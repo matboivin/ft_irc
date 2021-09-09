@@ -1,12 +1,19 @@
 # ft_irc
 
+## Usage
 
+```sh
+./ircserv [host:port_network:password_network] <port> <password>
+```
 
-## Getting started
+- `host`: the hostname on which IRC must connect to join a already existing network
+- `port_network`: the server port on which IRC must connect on host
+- `password_network`: the password needed to connect on host
+- `port`: the port number on which your server will accept incoming connections
+- `password`: the password needed by any IRC client who wants to connect to your server
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+If no `host`, `port_network` and `password_network` were given, a new IRC network is created.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
 
 ## Add your files
 
