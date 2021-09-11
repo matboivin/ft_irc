@@ -12,7 +12,7 @@
 - `port_network`: the server port on which IRC must connect on host
 - `password_network`: the password needed to connect on host
 - `port`: the port number on which your server will accept incoming connections
-- `password`: the password needed by any IRC client who wants to connect to your server
+- `password`: the password needed by any IRC client that wants to connect to your server
 
 If no `host`, `port_network` and `password_network` were given, a new IRC network is created.
 

@@ -1,18 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_irc.hpp                                         :+:      :+:    :+:   */
+/*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/11 15:50:22 by mboivin          ###   ########.fr       */
+/*   Created: 2021/09/11 16:03:21 by mboivin           #+#    #+#             */
+/*   Updated: 2021/09/11 16:03:27 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_IRC_HPP
-#define FT_IRC_HPP
+#include <iostream>
+#include "ft_irc.hpp"
 
-void	displayUsage( const char* program_name );
+void	displayUsage( const char* program_name ) {
 
-#endif
+	std::cout << "usage: " << program_name
+			  << " [host:port_network:password_network] <port> <password>"
+			  << std::endl;
+}

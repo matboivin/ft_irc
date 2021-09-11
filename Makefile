@@ -10,7 +10,8 @@ RM = /bin/rm
 
 INC_FILES = ft_irc.hpp
 
-SRC_FILES = main.cpp
+SRC_FILES = main.cpp \
+			utils.cpp
 
 OBJ_FILES = $(SRC_FILES:%.cpp=%.o)
 
@@ -20,14 +21,13 @@ INC_DIR = include
 SRC_DIR = src
 OBJ_DIR = obj
 
-# If sub dirs needed, add SRC_SUBDIRS to VPATH
-#SUB_DIRS = 
-#SRC_SUBDIRS = $(addprefix $(SRC_DIR)/, $(SUB_DIRS))
+SUB_DIRS = utils
+SRC_SUBDIRS = $(addprefix $(SRC_DIR)/, $(SUB_DIRS))
 
 INC = $(addprefix $(INC_DIR)/, $(INC_FILES))
 OBJ = $(addprefix $(OBJ_DIR)/, $(OBJ_FILES))
 
-VPATH = $(SRC_DIR)
+VPATH = $(SRC_DIR) $(SRC_SUBDIRS)
 
 # COMPIL AND FLAGS
 
