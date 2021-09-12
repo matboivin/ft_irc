@@ -4,6 +4,7 @@ image: ubuntu:18.04
 
 variables:
   EXE : "ircserv"
+  PATH : 
 
 # Define commands that run before each job's script
 before_script:
@@ -12,7 +13,8 @@ before_script:
   - rm -rf /var/lib/apt/lists/*
   -  curl -SL https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz | tar -xJC .
   - mv clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04 clang_10
-  - mv /clang_10/bin/* /bin/. && mv clang_10/lib/* /lib/.
+  - mv /clang_10/bin/* /bin/.
+  - mv /clang_10/lib/* /lib/. 
 
 # Try to compile our sample hello world app
 compile:
