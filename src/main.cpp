@@ -6,14 +6,14 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:21 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/11 16:03:33 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/12 18:09:21 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_irc.hpp"
 
-int	main( int argc, char** argv ) {
-
+int	main( int argc, char** argv )
+{
 	if (argc < 3 || argc > 4)
 		displayUsage(argv[0]);
 
