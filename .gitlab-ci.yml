@@ -9,25 +9,25 @@ stages:
 variables:
   EXE : "ircserv"
 
-cache:
-  paths:
-    - clang_10/
-
 include:
   - template: Code-Quality.gitlab-ci.yml
 
-# Define commands that run before each job's script
-before_script:
-  - apt-get update
-  - apt-get install -y xz-utils curl build-essential
-  - rm -rf /var/lib/apt/lists/*
-  -  if ! [ -d ./clang_10/ ]; then curl -SL https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz | tar -xJC . && mv clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04 clang_10 ; fi
-  - cp -r ./clang_10/bin/* /bin/.
-  - cp -r ./clang_10/lib/* /lib/. 
 
 # Try to compile our sample hello world app
 build:
   stage: build
+  cache:
+    paths:
+      - clang_10/
+
+  # Define commands that run before each job's script
+  before_script:
+    - apt-get update
+    - apt-get install -y xz-utils curl build-essential
+    - rm -rf /var/lib/apt/lists/*
+    -  if ! [ -d ./clang_10/ ]; then curl -SL https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz | tar -xJC . && mv clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04 clang_10 ; fi
+    - cp -r ./clang_10/bin/* /bin/.
+    - cp -r ./clang_10/lib/* /lib/. 
   script: make
   # Save the compiled output from the above for downloading via GitLab and in Gitlab 8.6 to use in future steps
   artifacts:
