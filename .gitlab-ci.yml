@@ -2,12 +2,19 @@
 # See: http://doc.gitlab.com/ee/ci/docker/using_docker_images.html
 image: ubuntu:18.04
 
+stages:
+  - build
+  - test
+
 variables:
   EXE : "ircserv"
 
 cache:
   paths:
     - clang_10/
+
+include:
+  - template: Code-Quality.gitlab-ci.yml
 
 # Define commands that run before each job's script
 before_script:
@@ -19,13 +26,25 @@ before_script:
   - cp -r ./clang_10/lib/* /lib/. 
 
 # Try to compile our sample hello world app
-compile:
-  script:
-  # Compile our app
-  - make 
-  # Verify that our compiled executable exists
-  - test -f "$EXE"
+build:
+  stage: build
+  script: make
   # Save the compiled output from the above for downloading via GitLab and in Gitlab 8.6 to use in future steps
   artifacts:
     paths:
     - "$EXE"
+
+code_quality:
+  stage: test
+  artifacts:
+    paths: [gl-code-quality-report.json]
+
+
+
+
+test:
+  stage: test
+  script:
+    # Verify that our compiled executable exists
+  - test -f "$EXE"
+
