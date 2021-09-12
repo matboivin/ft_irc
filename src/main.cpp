@@ -12,7 +12,8 @@
 
 #include "ft_irc.hpp"
 
-int	main( int argc, char** argv ) {
+int	main( int argc, char** argv )
+{
 
 	if (argc < 3 || argc > 4)
 		displayUsage(argv[0]);
