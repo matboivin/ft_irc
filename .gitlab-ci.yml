@@ -19,8 +19,8 @@ build:
   cache:
     paths:
       - clang_10/
-  
-# Define commands that run before each job's script
+
+  # Define commands that run before each job's script
   before_script:
     - apt-get update
     - apt-get install -y xz-utils curl build-essential
