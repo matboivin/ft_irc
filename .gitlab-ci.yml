@@ -34,12 +34,12 @@ build:
     paths:
     - "$EXE"
 
-code_quality:
-  stage: test
-  before_script:
-    - echo
-  artifacts:
-    paths: [gl-code-quality-report.json]
+#code_quality:
+#  stage: test
+#  before_script:
+#    - echo
+#  artifacts:
+#    paths: [gl-code-quality-report.json]
 
 
 test:
