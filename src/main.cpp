@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:21 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/19 13:57:23 by root             ###   ########.fr       */
+/*   Updated: 2021/09/19 14:13:50 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,11 @@ namespace ft_irc
 	public:
 		CLIParser(int argc, char **argv)
 		{
+			if (argc == 2 && std::strcmp(argv[1], "--help") == 0)
+			{
+				displayUsage(argv[0]);
+				exit(EXIT_SUCCESS);
+			}
 			if (argc < 4)
 				throw std::runtime_error("Not enough arguments");
 			if (argc > 4)
@@ -325,32 +330,32 @@ namespace ft_irc
 				std::cout << "Client " << inet_ntoa(client_address.sin_addr) << " connected" << std::endl;
 
 				//read the client's nick
-				std::string nick;
+				std::string input;
 	
-				if (!sockGetLine(new_sockfd, nick))
+				if (!sockGetLine(new_sockfd, input))
 				{
 					throw std::runtime_error("sockGetLine() failed");
 				}
-				client.setNick(nick);
-				std::cout << "Nick: " << nick << std::endl;
-				
+				client.setNick(input);
+				std::cout << "Nick: " << input << std::endl;
+				input.clear();
 				//read the client's user agent
-				std::string user_agent;
-				if (!sockGetLine(new_sockfd, user_agent))
+				if (!sockGetLine(new_sockfd, input))
 				{
 					throw std::runtime_error("sockGetLine() failed");
 				}
-				client.setUserAgent(user_agent);
-				std::cout << "User-Agent: " << user_agent << std::endl;
-				
+				client.setUserAgent(input);
+				std::cout << "User-Agent: " << input << std::endl;
+				input.clear();
+		
 				//read the client's password
-				std::string password;
-				if (!sockGetLine(new_sockfd, password))
+				if (!sockGetLine(new_sockfd, input))
 				{
 					throw std::runtime_error("sockGetLine() failed");
 				}
-				client.setPassword(password);
-				std::cout << "Password: " << password << std::endl;
+				client.setPassword(input);
+				std::cout << "Password: " << input << std::endl;
+				input.clear();
 				
 				//send the client's nick and user agent back to him (for logging purposes)
 				std::string response = ":";
@@ -367,7 +372,8 @@ namespace ft_irc
 					throw std::runtime_error("send() failed");
 				}
 				//log the closing of the connection
-				std::cout << "Closing connection to " << inet_ntoa(client_address.sin_addr) << std::endl << "----------------------------------------------------------------" << std::endl;
+				std::cout << "Closing connection to " << inet_ntoa(client_address.sin_addr) << std::endl
+				<< "----------------------------------------------------------------" << std::endl;
 				//send EOF to the client
 				//close the connection
 				close(new_sockfd);
