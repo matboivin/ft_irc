@@ -7,7 +7,7 @@ stages:
   - test
 
 variables:
-  EXE : "ircserv"
+  EXE : "./ircserv"
 
 #include:
 #  - template: Code-Quality.gitlab-ci.yml
