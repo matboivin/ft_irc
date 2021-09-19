@@ -16,7 +16,7 @@ variables:
 # Try to compile our sample hello world app
 build:
   stage: build
-  script: make
+  script: /usr/bin/make
   # Save the compiled output from the above for downloading via GitLab and in Gitlab 8.6 to use in future steps
   artifacts:
     paths:
