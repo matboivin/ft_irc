@@ -35,7 +35,6 @@ test:
   script:
     # Verify that our compiled executable exists
   - test -f "$EXE"
-  - ls ; pwd
   - ./tests/usage.sh
   - python3 ./tests/connect_tester 0.0.0.0 127.0.0.1 2727 ""
 
