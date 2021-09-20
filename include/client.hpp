@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/09/20 17:01:55 by root             ###   ########.fr       */
+/*   Updated: 2021/09/20 17:37:50 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <netdb.h>
 # include <fcntl.h>
 # include <unistd.h>
-# include <string> 
+# include <string>
 
 
 namespace ft_irc
