@@ -9,11 +9,13 @@ RM = /bin/rm
 # FILES
 
 INC_FILES = ft_irc.hpp \
-			cli_parser.hpp
+			cli_parser.hpp \
+			client.hpp 
 
 SRC_FILES = main.cpp \
 			utils.cpp \
-			cli_parser.cpp
+			cli_parser.cpp \
+			client.cpp
 
 
 OBJ_FILES = $(SRC_FILES:%.cpp=%.o)
@@ -25,7 +27,8 @@ SRC_DIR = src
 OBJ_DIR = obj
 
 SUB_DIRS =	utils \
-			cli_parser
+			cli_parser \
+			client
 
 SRC_SUBDIRS = $(addprefix $(SRC_DIR)/, $(SUB_DIRS))
 
