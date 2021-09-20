@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/09/20 18:04:27 by root             ###   ########.fr       */
+/*   Updated: 2021/09/20 18:05:39 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,15 +32,15 @@ namespace ft_irc
 	//IRCServer getters
 	std::string IRCServer::getBindAddress() const
 	{
-		return (this)->bind_address;
+		return (this->bind_address);
 	}
 	std::string IRCServer::getPort() const
 	{
-		return (this)->port;
+		return (this->port);
 	}
 	std::string IRCServer::getPassword() const
 	{
-		return (this)->password;
+		return (this->password);
 	}
 
 	//IRCServer setters
@@ -74,7 +74,7 @@ namespace ft_irc
 		this->password = other.password;
 		this->sockfd = other.sockfd;
 		this->backlog_max = other.backlog_max;
-		return *this;
+		return (*this);
 	}
 	//destructor
 	IRCServer::~IRCServer()
