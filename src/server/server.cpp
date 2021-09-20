@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/09/20 17:43:03 by root             ###   ########.fr       */
+/*   Updated: 2021/09/20 18:04:27 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,15 +32,15 @@ namespace ft_irc
 	//IRCServer getters
 	std::string IRCServer::getBindAddress() const
 	{
-		return this->bind_address;
+		return (this)->bind_address;
 	}
 	std::string IRCServer::getPort() const
 	{
-		return this->port;
+		return (this)->port;
 	}
 	std::string IRCServer::getPassword() const
 	{
-		return this->password;
+		return (this)->password;
 	}
 
 	//IRCServer setters
@@ -95,28 +95,28 @@ namespace ft_irc
 		if (this->sockfd < 0)
 		{
 			std::cerr << "Error: Could not create socket." << std::endl;
-			return false;
+			return (false);
 		}
 		//Set socket options.
 		int optval = 1;
 		if (setsockopt(this->sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) < 0)
 		{
 			std::cerr << "Error: Could not set socket options." << std::endl;
-			return false;
+			return (false);
 		}
 		//Bind the socket to the address.
 		if (bind(this->sockfd, (struct sockaddr *)&address, sizeof(address)) < 0)
 		{
 			std::cerr << "Error: Could not bind socket." << std::endl;
-			return false;
+			return (false);
 		}
 		//Listen for connections.
 		if (listen(this->sockfd, this->backlog_max) < 0)
 		{
 			std::cerr << "Error: Could not listen on socket." << std::endl;
-			return false;
+			return (false);
 		}
-		return true;
+		return (true);
 	}
 	int IRCServer::run()
 	{
@@ -196,7 +196,7 @@ namespace ft_irc
 		{
 			if (recv(sockfd, &c, 1, 0) < 0)
 			{
-				return false;
+				return (false);
 			}
 			if (c == '\n')
 			{
@@ -204,7 +204,7 @@ namespace ft_irc
 			}
 			line += c;
 		}
-		return true;
+		return (true);
 	}
 
 	int IRCServer::sockGetLine(int sockfd, std::string &line, std::size_t max_bytes)
@@ -216,7 +216,7 @@ namespace ft_irc
 		{
 			if (recv(sockfd, &c, 1, 0) < 0)
 			{
-				return false;
+				return (false);
 			}
 			if (c == '\n')
 			{
@@ -228,6 +228,6 @@ namespace ft_irc
 				throw std::runtime_error("line too long");
 			}
 		}
-		return true;
+		return (true);
 	}
 }
