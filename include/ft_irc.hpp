@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/20 15:33:58 by root             ###   ########.fr       */
+/*   Updated: 2021/09/20 16:51:49 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,19 +34,23 @@ namespace ft_irc
 	class IRCClient
 	{
 	private:
-		std::string nick;
-		std::string user_agent;
-		std::string joined_channels;
-		std::string password;
-		struct sockaddr_in client_address;	//IPv4 address		
-		std::string client_address_str;		//IPv4 address as string
+		std::string			nick;
+		std::string			user_agent;
+		std::string			joined_channels;
+		std::string			password;
+		struct sockaddr_in	address;			//IPv4 address		
+		socklen_t 			address_size;		//IPv4 address size
+		std::string			address_str;		//IPv4 address as string
 	public:
-		IRCClient(std::string nick="", std::string user_agent="", std::string password="")
+		IRCClient(struct sockaddr_in address=(struct sockaddr_in){0,0,{0},{0}},
+		std::string nick="", std::string user_agent="", std::string password="")
 		{
 			this->nick = nick;
 			this->user_agent = user_agent;
 			this->password = password;
-			this->client_address_str = "";
+			this->address = address;
+			this->address_str = inet_ntoa(address.sin_addr);
+			this->address_size = sizeof(address);
 		}
 		//IRCClient getters
 		std::string getNick() const
@@ -67,11 +71,16 @@ namespace ft_irc
 		}
 		std::string getIpAddressStr() const
 		{
-			return this->client_address_str;
+			return this->address_str;
 		}
-		struct sockaddr_in getClientAddress() const
+		struct sockaddr_in &getAddress()
 		{
-			return this->client_address;
+			return this->address;
+		}
+		//getAdressSize
+		socklen_t &getAddressSize()
+		{
+			return this->address_size;
 		}
 		//IRCClient setters
 		void setNick(std::string nick)
@@ -90,10 +99,6 @@ namespace ft_irc
 		{
 			this->password = password;
 		}
-		void setAddress(std::string ipaddress)
-		{
-			this->client_address_str = ipaddress;
-		}
 		//copy constructor
 		IRCClient(const IRCClient &other)
 		{
@@ -101,8 +106,9 @@ namespace ft_irc
 			this->user_agent = other.user_agent;
 			this->joined_channels = other.joined_channels;
 			this->password = other.password;
-			this->client_address_str = other.client_address_str;
-			this->client_address = other.client_address;
+			this->address_str = other.address_str;
+			this->address = other.address;
+			this->address_size = other.address_size;
 		}
 		//assignment operator
 		IRCClient &operator=(const IRCClient &other)
@@ -111,7 +117,9 @@ namespace ft_irc
 			this->user_agent = other.user_agent;
 			this->joined_channels = other.joined_channels;
 			this->password = other.password;
-			this->client_address_str = other.client_address_str;
+			this->address_str = other.address_str;
+			this->address = other.address;
+			this->address_size = other.address_size;
 			return *this;
 		}
 		//destructor
@@ -133,13 +141,18 @@ namespace ft_irc
 		int					sockfd;
 		int					backlog_max;
 	public:
-		IRCServer(std::string const &bind_address, std::string const &port, std::string const &password)
+		IRCServer(std::string bind_address="0.0.0.0", std::string port="6697",
+			std::string password="", int backlog_max=5)
 		{
 			this->bind_address = bind_address;
 			this->port = port;
 			this->password = password;
 			this->sockfd = -1;
-			this->backlog_max = 5;
+			this->backlog_max = backlog_max;
+			//create a new address struct
+			address.sin_family = AF_INET;
+			address.sin_port = htons(atoi(this->port.c_str()));
+			address.sin_addr.s_addr = inet_addr(this->bind_address.c_str());
 		}
 		
 		//IRCServer getters
@@ -170,15 +183,6 @@ namespace ft_irc
 			this->password = password;
 		}
 
-		//default constructor
-		IRCServer()
-		{
-			this->bind_address = "";
-			this->port = "";
-			this->password = "";
-			this->sockfd = -1;
-			this->backlog_max = 5;
-		}
 		//copy constructor
 		IRCServer(const IRCServer &other)
 		{
@@ -202,56 +206,65 @@ namespace ft_irc
 		~IRCServer()
 		{
 		}
+	private:
+		//Function to create a socket.
+		//create a new listening tcp s	ocket and bind it to the given address and port
+		//https://www.geeksforgeeks.org/socket-programming-cc/
 
+		//create a new socket
+		//AF_INET: IPv4
+		//SOCK_STREAM: TCP
+		//IPPROTO_TCP: TCP protocol
+		bool createSocket()
+		{
+			//Create a socket.
+			this->sockfd = socket(AF_INET, SOCK_STREAM, 0);
+			if (this->sockfd < 0)
+			{
+				std::cerr << "Error: Could not create socket." << std::endl;
+				return false;
+			}
+			//Set socket options.
+			int optval = 1;
+			if (setsockopt(this->sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) < 0)
+			{
+				std::cerr << "Error: Could not set socket options." << std::endl;
+				return false;
+			}
+			//Bind the socket to the address.
+			if (bind(this->sockfd, (struct sockaddr *)&address, sizeof(address)) < 0)
+			{
+				std::cerr << "Error: Could not bind socket." << std::endl;
+				return false;
+			}
+			//Listen for connections.
+			if (listen(this->sockfd, this->backlog_max) < 0)
+			{
+				std::cerr << "Error: Could not listen on socket." << std::endl;
+				return false;
+			}
+			return true;
+		}
+
+	public:	
 		int run()
 		{
-			//create a new listening tcp socket and bind it to the given address and port
-			//https://www.geeksforgeeks.org/socket-programming-cc/
-
-			//create a new socket
-			//AF_INET: IPv4
-			//SOCK_STREAM: TCP
-			//IPPROTO_TCP: TCP protocol
-			sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-			if (sockfd < 0)
+			if (createSocket() == false)
 			{
-				throw std::runtime_error("socket() failed");
+				return (-1);
 			}
-			
-			//create a new address struct
-			address.sin_family = AF_INET;
-			address.sin_port = htons(atoi(this->port.c_str()));
-			address.sin_addr.s_addr = inet_addr(this->bind_address.c_str());
-			
-			//bind the socket to the given address
-			if (bind(sockfd, (struct sockaddr *)&address, sizeof(address)) < 0)
-			{
-				throw std::runtime_error("bind() failed");
-			}
-			
-			//listen for incoming connections
-			if (listen(sockfd, 5) < 0)
-			{
-				throw std::runtime_error("listen() failed");
-			}
-			
 			//accept incoming connections
 			while (true)
 			{
-				//create new Client object
 				IRCClient client;
-				//declare a new client address
-				struct sockaddr_in client_address;
-				//declare a new client address size
-				socklen_t client_address_size = sizeof(client_address);	
 				//accept a new connection
-				int new_sockfd = accept(sockfd, (struct sockaddr *)&client_address, &client_address_size);
+				int new_sockfd = accept(sockfd, (struct sockaddr *)&(client.getAddress()), &(client.getAddressSize()));
 				if (new_sockfd < 0)
 				{
 					throw std::runtime_error("accept() failed");
 				}				
 				//log the clients IP address
-				std::cout << "Client " << inet_ntoa(client_address.sin_addr) << " connected" << std::endl;
+				std::cout << "Client " << client.getIpAddressStr() << " connected" << std::endl;
 
 				//read the client's nick
 				std::string input;
@@ -290,13 +303,13 @@ namespace ft_irc
 				response += client.getPassword();
 				response += "\r\n";
 				//log the response
-				std::cout << "Sending: " << response << "to " << inet_ntoa(client_address.sin_addr) << std::endl;
+				std::cout << "Sending: " << response << "to " << inet_ntoa(address.sin_addr) << std::endl;
 				if (send(new_sockfd, response.c_str(), response.size(), 0) < 0)
 				{
 					throw std::runtime_error("send() failed");
 				}
 				//log the closing of the connection
-				std::cout << "Closing connection to " << inet_ntoa(client_address.sin_addr) << std::endl
+				std::cout << "Closing connection to " << inet_ntoa(address.sin_addr) << std::endl
 				<< "----------------------------------------------------------------" << std::endl;
 				//send EOF to the client
 				//close the connection
