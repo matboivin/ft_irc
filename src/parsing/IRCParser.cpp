@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/20 17:33:23 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/20 19:46:41 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,5 +38,11 @@ namespace ft_irc
 	// destructor
 	IRCParser::~IRCParser()
 	{
+	}
+
+	// main parsing function
+	void	IRCParser::parse(const std::string& packet)
+	{
+		static_cast<void>(packet); // tmp
 	}
 }
