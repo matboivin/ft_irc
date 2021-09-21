@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/21 14:53:10 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/21 14:54:57 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,17 @@
 namespace ft_irc
 {
 	// default constructor
-	Message::Message() : _prefix(":"), _command(), _params()
+	Message::Message()
+			: _prefix(":"), _command(), _content(), _params()
 	{
 	}
 
 	// copy constructor
 	Message::Message(const Message& other)
-			: _prefix(other._prefix), _command(other._command), _params(other._params)
+			: _prefix(other._prefix),
+			  _command(other._command),
+			  _content(other._content),
+			  _params(other._params)
 	{
 	}
 
@@ -33,6 +37,7 @@ namespace ft_irc
 		{
 			_prefix = other.getPrefix();
 			_command = other.getCommand();
+			_content = other.getContent();
 			_params = other.getParams();
 		}
 		return (*this);
