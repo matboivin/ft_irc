@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/20 19:24:57 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/21 14:08:40 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ namespace ft_irc
 			_command = other.getCommand();
 			_params = other.getParams();
 		}
-		return *this;
+		return (*this);
 	}
 
 	// destructor
@@ -45,12 +45,12 @@ namespace ft_irc
 
 	std::string	Message::getCommand(void) const
 	{
-		return this->_command;
+		return (this->_command);
 	}
 
-	Message::param_list	Message::getParams(void) const
+	Message::str_vec	Message::getParams(void) const
 	{
-		return this->_params;
+		return (this->_params);
 	}
 
 	// setters

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/20 19:46:41 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/21 14:07:43 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ namespace ft_irc
 	{
 		static_cast<void>(other);// tmp
 
-		return *this;
+		return (*this);
 	}
 
 	// destructor
