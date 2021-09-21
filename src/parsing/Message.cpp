@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/21 14:08:40 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/21 14:11:12 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,11 @@ namespace ft_irc
 
 	// getters
 
+	std::string	Message::getPrefix(void) const
+	{
+		return (this->_prefix);
+	}
+
 	std::string	Message::getCommand(void) const
 	{
 		return (this->_command);
@@ -54,6 +59,11 @@ namespace ft_irc
 	}
 
 	// setters
+
+	void	Message::setPrefix(const std::string& prefix)
+	{
+		this->_prefix = prefix;
+	}
 
 	void	Message::setCommand(const std::string& command)
 	{

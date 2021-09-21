@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:47:11 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/21 14:08:31 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/21 14:10:20 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,22 +23,31 @@ namespace ft_irc
 	class Message
 	{
 		private:
+
 			// private alias
 			typedef std::vector<std::string>	str_vec;
 
-			// TODO: sender info + target info
+			std::string	_prefix;
 			std::string	_command;
 			str_vec		_params;
 
 		public:
+
 			Message();
+			// copy constructor
 			Message(const Message& other);
+			// assignment operator
 			Message	&operator=(const Message& other);
+			// destructor
 			~Message();
-			// getters
+
+			// Messagegetters
+			std::string	getPrefix(void) const;
 			std::string	getCommand(void) const;
 			str_vec		getParams(void) const;
-			//setters
+
+			// Message setters
+			void	setPrefix(const std::string& prefix);
 			void	setCommand(const std::string& command);
 			void	setParam(const std::string& param);
 	};
