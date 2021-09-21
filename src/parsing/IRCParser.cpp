@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/21 16:33:34 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/21 16:40:25 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,18 @@ namespace ft_irc
 
 	// parsing
 
+	// <letter> { <letter> } | <number> <number> <number>
+	bool	IRCParser::_parseCommand()
+	{
+		return (false);
+	}
+
+	// <SPACE> [ ':' <trailing> | <middle> <params> ]
+	bool	IRCParser::_parseParams()
+	{
+		return (false);
+	}
+
 	bool	IRCParser::_parseSeparator()
 	{
 		std::string	s = &(*this->getPacketIt());
@@ -69,10 +81,16 @@ namespace ft_irc
 	{
 		Message	msg;
 
-		static_cast<void>(sender);
 		this->setPacketIt(packet.begin());
 
-		//msg.setPrefix(sender.getNick() + "!" + "tmp" + "@" + sender.getIpAddressStr());
+		_parseCommand();
+		_parseParams();
+
+		if (_parseSeparator())
+		{
+			msg.setPrefix(sender.getNick() + "!" + "tmp" + "@" + sender.getIpAddressStr());
+			nextStep(msg);
+		}
 	}
 
 	// 3 types of messages -> 3 types of handling them:

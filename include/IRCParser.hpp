@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:20:57 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/21 16:21:36 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/21 16:35:10 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ namespace ft_irc
 		// add next workers in pipeline?
 
 		// helpers
+		bool			_parseCommand();
+		bool			_parseParams();
 		bool			_parseSeparator();
 
 	public:

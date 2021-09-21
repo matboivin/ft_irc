@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/21 15:48:12 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/21 16:35:54 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ namespace ft_irc
 			this->_prefix.append(prefix);
 	}
 
-	//  <letter> { <letter> } | <number> <number> <number>
+	// <letter> { <letter> } | <number> <number> <number>
 	void	Message::setCommand(const std::string& command)
 	{
 		this->_command = command;
