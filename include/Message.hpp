@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:47:11 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/21 14:10:20 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/21 14:51:34 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ namespace ft_irc
 
 			std::string	_prefix;
 			std::string	_command;
+			std::string	_content;
 			str_vec		_params;
 
 		public:
@@ -41,14 +42,16 @@ namespace ft_irc
 			// destructor
 			~Message();
 
-			// Messagegetters
+			// Message getters
 			std::string	getPrefix(void) const;
 			std::string	getCommand(void) const;
+			std::string	getContent(void) const;
 			str_vec		getParams(void) const;
 
 			// Message setters
 			void	setPrefix(const std::string& prefix);
 			void	setCommand(const std::string& command);
+			void	setContent(const std::string& content);
 			void	setParam(const std::string& param);
 	};
 }

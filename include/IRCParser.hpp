@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:20:57 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/20 19:46:08 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/21 14:11:53 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,12 @@ namespace ft_irc
 
 		public:
 			IRCParser();
+			// copy constructor
 			IRCParser(const IRCParser& other);
+			// assignment operator
 			IRCParser	&operator=(const IRCParser& other);
 			~IRCParser();
-
+			// destructor
 			void	parse(const std::string& packet); // + client sender info
 	};
 }
