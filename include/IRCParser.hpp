@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:20:57 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/21 14:11:53 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/21 15:25:43 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,18 @@
 
 # include <string>
 # include "ft_irc.hpp"
+# include "client.hpp"
+# include "Message.hpp"
 
 namespace ft_irc
 {
+	class IRCClient;
+	class Message;
+
 	// Parser for IRC protocol messages
 	class IRCParser
 	{
-		protected:
+		// private:
 			// next workers in pipeline?
 
 		public:
@@ -32,7 +37,8 @@ namespace ft_irc
 			IRCParser	&operator=(const IRCParser& other);
 			~IRCParser();
 			// destructor
-			void	parse(const std::string& packet); // + client sender info
+			void	parse(const std::string& packet, IRCClient& sender); // tmp
+			void	nextStep(Message& msg); // dummy tmp function
 	};
 }
 

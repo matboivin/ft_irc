@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:47:11 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/21 14:51:34 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/21 15:23:06 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <string>
 # include <vector>
 # include "ft_irc.hpp"
+# include "IRCParser.hpp"
 
 namespace ft_irc
 {
@@ -53,6 +54,9 @@ namespace ft_irc
 			void	setCommand(const std::string& command);
 			void	setContent(const std::string& content);
 			void	setParam(const std::string& param);
+
+			// end message with CRLF
+			void	appendSeparator();
 	};
 }
 

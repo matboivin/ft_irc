@@ -6,12 +6,13 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/21 14:54:57 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/21 15:27:16 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <string>
 #include "Message.hpp"
+#include "IRCParser.hpp"
 
 namespace ft_irc
 {
@@ -73,12 +74,13 @@ namespace ft_irc
 	// setters
 
 	// <servername> | <nick> [ '!' <user> ] [ '@' <host> ]
+	// if cannot resolve the client hostname, the IP address is used instead
 	void	Message::setPrefix(const std::string& prefix)
 	{
-		if (prefix[0] != ':')
-			this->_prefix.append(prefix);
-		else
+		if (prefix[0] == ':')
 			this->_prefix = prefix;
+		else
+			this->_prefix.append(prefix);
 	}
 
 	//  <letter> { <letter> } | <number> <number> <number>
@@ -97,5 +99,11 @@ namespace ft_irc
 	void	Message::setParam(const std::string& param)
 	{
 		this->_params.push_back(param);
+	}
+
+	// end message with CRLF
+	void	Message::appendSeparator()
+	{
+		this->_content.append(CRLF);
 	}
 }
