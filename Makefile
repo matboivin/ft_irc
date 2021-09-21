@@ -80,7 +80,7 @@ $(NAME): $(OBJ_DIR) $(OBJ) $(INC)
 
 # DEBUG
 debug: $(NAME)
-	./$(NAME)
+	./$(NAME) 0.0.0.0 6667 test
 
 show:
 	@echo "VPATH: $(VPATH)"

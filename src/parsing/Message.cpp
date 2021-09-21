@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/21 15:27:16 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/21 15:48:12 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,7 @@
 namespace ft_irc
 {
 	// default constructor
-	Message::Message()
-			: _prefix(":"), _command(), _content(), _params()
-	{
-	}
+	Message::Message() : _prefix(":"), _command(), _content(), _params() {}
 
 	// copy constructor
 	Message::Message(const Message& other)
@@ -45,9 +42,7 @@ namespace ft_irc
 	}
 
 	// destructor
-	Message::~Message()
-	{
-	}
+	Message::~Message() {}
 
 	// getters
 

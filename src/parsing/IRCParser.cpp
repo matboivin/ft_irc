@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/21 15:43:21 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/21 16:33:34 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,10 @@ namespace ft_irc
 	// Parser for IRC protocol messages
 
 	// default constructor
-	IRCParser::IRCParser()
-	{
-	}
+	IRCParser::IRCParser() : _packet_it() {}
 
 	// copy constructor
-	IRCParser::IRCParser(const IRCParser& other)
+	IRCParser::IRCParser(const IRCParser& other) : _packet_it(other._packet_it)
 	{
 		static_cast<void>(other); // tmp
 	}
@@ -34,26 +32,53 @@ namespace ft_irc
 	// assignment operator
 	IRCParser&	IRCParser::operator=(const IRCParser& other)
 	{
-		static_cast<void>(other); // tmp
+		if (this != &other)
+			_packet_it = other.getPacketIt();
 
 		return (*this);
 	}
 
 	// destructor
-	IRCParser::~IRCParser()
+	IRCParser::~IRCParser() {}
+
+	// getters
+	IRCParser::str_const_it	IRCParser::getPacketIt() const
 	{
+		return (this->_packet_it);
+	}
+
+	// setters
+	void	IRCParser::setPacketIt(IRCParser::str_const_it packet_it)
+	{
+		this->_packet_it = packet_it;
+	}
+
+	// parsing
+
+	bool	IRCParser::_parseSeparator()
+	{
+		std::string	s = &(*this->getPacketIt());
+
+		return (s == CRLF);
 	}
 
 	// main parsing function
 	// not sure about how to pass the client arg
+	// packet looks like: <command> <params> <crlf>
 	void	IRCParser::parseMessage(const std::string& packet, IRCClient& sender)
 	{
 		Message	msg;
 
-		static_cast<void>(packet);
-		msg.setPrefix(sender.getNick() + "!" + "tmp" + "@" + sender.getIpAddressStr()); // tmp
-		std::cout << msg.getPrefix() << std::endl; // tmp
+		static_cast<void>(sender);
+		this->setPacketIt(packet.begin());
+
+		//msg.setPrefix(sender.getNick() + "!" + "tmp" + "@" + sender.getIpAddressStr());
 	}
+
+	// 3 types of messages -> 3 types of handling them:
+	//  - respond directly to sender
+	//  - forward message to recipient(s)
+	//  - broadcast (e.g., joining a channel)
 
 	// dummy tmp function that would pass msg to appropriate worker
 	void	IRCParser::nextStep(Message& msg)
