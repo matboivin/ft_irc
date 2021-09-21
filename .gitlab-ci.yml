@@ -7,7 +7,7 @@ stages:
   - test
 
 variables:
-  EXE : "ircserv"
+  EXE : "./ircserv"
 
 #include:
 #  - template: Code-Quality.gitlab-ci.yml
@@ -35,6 +35,10 @@ test:
   script:
     # Verify that our compiled executable exists
   - test -f "$EXE"
+  - ls ; pwd
+  - ./tests/usage.sh
+  - python3 ./tests/connect_tester.py 0.0.0.0 127.0.0.1 2727 ""
+
 
 
 
