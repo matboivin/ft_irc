@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:20:57 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/21 16:35:10 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/21 19:18:12 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,14 @@ namespace ft_irc
 		typedef std::string::const_iterator	str_const_it;
 
 		// attributes
-		str_const_it	_packet_it;
+		str_const_it	_start;
+		str_const_it	_current;
+		str_const_it	_end;
 		// add next workers in pipeline?
 
 		// helpers
-		bool			_parseCommand();
-		bool			_parseParams();
+		bool			_parseCommand(Message& msg);
+		bool			_parseParams(Message& msg);
 		bool			_parseSeparator();
 
 	public:
@@ -52,9 +54,13 @@ namespace ft_irc
 						~IRCParser();
 
 		// IRCParser getters
-		str_const_it	getPacketIt() const;
+		str_const_it	getItStart() const;
+		str_const_it	getItCurrent() const;
+		str_const_it	getItEnd() const;
 		// IRCParser setters
-		void			setPacketIt(str_const_it packet_it);
+		void			setItStart(str_const_it start);
+		void			setItCurrent(str_const_it current);
+		void			setItEnd(str_const_it end);
 
 		// tmp main parsing function
 		void			parseMessage(const std::string& packet, IRCClient& sender);

@@ -6,11 +6,12 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/21 16:40:25 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/21 19:21:11 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
+#include <cctype>
 #include <string>
 #include "IRCParser.hpp"
 #include "client.hpp"
@@ -21,20 +22,23 @@ namespace ft_irc
 	// Parser for IRC protocol messages
 
 	// default constructor
-	IRCParser::IRCParser() : _packet_it() {}
+	IRCParser::IRCParser() : _start(), _current(), _end() {}
 
 	// copy constructor
-	IRCParser::IRCParser(const IRCParser& other) : _packet_it(other._packet_it)
+	IRCParser::IRCParser(const IRCParser& other)
+			: _start(other._start), _current(other._current), _end(other._end)
 	{
-		static_cast<void>(other); // tmp
 	}
 
 	// assignment operator
 	IRCParser&	IRCParser::operator=(const IRCParser& other)
 	{
 		if (this != &other)
-			_packet_it = other.getPacketIt();
-
+		{
+			_start = other.getItStart();
+			_current = other.getItCurrent();
+			_end = other.getItEnd();
+		}
 		return (*this);
 	}
 
@@ -42,34 +46,76 @@ namespace ft_irc
 	IRCParser::~IRCParser() {}
 
 	// getters
-	IRCParser::str_const_it	IRCParser::getPacketIt() const
+	IRCParser::str_const_it	IRCParser::getItStart() const
 	{
-		return (this->_packet_it);
+		return (this->_start);
+	}
+
+	IRCParser::str_const_it	IRCParser::getItCurrent() const
+	{
+		return (this->_current);
+	}
+
+	IRCParser::str_const_it	IRCParser::getItEnd() const
+	{
+		return (this->_end);
 	}
 
 	// setters
-	void	IRCParser::setPacketIt(IRCParser::str_const_it packet_it)
+	void	IRCParser::setItStart(IRCParser::str_const_it start)
 	{
-		this->_packet_it = packet_it;
+		this->_start = start;
+	}
+
+	void	IRCParser::setItCurrent(str_const_it current)
+	{
+		this->_current = current;
+	}
+
+	void	IRCParser::setItEnd(IRCParser::str_const_it end)
+	{
+		this->_end = end;
 	}
 
 	// parsing
 
 	// <letter> { <letter> } | <number> <number> <number>
-	bool	IRCParser::_parseCommand()
+	bool	IRCParser::_parseCommand(Message& msg)
 	{
-		return (false);
+		if (!isalnum(*_current))
+			return (false);
+		if (isdigit(*_current))
+		{
+			for (int i = 0; i < 3 && (_current != _end); i++)
+			{
+				if (!isdigit(*_current))
+					return (false);
+				_current++;
+			}
+		}
+		else if (isalpha(*_current))
+		{
+			while (_current != _end)
+			{
+				if (!isalpha(*_current))
+					return (false);
+				_current++;
+			}
+		}
+		msg.setCommand(std::string(_start, _current));
+		return (_parseParams(msg));
 	}
 
 	// <SPACE> [ ':' <trailing> | <middle> <params> ]
-	bool	IRCParser::_parseParams()
+	bool	IRCParser::_parseParams(Message& msg)
 	{
-		return (false);
+		(void)msg;
+		return (_parseSeparator());
 	}
 
 	bool	IRCParser::_parseSeparator()
 	{
-		std::string	s = &(*this->getPacketIt());
+		std::string	s = &(*this->getItStart());
 
 		return (s == CRLF);
 	}
@@ -79,15 +125,21 @@ namespace ft_irc
 	// packet looks like: <command> <params> <crlf>
 	void	IRCParser::parseMessage(const std::string& packet, IRCClient& sender)
 	{
+		bool	format_is_correct;
 		Message	msg;
 
-		this->setPacketIt(packet.begin());
+		this->setItStart(packet.begin());
+		this->setItCurrent(packet.begin());
+		this->setItEnd(packet.end());
 
-		_parseCommand();
-		_parseParams();
+		_start++; // tmp for ':'
+		_current++;
 
-		if (_parseSeparator())
+		format_is_correct = _parseCommand(msg);
+
+		if (format_is_correct)
 		{
+			// tmp
 			msg.setPrefix(sender.getNick() + "!" + "tmp" + "@" + sender.getIpAddressStr());
 			nextStep(msg);
 		}
