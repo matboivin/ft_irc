@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:20:57 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/21 15:25:43 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/21 15:43:12 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,19 +26,24 @@ namespace ft_irc
 	// Parser for IRC protocol messages
 	class IRCParser
 	{
-		// private:
-			// next workers in pipeline?
+	// private:
+		// next workers in pipeline?
 
-		public:
-			IRCParser();
-			// copy constructor
-			IRCParser(const IRCParser& other);
-			// assignment operator
-			IRCParser	&operator=(const IRCParser& other);
-			~IRCParser();
-			// destructor
-			void	parse(const std::string& packet, IRCClient& sender); // tmp
-			void	nextStep(Message& msg); // dummy tmp function
+	public:
+
+		// default constructor
+					IRCParser();
+		// copy constructor
+					IRCParser(const IRCParser& other);
+		// assignment operator
+		IRCParser	&operator=(const IRCParser& other);
+		// destructor
+					~IRCParser();
+
+		// tmp main parsing function
+		void		parseMessage(const std::string& packet, IRCClient& sender);
+		// dummy tmp function
+		void		nextStep(Message& msg);
 	};
 }
 

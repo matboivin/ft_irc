@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/21 15:31:20 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/21 15:43:21 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ namespace ft_irc
 
 	// main parsing function
 	// not sure about how to pass the client arg
-	void	IRCParser::parse(const std::string& packet, IRCClient& sender)
+	void	IRCParser::parseMessage(const std::string& packet, IRCClient& sender)
 	{
 		Message	msg;
 

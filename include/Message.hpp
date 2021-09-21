@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:47:11 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/21 15:23:06 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/21 15:42:05 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,40 +23,42 @@ namespace ft_irc
 	// Parser for IRC protocol messages
 	class Message
 	{
-		private:
+	private:
 
-			// private alias
-			typedef std::vector<std::string>	str_vec;
+		// private alias
+		typedef std::vector<std::string>	str_vec;
 
-			std::string	_prefix;
-			std::string	_command;
-			std::string	_content;
-			str_vec		_params;
+		// attributes
+		std::string	_prefix;
+		std::string	_command;
+		std::string	_content;
+		str_vec		_params;
 
-		public:
+	public:
 
-			Message();
-			// copy constructor
-			Message(const Message& other);
-			// assignment operator
-			Message	&operator=(const Message& other);
-			// destructor
-			~Message();
+		// default constructor
+					Message();
+		// copy constructor
+					Message(const Message& other);
+		// assignment operator
+		Message		&operator=(const Message& other);
+		// destructor
+					~Message();
 
-			// Message getters
-			std::string	getPrefix(void) const;
-			std::string	getCommand(void) const;
-			std::string	getContent(void) const;
-			str_vec		getParams(void) const;
+		// Message getters
+		std::string	getPrefix(void) const;
+		std::string	getCommand(void) const;
+		std::string	getContent(void) const;
+		str_vec		getParams(void) const;
 
-			// Message setters
-			void	setPrefix(const std::string& prefix);
-			void	setCommand(const std::string& command);
-			void	setContent(const std::string& content);
-			void	setParam(const std::string& param);
+		// Message setters
+		void		setPrefix(const std::string& prefix);
+		void		setCommand(const std::string& command);
+		void		setContent(const std::string& content);
+		void		setParam(const std::string& param);
 
-			// end message with CRLF
-			void	appendSeparator();
+		// end message with CRLF
+		void		appendSeparator();
 	};
 }
 
