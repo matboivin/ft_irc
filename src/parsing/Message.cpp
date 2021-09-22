@@ -6,10 +6,11 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/21 16:35:54 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/22 16:30:00 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <iostream>
 #include <string>
 #include "Message.hpp"
 #include "IRCParser.hpp"
@@ -99,6 +100,18 @@ namespace ft_irc
 	// end message with CRLF
 	void	Message::appendSeparator()
 	{
-		this->_content.append(CRLF);
+		this->_content.append("\r\n");
+	}
+
+	// debug
+	void	Message::displayMessage() const
+	{
+		std::cout << "prefix:  " << getPrefix() << '\n'
+				  << "command: " << getCommand() << '\n'
+				  << "params:  ";
+		
+		for (std::size_t i = 0; i < _params.size(); i++)
+			std::cout << "'" << _params[i] << "' ";
+		std::cout << std::endl;
 	}
 }

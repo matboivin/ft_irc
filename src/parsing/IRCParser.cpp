@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/22 15:19:58 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/22 16:49:22 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,76 +79,80 @@ namespace ft_irc
 
 	// parsing
 
+	// Checks whether the string contains the CRLF (carriage return + line feed) separator
 	bool	IRCParser::_parseSeparator()
 	{
-		if (_current == _end)
-			return (false);
-
-		std::string	s = &(*this->getItStart());
-		return (s == CRLF);
+		if ((_current != _end) && (*_current == '\r'))
+		{
+			_current++;
+			return ((_current != _end) && (*_current == '\n'));
+		}
+		return (false);
 	}
 
-	// Returns true if character pointed by it is not a NUL, CR, LF, space or a colon
-	// False otherwise.
+	// Checks whether the character pointed by it is not a NUL, CR, LF, space or a colon
 	bool	IRCParser::_nospcrlfcl(IRCParser::str_const_it it)
 	{
 		return (it != _end && *it != ' ' && *it != '\r' && *it != '\n' && *it != ':');
+	}
+
+	// Any, possibly *empty*, sequence of octets not including NUL or CR or LF
+	// *( ":" / " " / nospcrlfcl )
+	bool	IRCParser::_parseTrailing(Message& msg)
+	{
+		while ((_current != _end) && (*_current != '\r'))
+		{
+			if (!_nospcrlfcl(_current) && (*_current != ' ') && (*_current != ':'))
+				break ;
+			_current++;
+		}
+		if (std::distance(_start, _current) > 0)
+			msg.setParam(std::string(_start, _current));
+		return (_parseSeparator());
 	}
 
 	// Any *non-empty* sequence of octets not including SPACE or NUL or CR or LF,
 	// the first of which may not be ':'
 	bool	IRCParser::_parseMiddle(Message& msg)
 	{
-		msg.setParam("lol");
-		return (_parseSeparator());
+		while (_nospcrlfcl(_current) && (*_current != ' '))
+			_current++;
+		msg.setParam(std::string(_start, _current));
+		if ((_current != _end) && (*_current == ' '))
+			_current++;
+		_start = _current;
+		return (_parseTrailing(msg));
 	}
 
-	// Any, possibly *empty*, sequence of octets not including NUL or CR or LF
-	bool	IRCParser::_parseTrailing(Message& msg)
-	{
-		msg.setParam("lol");
-		return (_parseSeparator());
-	}
-
-	// <SPACE> [ ':' <trailing> | <middle> <params> ]
+	// *14(SPACE middle) [ SPACE ":" trailing ]
 	bool	IRCParser::_parseParams(Message& msg)
 	{
-		if (*_current != ' ')
-			return (false);
-		_current++;
-		if (_current != _end && *_current == ':')
-			return (_parseTrailing(msg));
-		else if (_current != _end)
-			return (_parseMiddle(msg));
+		if ((_current != _end) && (*_current == ' '))
+		{
+			_current++;
+			_start = _current;
+			if ((_current != _end) && (*_current == ':'))
+				return (_parseTrailing(msg));
+			else if (_current != _end)
+				return (_parseMiddle(msg));
+		}
 		return (_parseSeparator());
 	}
 
-	// <letter> { <letter> } | <number> <number> <number>
+	// <letter> { <letter> }
 	bool	IRCParser::_parseCommand(Message& msg)
 	{
-		if ((_current == _end) || !isalnum(*_current))
+		if ((_current == _end) || !isalpha(*_current))
 			return (false);
-		if (isalpha(*_current))
-		{
-			while ((_current != _end) && isalpha(*_current))
-				_current++;
-		}
-		else if (isdigit(*_current))
-		{
-			for (int i = 0; i < 3 && (_current != _end); i++)
-			{
-				if (!isdigit(*_current))
-					return (false);
-				_current++;
-			}
-		}
+		while ((_current != _end) && isalpha(*_current))
+			_current++;
 		msg.setCommand(std::string(_start, _current));
 		return (_parseParams(msg));
 	}
 
 	// main parsing function
 	// not sure about how to pass the client arg
-	// packet looks like: <command> <params> <crlf>
+	// packet looks like: <command> [ params ] <crlf>
 	void	IRCParser::parseMessage(const std::string& packet, IRCClient& sender)
 	{
 		bool	format_is_correct;
@@ -158,17 +162,18 @@ namespace ft_irc
 		this->setItCurrent(packet.begin());
 		this->setItEnd(packet.end());
 
-		_start++; // tmp for ':'
-		_current++;
-
 		format_is_correct = _parseCommand(msg);
 
 		if (format_is_correct)
 		{
 			// tmp
 			msg.setPrefix(sender.getNick() + "!" + "tmp" + "@" + sender.getIpAddressStr());
-			nextStep(msg);
 		}
+
+		msg.displayMessage(); // debug
+		std::cout << "\n\n";
+
+		nextStep(msg);
 	}
 
 	// 3 types of messages -> 3 types of handling them:

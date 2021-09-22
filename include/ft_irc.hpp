@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/21 15:14:47 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/22 15:48:30 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,6 @@
 # include "server.hpp"
 # include "IRCParser.hpp"
 # include "Message.hpp"
-
-# define CRLF "\r\n"
 
 void	displayUsage( const char* program_name );
 
