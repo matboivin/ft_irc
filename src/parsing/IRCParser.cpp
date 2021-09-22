@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/22 17:16:23 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/22 18:29:57 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,7 +180,15 @@ namespace ft_irc
 		if (format_is_correct)
 		{
 			// tmp
+			// example forward
 			msg.setPrefix(sender.getNick() + "!" + "tmp" + "@" + sender.getIpAddressStr());
+			msg.setContent(packet);
+			// example numeric reply
+			// msg.setPrefix("ft_irc"); // server hostname
+			// msg.setCommand("001");
+			// msg.setContent("Welcome to the Internet Relay Network "
+			// 				+ sender.getNick() + "!" + "tmp" + "@"
+			// 				+ sender.getIpAddressStr());
 		}
 
 		msg.displayMessage(); // debug

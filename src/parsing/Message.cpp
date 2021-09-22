@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/22 17:14:49 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/22 18:44:11 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,18 @@
 namespace ft_irc
 {
 	// default constructor
-	Message::Message() : _prefix(), _command(), _content(), _params() {}
+	Message::Message()
+			: _prefix(), _command(), _content(), _params(), _type(undefined)
+	{
+	}
 
 	// copy constructor
 	Message::Message(const Message& other)
 			: _prefix(other._prefix),
 			  _command(other._command),
 			  _content(other._content),
-			  _params(other._params)
+			  _params(other._params),
+			  _type(other._type)
 	{
 	}
 
@@ -38,6 +42,7 @@ namespace ft_irc
 			_command = other.getCommand();
 			_content = other.getContent();
 			_params = other.getParams();
+			_type = other.getType();
 		}
 		return (*this);
 	}
@@ -67,10 +72,13 @@ namespace ft_irc
 		return (this->_params);
 	}
 
+	reply_type	Message::getType() const
+	{
+		return (this->_type);
+	}
+
 	// setters
 
-	// <servername> | <nick> [ '!' <user> ] [ '@' <host> ]
-	// if cannot resolve the client hostname, the IP address is used instead
 	void	Message::setPrefix(const std::string& prefix)
 	{
 		if (prefix.empty())
@@ -81,23 +89,25 @@ namespace ft_irc
 			this->_prefix = ":" + prefix;
 	}
 
-	// <letter> { <letter> } | <number> <number> <number>
 	void	Message::setCommand(const std::string& command)
 	{
 		this->_command = command;
 	}
 
-	// Content of the reply or forwarded message
 	void	Message::setContent(const std::string& content)
 	{
 		this->_content = content;
 	}
 
-	// <SPACE> [ ':' <trailing> | <middle> <params> ]
 	void	Message::setParam(const std::string& param)
 	{
 		if (!param.empty())
 			this->_params.push_back(param);
+	}
+
+	void	Message::setType(reply_type type)
+	{
+		this->_type = type;
 	}
 
 	// end message with CRLF
