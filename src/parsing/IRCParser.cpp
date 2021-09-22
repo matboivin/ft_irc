@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/21 19:21:11 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/22 15:19:58 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,12 +79,61 @@ namespace ft_irc
 
 	// parsing
 
+	bool	IRCParser::_parseSeparator()
+	{
+		if (_current == _end)
+			return (false);
+
+		std::string	s = &(*this->getItStart());
+		return (s == CRLF);
+	}
+
+	// Returns true if character pointed by it is not a NUL, CR, LF, space or a colon
+	// False otherwise.
+	bool	IRCParser::_nospcrlfcl(IRCParser::str_const_it it)
+	{
+		return (it != _end && *it != ' ' && *it != '\r' && *it != '\n' && *it != ':');
+	}
+
+	// Any *non-empty* sequence of octets not including SPACE or NUL or CR or LF,
+	// the first of which may not be ':'
+	bool	IRCParser::_parseMiddle(Message& msg)
+	{
+		msg.setParam("lol");
+		return (_parseSeparator());
+	}
+
+	// Any, possibly *empty*, sequence of octets not including NUL or CR or LF
+	bool	IRCParser::_parseTrailing(Message& msg)
+	{
+		msg.setParam("lol");
+		return (_parseSeparator());
+	}
+
+	// <SPACE> [ ':' <trailing> | <middle> <params> ]
+	bool	IRCParser::_parseParams(Message& msg)
+	{
+		if (*_current != ' ')
+			return (false);
+		_current++;
+		if (_current != _end && *_current == ':')
+			return (_parseTrailing(msg));
+		else if (_current != _end)
+			return (_parseMiddle(msg));
+		return (_parseSeparator());
+	}
+
 	// <letter> { <letter> } | <number> <number> <number>
 	bool	IRCParser::_parseCommand(Message& msg)
 	{
-		if (!isalnum(*_current))
+		if ((_current == _end) || !isalnum(*_current))
 			return (false);
-		if (isdigit(*_current))
+		if (isalpha(*_current))
+		{
+			while ((_current != _end) && isalpha(*_current))
+				_current++;
+		}
+		else if (isdigit(*_current))
 		{
 			for (int i = 0; i < 3 && (_current != _end); i++)
 			{
@@ -93,31 +142,8 @@ namespace ft_irc
 				_current++;
 			}
 		}
-		else if (isalpha(*_current))
-		{
-			while (_current != _end)
-			{
-				if (!isalpha(*_current))
-					return (false);
-				_current++;
-			}
-		}
 		msg.setCommand(std::string(_start, _current));
 		return (_parseParams(msg));
-	}
-
-	// <SPACE> [ ':' <trailing> | <middle> <params> ]
-	bool	IRCParser::_parseParams(Message& msg)
-	{
-		(void)msg;
-		return (_parseSeparator());
-	}
-
-	bool	IRCParser::_parseSeparator()
-	{
-		std::string	s = &(*this->getItStart());
-
-		return (s == CRLF);
 	}
 
 	// main parsing function

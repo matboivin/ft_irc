@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:20:57 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/21 19:18:12 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/22 15:17:20 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,10 @@ namespace ft_irc
 		// helpers
 		bool			_parseCommand(Message& msg);
 		bool			_parseParams(Message& msg);
+		bool			_parseMiddle(Message& msg);
+		bool			_parseTrailing(Message& msg);
 		bool			_parseSeparator();
+		bool			_nospcrlfcl(str_const_it it);
 
 	public:
 
