@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/22 17:02:42 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/22 17:14:49 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 namespace ft_irc
 {
 	// default constructor
-	Message::Message() : _prefix(":"), _command(), _content(), _params() {}
+	Message::Message() : _prefix(), _command(), _content(), _params() {}
 
 	// copy constructor
 	Message::Message(const Message& other)
@@ -73,10 +73,12 @@ namespace ft_irc
 	// if cannot resolve the client hostname, the IP address is used instead
 	void	Message::setPrefix(const std::string& prefix)
 	{
+		if (prefix.empty())
+			return ;
 		if (prefix[0] == ':')
 			this->_prefix = prefix;
 		else
-			this->_prefix.append(prefix);
+			this->_prefix = ":" + prefix;
 	}
 
 	// <letter> { <letter> } | <number> <number> <number>
