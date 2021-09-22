@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/22 16:30:00 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/22 17:02:42 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,8 @@ namespace ft_irc
 	// <SPACE> [ ':' <trailing> | <middle> <params> ]
 	void	Message::setParam(const std::string& param)
 	{
-		this->_params.push_back(param);
+		if (!param.empty())
+			this->_params.push_back(param);
 	}
 
 	// end message with CRLF

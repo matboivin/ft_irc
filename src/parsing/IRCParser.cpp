@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/22 16:49:22 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/22 17:09:35 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,16 +77,31 @@ namespace ft_irc
 		this->_end = end;
 	}
 
+	void	IRCParser::setIterators(const std::string& str)
+	{
+		this->setItStart(str.begin());
+		this->setItCurrent(str.begin());
+		this->setItEnd(str.end());
+	}
+
 	// parsing
+
+	// Advance iterator if it points to the expected character and returns true
+	bool	IRCParser::_eat(char expected)
+	{
+		if ((_current != _end) && (*_current == expected))
+		{
+			_current++;
+			return (true);
+		}
+		return (false);
+	}
 
 	// Checks whether the string contains the CRLF (carriage return + line feed) separator
 	bool	IRCParser::_parseSeparator()
 	{
-		if ((_current != _end) && (*_current == '\r'))
-		{
-			_current++;
-			return ((_current != _end) && (*_current == '\n'));
-		}
+		if (_eat('\r'))
+			return (_eat('\n'));
 		return (false);
 	}
 
@@ -106,8 +121,7 @@ namespace ft_irc
 				break ;
 			_current++;
 		}
-		if (std::distance(_start, _current) > 0)
-			msg.setParam(std::string(_start, _current));
+		msg.setParam(std::string(_start, _current));
 		return (_parseSeparator());
 	}
 
@@ -118,18 +132,19 @@ namespace ft_irc
 		while (_nospcrlfcl(_current) && (*_current != ' '))
 			_current++;
 		msg.setParam(std::string(_start, _current));
-		if ((_current != _end) && (*_current == ' '))
-			_current++;
-		_start = _current;
-		return (_parseTrailing(msg));
+		if (_eat(' '))
+		{
+			_start = _current;
+			return (_parseTrailing(msg));
+		}
+		return (_parseSeparator());
 	}
 
 	// *14(SPACE middle) [ SPACE ":" trailing ]
 	bool	IRCParser::_parseParams(Message& msg)
 	{
-		if ((_current != _end) && (*_current == ' '))
+		if (_eat(' '))
 		{
-			_current++;
 			_start = _current;
 			if ((_current != _end) && (*_current == ':'))
 				return (_parseTrailing(msg));
@@ -158,9 +173,7 @@ namespace ft_irc
 		bool	format_is_correct;
 		Message	msg;
 
-		this->setItStart(packet.begin());
-		this->setItCurrent(packet.begin());
-		this->setItEnd(packet.end());
+		this->setIterators(packet);
 
 		format_is_correct = _parseCommand(msg);
 

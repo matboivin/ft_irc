@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:20:57 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/22 15:17:20 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/22 17:04:07 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ namespace ft_irc
 		// add next workers in pipeline?
 
 		// helpers
+		bool			_eat(char expected);
 		bool			_parseCommand(Message& msg);
 		bool			_parseParams(Message& msg);
 		bool			_parseMiddle(Message& msg);
@@ -64,6 +65,7 @@ namespace ft_irc
 		void			setItStart(str_const_it start);
 		void			setItCurrent(str_const_it current);
 		void			setItEnd(str_const_it end);
+		void			setIterators(const std::string& str);
 
 		// tmp main parsing function
 		void			parseMessage(const std::string& packet, IRCClient& sender);
