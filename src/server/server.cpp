@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/09/20 18:05:39 by root             ###   ########.fr       */
+/*   Updated: 2021/09/24 15:08:42 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,7 @@ namespace ft_irc
 		}
 		return (true);
 	}
+
 	int IRCServer::run()
 	{
 		if (createSocket() == false)
@@ -174,13 +175,13 @@ namespace ft_irc
 			response += client.getPassword();
 			response += "\r\n";
 			//log the response
-			std::cout << "Sending: " << response << "to " << inet_ntoa(address.sin_addr) << std::endl;
+			std::cout << "Sending: " << response << "to " << client.getIpAddressStr() << std::endl;
 			if (send(new_sockfd, response.c_str(), response.size(), 0) < 0)
 			{
 				throw std::runtime_error("send() failed");
 			}
 			//log the closing of the connection
-			std::cout << "Closing connection to " << inet_ntoa(address.sin_addr) << std::endl
+			std::cout << "Closing connection to " << client.getIpAddressStr() << std::endl
 			<< "----------------------------------------------------------------" << std::endl;
 			//send EOF to the client
 			//close the connection
@@ -230,4 +231,7 @@ namespace ft_irc
 		}
 		return (true);
 	}
+	//awaitNewConnection
+	//accepts a new connection
+	
 }

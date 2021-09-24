@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/09/20 18:00:48 by root             ###   ########.fr       */
+/*   Updated: 2021/09/24 15:09:24 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,20 +24,22 @@
 # include <fcntl.h>
 # include <unistd.h>
 # include "client.hpp"
+# include <vector>
 
 namespace ft_irc
 {
 	class IRCServer
 	{
 	private:
-		std::string			bind_address;
-		std::string			port;
-		std::string			password;
+		std::string				bind_address;
+		std::string				port;
+		std::string				password;
 		//Structure describing an Internet socket address.
-		struct sockaddr_in	address;
+		struct sockaddr_in		address;
 		//Socket descriptor.
-		int					sockfd;
-		int					backlog_max;
+		int						sockfd;
+		int						backlog_max;
+		std::vector<IRCClient>	clients;
 	public:
 							IRCServer(std::string bind_address="0.0.0.0",
 									std::string port="6697",
@@ -66,6 +68,8 @@ namespace ft_irc
 		bool				createSocket();
 		int					sockGetLine(int sockfd, std::string &line);
 		int					sockGetLine(int sockfd, std::string &line, std::size_t max_bytes);
+		//awaitConnection
+		bool				awaitNewConnection(IRCClient *client);
 	};
 }
 
