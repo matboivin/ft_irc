@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/24 17:17:04 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/24 17:53:47 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,8 +186,7 @@ namespace ft_irc
 		{
 			if (commandIsValid(msg))
 				parseParams(msg);
-			msg.displayMessage(); // debug
-			msg.displayReply();
+			msg.displayReply(); // debug
 			std::cout << '\n';
 		}
 	}
