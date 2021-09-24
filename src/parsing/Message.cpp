@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/24 17:16:47 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/24 17:36:12 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,19 @@ namespace ft_irc
 {
 	// default constructor
 	Message::Message()
-			: _sender(), _type(undefined), _output(), _command(), _params()
+			: _sender(),
+			  _type(undefined),
+			  _serv_hostname("ft_irc"),
+			  _output(), _command(), _params()
+	{
+	}
+
+	// server hostname constructor
+	Message::Message(const std::string& serv_hostname)
+			: _sender(),
+			  _type(undefined),
+			  _serv_hostname(serv_hostname),
+			  _output(), _command(), _params()
 	{
 	}
 
@@ -27,6 +39,7 @@ namespace ft_irc
 	Message::Message(const Message& other)
 			: _sender(other._sender),
 			  _type(other._type),
+			  _serv_hostname(other._serv_hostname),
 			  _output(other._output),
 			  _command(other._command),
 			  _params(other._params)
@@ -40,6 +53,7 @@ namespace ft_irc
 		{
 			_sender = other.getSender();
 			_type = other.getType();
+			_serv_hostname = other.getServHostname();
 			_output = other.getOutput();
 			_command = other.getCommand();
 			_params = other.getParams();
@@ -59,6 +73,11 @@ namespace ft_irc
 	reply_type	Message::getType() const
 	{
 		return (this->_type);
+	}
+
+	std::string	Message::getServHostname() const
+	{
+		return (this->_serv_hostname);
 	}
 
 	std::string	Message::getOutput(void) const
@@ -86,6 +105,11 @@ namespace ft_irc
 	void	Message::setType(reply_type type)
 	{
 		this->_type = type;
+	}
+
+	void	Message::setServHostname(const std::string& serv_hostname)
+	{
+		this->_serv_hostname = serv_hostname;
 	}
 
 	void	Message::setOutput(const std::string& output)

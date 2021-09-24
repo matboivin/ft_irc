@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/24 17:06:22 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/24 17:29:10 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,7 @@ namespace ft_irc
 	class Message;
 
 	// numeric replies
-	void	rpl_welcome(const std::string& nick, const std::string& user,
-						const::std::string& host);
+	void	rpl_welcome(Message& msg);
 
 	// error replies
 	void	err_unknowncommand(Message& msg);
