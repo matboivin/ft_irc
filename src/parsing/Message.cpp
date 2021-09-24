@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/24 15:52:03 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/24 17:16:47 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,18 +19,17 @@ namespace ft_irc
 {
 	// default constructor
 	Message::Message()
-			: _sender(), _prefix(), _command(), _content(), _params(), _type(undefined)
+			: _sender(), _type(undefined), _output(), _command(), _params()
 	{
 	}
 
 	// copy constructor
 	Message::Message(const Message& other)
 			: _sender(other._sender),
-			  _prefix(other._prefix),
+			  _type(other._type),
+			  _output(other._output),
 			  _command(other._command),
-			  _content(other._content),
-			  _params(other._params),
-			  _type(other._type)
+			  _params(other._params)
 	{
 	}
 
@@ -40,11 +39,10 @@ namespace ft_irc
 		if (this != &other)
 		{
 			_sender = other.getSender();
-			_prefix = other.getPrefix();
-			_command = other.getCommand();
-			_content = other.getContent();
-			_params = other.getParams();
 			_type = other.getType();
+			_output = other.getOutput();
+			_command = other.getCommand();
+			_params = other.getParams();
 		}
 		return (*this);
 	}
@@ -58,9 +56,14 @@ namespace ft_irc
 		return (this->_sender);
 	}
 
-	std::string	Message::getPrefix(void) const
+	reply_type	Message::getType() const
 	{
-		return (this->_prefix);
+		return (this->_type);
+	}
+
+	std::string	Message::getOutput(void) const
+	{
+		return (this->_output);
 	}
 
 	std::string	Message::getCommand(void) const
@@ -68,19 +71,9 @@ namespace ft_irc
 		return (this->_command);
 	}
 
-	std::string	Message::getContent(void) const
-	{
-		return (this->_content);
-	}
-
 	Message::str_vec	Message::getParams(void) const
 	{
 		return (this->_params);
-	}
-
-	reply_type	Message::getType() const
-	{
-		return (this->_type);
 	}
 
 	// setters
@@ -90,24 +83,19 @@ namespace ft_irc
 		this->_sender = sender;
 	}
 
-	void	Message::setPrefix(const std::string& prefix)
+	void	Message::setType(reply_type type)
 	{
-		if (prefix.empty())
-			return ;
-		if (prefix[0] == ':')
-			this->_prefix = prefix;
-		else
-			this->_prefix = ":" + prefix;
+		this->_type = type;
+	}
+
+	void	Message::setOutput(const std::string& output)
+	{
+		this->_output = output;
 	}
 
 	void	Message::setCommand(const std::string& command)
 	{
 		this->_command = command;
-	}
-
-	void	Message::setContent(const std::string& content)
-	{
-		this->_content = content;
 	}
 
 	void	Message::setParam(const std::string& param)
@@ -116,26 +104,25 @@ namespace ft_irc
 			this->_params.push_back(param);
 	}
 
-	void	Message::setType(reply_type type)
-	{
-		this->_type = type;
-	}
-
 	// end message with CRLF
 	void	Message::appendSeparator()
 	{
-		this->_content.append("\r\n");
+		this->_output.append("\r\n");
 	}
 
 	// debug
 	void	Message::displayMessage() const
 	{
-		std::cout << "prefix:  " << getPrefix() << '\n'
-				  << "command: " << getCommand() << '\n'
+		std::cout << "command: " << getCommand() << '\n'
 				  << "params:  ";
 		
 		for (std::size_t i = 0; i < _params.size(); i++)
 			std::cout << "'" << _params[i] << "' ";
 		std::cout << std::endl;
+	}
+
+	void	Message::displayReply() const
+	{
+		std::cout << "Reply: '" << getOutput() << "'" << std::endl;
 	}
 }

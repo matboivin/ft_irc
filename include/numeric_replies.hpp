@@ -1,37 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_irc.hpp                                         :+:      :+:    :+:   */
+/*   numeric_replies.hpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/24 17:23:51 by mboivin          ###   ########.fr       */
+/*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
+/*   Updated: 2021/09/24 17:06:22 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_IRC_HPP
-# define FT_IRC_HPP
-# include <cstring>
-# include <cstdlib>
-# include <iostream>
+#ifndef NUMERIC_REPLIES_HPP
+# define NUMERIC_REPLIES_HPP
+
 # include <string>
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <arpa/inet.h>
-# include <netdb.h>
-# include <fcntl.h>
-# include <unistd.h>
-# include "numeric_replies.hpp"
-# include "client.hpp"
-# include "server.hpp"
-# include "IRCParser.hpp"
 # include "Message.hpp"
 
-void	displayUsage( const char* program_name );
+namespace ft_irc
+{
+	class Message;
 
-#ifndef nullptr
-# define nullptr NULL
-#endif // !nullpt
+	// numeric replies
+	void	rpl_welcome(const std::string& nick, const std::string& user,
+						const::std::string& host);
+
+	// error replies
+	void	err_unknowncommand(Message& msg);
+}
 
 #endif

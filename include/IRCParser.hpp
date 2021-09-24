@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:20:57 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/22 17:04:07 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/24 16:31:41 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,13 +38,13 @@ namespace ft_irc
 		// add next workers in pipeline?
 
 		// helpers
-		bool			_eat(char expected);
-		bool			_parseCommand(Message& msg);
-		bool			_parseParams(Message& msg);
-		bool			_parseMiddle(Message& msg);
-		bool			_parseTrailing(Message& msg);
-		bool			_parseSeparator();
-		bool			_nospcrlfcl(str_const_it it);
+		bool			eat(char expected);
+		bool			parseCommand(Message& msg);
+		bool			parseParams(Message& msg);
+		bool			parseMiddle(Message& msg);
+		bool			parseTrailing(Message& msg);
+		bool			parseSeparator();
+		bool			nospcrlfcl(str_const_it it);
 
 	public:
 
@@ -70,7 +70,7 @@ namespace ft_irc
 		// tmp main parsing function
 		void			parseMessage(const std::string& packet, IRCClient& sender);
 		// dummy tmp function
-		void			nextStep(Message& msg);
+		bool			commandIsValid(Message& msg);
 	};
 }
 

@@ -6,23 +6,27 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/24 15:52:49 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/24 17:17:04 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
+#include <algorithm>
 #include <cctype>
 #include <string>
 #include "IRCParser.hpp"
 #include "client.hpp"
 #include "Message.hpp"
+#include "numeric_replies.hpp"
 
 namespace ft_irc
 {
 	// Parser for IRC protocol messages
 
 	// default constructor
-	IRCParser::IRCParser() : _start(), _current(), _end() {}
+	IRCParser::IRCParser() : _start(), _current(), _end()
+	{
+	}
 
 	// copy constructor
 	IRCParser::IRCParser(const IRCParser& other)
@@ -43,7 +47,9 @@ namespace ft_irc
 	}
 
 	// destructor
-	IRCParser::~IRCParser() {}
+	IRCParser::~IRCParser()
+	{
+	}
 
 	// getters
 	IRCParser::str_const_it	IRCParser::getItStart() const
@@ -87,7 +93,7 @@ namespace ft_irc
 	// parsing
 
 	// Advance iterator if it points to the expected character and returns true
-	bool	IRCParser::_eat(char expected)
+	bool	IRCParser::eat(char expected)
 	{
 		if ((_current != _end) && (*_current == expected))
 		{
@@ -98,64 +104,64 @@ namespace ft_irc
 	}
 
 	// Checks whether the string contains the CRLF (carriage return + line feed) separator
-	bool	IRCParser::_parseSeparator()
+	bool	IRCParser::parseSeparator()
 	{
-		if (_eat('\r'))
-			return (_eat('\n'));
+		if (eat('\r'))
+			return (eat('\n'));
 		return (false);
 	}
 
 	// Checks whether the character pointed by it is not a NUL, CR, LF, space or a colon
-	bool	IRCParser::_nospcrlfcl(IRCParser::str_const_it it)
+	bool	IRCParser::nospcrlfcl(IRCParser::str_const_it it)
 	{
 		return (it != _end && *it != ' ' && *it != '\r' && *it != '\n' && *it != ':');
 	}
 
 	// Any, possibly *empty*, sequence of octets not including NUL or CR or LF
 	// *( ":" / " " / nospcrlfcl )
-	bool	IRCParser::_parseTrailing(Message& msg)
+	bool	IRCParser::parseTrailing(Message& msg)
 	{
 		while ((_current != _end) && (*_current != '\r'))
 		{
-			if (!_nospcrlfcl(_current) && (*_current != ' ') && (*_current != ':'))
+			if (!nospcrlfcl(_current) && (*_current != ' ') && (*_current != ':'))
 				break ;
 			_current++;
 		}
 		msg.setParam(std::string(_start, _current));
-		return (_parseSeparator());
+		return (parseSeparator());
 	}
 
 	// Any *non-empty* sequence of octets not including SPACE or NUL or CR or LF,
 	// the first of which may not be ':'
-	bool	IRCParser::_parseMiddle(Message& msg)
+	bool	IRCParser::parseMiddle(Message& msg)
 	{
-		while (_nospcrlfcl(_current) && (*_current != ' '))
+		while (nospcrlfcl(_current) && (*_current != ' '))
 			_current++;
 		msg.setParam(std::string(_start, _current));
-		if (_eat(' '))
+		if (eat(' '))
 		{
 			_start = _current;
-			return (_parseTrailing(msg));
+			return (parseTrailing(msg));
 		}
-		return (_parseSeparator());
+		return (parseSeparator());
 	}
 
 	// *14(SPACE middle) [ SPACE ":" trailing ]
-	bool	IRCParser::_parseParams(Message& msg)
+	bool	IRCParser::parseParams(Message& msg)
 	{
-		if (_eat(' '))
+		if (eat(' '))
 		{
 			_start = _current;
 			if ((_current != _end) && (*_current == ':'))
-				return (_parseTrailing(msg));
+				return (parseTrailing(msg));
 			else if (_current != _end)
-				return (_parseMiddle(msg));
+				return (parseMiddle(msg));
 		}
-		return (_parseSeparator());
+		return (parseSeparator());
 	}
 
 	// <letter> { <letter> }
-	bool	IRCParser::_parseCommand(Message& msg)
+	bool	IRCParser::parseCommand(Message& msg)
 	{
 		if ((_current == _end) || !isalpha(*_current))
 			return (false);
@@ -176,23 +182,13 @@ namespace ft_irc
 		this->setIterators(packet);
 		msg.setSender(sender);
 
-		if (_parseCommand(msg)) // wrong command format is ignored
+		if (parseCommand(msg)) // wrong command format is ignored
 		{
-			_parseParams(msg);
-			// tmp
-			// example forward
-			//msg.setPrefix(sender.getNick() + "!" + "tmp" + "@" + sender.getIpAddressStr());
-			//msg.setContent(packet);
-			// example numeric reply
-			// msg.setPrefix("ft_irc"); // server hostname
-			// msg.setCommand("001");
-			// msg.setContent("Welcome to the Internet Relay Network "
-			// 				+ sender.getNick() + "!" + "tmp" + "@"
-			// 				+ sender.getIpAddressStr());
+			if (commandIsValid(msg))
+				parseParams(msg);
 			msg.displayMessage(); // debug
-			std::cout << "\n\n";
-
-			nextStep(msg);
+			msg.displayReply();
+			std::cout << '\n';
 		}
 	}
 
@@ -202,9 +198,20 @@ namespace ft_irc
 	//  - broadcast (e.g., joining a channel)
 
 	// dummy tmp function that would pass msg to appropriate worker
-	void	IRCParser::nextStep(Message& msg)
+	bool	IRCParser::commandIsValid(Message& msg)
 	{
-		msg.appendSeparator();
-		// pass the message
+		const std::string	cmds[] = {
+				"INVITE", "JOIN", "KICK", "KILL", "LIST", "MODE", "NAMES",
+				"NICK", "NOTICE", "OPER", "PASS", "PART", "PING", "PONG",
+				"PRIVMSG", "TOPIC", "QUIT", "USER", "WHOIS", "WHO"
+			};
+
+		for (std::size_t i = 0; i < 20; i++)
+		{
+			if (cmds[i] == msg.getCommand())
+				return (true);
+		}
+		err_unknowncommand(msg);
+		return (false);
 	}
 }
