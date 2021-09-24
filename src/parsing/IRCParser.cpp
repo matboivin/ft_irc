@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/22 18:29:57 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/24 15:52:49 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,39 +162,38 @@ namespace ft_irc
 		while ((_current != _end) && isalpha(*_current))
 			_current++;
 		msg.setCommand(std::string(_start, _current));
-		return (_parseParams(msg));
+		return (true);
 	}
 
 	// main parsing function
 	// not sure about how to pass the client arg
 	// packet looks like: <command> [ params ] <crlf>
+	// packet max len: 512 characters including CRLF (if not, packet is split)
 	void	IRCParser::parseMessage(const std::string& packet, IRCClient& sender)
 	{
-		bool	format_is_correct;
 		Message	msg;
 
 		this->setIterators(packet);
+		msg.setSender(sender);
 
-		format_is_correct = _parseCommand(msg);
-
-		if (format_is_correct)
+		if (_parseCommand(msg)) // wrong command format is ignored
 		{
+			_parseParams(msg);
 			// tmp
 			// example forward
-			msg.setPrefix(sender.getNick() + "!" + "tmp" + "@" + sender.getIpAddressStr());
-			msg.setContent(packet);
+			//msg.setPrefix(sender.getNick() + "!" + "tmp" + "@" + sender.getIpAddressStr());
+			//msg.setContent(packet);
 			// example numeric reply
 			// msg.setPrefix("ft_irc"); // server hostname
 			// msg.setCommand("001");
 			// msg.setContent("Welcome to the Internet Relay Network "
 			// 				+ sender.getNick() + "!" + "tmp" + "@"
 			// 				+ sender.getIpAddressStr());
+			msg.displayMessage(); // debug
+			std::cout << "\n\n";
+
+			nextStep(msg);
 		}
-
-		msg.displayMessage(); // debug
-		std::cout << "\n\n";
-
-		nextStep(msg);
 	}
 
 	// 3 types of messages -> 3 types of handling them:

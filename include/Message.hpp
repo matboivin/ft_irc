@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:47:11 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/22 18:42:26 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/24 15:51:47 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,14 @@
 # include <vector>
 # include "ft_irc.hpp"
 # include "IRCParser.hpp"
+# include "client.hpp"
+
+# define MSG_MAX_PARAMS 15
 
 namespace ft_irc
 {
+	class IRCClient;
+
 	enum reply_type { undefined = 0, serv_to_cli, cli_to_cli, broadcast };
 	// broadcast is tmp
 
@@ -32,6 +37,7 @@ namespace ft_irc
 		typedef std::vector<std::string>	str_vec;
 
 		// attributes
+		IRCClient	_sender;
 		std::string	_prefix;
 		std::string	_command;
 		std::string	_content;
@@ -50,6 +56,7 @@ namespace ft_irc
 					~Message();
 
 		// Message getters
+		IRCClient	getSender() const;
 		std::string	getPrefix() const;
 		std::string	getCommand() const;
 		std::string	getContent() const;
@@ -57,6 +64,7 @@ namespace ft_irc
 		reply_type	getType() const;
 
 		// Message setters
+		void		setSender(const IRCClient& sender);
 		void		setPrefix(const std::string& prefix);
 		void		setCommand(const std::string& command);
 		void		setContent(const std::string& content);

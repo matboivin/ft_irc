@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/22 18:44:11 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/24 15:52:03 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,14 @@ namespace ft_irc
 {
 	// default constructor
 	Message::Message()
-			: _prefix(), _command(), _content(), _params(), _type(undefined)
+			: _sender(), _prefix(), _command(), _content(), _params(), _type(undefined)
 	{
 	}
 
 	// copy constructor
 	Message::Message(const Message& other)
-			: _prefix(other._prefix),
+			: _sender(other._sender),
+			  _prefix(other._prefix),
 			  _command(other._command),
 			  _content(other._content),
 			  _params(other._params),
@@ -38,6 +39,7 @@ namespace ft_irc
 	{
 		if (this != &other)
 		{
+			_sender = other.getSender();
 			_prefix = other.getPrefix();
 			_command = other.getCommand();
 			_content = other.getContent();
@@ -51,6 +53,10 @@ namespace ft_irc
 	Message::~Message() {}
 
 	// getters
+	IRCClient	Message::getSender() const
+	{
+		return (this->_sender);
+	}
 
 	std::string	Message::getPrefix(void) const
 	{
@@ -79,6 +85,11 @@ namespace ft_irc
 
 	// setters
 
+	void	Message::setSender(const IRCClient& sender)
+	{
+		this->_sender = sender;
+	}
+
 	void	Message::setPrefix(const std::string& prefix)
 	{
 		if (prefix.empty())
@@ -101,7 +112,7 @@ namespace ft_irc
 
 	void	Message::setParam(const std::string& param)
 	{
-		if (!param.empty())
+		if (!param.empty() && (_params.size() < MSG_MAX_PARAMS))
 			this->_params.push_back(param);
 	}
 
