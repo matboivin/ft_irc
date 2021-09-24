@@ -9,8 +9,8 @@ stages:
 variables:
   EXE : "./ircserv"
 
-#include:
-#  - template: Code-Quality.gitlab-ci.yml
+include:
+ - template: Code-Quality.gitlab-ci.yml
 
 
 # Try to compile our sample hello world app
