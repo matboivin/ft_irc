@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/24 17:49:00 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/24 17:55:05 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ namespace ft_irc
 	// numeric replies
 	void	rpl_welcome(Message& msg)
 	{
+		msg.setType(reply_to_cli);
 		msg.setOutput(
 			build_prefix(msg.getServHostname())
 			+ " 001 Welcome to the Internet Relay Network "
@@ -47,6 +48,7 @@ namespace ft_irc
 	// error replies
 	void	err_unknowncommand(Message& msg)
 	{
+		msg.setType(reply_to_cli);
 		msg.setOutput(
 			build_prefix(msg.getServHostname())
 			+ " 421 " + msg.getCommand() + " :Unknown command"
