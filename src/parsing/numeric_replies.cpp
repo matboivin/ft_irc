@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/24 19:04:00 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/24 19:17:09 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,24 @@ namespace ft_irc
 		msg.setOutput(
 			build_prefix(msg.getServHostname())
 			+ " 381 :You are now an IRC operator"
+			); 
+	}
+
+	void	err_nosuchnick(Message& msg, const std::string& nick)
+	{
+		msg.setType(reply_to_cli);
+		msg.setOutput(
+			build_prefix(msg.getServHostname())
+			+ " 401 " + nick + " :No such nick/channel"
+			); 
+	}
+
+	void	err_nosuchchannel(Message& msg, const std::string& channel)
+	{
+		msg.setType(reply_to_cli);
+		msg.setOutput(
+			build_prefix(msg.getServHostname())
+			+ " 403 " + channel + " :No such channel"
 			); 
 	}
 
@@ -102,12 +120,21 @@ namespace ft_irc
 			);
 	}
 
-	void	err_unavailresource(const std::string& target)
+	void	err_unavailresource(Message& msg, const std::string& target)
 	{
 		msg.setType(reply_to_cli);
 		msg.setOutput(
 			build_prefix(msg.getServHostname())
 			+ " 437 " + target + " :Nick/channel is temporarily unavailable"
+			);
+	}
+
+	void	err_notonchannel(Message& msg, const std::string& channel)
+	{
+		msg.setType(reply_to_cli);
+		msg.setOutput(
+			build_prefix(msg.getServHostname())
+			+ " 442 " + channel + " :You're not on that channel"
 			);
 	}
 
@@ -138,11 +165,37 @@ namespace ft_irc
 			);
 	}
 
-	void	err_restricted(Message& msg);
+	void	err_passwdmismatch(Message& msg)
 	{
 		msg.setType(reply_to_cli);
 		msg.setOutput(
 			build_prefix(msg.getServHostname())
-			+ " :Your connection is restricted!");
+			+ " 464 :Password incorrect"
+			);
+	}
+
+	void	err_badchannelkey(Message& msg, const std::string& channel)
+	{
+		msg.setType(reply_to_cli);
+		msg.setOutput(
+			build_prefix(msg.getServHostname())
+			+ " 475 " + channel + " :Cannot join channel (+k)"
+			);
+	}
+
+	void	err_restricted(Message& msg)
+	{
+		msg.setType(reply_to_cli);
+		msg.setOutput(
+			build_prefix(msg.getServHostname())
+			+ " 484 :Your connection is restricted!");
+	}
+
+	void	err_nooperhost(Message& msg)
+	{
+		msg.setType(reply_to_cli);
+		msg.setOutput(
+			build_prefix(msg.getServHostname())
+			+ " 491 :No O-lines for your host");
 	}
 }
