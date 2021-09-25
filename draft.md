@@ -8,8 +8,8 @@ Quelques Design patterns qu'on sera amené à implémenter pour les besoins du p
 
 > Singleton Pattern
 > Strategy pattern
-> Pattern decorator
 > Observer pattern
+> Pattern decorator
 > Reactor pattern
 > Command Pattern
 
@@ -59,6 +59,8 @@ I. 3 Choix technique
 1 classe Server
 1 classe User qui englobe Client et Bot -> pattern strategy, interface UserInterface avec ClientStrategy et BotStrategy 
 1 classe Command (sendCommand dans UserInterface qui retourne une ref vers l'objet Command)
-1 classe Package -> pattern decorator pour emballer l'objet Command avant
-1 classe Mediator
+1 classe Package -> pattern decorator pour emballer l'objet Command avant 
+1 classe Mediator -> fait le pont entre l'unique serveur et les différents clients (L'objet Serveur et les objets UserInterface sont liés [pattern observer - les UserInterface sont notifiés par le serveur], le Mediator va retranscrire cette relation sur le réseau en recevant et envoyant les trames, les paquets)
 
+1 classe Data (qui encapsule les classes Message, Package)
+1 decorateur File qui va contenir une feature pour découper/re-assembler en plusieurs Messages avant transmission (découper pour download d'un client et assemblage d'un fichier sur le server)
