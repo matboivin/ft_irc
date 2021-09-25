@@ -38,5 +38,4 @@ test:
   - ls ; pwd
   - ./tests/usage.sh
   - python3 ./tests/connect_tester.py 0.0.0.0 127.0.0.1 2727 ""
-
-
+  - python3 ./tests/connect_tester.py 127.0.0.1 127.0.0.1 2727 ""
