@@ -1,0 +1,45 @@
+<<<<<<< HEAD
+=======
+# Specify the docker image to use (only used if using docker runners)
+# See: http://doc.gitlab.com/ee/ci/docker/using_docker_images.html
+image: smaccary/ft_irc
+
+stages:
+  - build
+  - test
+
+variables:
+  EXE : "./ircserv"
+
+include:
+ - template: Code-Quality.gitlab-ci.yml
+
+
+# Try to compile our sample hello world app
+build:
+  stage: build
+  script: /usr/bin/make
+  # Save the compiled output from the above for downloading via GitLab and in Gitlab 8.6 to use in future steps
+  artifacts:
+    paths:
+    - "$EXE"
+
+code_quality:
+  stage: test
+  before_script:
+    - echo
+  artifacts:
+    paths: [gl-code-quality-report.json]
+
+
+test:
+  stage: test
+  script:
+    # Verify that our compiled executable exists
+  - test -f "$EXE"
+  - ls ; pwd
+  - ./tests/usage.sh
+  - python3 ./tests/connect_tester.py 0.0.0.0 127.0.0.1 2727 ""
+
+
+>>>>>>> 58e90b392e45633b85d201ea8e69f9a08bdc30f8
