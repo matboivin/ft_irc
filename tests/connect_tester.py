@@ -21,16 +21,16 @@ result_of_check = s.connect_ex((address, port))
 
 #check that the connection is established
 if proc.poll() is not None:
-	print("ircserv died")
+	print("[KO] ircserv died")
 	exit(1)
 
 if result_of_check == 0:
-	print(f"Connection to {address}:{port} established")
+	print(f"[OK] Connection to {address}:{port} established")
 	#kill proc
 	proc.kill()
 	exit (0)
 else:
-	print(f"Connection to {address}:{port} failed")
+	print(f"[KO] Connection to {address}:{port} failed")
 	#kill proc
 	proc.kill()
 	exit (1)

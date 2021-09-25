@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/09/24 15:08:42 by root             ###   ########.fr       */
+/*   Updated: 2021/09/25 11:51:56 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ namespace ft_irc
 		this->password = other.password;
 		this->sockfd = other.sockfd;
 		this->backlog_max = other.backlog_max;
+		this->address = other.address;
 	}
 	//assignment operator
 	IRCServer &IRCServer::operator=(const IRCServer &other)
@@ -128,64 +129,8 @@ namespace ft_irc
 		//accept incoming connections
 		while (true)
 		{
-			IRCClient client;
-			//accept a new connection
-			int new_sockfd = accept(sockfd, (struct sockaddr *)&(client.getAddress()), &(client.getAddressSize()));
-			if (new_sockfd < 0)
-			{
-				throw std::runtime_error("accept() failed");
-			}				
-			//log the clients IP address
-			std::cout << "Client " << client.getIpAddressStr() << " connected" << std::endl;
-
-			//read the client's nick
-			std::string input;
-
-			if (!sockGetLine(new_sockfd, input))
-			{
-				throw std::runtime_error("sockGetLine() failed");
-			}
-			client.setNick(input);
-			std::cout << "Nick: " << input << std::endl;
-			input.clear();
-			//read the client's user agent
-			if (!sockGetLine(new_sockfd, input))
-			{
-				throw std::runtime_error("sockGetLine() failed");
-			}
-			client.setUserAgent(input);
-			std::cout << "User-Agent: " << input << std::endl;
-			input.clear();
-	
-			//read the client's password
-			if (!sockGetLine(new_sockfd, input))
-			{
-				throw std::runtime_error("sockGetLine() failed");
-			}
-			client.setPassword(input);
-			std::cout << "Password: " << input << std::endl;
-			input.clear();
-			
-			//send the client's nick and user agent back to him (for logging purposes)
-			std::string response = ":";
-			response += client.getNick();
-			response += "!";
-			response += client.getUserAgent();
-			response += " ";
-			response += client.getPassword();
-			response += "\r\n";
-			//log the response
-			std::cout << "Sending: " << response << "to " << client.getIpAddressStr() << std::endl;
-			if (send(new_sockfd, response.c_str(), response.size(), 0) < 0)
-			{
-				throw std::runtime_error("send() failed");
-			}
-			//log the closing of the connection
-			std::cout << "Closing connection to " << client.getIpAddressStr() << std::endl
-			<< "----------------------------------------------------------------" << std::endl;
-			//send EOF to the client
-			//close the connection
-			close(new_sockfd);
+			awaitNewConnection();
+			processClients();
 		}
 	}
 	int IRCServer::sockGetLine(int sockfd, std::string &line)
@@ -233,5 +178,81 @@ namespace ft_irc
 	}
 	//awaitNewConnection
 	//accepts a new connection
+	bool				IRCServer::awaitNewConnection()
+	{
+		IRCClient new_client;
+
+		//accept a new connection
+		
+		new_client.awaitConnection(this->sockfd);
+		if (new_client.getSocketFd() < 0)
+		{
+			throw std::runtime_error("accept() failed");
+		}
+		//log the clients IP address
+		std::cout << "Client " << new_client.getIpAddressStr()
+		<< " connected" << std::endl;
+		this->clients.push_back(new_client);
+		return (true);
+	}
 	
+	bool				IRCServer::processClients()
+	{
+		//process all clients
+		for (std::list<IRCClient>::iterator it = this->clients.begin(); it != this->clients.end(); ++it)
+		{
+			if (it->getSocketFd() < 0)
+			{
+				continue;
+			}
+			//read the client's nick	
+			std::string input;
+			if (!sockGetLine(it->getSocketFd(), input))
+			{
+				throw std::runtime_error("sockGetLine() failed");
+			}
+			it->setNick(input);
+			std::cout << "Nick: " << input << std::endl;
+
+			//read the client's user agent
+			if (!sockGetLine(it->getSocketFd(), input))
+			{
+				throw std::runtime_error("sockGetLine() failed");
+			}
+			it->setUserAgent(input);
+			std::cout << "User-Agent: " << input << std::endl;
+
+			//read the client's password
+			if (!sockGetLine(it->getSocketFd(), input))
+			{
+				throw std::runtime_error("sockGetLine() failed");
+			}
+			it->setPassword(input);
+			std::cout << "Password: " << input << std::endl;
+
+			//send the client's nick and user agent back to him (for logging purposes)
+			std::string response = ":";
+			response += it->getNick();
+			response += "!";
+			response += it->getUserAgent();
+			response += " ";
+			response += it->getPassword();
+			response += "\r\n";
+			//log the response
+			std::cout << "Sending: " << response << "to " << it->getIpAddressStr() << std::endl;
+			if (send(it->getSocketFd(), response.c_str(), response.size(), 0) < 0)
+			{
+				throw std::runtime_error("send() failed");
+			}
+			//log the closing of the connection
+			std::cout << "Closing connection to " << it->getIpAddressStr() << std::endl
+			<< "---------------------------------------------------------" << std::endl;
+			//send EOF to the client
+			//close the connection
+			close(it->getSocketFd());
+			//delete the client
+			it = this->clients.erase(it);
+		}
+		return (true);
+	}
 }

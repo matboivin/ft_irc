@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/09/24 14:39:23 by root             ###   ########.fr       */
+/*   Updated: 2021/09/24 22:45:39 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ namespace ft_irc
 		this->address_str = inet_ntoa(address.sin_addr);
 		this->address_size = sizeof(address);
 		this->socket_fd = -1;
+		this->connected = false;
+		this->timeout = (struct timeval){.tv_sec = 0, .tv_usec = 0};
 	}
 		//copy constructor
 	IRCClient::IRCClient(const IRCClient &other)
@@ -36,6 +38,8 @@ namespace ft_irc
 		this->address = other.address;
 		this->address_size = other.address_size;
 		this->socket_fd = other.socket_fd;
+		this->connected = other.connected;
+		this->timeout = other.timeout;
 	}
 	//assignment operator
 	IRCClient &IRCClient::operator=(const IRCClient &other)
@@ -48,6 +52,8 @@ namespace ft_irc
 		this->address = other.address;
 		this->address_size = other.address_size;
 		this->socket_fd = other.socket_fd;
+		this->connected = other.connected;
+		this->timeout = other.timeout;
 		return *this;
 	}
 	//destructor
@@ -102,6 +108,11 @@ namespace ft_irc
 		this->password = password;
 	}
 	
+	void IRCClient::setSocketFd(int socket_fd)
+	{
+		this->socket_fd = socket_fd;
+	}
+
 	bool IRCClient::isRegistered() const
 	{
 		return (!(this->nick.empty() || this->user_agent.empty()));
@@ -115,5 +126,13 @@ namespace ft_irc
 	bool IRCClient::isConnected() const
 	{
 		return (this->socket_fd != -1);
-	}	
+	}
+
+	int	IRCClient::awaitConnection(int socket_fd)
+	{
+		this->socket_fd = accept(socket_fd, (struct sockaddr *)&this->address,
+								 &this->address_size);
+		this->address_str = inet_ntoa(this->address.sin_addr);
+		return this->socket_fd;
+	}
 }
