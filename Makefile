@@ -8,10 +8,19 @@ RM = /bin/rm
 
 # FILES
 
-INC_FILES = ft_irc.hpp
+INC_FILES = ft_irc.hpp \
+			bot.hpp \
+			singleton.hpp \
+			array.hpp \
+			user.hpp \
+			server.hpp
 
 SRC_FILES = main.cpp \
-			utils.cpp
+			utils.cpp \
+			bot.cpp \
+			singleton.cpp \
+			user.cpp \
+			server.cpp
 
 OBJ_FILES = $(SRC_FILES:%.cpp=%.o)
 
@@ -33,7 +42,7 @@ VPATH = $(SRC_DIR) $(SRC_SUBDIRS)
 
 CPPFLAGS = -I$(INC_DIR)
 CXX = clang++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -pedantic
 
 # COLORS
 

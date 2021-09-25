@@ -1,23 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_irc.hpp                                         :+:      :+:    :+:   */
+/*   client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbenjell <mbenjell@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/25 00:51:09 by mbenjell         ###   ########.fr       */
+/*   Created: 2021/09/24 23:51:04 by mbenjell          #+#    #+#             */
+/*   Updated: 2021/09/24 23:53:04 by mbenjell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_IRC_HPP
-#define FT_IRC_HPP
+#include "ft_irc"
 
-#include <string>
-#include <iostream>
-#include <array.hpp>
-#include <singleton.hpp>
+Client::Client( void ){}
 
-void	displayUsage( const char* program_name );
+~Client::~Client( void ){}
 
-#endif

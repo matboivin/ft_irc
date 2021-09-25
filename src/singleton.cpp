@@ -1,23 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_irc.hpp                                         :+:      :+:    :+:   */
+/*   singleton.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbenjell <mbenjell@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/25 00:51:09 by mbenjell         ###   ########.fr       */
+/*   Created: 2021/09/25 00:48:32 by mbenjell          #+#    #+#             */
+/*   Updated: 2021/09/25 01:30:10 by mbenjell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_IRC_HPP
-#define FT_IRC_HPP
+#include "ft_irc.hpp"
+#include "singleton.hpp"
 
-#include <string>
-#include <iostream>
-#include <array.hpp>
-#include <singleton.hpp>
+Singleton::Singleton( void )
+{
+	if (_len)
+		throw "Error - Object already created.";
+	_len++;
+}
 
-void	displayUsage( const char* program_name );
+Singleton::~Singleton( void )
+{
+	_len = 0;
+}
 
-#endif
+int	Singleton::_len = 0;

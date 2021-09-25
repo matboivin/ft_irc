@@ -1,23 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_irc.hpp                                         :+:      :+:    :+:   */
+/*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbenjell <mbenjell@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/25 00:51:09 by mbenjell         ###   ########.fr       */
+/*   Created: 2021/09/23 00:56:41 by mbenjell          #+#    #+#             */
+/*   Updated: 2021/09/25 00:54:07 by mbenjell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_IRC_HPP
-#define FT_IRC_HPP
+#ifndef SERVER_HPP
+# define SERVER_HPP
 
-#include <string>
-#include <iostream>
-#include <array.hpp>
-#include <singleton.hpp>
+#include "ft_irc.hpp"
 
-void	displayUsage( const char* program_name );
+template< typename T >
+
+class Server : public Singleton
+{
+	private:
+		std::string		_name;
+		Array<T>		_users;
+
+	public:
+		Server<T>( void );
+		~Server<T>( void );
+};
 
 #endif

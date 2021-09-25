@@ -1,23 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_irc.hpp                                         :+:      :+:    :+:   */
+/*   bot.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbenjell <mbenjell@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/25 00:51:09 by mbenjell         ###   ########.fr       */
+/*   Created: 2021/09/25 01:30:45 by mbenjell          #+#    #+#             */
+/*   Updated: 2021/09/25 02:00:41 by mbenjell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_IRC_HPP
-#define FT_IRC_HPP
+#include "ft_irc.hpp"
+#include "bot.hpp"
 
-#include <string>
-#include <iostream>
-#include <array.hpp>
-#include <singleton.hpp>
+Bot::Bot( void ){}
 
-void	displayUsage( const char* program_name );
+Bot::~Bot( void ){}
 
-#endif
