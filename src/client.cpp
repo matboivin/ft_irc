@@ -6,7 +6,7 @@
 /*   By: mbenjell <mbenjell@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 23:51:04 by mbenjell          #+#    #+#             */
-/*   Updated: 2021/09/24 23:53:04 by mbenjell         ###   ########.fr       */
+/*   Updated: 2021/09/25 03:40:04 by mbenjell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,4 +15,6 @@
 Client::Client( void ){}
 
 ~Client::~Client( void ){}
+
+void Client::sendCommand( void ){}
 

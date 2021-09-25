@@ -6,7 +6,7 @@
 /*   By: mbenjell <mbenjell@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/25 01:30:45 by mbenjell          #+#    #+#             */
-/*   Updated: 2021/09/25 02:00:41 by mbenjell         ###   ########.fr       */
+/*   Updated: 2021/09/25 03:40:26 by mbenjell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,4 +16,6 @@
 Bot::Bot( void ){}
 
 Bot::~Bot( void ){}
+
+void Bot::sendCommand( void ){}
 

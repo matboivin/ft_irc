@@ -6,12 +6,12 @@ I. 1 Design pattern
 
 Quelques Design patterns qu'on sera amené à implémenter pour les besoins du projet:
 
-> Observer pattern
-> Pattern decorator
-> Reactor pattern
-> Strategy pattern
-> Command Pattern
 > Singleton Pattern
+> Strategy pattern
+> Pattern decorator
+> Observer pattern
+> Reactor pattern
+> Command Pattern
 
 I. 2 Structures de données
 
@@ -57,7 +57,8 @@ I. 2 Structures de données
 I. 3 Choix technique
 
 1 classe Server
-1 classe User qui englobe Client et Bot
-1 classe Client
-1 classe Bot
+1 classe User qui englobe Client et Bot -> pattern strategy, interface UserInterface avec ClientStrategy et BotStrategy 
+1 classe Command (sendCommand dans UserInterface qui retourne une ref vers l'objet Command)
+1 classe Package -> pattern decorator pour emballer l'objet Command avant
+1 classe Mediator
 

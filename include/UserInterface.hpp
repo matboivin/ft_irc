@@ -1,28 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   user.hpp                                           :+:      :+:    :+:   */
+/*   UserInterface.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbenjell <mbenjell@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 23:05:18 by mbenjell          #+#    #+#             */
-/*   Updated: 2021/09/24 23:08:25 by mbenjell         ###   ########.fr       */
+/*   Updated: 2021/09/25 03:30:07 by mbenjell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef USER_HPP
-# define USER_HPP
+#ifndef USER_INTERFACE_HPP
+# define USER_INTERFACE_HPP
 
 #include "ft_irc.hpp"
 
-class User 
+class UserInterface
 {
-	private:
-
 	public:
-		User( void );
-		~User( void );
-
+		UserInterface( void ){}
+		virtual ~UserInterface( void ){}
+		virtual void sendCommand( void ) = 0;
 };
 
 #endif

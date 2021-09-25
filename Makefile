@@ -12,14 +12,13 @@ INC_FILES = ft_irc.hpp \
 			bot.hpp \
 			singleton.hpp \
 			array.hpp \
-			user.hpp \
+			UserInterface.hpp \
 			server.hpp
 
 SRC_FILES = main.cpp \
 			utils.cpp \
 			bot.cpp \
 			singleton.cpp \
-			user.cpp \
 			server.cpp
 
 OBJ_FILES = $(SRC_FILES:%.cpp=%.o)
