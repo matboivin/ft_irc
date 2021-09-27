@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/24 17:53:47 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/27 16:50:39 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,13 +24,14 @@ namespace ft_irc
 	// Parser for IRC protocol messages
 
 	// default constructor
-	IRCParser::IRCParser() : _start(), _current(), _end()
+	IRCParser::IRCParser()
+	: _start(), _current(), _end()
 	{
 	}
 
 	// copy constructor
 	IRCParser::IRCParser(const IRCParser& other)
-			: _start(other._start), _current(other._current), _end(other._end)
+	: _start(other._start), _current(other._current), _end(other._end)
 	{
 	}
 
@@ -95,9 +96,9 @@ namespace ft_irc
 	// Advance iterator if it points to the expected character and returns true
 	bool	IRCParser::eat(char expected)
 	{
-		if ((_current != _end) && (*_current == expected))
+		if ((this->_current != this->_end) && (*this->_current == expected))
 		{
-			_current++;
+			this->_current++;
 			return (true);
 		}
 		return (false);
@@ -114,20 +115,20 @@ namespace ft_irc
 	// Checks whether the character pointed by it is not a NUL, CR, LF, space or a colon
 	bool	IRCParser::nospcrlfcl(IRCParser::str_const_it it)
 	{
-		return (it != _end && *it != ' ' && *it != '\r' && *it != '\n' && *it != ':');
+		return (it != this->_end && *it != ' ' && *it != '\r' && *it != '\n' && *it != ':');
 	}
 
 	// Any, possibly *empty*, sequence of octets not including NUL or CR or LF
 	// *( ":" / " " / nospcrlfcl )
 	bool	IRCParser::parseTrailing(Message& msg)
 	{
-		while ((_current != _end) && (*_current != '\r'))
+		while ((this->_current != this->_end) && (*this->_current != '\r'))
 		{
-			if (!nospcrlfcl(_current) && (*_current != ' ') && (*_current != ':'))
+			if (!nospcrlfcl(this->_current) && (*this->_current != ' ') && (*this->_current != ':'))
 				break ;
-			_current++;
+			this->_current++;
 		}
-		msg.setParam(std::string(_start, _current));
+		msg.setParam(std::string(this->_start, this->_current));
 		return (parseSeparator());
 	}
 
@@ -135,12 +136,12 @@ namespace ft_irc
 	// the first of which may not be ':'
 	bool	IRCParser::parseMiddle(Message& msg)
 	{
-		while (nospcrlfcl(_current) && (*_current != ' '))
-			_current++;
-		msg.setParam(std::string(_start, _current));
+		while (nospcrlfcl(this->_current) && (*this->_current != ' '))
+			this->_current++;
+		msg.setParam(std::string(this->_start, this->_current));
 		if (eat(' '))
 		{
-			_start = _current;
+			this->_start = this->_current;
 			return (parseTrailing(msg));
 		}
 		return (parseSeparator());
@@ -151,8 +152,8 @@ namespace ft_irc
 	{
 		if (eat(' '))
 		{
-			_start = _current;
-			if ((_current != _end) && (*_current == ':'))
+			this->_start = this->_current;
+			if ((this->_current != this->_end) && (*this->_current == ':'))
 				return (parseTrailing(msg));
 			else if (_current != _end)
 				return (parseMiddle(msg));
@@ -163,11 +164,11 @@ namespace ft_irc
 	// <letter> { <letter> }
 	bool	IRCParser::parseCommand(Message& msg)
 	{
-		if ((_current == _end) || !isalpha(*_current))
+		if ((this->_current == this->_end) || !isalpha(*this->_current))
 			return (false);
-		while ((_current != _end) && isalpha(*_current))
-			_current++;
-		msg.setCommand(std::string(_start, _current));
+		while ((this->_current != this->_end) && isalpha(*this->_current))
+			this->_current++;
+		msg.setCommand(std::string(this->_start, this->_current));
 		return (true);
 	}
 
@@ -175,11 +176,11 @@ namespace ft_irc
 	// not sure about how to pass the client arg
 	// packet looks like: <command> [ params ] <crlf>
 	// packet max len: 512 characters including CRLF (if not, packet is split)
-	void	IRCParser::parseMessage(const std::string& packet, IRCClient& sender)
+	void	IRCParser::parseMessage(const std::string& packet, IRCClient& sender, IRCServer& serv)
 	{
-		Message	msg;
+		Message	msg(serv.getBindAddress());
 
-		this->setIterators(packet);
+		setIterators(packet);
 		msg.setSender(sender);
 
 		if (parseCommand(msg)) // wrong command format is ignored
@@ -213,4 +214,4 @@ namespace ft_irc
 		err_unknowncommand(msg);
 		return (false);
 	}
-}
+} // !namespace ft_irc

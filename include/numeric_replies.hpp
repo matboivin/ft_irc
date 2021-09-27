@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/24 19:16:56 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/27 16:41:23 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,6 @@ namespace ft_irc
 	void	err_badchannelkey(Message& msg, const std::string& channel); // 475
 	void	err_restricted(Message& msg); // 484
 	void	err_nooperhost(Message& msg); // 491
-}
+} // !namespace ft_irc
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/24 19:17:09 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/27 16:45:58 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,4 +198,4 @@ namespace ft_irc
 			build_prefix(msg.getServHostname())
 			+ " 491 :No O-lines for your host");
 	}
-}
+} // !namespace ft_irc

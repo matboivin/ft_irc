@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/24 17:36:12 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/27 16:48:19 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,30 +19,20 @@ namespace ft_irc
 {
 	// default constructor
 	Message::Message()
-			: _sender(),
-			  _type(undefined),
-			  _serv_hostname("ft_irc"),
-			  _output(), _command(), _params()
+	: _sender(), _type(undefined), _serv_hostname("0.0.0.0"), _output(), _command(), _params()
 	{
 	}
 
 	// server hostname constructor
 	Message::Message(const std::string& serv_hostname)
-			: _sender(),
-			  _type(undefined),
-			  _serv_hostname(serv_hostname),
-			  _output(), _command(), _params()
+	: _sender(), _type(undefined), _serv_hostname(serv_hostname), _output(), _command(), _params()
 	{
 	}
 
 	// copy constructor
 	Message::Message(const Message& other)
-			: _sender(other._sender),
-			  _type(other._type),
-			  _serv_hostname(other._serv_hostname),
-			  _output(other._output),
-			  _command(other._command),
-			  _params(other._params)
+	: _sender(other._sender), _type(other._type), _serv_hostname(other._serv_hostname),
+	  _output(other._output), _command(other._command), _params(other._params)
 	{
 	}
 
@@ -124,7 +114,7 @@ namespace ft_irc
 
 	void	Message::setParam(const std::string& param)
 	{
-		if (!param.empty() && (_params.size() < MSG_MAX_PARAMS))
+		if (!param.empty() && (this->_params.size() < MSG_MAX_PARAMS))
 			this->_params.push_back(param);
 	}
 
@@ -140,8 +130,8 @@ namespace ft_irc
 		std::cout << "command: " << getCommand() << '\n'
 				  << "params:  ";
 		
-		for (std::size_t i = 0; i < _params.size(); i++)
-			std::cout << "'" << _params[i] << "' ";
+		for (std::size_t i = 0; i < this->_params.size(); i++)
+			std::cout << "'" << this->_params[i] << "' ";
 		std::cout << std::endl;
 	}
 
@@ -149,4 +139,4 @@ namespace ft_irc
 	{
 		std::cout << "Reply: '" << getOutput() << "'" << std::endl;
 	}
-}
+} // !namespace ft_irc

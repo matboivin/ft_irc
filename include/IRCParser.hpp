@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:20:57 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/24 16:31:41 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/27 16:50:17 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ namespace ft_irc
 	class IRCParser
 	{
 	private:
-
 		// private alias
 		typedef std::string::const_iterator	str_const_it;
 
@@ -47,7 +46,6 @@ namespace ft_irc
 		bool			nospcrlfcl(str_const_it it);
 
 	public:
-
 		// default constructor
 						IRCParser();
 		// copy constructor
@@ -68,10 +66,10 @@ namespace ft_irc
 		void			setIterators(const std::string& str);
 
 		// tmp main parsing function
-		void			parseMessage(const std::string& packet, IRCClient& sender);
+		void			parseMessage(const std::string& packet, IRCClient& sender, IRCServer& serv);
 		// dummy tmp function
 		bool			commandIsValid(Message& msg);
 	};
-}
+} // !namespace ft_irc
 
 #endif // !IRCParser
