@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/09/24 14:38:27 by root             ###   ########.fr       */
+/*   Updated: 2021/09/24 22:46:11 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,13 +38,13 @@ namespace ft_irc
 		std::string			address_str;		//IPv4 address as string
 		struct timeval		timeout;			//timeout for select()
 		int					socket_fd;			//socket file descriptor
-		bool				is_connected;		//is the client connected to the server?
+		bool				connected;		//is the client connected to the server?
 	public:
-		IRCClient(struct sockaddr_in address=(struct sockaddr_in){0,0,{0},{0}},
+							IRCClient(struct sockaddr_in address=(struct sockaddr_in){0,0,{0},{0}},
 		std::string nick="", std::string user_agent="", std::string password="");
-		IRCClient(const IRCClient &other);
-		IRCClient &operator=(const IRCClient &other);
-		~IRCClient();
+							IRCClient(const IRCClient &other);
+		IRCClient 			&operator=(const IRCClient &other);
+							~IRCClient();
 		//IRCClient ge/tters
 		std::string			getNick() const;
 		std::string			getUserAgent() const;
@@ -59,9 +59,10 @@ namespace ft_irc
 		void				setUserAgent(std::string user_agent);
 		void				setJoinedChannels(std::string joined_channels);
 		void				setPassword(std::string password);
+		void				setSocketFd(int socket_fd);
 		bool				isRegistered() const;
 		bool				isConnected() const;
-		bool				awaitConnection();
+		int					awaitConnection(int socket_fd);
 	};
 }
 
