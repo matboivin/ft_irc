@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/09/24 23:20:58 by root             ###   ########.fr       */
+/*   Updated: 2021/09/27 18:03:10 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@
 # include "client.hpp"
 # include <vector>
 # include <list>
+# include <poll.h>
+
 
 namespace ft_irc
 {
@@ -72,6 +74,7 @@ namespace ft_irc
 		//awaitConnection
 		bool				awaitNewConnection();
 		bool				processClients();
+		bool				hasPendingConnections();
 	};
 }
 

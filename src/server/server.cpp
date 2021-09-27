@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/09/25 11:51:56 by root             ###   ########.fr       */
+/*   Updated: 2021/09/27 18:05:59 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,20 @@ namespace ft_irc
 		}
 		return (true);
 	}
+	bool				IRCServer::hasPendingConnections()
+	{
+		//Check if there are pending connections. (poll)
+		struct pollfd		poll_fd = {this->sockfd, POLLIN, 0};
+		int					poll_result = poll(&poll_fd, 1, 0);
+		if (poll_result < 0)
+		{
+			std::cerr << "Error: Could not poll socket." << std::endl;
+			return (false);
+		}
+		if (poll_result == 0)
+			return (false);
+		return (true);
+	}
 
 	int IRCServer::run()
 	{
@@ -129,7 +143,8 @@ namespace ft_irc
 		//accept incoming connections
 		while (true)
 		{
-			awaitNewConnection();
+			if (hasPendingConnections() == true)
+				awaitNewConnection();
 			processClients();
 		}
 	}
@@ -201,7 +216,7 @@ namespace ft_irc
 		//process all clients
 		for (std::list<IRCClient>::iterator it = this->clients.begin(); it != this->clients.end(); ++it)
 		{
-			if (it->getSocketFd() < 0)
+			if (it->getSocketFd() < 0 || it->hasNewEvents() == false)
 			{
 				continue;
 			}
@@ -244,7 +259,7 @@ namespace ft_irc
 			{
 				throw std::runtime_error("send() failed");
 			}
-			//log the closing of the connection
+/*			//log the closing of the connection
 			std::cout << "Closing connection to " << it->getIpAddressStr() << std::endl
 			<< "---------------------------------------------------------" << std::endl;
 			//send EOF to the client
@@ -252,6 +267,7 @@ namespace ft_irc
 			close(it->getSocketFd());
 			//delete the client
 			it = this->clients.erase(it);
+*/
 		}
 		return (true);
 	}

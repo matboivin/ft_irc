@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/09/24 22:46:11 by root             ###   ########.fr       */
+/*   Updated: 2021/09/27 17:57:30 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 # include <string>
 # include <sys/time.h>
 # include <stdexcept>
+# include <poll.h>
 
 
 namespace ft_irc
@@ -30,7 +31,8 @@ namespace ft_irc
 	{
 	private:
 		std::string			nick;
-		std::string			user_agent;
+		std::string			realname;
+		std::string			mode;
 		std::string			joined_channels;
 		std::string			password;
 		struct sockaddr_in	address;			//IPv4 address		
@@ -41,7 +43,7 @@ namespace ft_irc
 		bool				connected;		//is the client connected to the server?
 	public:
 							IRCClient(struct sockaddr_in address=(struct sockaddr_in){0,0,{0},{0}},
-		std::string nick="", std::string user_agent="", std::string password="");
+		std::string nick="", std::string realname="", std::string password="");
 							IRCClient(const IRCClient &other);
 		IRCClient 			&operator=(const IRCClient &other);
 							~IRCClient();
@@ -56,13 +58,14 @@ namespace ft_irc
 		socklen_t 			&getAddressSize();
 		//IRCClient se/tters
 		void				setNick(std::string nick);
-		void				setUserAgent(std::string user_agent);
+		void				setUserAgent(std::string realname);
 		void				setJoinedChannels(std::string joined_channels);
 		void				setPassword(std::string password);
 		void				setSocketFd(int socket_fd);
 		bool				isRegistered() const;
 		bool				isConnected() const;
 		int					awaitConnection(int socket_fd);
+		bool				hasNewEvents();
 	};
 }
 
