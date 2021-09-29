@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/09/27 17:57:35 by root             ###   ########.fr       */
+/*   Updated: 2021/09/29 17:05:27 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,8 @@ namespace ft_irc
 		this->address_size = sizeof(address);
 		this->socket_fd = -1;
 		this->connected = false;
-		this->timeout = (struct timeval){.tv_sec = 0, .tv_usec = 5000};
+		this->timeout = (struct timeval){.tv_sec = 0, .tv_usec = 50};
+		this->max_cmd_length = 512;
 	}
 		//copy constructor
 	IRCClient::IRCClient(const IRCClient &other)
@@ -40,6 +41,7 @@ namespace ft_irc
 		this->socket_fd = other.socket_fd;
 		this->connected = other.connected;
 		this->timeout = other.timeout;
+		this->max_cmd_length = other.max_cmd_length;
 	}
 	//assignment operator
 	IRCClient &IRCClient::operator=(const IRCClient &other)
@@ -54,6 +56,7 @@ namespace ft_irc
 		this->socket_fd = other.socket_fd;
 		this->connected = other.connected;
 		this->timeout = other.timeout;
+		this->max_cmd_length = other.max_cmd_length;
 		return *this;
 	}
 	//destructor
@@ -65,7 +68,7 @@ namespace ft_irc
 	{
 		return this->nick;
 	}
-	std::string IRCClient::getUserAgent() const
+	std::string IRCClient::getRealName() const
 	{
 		return this->realname;
 	}
@@ -95,7 +98,7 @@ namespace ft_irc
 	{
 		this->nick = nick;
 	}
-	void IRCClient::setUserAgent(std::string realname)
+	void IRCClient::setRealName(std::string realname)
 	{
 		this->realname = realname;
 	}
@@ -143,5 +146,54 @@ namespace ft_irc
 		if (ret == -1)
 			throw std::runtime_error("poll() failed");
 		return (ret > 0);
+	}
+	bool				IRCClient::hasUnprocessedCommands()
+	{
+		//if \r\n is in the buffer, return true
+		return (this->buffer.find(CRLF) != std::string::npos);
+	}
+	
+	std::string			IRCClient::popUnprocessedCommand()
+	{
+		std::string cmd = this->buffer.substr(0, this->buffer.find(CRLF));
+		
+		this->buffer.erase(0, this->buffer.find(CRLF) + 2);
+		return cmd;
+	}
+
+	//reads 512 bytes from the socket if there is data to read
+	int					IRCClient::updateBuffer()
+	{
+		char					buffer[MAX_COMMAND_SIZE];
+		int						ret;
+		struct pollfd			poll_fd = {.fd = this->socket_fd, .events = POLLIN};
+		int						poll_ret = poll(&poll_fd, 1, this->timeout.tv_usec);
+		std::string::size_type	found;
+
+		if (poll_ret == -1)
+			throw std::runtime_error("poll() failed");
+		if (poll_ret == 0)
+			return 0;
+		//read
+		ret = recv(this->socket_fd, buffer, this->max_cmd_length, 0);
+		if (ret == -1)
+			throw std::runtime_error("recv() failed");
+		if (ret == 0)
+			return 0;
+		//append to buffer
+		this->buffer.append(buffer, ret);
+		//if there's not \r\n in the first 512 bytes, insert a \r\n at offset 512
+		if (this->buffer.size() > this->max_cmd_length)
+		{
+			found = this->buffer.find(CRLF);
+			if (found == std::string::npos || found > this->max_cmd_length)
+				this->buffer.insert(this->max_cmd_length, CRLF);
+		}
+		return ret;
+	}
+	//friend operator ==
+	bool				operator==(const IRCClient &lhs, const IRCClient &rhs)
+	{
+		return (lhs.socket_fd == rhs.socket_fd && lhs.nick == rhs.nick);
 	}
 }

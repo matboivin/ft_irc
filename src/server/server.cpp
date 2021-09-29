@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/09/27 18:05:59 by root             ###   ########.fr       */
+/*   Updated: 2021/09/29 17:05:12 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,65 +210,118 @@ namespace ft_irc
 		this->clients.push_back(new_client);
 		return (true);
 	}
+
+
 	
 	bool				IRCServer::processClients()
 	{
 		//process all clients
-		for (std::list<IRCClient>::iterator it = this->clients.begin(); it != this->clients.end(); ++it)
+		for (std::list<IRCClient>::iterator it = this->clients.begin();
+		 it != this->clients.end(); ++it)
 		{
-			if (it->getSocketFd() < 0 || it->hasNewEvents() == false)
+			if (it->hasUnprocessedCommands() == true)
+			{
+				this->executeCommand(it->popUnprocessedCommand(), *it);
+			}
+			else if (it->getSocketFd() < 0 || it->hasNewEvents() == false)
 			{
 				continue;
 			}
-			//read the client's nick	
-			std::string input;
-			if (!sockGetLine(it->getSocketFd(), input))
+			else
 			{
-				throw std::runtime_error("sockGetLine() failed");
+				it->updateBuffer();
 			}
-			it->setNick(input);
-			std::cout << "Nick: " << input << std::endl;
+		}
+		return (true);
+	}
+	
+	int	IRCServer::executeCommand(const std::string &command, IRCClient &client)
+	{
+		std::string cmd;
+		std::string params;
 
-			//read the client's user agent
-			if (!sockGetLine(it->getSocketFd(), input))
-			{
-				throw std::runtime_error("sockGetLine() failed");
-			}
-			it->setUserAgent(input);
-			std::cout << "User-Agent: " << input << std::endl;
+		cmd = command.substr(0, command.find(" ") ? command.find(" ") : command.size());
+		params = command.substr(command.find(" ") + 1);
+		std::cout << cmd << "(" << params << ")" << std::endl;
+		if (cmd == "NICK")
+		{
+			client.setNick(params);
+		}
+		else if (cmd == "USER")
+		{
+			client.setRealName(params);
+		}
+		else if (cmd == "PASS")
+		{
+			client.setPassword(params);
+		}
+		else if (cmd == "LIST")
+		{
+			this->sendList(client);
+		}
+		else if (cmd == "EXIT")
+		{
+			this->disconnectClient(client);
+		}
+		else
+		{
+			this->sendError(client, "Unknown command " + command);
+		}
+		return (0);
+	}
 
-			//read the client's password
-			if (!sockGetLine(it->getSocketFd(), input))
-			{
-				throw std::runtime_error("sockGetLine() failed");
-			}
-			it->setPassword(input);
-			std::cout << "Password: " << input << std::endl;
+	int	IRCServer::disconnectClient(IRCClient &client)
+	{
+		std::list<IRCClient>::iterator it = std::find(this->clients.begin(), this->clients.end(), client);
+		//log the closing of the connection
+		std::cout << "Closing connection to " << it->getIpAddressStr() << std::endl
+		<< "---------------------------------------------------------" << std::endl;
+		//send EOF to the client
+		//close the connection
+		close(it->getSocketFd());
+		//delete the client
+		it = this->clients.erase(it);
+		return (0);
+	}
 
-			//send the client's nick and user agent back to him (for logging purposes)
+	int	IRCServer::sendList(IRCClient &client)
+	{
+		for (std::list<IRCClient>::iterator it = this->clients.begin();
+		 it != this->clients.end(); ++it)
+		{
 			std::string response = ":";
 			response += it->getNick();
-			response += "!";
-			response += it->getUserAgent();
+			response += " 322 ";
+			response += client.getNick();
 			response += " ";
-			response += it->getPassword();
-			response += "\r\n";
+			response += it->getNick();
+			response += " 0 :";
+			response += it->getNick();
+			response += " :";
+			response += it->getNick();
+			response += " 0\r\n";
 			//log the response
 			std::cout << "Sending: " << response << "to " << it->getIpAddressStr() << std::endl;
-			if (send(it->getSocketFd(), response.c_str(), response.size(), 0) < 0)
+			if (send(client.getSocketFd(), response.c_str(), response.size(), 0) < 0)
 			{
 				throw std::runtime_error("send() failed");
 			}
-/*			//log the closing of the connection
-			std::cout << "Closing connection to " << it->getIpAddressStr() << std::endl
-			<< "---------------------------------------------------------" << std::endl;
-			//send EOF to the client
-			//close the connection
-			close(it->getSocketFd());
-			//delete the client
-			it = this->clients.erase(it);
-*/
 		}
-		return (true);
+		return (0);
+	}
+	int					IRCServer::sendError(IRCClient &client, const std::string &error)
+	{
+		std::string response = ":irc.42.fr 451 ";
+		response += client.getNick();
+		response += " ";
+		response += error;
+		response += "\r\n";
+		//log the response
+		std::cout << "Sending: " << response << "to " << client.getIpAddressStr() << std::endl;
+		if (send(client.getSocketFd(), response.c_str(), response.size(), 0) < 0)
+		{
+			throw std::runtime_error("send() failed");
+		}
+		return (0);
 	}
 }

@@ -6,13 +6,15 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/09/27 17:57:30 by root             ###   ########.fr       */
+/*   Updated: 2021/09/29 16:33:13 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef IRC_CLIENT_HPP
 # define IRC_CLIENT_HPP
 
+# define MAX_COMMAND_SIZE 512
+# define CRLF "\n"
 # include <sys/socket.h>
 # include <netinet/in.h>
 # include <arpa/inet.h>
@@ -23,7 +25,7 @@
 # include <sys/time.h>
 # include <stdexcept>
 # include <poll.h>
-
+# include <iostream>
 
 namespace ft_irc
 {
@@ -41,6 +43,8 @@ namespace ft_irc
 		struct timeval		timeout;			//timeout for select()
 		int					socket_fd;			//socket file descriptor
 		bool				connected;		//is the client connected to the server?
+		std::string			buffer;			//buffer for incoming data
+		size_t				max_cmd_length;	//max length of a command
 	public:
 							IRCClient(struct sockaddr_in address=(struct sockaddr_in){0,0,{0},{0}},
 		std::string nick="", std::string realname="", std::string password="");
@@ -49,7 +53,7 @@ namespace ft_irc
 							~IRCClient();
 		//IRCClient ge/tters
 		std::string			getNick() const;
-		std::string			getUserAgent() const;
+		std::string			getRealName() const;
 		std::string			getJoinedChannels() const;
 		std::string			getPassword() const;
 		std::string			getIpAddressStr() const;
@@ -58,7 +62,7 @@ namespace ft_irc
 		socklen_t 			&getAddressSize();
 		//IRCClient se/tters
 		void				setNick(std::string nick);
-		void				setUserAgent(std::string realname);
+		void				setRealName(std::string realname);
 		void				setJoinedChannels(std::string joined_channels);
 		void				setPassword(std::string password);
 		void				setSocketFd(int socket_fd);
@@ -66,6 +70,12 @@ namespace ft_irc
 		bool				isConnected() const;
 		int					awaitConnection(int socket_fd);
 		bool				hasNewEvents();
+		bool				hasUnprocessedCommands();
+		std::string			popUnprocessedCommand();
+		int					updateBuffer();
+
+		//operator==
+		friend bool			operator==(const IRCClient &lhs, const IRCClient &rhs);
 	};
 }
 
