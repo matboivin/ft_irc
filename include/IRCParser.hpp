@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:20:57 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/27 16:50:17 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/30 16:36:44 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,6 @@
 
 # include <string>
 # include "ft_irc.hpp"
-# include "client.hpp"
-# include "Message.hpp"
 
 namespace ft_irc
 {
@@ -66,7 +64,7 @@ namespace ft_irc
 		void			setIterators(const std::string& str);
 
 		// tmp main parsing function
-		void			parseMessage(const std::string& packet, IRCClient& sender, IRCServer& serv);
+		Message			parseMessage(const std::string& packet, IRCClient& sender);
 		// dummy tmp function
 		bool			commandIsValid(Message& msg);
 	};

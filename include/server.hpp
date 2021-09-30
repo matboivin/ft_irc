@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/09/29 16:14:42 by root             ###   ########.fr       */
+/*   Updated: 2021/09/30 16:37:52 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,9 @@
 
 namespace ft_irc
 {
+	class IRCParser;
+	class Message;
+
 	class IRCServer
 	{
 	private:
@@ -74,9 +77,9 @@ namespace ft_irc
 		int					sockGetLine(int sockfd, std::string &line, std::size_t max_bytes);
 		//awaitConnection
 		bool				awaitNewConnection();
-		bool				processClients();
+		bool				processClients(IRCParser& parser);
 		bool				hasPendingConnections();
-		int					executeCommand(const std::string &command, IRCClient &client);
+		int					executeCommand(Message& msg, IRCClient &client);
 		int					sendList(IRCClient &client);
 		int					sendError(IRCClient &client, const std::string &error);
 		int					disconnectClient(IRCClient &client);

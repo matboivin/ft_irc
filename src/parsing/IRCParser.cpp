@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/27 16:50:39 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/30 16:54:50 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,7 +168,11 @@ namespace ft_irc
 			return (false);
 		while ((this->_current != this->_end) && isalpha(*this->_current))
 			this->_current++;
-		msg.setCommand(std::string(this->_start, this->_current));
+
+		std::string	cmd(this->_start, this->_current);
+		// uppercase command name
+		std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::toupper);
+		msg.setCommand(cmd);
 		return (true);
 	}
 
@@ -176,9 +180,9 @@ namespace ft_irc
 	// not sure about how to pass the client arg
 	// packet looks like: <command> [ params ] <crlf>
 	// packet max len: 512 characters including CRLF (if not, packet is split)
-	void	IRCParser::parseMessage(const std::string& packet, IRCClient& sender, IRCServer& serv)
+	Message	IRCParser::parseMessage(const std::string& packet, IRCClient& sender)
 	{
-		Message	msg(serv.getBindAddress());
+		Message	msg;
 
 		setIterators(packet);
 		msg.setSender(sender);
@@ -187,9 +191,11 @@ namespace ft_irc
 		{
 			if (commandIsValid(msg))
 				parseParams(msg);
-			msg.displayReply(); // debug
+
+			msg.displayMessage(); // debug
 			std::cout << '\n';
 		}
+		return (msg);
 	}
 
 	// 3 types of messages -> 3 types of handling them:
