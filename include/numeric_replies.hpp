@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/27 16:41:23 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/30 16:34:26 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 # define NUMERIC_REPLIES_HPP
 
 # include <string>
-# include "Message.hpp"
 
 namespace ft_irc
 {

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:47:11 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/27 16:41:49 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/30 16:41:47 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,6 @@
 # include <string>
 # include <vector>
 # include "ft_irc.hpp"
-# include "IRCParser.hpp"
-# include "client.hpp"
 
 # define MSG_MAX_PARAMS 15
 
@@ -45,7 +43,7 @@ namespace ft_irc
 		IRCClient	_sender;
 		reply_type	_type;
 		std::string	_serv_hostname;
-		std::string	_output;
+		std::string	_response;
 		std::string	_command;
 		str_vec		_params;
 
@@ -65,7 +63,7 @@ namespace ft_irc
 		IRCClient	getSender() const;
 		reply_type	getType() const;
 		std::string	getServHostname() const;
-		std::string	getOutput() const;
+		std::string	getResponse() const;
 		std::string	getCommand() const;
 		str_vec		getParams() const;
 
@@ -73,7 +71,7 @@ namespace ft_irc
 		void		setSender(const IRCClient& sender);
 		void		setType(reply_type type);
 		void		setServHostname(const std::string& serv_hostname);
-		void		setOutput(const std::string& output);
+		void		setResponse(const std::string& response);
 		void		setCommand(const std::string& command);
 		void		setParam(const std::string& param);
 
@@ -82,7 +80,7 @@ namespace ft_irc
 
 		// debug
 		void		displayMessage() const;
-		void		displayReply() const;
+		void		displayResponse() const;
 	};
 } // !namespace ft_irc
 

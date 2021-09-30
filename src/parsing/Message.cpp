@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/27 16:48:19 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/30 16:45:38 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,20 +19,20 @@ namespace ft_irc
 {
 	// default constructor
 	Message::Message()
-	: _sender(), _type(undefined), _serv_hostname("0.0.0.0"), _output(), _command(), _params()
+	: _sender(), _type(undefined), _serv_hostname("irc.42.fr"), _response(), _command(), _params()
 	{
 	}
 
 	// server hostname constructor
 	Message::Message(const std::string& serv_hostname)
-	: _sender(), _type(undefined), _serv_hostname(serv_hostname), _output(), _command(), _params()
+	: _sender(), _type(undefined), _serv_hostname(serv_hostname), _response(), _command(), _params()
 	{
 	}
 
 	// copy constructor
 	Message::Message(const Message& other)
 	: _sender(other._sender), _type(other._type), _serv_hostname(other._serv_hostname),
-	  _output(other._output), _command(other._command), _params(other._params)
+	  _response(other._response), _command(other._command), _params(other._params)
 	{
 	}
 
@@ -44,7 +44,7 @@ namespace ft_irc
 			_sender = other.getSender();
 			_type = other.getType();
 			_serv_hostname = other.getServHostname();
-			_output = other.getOutput();
+			_response = other.getResponse();
 			_command = other.getCommand();
 			_params = other.getParams();
 		}
@@ -70,17 +70,17 @@ namespace ft_irc
 		return (this->_serv_hostname);
 	}
 
-	std::string	Message::getOutput(void) const
+	std::string	Message::getResponse() const
 	{
-		return (this->_output);
+		return (this->_response);
 	}
 
-	std::string	Message::getCommand(void) const
+	std::string	Message::getCommand() const
 	{
 		return (this->_command);
 	}
 
-	Message::str_vec	Message::getParams(void) const
+	Message::str_vec	Message::getParams() const
 	{
 		return (this->_params);
 	}
@@ -102,9 +102,9 @@ namespace ft_irc
 		this->_serv_hostname = serv_hostname;
 	}
 
-	void	Message::setOutput(const std::string& output)
+	void	Message::setResponse(const std::string& response)
 	{
-		this->_output = output;
+		this->_response = response;
 	}
 
 	void	Message::setCommand(const std::string& command)
@@ -121,7 +121,7 @@ namespace ft_irc
 	// end message with CRLF
 	void	Message::appendSeparator()
 	{
-		this->_output.append("\r\n");
+		this->_response.append("\r\n");
 	}
 
 	// debug
@@ -135,8 +135,8 @@ namespace ft_irc
 		std::cout << std::endl;
 	}
 
-	void	Message::displayReply() const
+	void	Message::displayResponse() const
 	{
-		std::cout << "Reply: '" << getOutput() << "'" << std::endl;
+		std::cout << "Response: '" << getResponse() << "'" << std::endl;
 	}
 } // !namespace ft_irc
