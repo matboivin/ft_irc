@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/09/29 16:14:42 by root             ###   ########.fr       */
+/*   Updated: 2021/09/30 15:21:21 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ namespace ft_irc
 	class IRCServer
 	{
 	private:
+		std::string				hostname;
 		std::string				bind_address;
 		std::string				port;
 		std::string				password;
@@ -47,7 +48,9 @@ namespace ft_irc
 	public:
 							IRCServer(std::string bind_address="0.0.0.0",
 									std::string port="6697",
-									std::string password="", int backlog_max=5);
+									std::string password="",
+									std::string hostname="irc.42.fr",
+									int backlog_max=5);
 		//copy constructor
 							IRCServer(const IRCServer &other);
 		//assignment operator
