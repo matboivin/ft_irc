@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/09/30 17:21:46 by root             ###   ########.fr       */
+/*   Updated: 2021/09/30 18:40:14 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,12 +126,22 @@ namespace ft_irc
 	//get socket fd
 	int IRCClient::getSocketFd() const
 	{
-		return this->socket_fd;
+		return (this->socket_fd);
 	}
 	//isConnected
 	bool IRCClient::isConnected() const
 	{
 		return (this->socket_fd != -1);
+	}
+
+	std::string	IRCClient::getUsername() const
+	{
+		return (this->username);
+	}
+
+	void IRCClient::setUsername(std::string username)
+	{
+		this->username = username;
 	}
 
 	int	IRCClient::awaitConnection(int socket_fd)
