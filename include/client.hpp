@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/09/29 16:33:13 by root             ###   ########.fr       */
+/*   Updated: 2021/09/30 15:19:09 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ namespace ft_irc
 	private:
 		std::string			nick;
 		std::string			realname;
+		std::string			username;
 		std::string			mode;
 		std::string			joined_channels;
 		std::string			password;
@@ -43,11 +44,12 @@ namespace ft_irc
 		struct timeval		timeout;			//timeout for select()
 		int					socket_fd;			//socket file descriptor
 		bool				connected;		//is the client connected to the server?
-		std::string			buffer;			//buffer for incoming data
+		std::string			in_buffer;			//buffer for incoming data
+		std::string			out_buffer;		//buffer for outgoing data
 		size_t				max_cmd_length;	//max length of a command
 	public:
 							IRCClient(struct sockaddr_in address=(struct sockaddr_in){0,0,{0},{0}},
-		std::string nick="", std::string realname="", std::string password="");
+		std::string nick="", std::string realname="", std::string username="", std::string password="");
 							IRCClient(const IRCClient &other);
 		IRCClient 			&operator=(const IRCClient &other);
 							~IRCClient();
@@ -72,7 +74,10 @@ namespace ft_irc
 		bool				hasNewEvents();
 		bool				hasUnprocessedCommands();
 		std::string			popUnprocessedCommand();
-		int					updateBuffer();
+		int					updateInBuffer();
+		int					updateOutBuffer();
+		//add response to the output buffer
+		void				sendCommand(std::string response);
 
 		//operator==
 		friend bool			operator==(const IRCClient &lhs, const IRCClient &rhs);

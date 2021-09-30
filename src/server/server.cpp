@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/09/30 16:51:10 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/30 18:13:35 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,17 @@
 #include "Message.hpp"
 #include <string>
 
+int	setNonblocking(int fd);
+
 namespace ft_irc
 {
-	IRCServer::IRCServer(std::string bind_address, std::string port,
-		std::string password, int backlog_max)
+	IRCServer::IRCServer(std::string bind_address,
+						std::string port,
+						std::string password,
+						std::string hostname,
+						int backlog_max)
 	{
+		this->hostname = hostname;
 		this->bind_address = bind_address;
 		this->port = port;
 		this->password = password;
@@ -100,6 +106,7 @@ namespace ft_irc
 			std::cerr << "Error: Could not create socket." << std::endl;
 			return (false);
 		}
+		setNonblocking(this->sockfd);
 		//Set socket options.
 		int optval = 1;
 		if (setsockopt(this->sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) < 0)
@@ -225,19 +232,19 @@ namespace ft_irc
 		for (std::list<IRCClient>::iterator it = this->clients.begin();
 		 it != this->clients.end(); ++it)
 		{
-			if (it->hasUnprocessedCommands() == true)
+			if (it->updateOutBuffer())
 			{
 				// parse the message
 				Message	msg = parser.parseMessage(it->popUnprocessedCommand(), *it);
 				this->executeCommand(msg, *it);
 			}
-			else if (it->getSocketFd() < 0 || it->hasNewEvents() == false)
+			if (it->hasUnprocessedCommands() == true)
 			{
-				continue;
+				this->executeCommand(it->popUnprocessedCommand(), *it);
 			}
-			else
+			if (it->getSocketFd() > 0)
 			{
-				it->updateBuffer();
+				it->updateInBuffer();
 			}
 		}
 		return (true);
@@ -293,10 +300,7 @@ namespace ft_irc
 		//log the closing of the connection
 		std::cout << "Closing connection to " << it->getIpAddressStr() << std::endl
 		<< "---------------------------------------------------------" << std::endl;
-		//send EOF to the client
-		//close the connection
 		close(it->getSocketFd());
-		//delete the client
 		it = this->clients.erase(it);
 		return (0);
 	}
@@ -319,16 +323,14 @@ namespace ft_irc
 			response += " 0\r\n";
 			//log the response
 			std::cout << "Sending: " << response << "to " << it->getIpAddressStr() << std::endl;
-			if (send(client.getSocketFd(), response.c_str(), response.size(), 0) < 0)
-			{
-				throw std::runtime_error("send() failed");
-			}
+			client.sendCommand(response);
 		}
 		return (0);
 	}
+
 	int					IRCServer::sendError(IRCClient &client, const std::string &error)
 	{
-		std::string response = ":irc.42.fr 451 ";
+		std::string response = ":" + hostname + " 451 ";
 		response += client.getNick();
 		response += " ";
 		response += error;
