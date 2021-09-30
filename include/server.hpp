@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/09/24 23:20:58 by root             ###   ########.fr       */
+/*   Updated: 2021/09/29 16:14:42 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,9 @@
 # include "client.hpp"
 # include <vector>
 # include <list>
+# include <poll.h>
+# include <algorithm>
+
 
 namespace ft_irc
 {
@@ -72,6 +75,11 @@ namespace ft_irc
 		//awaitConnection
 		bool				awaitNewConnection();
 		bool				processClients();
+		bool				hasPendingConnections();
+		int					executeCommand(const std::string &command, IRCClient &client);
+		int					sendList(IRCClient &client);
+		int					sendError(IRCClient &client, const std::string &error);
+		int					disconnectClient(IRCClient &client);
 	};
 }
 
