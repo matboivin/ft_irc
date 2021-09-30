@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/09/30 18:13:35 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/30 18:57:41 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,13 +234,13 @@ namespace ft_irc
 		{
 			if (it->updateOutBuffer())
 			{
-				// parse the message
-				Message	msg = parser.parseMessage(it->popUnprocessedCommand(), *it);
-				this->executeCommand(msg, *it);
+				continue;
 			}
 			if (it->hasUnprocessedCommands() == true)
 			{
-				this->executeCommand(it->popUnprocessedCommand(), *it);
+				// parse the message
+				Message	msg = parser.parseMessage(it->popUnprocessedCommand(), *it);
+				this->executeCommand(msg, *it);
 			}
 			if (it->getSocketFd() > 0)
 			{

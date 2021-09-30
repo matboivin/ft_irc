@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/30 18:33:20 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/30 19:11:50 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 namespace ft_irc
 {
 	class Message;
+	class Channel;
+	class IRCClient;
 
 	// numeric replies
 	void	rpl_welcome(Message& msg); // 001
@@ -27,10 +29,14 @@ namespace ft_irc
 	void	rpl_endofwho(Message& msg, const std::string& name); // 315
 	void	rpl_endofwhois(Message& msg, const std::string& nick); // 318
 	void	rpl_whoischannels(Message& msg, const std::string& nick, const std::string& chan_name); // 319
-	void	rpl_list(Message& msg, const std::string& chan_name, const std::string& chan_topic); // 322
+	void	rpl_list(Message& msg, Channel& channel); // 322
 	void	rpl_listend(Message& msg); // 323
+	void	rpl_channelmodeis(Message& msg, Channel& channel); // 324
 	void	rpl_notopic(Message& msg, const std::string& chan_name); // 331
-	void	rpl_topic(Message& msg, const std::string& chan_name, const std::string& chan_topic); // 332
+	void	rpl_topic(Message& msg, Channel& channel); // 332
+	void	rpl_inviting(Message& msg, const std::string& chan_name, const std::string& nick); // 341
+	void	rpl_whoreply(Message& msg, const std::string& chan_name, IRCClient& target); // 352
+	void	rpl_namreply(Message& msg); // 353
 	void	rpl_youreoper(Message& msg); // 381
 
 	// error replies

@@ -6,32 +6,34 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/30 18:33:05 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/30 19:11:30 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include <string>
-# include "ft_irc.hpp"
 # include "numeric_replies.hpp"
 # include "client.hpp"
+# include "Channel.hpp"
 # include "Message.hpp"
 
 namespace ft_irc
 {
 	class IRCClient;
+	class Channel;
+	class Message;
 
 	// helpers
-	static std::string	build_prefix(const std::string& from)
+	static std::string	build_prefix(const std::string& sender)
 	{
-		return (":" + from);
+		return (":" + sender);
 	}
 
 	static std::string	build_full_client_id(const IRCClient& client)
 	{
 		return (
-			client.getNick() + "!" + "usertmp" // need username
-			+ "@" + client.getIpAddressStr()
-			);// need host (ip only if couldn't resolve)
+			client.getNick() + "!" + client.getUsername()
+			+ "@" + client.getIpAddressStr() // need host (ip only if couldn't resolve)
+			);
 	}
 
 	// numeric replies
@@ -61,7 +63,7 @@ namespace ft_irc
 		msg.setType(reply_to_cli);
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
-			+ " 311 " + msg.getSender().getNick() + " " + "getUsername()" + " "
+			+ " 311 " + msg.getSender().getNick() + " " + msg.getSender().getUsername() + " "
 			+ msg.getSender().getIpAddressStr() + " :" + msg.getSender().getRealName()
 			);
 		msg.appendSeparator();
@@ -101,12 +103,22 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	rpl_list(Message& msg, const std::string& chan_name, const std::string& chan_topic)
+	void	rpl_list(Message& msg, Channel& channel)
 	{
 		msg.setType(reply_to_cli);
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
-			+ " 322 " + chan_name + " :" + chan_topic
+			+ " 322 " + channel.getName() + " :" + channel.getTopic()
+			);
+		msg.appendSeparator();
+	}
+
+	void	rpl_channelmodeis(Message& msg, Channel& channel)
+	{
+		msg.setType(reply_to_cli);
+		msg.setResponse(
+			build_prefix(msg.getServHostname())
+			+ " 322 " + channel.getName() + " " + channel.getMode() // todo + <mode params>
 			);
 		msg.appendSeparator();
 	}
@@ -128,12 +140,43 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	rpl_topic(Message& msg, const std::string& chan_name, const std::string& chan_topic)
+	void	rpl_topic(Message& msg, Channel& channel)
 	{
 		msg.setType(reply_to_cli);
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
-			+ " 332 " + chan_name + " :" + chan_topic
+			+ " 332 " + channel.getName() + " :" + channel.getTopic()
+			);
+		msg.appendSeparator();
+	}
+
+	void	rpl_inviting(Message& msg, const std::string& chan_name, const std::string& nick)
+	{
+		msg.setType(reply_to_cli);
+		msg.setResponse(
+			build_prefix(msg.getServHostname())
+			+ " 341 " + chan_name + " " + nick
+			);
+		msg.appendSeparator();
+	}
+
+	void	rpl_whoreply(Message& msg, const std::string& chan_name, IRCClient& target)
+	{
+		msg.setType(reply_to_cli);
+		msg.setResponse(
+			build_prefix(msg.getServHostname())
+			+ " 352 " + chan_name + " " + target.getUsername() + " " + target.getIpAddressStr()
+			+ " " + "getServer" + " " + target.getNick() + " :" + target.getRealName()
+			);
+		msg.appendSeparator();
+	}
+
+	void	rpl_namreply(Message& msg, Channel& channel)
+	{
+		msg.setType(reply_to_cli);
+		msg.setResponse(
+			build_prefix(msg.getServHostname())
+			+ " 353 " + channel.getName() // todo
 			);
 		msg.appendSeparator();
 	}

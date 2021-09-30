@@ -9,6 +9,7 @@ RM = /bin/rm
 # FILES
 
 INC_FILES = ft_irc.hpp \
+			Channel.hpp \
 			cli_parser.hpp \
 			client.hpp \
 			IRCParser.hpp \
@@ -17,6 +18,7 @@ INC_FILES = ft_irc.hpp \
 			server.hpp
 
 SRC_FILES = main.cpp \
+			Channel.cpp \
 			cli_parser.cpp \
 			client.cpp \
 			IRCParser.cpp \
@@ -33,7 +35,8 @@ INC_DIR = include
 SRC_DIR = src
 OBJ_DIR = obj
 
-SUB_DIRS =	cli_parser \
+SUB_DIRS =	channel \
+			cli_parser \
 			client \
 			parsing \
 			server \
