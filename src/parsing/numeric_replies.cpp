@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/30 19:11:30 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/09/30 19:53:16 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ namespace ft_irc
 			);
 	}
 
-	// numeric replies
+	// command responses
 	void	rpl_welcome(Message& msg)
 	{
 		msg.setType(reply_to_cli);
@@ -181,6 +181,16 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
+	void	rpl_endofnames(Message& msg, const std::string& chan_name)
+	{
+		msg.setType(reply_to_cli);
+		msg.setResponse(
+			build_prefix(msg.getServHostname())
+			+ " 366 " + chan_name + " :End of NAMES list"
+			);
+		msg.appendSeparator();
+	}
+
 	void	rpl_youreoper(Message& msg)
 	{
 		msg.setType(reply_to_cli);
@@ -190,6 +200,8 @@ namespace ft_irc
 			);
 		msg.appendSeparator();
 	}
+
+	// error replies
 
 	void	err_nosuchnick(Message& msg, const std::string& nick)
 	{
@@ -211,7 +223,60 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	// error replies
+	void	err_cannotsendtochan(Message& msg, const std::string& chan_name)
+	{
+		msg.setType(reply_to_cli);
+		msg.setResponse(
+			build_prefix(msg.getServHostname())
+			+ " 404 " + chan_name + " :Cannot send to channel"
+			);
+		msg.appendSeparator();
+	}
+
+	void	err_toomanychannels(Message& msg, const std::string& chan_name)
+	{
+		msg.setType(reply_to_cli);
+		msg.setResponse(
+			build_prefix(msg.getServHostname())
+			+ " 405 " + chan_name + " :You have joined too many channels"
+			);
+		msg.appendSeparator();
+	}
+
+	void	err_toomanytargets(Message& msg, const std::string& target) // necessary?
+	{
+		msg.setType(reply_to_cli);
+		msg.setResponse(
+			build_prefix(msg.getServHostname())
+			+ " 407 " + target + " :<error code> recipients. <abort message>" // todo
+			);
+		msg.appendSeparator();
+	}
+
+	void	err_noorigin(Message& msg)
+	{
+		msg.setType(reply_to_cli);
+		msg.setResponse(build_prefix(msg.getServHostname()) + " 409 :No origin specified");
+		msg.appendSeparator();
+	}
+
+	void	err_norecipient(Message& msg)
+	{
+		msg.setType(reply_to_cli);
+		msg.setResponse(
+			build_prefix(msg.getServHostname())
+			+ " 411 :No recipient given (" + msg.getCommand() + ")"
+			);
+		msg.appendSeparator();
+	}
+
+	void	err_notexttosend(Message& msg)
+	{
+		msg.setType(reply_to_cli);
+		msg.setResponse(build_prefix(msg.getServHostname()) + " 412 :No text to send");
+		msg.appendSeparator();
+	}
+
 	void	err_unknowncommand(Message& msg)
 	{
 		msg.setType(reply_to_cli);
@@ -271,12 +336,30 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
+	void	err_usernotinchannel(Message& msg, const std::string& nick, const std::string& chan_name)
+	{
+		msg.setType(reply_to_cli);
+		msg.setResponse(
+			build_prefix(msg.getServHostname())
+			+ " 441 " + nick + " " + chan_name + " :They aren't on that channel");
+		msg.appendSeparator();
+	}
+
 	void	err_notonchannel(Message& msg, const std::string& chan_name)
 	{
 		msg.setType(reply_to_cli);
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 442 " + chan_name + " :You're not on that channel");
+		msg.appendSeparator();
+	}
+
+	void	err_userinchannel(Message& msg, const std::string& nick, const std::string& chan_name)
+	{
+		msg.setType(reply_to_cli);
+		msg.setResponse(
+			build_prefix(msg.getServHostname())
+			+ " 443 " + nick + " " + chan_name + " :is already on channel");
 		msg.appendSeparator();
 	}
 
@@ -314,10 +397,46 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	err_restricted(Message& msg)
+	void	err_channelisfull(Message& msg, const std::string& chan_name)
 	{
 		msg.setType(reply_to_cli);
-		msg.setResponse(build_prefix(msg.getServHostname()) + " 484 :Your connection is restricted!");
+		msg.setResponse(
+			build_prefix(msg.getServHostname())
+			+ " 471 " + chan_name + " :Cannot join channel (+l)");
+		msg.appendSeparator();
+	}
+
+	void	err_bannedfromchan(Message& msg, const std::string& chan_name)
+	{
+		msg.setType(reply_to_cli);
+		msg.setResponse(
+			build_prefix(msg.getServHostname())
+			+ " 474 " + chan_name + " :Cannot join channel (+b)");
+		msg.appendSeparator();
+	}
+
+	void	err_noprivileges(Message& msg)
+	{
+		msg.setType(reply_to_cli);
+		msg.setResponse(build_prefix(
+			msg.getServHostname()) + " 481 :Permission Denied- You're not an IRC operator"
+			);
+		msg.appendSeparator();
+	}
+
+	void	err_chanoprivsneeded(Message& msg, const std::string& chan_name)
+	{
+		msg.setType(reply_to_cli);
+		msg.setResponse(
+			build_prefix(msg.getServHostname())
+			+ " 482 " + chan_name + " :You're not channel operator");
+		msg.appendSeparator();
+	}
+
+	void	err_cantkillserver(Message& msg)
+	{
+		msg.setType(reply_to_cli);
+		msg.setResponse(build_prefix(msg.getServHostname()) + " 483 :You can't kill a server!");
 		msg.appendSeparator();
 	}
 
@@ -325,6 +444,20 @@ namespace ft_irc
 	{
 		msg.setType(reply_to_cli);
 		msg.setResponse(build_prefix(msg.getServHostname()) + " 491 :No O-lines for your host");
+		msg.appendSeparator();
+	}
+
+	void	err_unknownmodeflag(Message& msg)
+	{
+		msg.setType(reply_to_cli);
+		msg.setResponse(build_prefix(msg.getServHostname()) + " 501 :Unknown MODE flag");
+		msg.appendSeparator();
+	}
+
+	void	err_usersdontmatch(Message& msg)
+	{
+		msg.setType(reply_to_cli);
+		msg.setResponse(build_prefix(msg.getServHostname()) + " 502 :Cannot change mode for other users");
 		msg.appendSeparator();
 	}
 } // !namespace ft_irc
