@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/09/30 15:19:09 by root             ###   ########.fr       */
+/*   Updated: 2021/09/30 18:39:06 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,10 @@ namespace ft_irc
 		int 				getSocketFd() const;
 		struct sockaddr_in	&getAddress();
 		socklen_t 			&getAddressSize();
+		//get username
+		std::string			getUsername() const;
+		//set
+		void				setUsername(std::string username);
 		//IRCClient se/tters
 		void				setNick(std::string nick);
 		void				setRealName(std::string realname);
