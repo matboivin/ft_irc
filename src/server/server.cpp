@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/01 18:26:33 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/01 18:35:17 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,8 +224,6 @@ namespace ft_irc
 		return (true);
 	}
 
-
-	
 	bool				IRCServer::processClients(IRCParser& parser)
 	{
 		//process all clients
@@ -240,7 +238,25 @@ namespace ft_irc
 			{
 				// parse the message
 				Message	msg = parser.parseMessage(it->popUnprocessedCommand(), *it);
+				// execute the command
 				this->executeCommand(msg, *it);
+				// send response to recipient(s)
+				if (!msg.getRecipients().empty())
+				{
+					// there can be many recipients (ex: broadcast to channel)
+					std::vector<IRCClient>	recipients = msg.getRecipients();
+
+					for (std::vector<IRCClient>::const_iterator	it = recipients.begin();
+						it != recipients.end();
+						++it)
+					{
+						std::cout << "Sending: '" << msg.getResponse() << "' to " << it->getIpAddressStr() << std::endl;
+						if (send(it->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
+						{
+							throw std::runtime_error("send() failed");
+						}
+					}
+				}
 			}
 			if (it->getSocketFd() > 0)
 			{
@@ -252,23 +268,7 @@ namespace ft_irc
 
 	int	IRCServer::executeCommand(Message& msg, IRCClient &client)
 	{
-		// would be in a send response method
-		if (!msg.getRecipients().empty()) // there can be many recipients (ex: broadcast to channel)
-		{
-			std::vector<IRCClient>	recipients = msg.getRecipients();
-
-			for (std::vector<IRCClient>::const_iterator	it = recipients.begin();
-				 it != recipients.end();
-				 ++it)
-			{
-				std::cout << "Sending: '" << msg.getResponse() << "' to " << it->getIpAddressStr() << std::endl;
-				if (send(it->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
-				{
-					throw std::runtime_error("send() failed");
-				}
-			}
-		} // !send response
-		else if (msg.getCommand() == "NICK")
+		if (msg.getCommand() == "NICK")
 		{
 			client.setNick(msg.getParams()[0]);
 		}
