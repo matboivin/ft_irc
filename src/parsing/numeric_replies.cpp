@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/30 19:53:16 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/01 18:01:30 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ namespace ft_irc
 	// command responses
 	void	rpl_welcome(Message& msg)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 001 Welcome to the Internet Relay Network "
@@ -50,7 +50,7 @@ namespace ft_irc
 
 	void	rpl_umodeis(Message& msg, const std::string& user_mode)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 221 " + user_mode
@@ -60,7 +60,7 @@ namespace ft_irc
 
 	void	rpl_whoisuser(Message& msg)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 311 " + msg.getSender().getNick() + " " + msg.getSender().getUsername() + " "
@@ -71,7 +71,7 @@ namespace ft_irc
 
 	void	rpl_whoisoperator(Message& msg)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 313 " + msg.getSender().getNick() + " :is an IRC operator"
@@ -81,21 +81,21 @@ namespace ft_irc
 
 	void	rpl_endofwho(Message& msg, const std::string& name)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(build_prefix(msg.getServHostname()) + " 315 " + name + " :End of WHO list");
 		msg.appendSeparator();
 	}
 
 	void	rpl_endofwhois(Message& msg, const std::string& nick)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(build_prefix(msg.getServHostname()) + " 318 " + nick + " :End of WHOIS list");
 		msg.appendSeparator();
 	}
 
 	void	rpl_whoischannels(Message& msg, const std::string& nick, const std::string& chan_name)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(build_prefix(
 			msg.getServHostname())
 			+ " 319 " + nick + " :*" + chan_name // todo
@@ -105,7 +105,7 @@ namespace ft_irc
 
 	void	rpl_list(Message& msg, Channel& channel)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 322 " + channel.getName() + " :" + channel.getTopic()
@@ -115,7 +115,7 @@ namespace ft_irc
 
 	void	rpl_channelmodeis(Message& msg, Channel& channel)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 322 " + channel.getName() + " " + channel.getMode() // todo + <mode params>
@@ -125,14 +125,14 @@ namespace ft_irc
 
 	void	rpl_listend(Message& msg)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(build_prefix(msg.getServHostname()) + " 323 :End of LIST");
 		msg.appendSeparator();
 	}
 
 	void	rpl_notopic(Message& msg, const std::string& chan_name)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 331 " + chan_name + " :No topic is set"
@@ -142,7 +142,7 @@ namespace ft_irc
 
 	void	rpl_topic(Message& msg, Channel& channel)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 332 " + channel.getName() + " :" + channel.getTopic()
@@ -152,7 +152,7 @@ namespace ft_irc
 
 	void	rpl_inviting(Message& msg, const std::string& chan_name, const std::string& nick)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 341 " + chan_name + " " + nick
@@ -162,7 +162,7 @@ namespace ft_irc
 
 	void	rpl_whoreply(Message& msg, const std::string& chan_name, IRCClient& target)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 352 " + chan_name + " " + target.getUsername() + " " + target.getIpAddressStr()
@@ -173,7 +173,7 @@ namespace ft_irc
 
 	void	rpl_namreply(Message& msg, Channel& channel)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 353 " + channel.getName() // todo
@@ -183,7 +183,7 @@ namespace ft_irc
 
 	void	rpl_endofnames(Message& msg, const std::string& chan_name)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 366 " + chan_name + " :End of NAMES list"
@@ -193,7 +193,7 @@ namespace ft_irc
 
 	void	rpl_youreoper(Message& msg)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 381 :You are now an IRC operator"
@@ -205,7 +205,7 @@ namespace ft_irc
 
 	void	err_nosuchnick(Message& msg, const std::string& nick)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 401 " + nick + " :No such nick/channel"
@@ -215,7 +215,7 @@ namespace ft_irc
 
 	void	err_nosuchchannel(Message& msg, const std::string& chan_name)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 403 " + chan_name + " :No such channel"
@@ -225,7 +225,7 @@ namespace ft_irc
 
 	void	err_cannotsendtochan(Message& msg, const std::string& chan_name)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 404 " + chan_name + " :Cannot send to channel"
@@ -235,7 +235,7 @@ namespace ft_irc
 
 	void	err_toomanychannels(Message& msg, const std::string& chan_name)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 405 " + chan_name + " :You have joined too many channels"
@@ -245,7 +245,7 @@ namespace ft_irc
 
 	void	err_toomanytargets(Message& msg, const std::string& target) // necessary?
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 407 " + target + " :<error code> recipients. <abort message>" // todo
@@ -255,14 +255,14 @@ namespace ft_irc
 
 	void	err_noorigin(Message& msg)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(build_prefix(msg.getServHostname()) + " 409 :No origin specified");
 		msg.appendSeparator();
 	}
 
 	void	err_norecipient(Message& msg)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 411 :No recipient given (" + msg.getCommand() + ")"
@@ -272,14 +272,14 @@ namespace ft_irc
 
 	void	err_notexttosend(Message& msg)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(build_prefix(msg.getServHostname()) + " 412 :No text to send");
 		msg.appendSeparator();
 	}
 
 	void	err_unknowncommand(Message& msg)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 421 " + msg.getCommand() + " :Unknown command"
@@ -289,14 +289,14 @@ namespace ft_irc
 
 	void	err_nonicknamegiven(Message& msg)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(build_prefix(msg.getServHostname()) + " 431 :No nickname given");
 		msg.appendSeparator();
 	}
 
 	void	err_erroneusnickname(Message& msg)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 432 " + msg.getSender().getNick() + " :Erroneous nickname"
@@ -306,7 +306,7 @@ namespace ft_irc
 
 	void	err_nicknameinuse(Message& msg)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 433 " + msg.getSender().getNick() + " :Nickname is already in use"
@@ -316,7 +316,7 @@ namespace ft_irc
 
 	void	err_nickcollision(Message& msg)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 436 " + msg.getSender().getNick()
@@ -328,7 +328,7 @@ namespace ft_irc
 
 	void	err_unavailresource(Message& msg, const std::string& target)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 437 " + target + " :Nick/channel is temporarily unavailable"
@@ -338,7 +338,7 @@ namespace ft_irc
 
 	void	err_usernotinchannel(Message& msg, const std::string& nick, const std::string& chan_name)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 441 " + nick + " " + chan_name + " :They aren't on that channel");
@@ -347,7 +347,7 @@ namespace ft_irc
 
 	void	err_notonchannel(Message& msg, const std::string& chan_name)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 442 " + chan_name + " :You're not on that channel");
@@ -356,7 +356,7 @@ namespace ft_irc
 
 	void	err_userinchannel(Message& msg, const std::string& nick, const std::string& chan_name)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 443 " + nick + " " + chan_name + " :is already on channel");
@@ -365,14 +365,14 @@ namespace ft_irc
 
 	void	err_notregistered(Message& msg)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(build_prefix(msg.getServHostname()) + " 451 :You have not registered");
 		msg.appendSeparator();
 	}
 
 	void	err_needmoreparams(Message& msg)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 461 " + msg.getCommand() + ":Not enough parameters"
@@ -382,7 +382,7 @@ namespace ft_irc
 
 	void	err_alreadyregistered(Message& msg)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 462 :Unauthorized command (already registered)"
@@ -392,14 +392,14 @@ namespace ft_irc
 
 	void	err_passwdmismatch(Message& msg)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(build_prefix(msg.getServHostname()) + " 464 :Password incorrect");
 		msg.appendSeparator();
 	}
 
 	void	err_channelisfull(Message& msg, const std::string& chan_name)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 471 " + chan_name + " :Cannot join channel (+l)");
@@ -408,7 +408,7 @@ namespace ft_irc
 
 	void	err_bannedfromchan(Message& msg, const std::string& chan_name)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 474 " + chan_name + " :Cannot join channel (+b)");
@@ -417,7 +417,7 @@ namespace ft_irc
 
 	void	err_noprivileges(Message& msg)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(build_prefix(
 			msg.getServHostname()) + " 481 :Permission Denied- You're not an IRC operator"
 			);
@@ -426,7 +426,7 @@ namespace ft_irc
 
 	void	err_chanoprivsneeded(Message& msg, const std::string& chan_name)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 482 " + chan_name + " :You're not channel operator");
@@ -435,28 +435,28 @@ namespace ft_irc
 
 	void	err_cantkillserver(Message& msg)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(build_prefix(msg.getServHostname()) + " 483 :You can't kill a server!");
 		msg.appendSeparator();
 	}
 
 	void	err_nooperhost(Message& msg)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(build_prefix(msg.getServHostname()) + " 491 :No O-lines for your host");
 		msg.appendSeparator();
 	}
 
 	void	err_unknownmodeflag(Message& msg)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(build_prefix(msg.getServHostname()) + " 501 :Unknown MODE flag");
 		msg.appendSeparator();
 	}
 
 	void	err_usersdontmatch(Message& msg)
 	{
-		msg.setType(reply_to_cli);
+		msg.setRecipient(msg.getSender());
 		msg.setResponse(build_prefix(msg.getServHostname()) + " 502 :Cannot change mode for other users");
 		msg.appendSeparator();
 	}

@@ -5,7 +5,7 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
+/*   Cr_eated: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
 /*   Updated: 2021/09/30 16:54:50 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -91,10 +91,34 @@ namespace ft_irc
 		this->setItEnd(str.end());
 	}
 
-	// parsing
+	// Checks whether command name is valid
+	bool	IRCParser::_commandIsValid(Message& msg)
+	{
+		const std::string	cmds[] = {
+				"INVITE", "JOIN", "KICK", "KILL", "LIST", "MODE", "NAMES",
+				"NICK", "NOTICE", "OPER", "PASS", "PART", "PING", "PONG",
+				"PRIVMSG", "TOPIC", "QUIT", "USER", "WHOIS", "WHO"
+			};
+		std::string	cmd_name = msg.getCommand();
 
-	// Advance iterator if it points to the expected character and returns true
-	bool	IRCParser::eat(char expected)
+		std::transform(cmd_name.begin(), cmd_name.end(), cmd_name.begin(), ::toupper);
+
+		for (std::size_t i = 0; i < 20; i++)
+		{
+			if (cmds[i] == cmd_name)
+			{
+				msg.setCommand(cmd_name); // uppercase command name if valid
+				return (true);
+			}
+		}
+		err_unknowncommand(msg); // else keep original format
+		return (false);
+	}
+
+	// parsing helpers
+
+	// If the character is the one expected, advance in the string and returns true
+	bool	IRCParser::_eat(char expected)
 	{
 		if ((this->_current != this->_end) && (*this->_current == expected))
 		{
@@ -104,65 +128,73 @@ namespace ft_irc
 		return (false);
 	}
 
-	// Checks whether the string contains the CRLF (carriage return + line feed) separator
-	bool	IRCParser::parseSeparator()
+	// Checks whether the character pointed by it is not a NUL, CR, LF
+	bool	IRCParser::_nocrlf(IRCParser::str_const_it it)
 	{
-		if (eat('\r'))
-			return (eat('\n'));
-		return (false);
+		return (it != this->_end && *it != '\r' && *it != '\n');
 	}
 
 	// Checks whether the character pointed by it is not a NUL, CR, LF, space or a colon
-	bool	IRCParser::nospcrlfcl(IRCParser::str_const_it it)
+	bool	IRCParser::_nospcrlfcl(IRCParser::str_const_it it)
 	{
-		return (it != this->_end && *it != ' ' && *it != '\r' && *it != '\n' && *it != ':');
+		return (_nocrlf(it) && *it != ' ' && *it != ':');
 	}
 
-	// Any, possibly *empty*, sequence of octets not including NUL or CR or LF
-	// *( ":" / " " / nospcrlfcl )
-	bool	IRCParser::parseTrailing(Message& msg)
+	// Checks whether the string contains the CRLF (carriage return + line feed) separator
+	bool	IRCParser::_parseSeparator()
+	{
+		if (_eat('\r'))
+			return (_eat('\n'));
+		return (false);
+	}
+
+	// Parses the trailing part of a message
+	// It starts by a ':' followed by a possibly empty sequence of octets not including
+	// NUL or CR or LF
+	bool	IRCParser::_parseTrailing(Message& msg)
 	{
 		while ((this->_current != this->_end) && (*this->_current != '\r'))
 		{
-			if (!nospcrlfcl(this->_current) && (*this->_current != ' ') && (*this->_current != ':'))
+			if (!_nocrlf(this->_current))
 				break ;
 			this->_current++;
 		}
 		msg.setParam(std::string(this->_start, this->_current));
-		return (parseSeparator());
+		return (_parseSeparator());
 	}
 
-	// Any *non-empty* sequence of octets not including SPACE or NUL or CR or LF,
-	// the first of which may not be ':'
-	bool	IRCParser::parseMiddle(Message& msg)
+	// Parses the middle part of a message
+	// It musn't start by a ':'.
+	// It is a non-empty sequence of octets not including SPACE or NUL or CR or LF.
+	bool	IRCParser::_parseMiddle(Message& msg)
 	{
-		while (nospcrlfcl(this->_current) && (*this->_current != ' '))
+		while (_nospcrlfcl(this->_current) || (*this->_current == ':'))
 			this->_current++;
 		msg.setParam(std::string(this->_start, this->_current));
-		if (eat(' '))
+		if (_eat(' '))
 		{
 			this->_start = this->_current;
-			return (parseTrailing(msg));
+			return (_parseTrailing(msg));
 		}
-		return (parseSeparator());
+		return (_parseSeparator());
 	}
 
-	// *14(SPACE middle) [ SPACE ":" trailing ]
-	bool	IRCParser::parseParams(Message& msg)
+	// Parses the command parameters
+	bool	IRCParser::_parseParams(Message& msg)
 	{
-		if (eat(' '))
+		if (_eat(' '))
 		{
 			this->_start = this->_current;
 			if ((this->_current != this->_end) && (*this->_current == ':'))
-				return (parseTrailing(msg));
+				return (_parseTrailing(msg));
 			else if (_current != _end)
-				return (parseMiddle(msg));
+				return (_parseMiddle(msg));
 		}
-		return (parseSeparator());
+		return (_parseSeparator());
 	}
 
-	// <letter> { <letter> }
-	bool	IRCParser::parseCommand(Message& msg)
+	// Parses the command name
+	bool	IRCParser::_parseCommand(Message& msg)
 	{
 		if ((this->_current == this->_end) || !isalpha(*this->_current))
 			return (false);
@@ -170,16 +202,11 @@ namespace ft_irc
 			this->_current++;
 
 		std::string	cmd(this->_start, this->_current);
-		// uppercase command name
-		std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::toupper);
 		msg.setCommand(cmd);
 		return (true);
 	}
 
-	// main parsing function
-	// not sure about how to pass the client arg
-	// packet looks like: <command> [ params ] <crlf>
-	// packet max len: 512 characters including CRLF (if not, packet is split)
+	// Main parsing function
 	Message	IRCParser::parseMessage(const std::string& packet, IRCClient& sender)
 	{
 		Message	msg;
@@ -187,37 +214,11 @@ namespace ft_irc
 		setIterators(packet);
 		msg.setSender(sender);
 
-		if (parseCommand(msg)) // wrong command format is ignored
+		if (_parseCommand(msg)) // wrong command format is ignored
 		{
-			if (commandIsValid(msg))
-				parseParams(msg);
-
-			msg.displayMessage(); // debug
-			std::cout << '\n';
+			if (_commandIsValid(msg))
+				_parseParams(msg);
 		}
 		return (msg);
-	}
-
-	// 3 types of messages -> 3 types of handling them:
-	//  - respond directly to sender
-	//  - forward message to recipient(s)
-	//  - broadcast (e.g., joining a channel)
-
-	// dummy tmp function that would pass msg to appropriate worker
-	bool	IRCParser::commandIsValid(Message& msg)
-	{
-		const std::string	cmds[] = {
-				"INVITE", "JOIN", "KICK", "KILL", "LIST", "MODE", "NAMES",
-				"NICK", "NOTICE", "OPER", "PASS", "PART", "PING", "PONG",
-				"PRIVMSG", "TOPIC", "QUIT", "USER", "WHOIS", "WHO"
-			};
-
-		for (std::size_t i = 0; i < 20; i++)
-		{
-			if (cmds[i] == msg.getCommand())
-				return (true);
-		}
-		err_unknowncommand(msg);
-		return (false);
 	}
 } // !namespace ft_irc

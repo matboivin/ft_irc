@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/30 16:45:38 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/01 18:14:04 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,20 +19,21 @@ namespace ft_irc
 {
 	// default constructor
 	Message::Message()
-	: _sender(), _type(undefined), _serv_hostname("irc.42.fr"), _response(), _command(), _params()
+	: _sender(), _serv_hostname("irc.42.fr"), _response(), _command(), _params(), _recipients()
 	{
 	}
 
 	// server hostname constructor
 	Message::Message(const std::string& serv_hostname)
-	: _sender(), _type(undefined), _serv_hostname(serv_hostname), _response(), _command(), _params()
+	: _sender(), _serv_hostname(serv_hostname), _response(), _command(), _params(), _recipients()
 	{
 	}
 
 	// copy constructor
 	Message::Message(const Message& other)
-	: _sender(other._sender), _type(other._type), _serv_hostname(other._serv_hostname),
-	  _response(other._response), _command(other._command), _params(other._params)
+	: _sender(other._sender), _serv_hostname(other._serv_hostname),
+	  _response(other._response), _command(other._command), _params(other._params),
+	  _recipients(other._recipients)
 	{
 	}
 
@@ -42,11 +43,11 @@ namespace ft_irc
 		if (this != &other)
 		{
 			_sender = other.getSender();
-			_type = other.getType();
 			_serv_hostname = other.getServHostname();
 			_response = other.getResponse();
 			_command = other.getCommand();
 			_params = other.getParams();
+			_recipients = other.getRecipients();
 		}
 		return (*this);
 	}
@@ -58,11 +59,6 @@ namespace ft_irc
 	IRCClient	Message::getSender() const
 	{
 		return (this->_sender);
-	}
-
-	reply_type	Message::getType() const
-	{
-		return (this->_type);
 	}
 
 	std::string	Message::getServHostname() const
@@ -80,9 +76,14 @@ namespace ft_irc
 		return (this->_command);
 	}
 
-	Message::str_vec	Message::getParams() const
+	std::vector<std::string>	Message::getParams() const
 	{
 		return (this->_params);
+	}
+
+	std::vector<IRCClient>	Message::getRecipients() const
+	{
+		return (this->_recipients);
 	}
 
 	// setters
@@ -90,11 +91,6 @@ namespace ft_irc
 	void	Message::setSender(const IRCClient& sender)
 	{
 		this->_sender = sender;
-	}
-
-	void	Message::setType(reply_type type)
-	{
-		this->_type = type;
 	}
 
 	void	Message::setServHostname(const std::string& serv_hostname)
@@ -118,6 +114,18 @@ namespace ft_irc
 			this->_params.push_back(param);
 	}
 
+	void	Message::setRecipient(const IRCClient& recipient)
+	{
+		this->_recipients.push_back(recipient);
+	}
+
+	void	Message::setRecipients(const std::vector<IRCClient>& recipients)
+	{
+		if (!this->_recipients.empty())
+			this->_recipients.clear();
+		this->_recipients.assign(recipients.begin(), recipients.end());
+	}
+
 	// end message with CRLF
 	void	Message::appendSeparator()
 	{
@@ -133,10 +141,5 @@ namespace ft_irc
 		for (std::size_t i = 0; i < this->_params.size(); i++)
 			std::cout << "'" << this->_params[i] << "' ";
 		std::cout << std::endl;
-	}
-
-	void	Message::displayResponse() const
-	{
-		std::cout << "Response: '" << getResponse() << "'" << std::endl;
 	}
 } // !namespace ft_irc

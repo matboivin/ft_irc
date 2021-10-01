@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/09/30 18:57:41 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/01 18:26:33 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -249,24 +249,25 @@ namespace ft_irc
 		}
 		return (true);
 	}
-	
+
 	int	IRCServer::executeCommand(Message& msg, IRCClient &client)
 	{
-		// std::string cmd;
-		// std::string params;
-
-		// cmd = command.substr(0, command.find(" ") ? command.find(" ") : command.size());
-		// params = command.substr(command.find(" ") + 1);
-		// std::cout << cmd << "(" << params << ")" << std::endl;
-		if (msg.getType() == reply_to_cli)
+		// would be in a send response method
+		if (!msg.getRecipients().empty()) // there can be many recipients (ex: broadcast to channel)
 		{
-			std::cout << "Sending: '" << msg.getResponse()
-					  << "' to " << client.getIpAddressStr() << std::endl;
-			if (send(client.getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
+			std::vector<IRCClient>	recipients = msg.getRecipients();
+
+			for (std::vector<IRCClient>::const_iterator	it = recipients.begin();
+				 it != recipients.end();
+				 ++it)
 			{
-				throw std::runtime_error("send() failed");
+				std::cout << "Sending: '" << msg.getResponse() << "' to " << it->getIpAddressStr() << std::endl;
+				if (send(it->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
+				{
+					throw std::runtime_error("send() failed");
+				}
 			}
-		}
+		} // !send response
 		else if (msg.getCommand() == "NICK")
 		{
 			client.setNick(msg.getParams()[0]);
@@ -287,10 +288,6 @@ namespace ft_irc
 		{
 			this->disconnectClient(client);
 		}
-		// else
-		// {
-		// 	this->sendError(client, "Unknown command " + command);
-		// }
 		return (0);
 	}
 

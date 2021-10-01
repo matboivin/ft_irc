@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:47:11 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/30 16:41:47 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/01 18:14:08 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,29 +23,17 @@ namespace ft_irc
 {
 	class IRCClient;
 
-	enum reply_type
-	{
-		undefined = 0,
-		reply_to_cli,
-		forward,
-		broadcast
-	};
-	// broadcast is tmp
-
 	// Parser for IRC protocol messages
 	class Message
 	{
 	private:
-		// private alias
-		typedef std::vector<std::string>	str_vec;
-
 		// attributes
-		IRCClient	_sender;
-		reply_type	_type;
-		std::string	_serv_hostname;
-		std::string	_response;
-		std::string	_command;
-		str_vec		_params;
+		IRCClient					_sender;
+		std::string					_serv_hostname;
+		std::string					_response;
+		std::string					_command;
+		std::vector<std::string>	_params;
+		std::vector<IRCClient>		_recipients;
 
 	public:
 		// default constructor
@@ -59,28 +47,28 @@ namespace ft_irc
 		// destructor
 					~Message();
 
-		// Message getters
+		// getters
 		IRCClient	getSender() const;
-		reply_type	getType() const;
 		std::string	getServHostname() const;
 		std::string	getResponse() const;
 		std::string	getCommand() const;
-		str_vec		getParams() const;
+		std::vector<std::string>	getParams() const;
+		std::vector<IRCClient>		getRecipients() const;
 
-		// Message setters
+		// setters
 		void		setSender(const IRCClient& sender);
-		void		setType(reply_type type);
 		void		setServHostname(const std::string& serv_hostname);
 		void		setResponse(const std::string& response);
 		void		setCommand(const std::string& command);
 		void		setParam(const std::string& param);
+		void		setRecipient(const IRCClient& recipient);
+		void		setRecipients(const std::vector<IRCClient>& recipients);
 
 		// end message with CRLF
 		void		appendSeparator();
 
 		// debug
 		void		displayMessage() const;
-		void		displayResponse() const;
 	};
 } // !namespace ft_irc
 
