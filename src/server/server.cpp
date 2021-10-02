@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/02 19:56:11 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/02 20:09:02 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -272,12 +272,9 @@ namespace ft_irc
 		// TODO: map to avoid if forest
 		if (msg.getCommand() == "NICK")
 		{
+			msg.displayMessage();
 			NickCommand	cmd(msg);
 			cmd.execute();
-
-			// debug
-			std::cout << "client " << msg.getSender().getIpAddressStr() << " nick is now: "
-					  <<  client.getNick() << std::endl;
 		}
 		else if (msg.getCommand() == "USER")
 		{

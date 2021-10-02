@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/02 19:09:25 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/02 19:53:01 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/02 20:07:43 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ namespace ft_irc
 {
 	// nickname constructor
 	NickCommand::NickCommand(Message& msg)
-	: _msg(msg)
+	: _newnick(""), _msg(msg)
 	{
 		try
 		{
@@ -76,14 +76,21 @@ namespace ft_irc
 
 	void	NickCommand::execute()
 	{
-		// TODO
-		// nickname   =  ( letter / special ) *8( letter / digit / special / "-" )
+		if (!this->_newnick.empty())
+		{
+			// TODO
+			// nickname   =  ( letter / special ) *8( letter / digit / special / "-" )
 
-		// if not valid
-		//    err_nicknameinuse(this->_msg);
-		// if nickname already exists
-		//    err_nicknameinuse(this->_msg);
-		// else
-		this->_msg.getSender().setNick(_newnick);
+			// if not valid
+			//    err_nicknameinuse(this->_msg);
+			// if nickname already exists
+			//    err_nicknameinuse(this->_msg);
+			// else
+			this->_msg.getSender().setNick(_newnick);
+
+			// debug
+			std::cout << "client " << this->_msg.getSender().getIpAddressStr() << " nick is now: "
+					  <<  this->_msg.getSender().getNick() << std::endl;
+		}
 	}
 } // namespace ft_irc
