@@ -39,8 +39,8 @@ test:
   - ./tests/usage.sh
   - python3 ./tests/connect_tester.py 0.0.0.0 127.0.0.1 2727 ""
 
-test:
-  stage: replies
+replies:
+  stage: test
   script:
     # Verify the replies are correct
   - test -f "$EXE"
