@@ -5,10 +5,11 @@
 . ./tests/common.sh
 
 BIND_ADDR="0.0.0.0"
-PORT="6667"
+PORT="2727"
 
 # run server in background
 ./$EXE $BIND_ADDR $PORT "" &
+sleep 1
 
 # Compare outputs
 
