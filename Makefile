@@ -87,6 +87,9 @@ $(NAME): $(OBJ_DIR) $(OBJ) $(INC)
 debug: $(NAME)
 	./$(NAME) 0.0.0.0 6667 test
 
+test:
+	./tests/parsing_tester.sh
+
 show:
 	@echo "VPATH: $(VPATH)"
 

@@ -14,6 +14,9 @@ assert_exec()
 	eval "$1  2> \"$ERR_FILE\" 1> \"$OUT_FILE\""
 	EXIT_CODE=$?
 
+	# Remove carriage return char for comparison
+	sed --in-place 's/\r$//' $OUT_FILE $ERR_FILE
+
 	echo "Expected exit code: $4"
 	echo "Actual exit code: $EXIT_CODE"
 	echo "Expected standard output:"
