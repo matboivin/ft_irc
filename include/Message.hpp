@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:47:11 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/02 19:15:48 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/02 19:54:52 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ namespace ft_irc
 	{
 	private:
 		// attributes
-		IRCClient					_sender;
+		IRCClient&					_sender;
 		std::string					_serv_hostname;
 		std::string					_response;
 		std::string					_command;
@@ -37,9 +37,9 @@ namespace ft_irc
 
 	public:
 		// default constructor
-					Message();
+					Message(IRCClient& sender);
 		// server hostname constructor
-					Message(const std::string& serv_hostname);
+					Message(IRCClient& sender, const std::string& serv_hostname);
 		// copy constructor
 					Message(const Message& other);
 		// assignment operator
@@ -48,7 +48,7 @@ namespace ft_irc
 					~Message();
 
 		// getters
-		IRCClient	getSender() const;
+		IRCClient&	getSender() const;
 		std::string	getServHostname() const;
 		std::string	getResponse() const;
 		std::string	getCommand() const;

@@ -12,6 +12,7 @@ INC_FILES = ft_irc.hpp \
 			Channel.hpp \
 			cli_parser.hpp \
 			client.hpp \
+			Command.hpp \
 			IRCParser.hpp \
 			Message.hpp \
 			numeric_replies.hpp \
@@ -27,6 +28,10 @@ SRC_FILES = main.cpp \
 			server.cpp \
 			utils.cpp
 
+# COMMANDS
+
+SRC_FILES += NickCommand.cpp
+
 OBJ_FILES = $(SRC_FILES:%.cpp=%.o)
 
 # DIRS AND PATHS
@@ -38,6 +43,7 @@ OBJ_DIR = obj
 SUB_DIRS =	channel \
 			cli_parser \
 			client \
+			commands \
 			parsing \
 			server \
 			utils

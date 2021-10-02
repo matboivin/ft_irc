@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/01 18:01:30 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/02 19:35:03 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -310,18 +310,6 @@ namespace ft_irc
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 433 " + msg.getSender().getNick() + " :Nickname is already in use"
-			);
-		msg.appendSeparator();
-	}
-
-	void	err_nickcollision(Message& msg)
-	{
-		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 436 " + msg.getSender().getNick()
-			+ " :Nickname collision KILL from " + "usertmp"
-			+ "@" + msg.getSender().getIpAddressStr()
 			);
 		msg.appendSeparator();
 	}

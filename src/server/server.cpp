@@ -6,12 +6,13 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/02 17:32:45 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/02 19:56:11 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
 #include "IRCParser.hpp"
+#include "Command.hpp"
 #include "Message.hpp"
 #include <string>
 
@@ -268,17 +269,23 @@ namespace ft_irc
 
 	int	IRCServer::executeCommand(Message& msg, IRCClient &client)
 	{
+		// TODO: map to avoid if forest
 		if (msg.getCommand() == "NICK")
 		{
-			client.setNick(msg.getParams()[0]);
+			NickCommand	cmd(msg);
+			cmd.execute();
+
+			// debug
+			std::cout << "client " << msg.getSender().getIpAddressStr() << " nick is now: "
+					  <<  client.getNick() << std::endl;
 		}
 		else if (msg.getCommand() == "USER")
 		{
-			client.setRealName(msg.getParams()[0]);
+			client.setRealName(msg.getParam(0));
 		}
 		else if (msg.getCommand() == "PASS")
 		{
-			client.setPassword(msg.getParams()[0]);
+			client.setPassword(msg.getParam(0));
 		}
 		else if (msg.getCommand() == "LIST")
 		{
