@@ -214,7 +214,7 @@ namespace ft_irc
 		setIterators(packet);
 		msg.setSender(sender);
 
-		if (_parseCommand(msg)) // wrong command format is ignored
+		if (_parseCommand(msg)) // wrong command name format is silently ignored
 		{
 			if (_commandIsValid(msg))
 				_parseParams(msg);

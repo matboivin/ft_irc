@@ -1,5 +1,5 @@
 #!/bin/bash
-# Test parsing use cases
+# Test replies
 
 # import functions
 . ./tests/common.sh
