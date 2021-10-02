@@ -41,6 +41,9 @@ test:
 
 replies:
   stage: test
+  # Install netcat
+  before_script:
+    - apt-get update && apt-get install -y netcat
   script:
     # Verify the replies are correct
   - test -f "$EXE"
