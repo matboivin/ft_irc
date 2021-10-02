@@ -8,7 +8,7 @@ BIND_ADDR="0.0.0.0"
 PORT="6667"
 
 # run server in background
-./ircserv $BIND_ADDR $PORT "" &
+./$EXE $BIND_ADDR $PORT "" &
 
 # Compare outputs
 
