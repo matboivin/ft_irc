@@ -209,10 +209,9 @@ namespace ft_irc
 	// Main parsing function
 	Message	IRCParser::parseMessage(const std::string& packet, IRCClient& sender)
 	{
-		Message	msg;
+		Message	msg(sender);
 
 		setIterators(packet);
-		msg.setSender(sender);
 
 		if (_parseCommand(msg)) // wrong command name format is silently ignored
 		{

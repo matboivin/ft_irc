@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/02 19:19:07 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/03 11:38:02 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,16 @@
 namespace ft_irc
 {
 	// default constructor
-	Message::Message()
-	: _sender(), _serv_hostname("irc.42.fr"), _response(), _command(), _params(), _recipients()
+	Message::Message(IRCClient& sender)
+	: _sender(sender), _serv_hostname("irc.42.fr"),
+	  _response(), _command(), _params(), _recipients()
 	{
 	}
 
 	// server hostname constructor
-	Message::Message(const std::string& serv_hostname)
-	: _sender(), _serv_hostname(serv_hostname), _response(), _command(), _params(), _recipients()
+	Message::Message(IRCClient& sender, const std::string& serv_hostname)
+	: _sender(sender), _serv_hostname(serv_hostname),
+	  _response(), _command(), _params(), _recipients()
 	{
 	}
 
@@ -56,7 +58,7 @@ namespace ft_irc
 	Message::~Message() {}
 
 	// getters
-	IRCClient	Message::getSender() const
+	IRCClient&	Message::getSender() const
 	{
 		return (this->_sender);
 	}
@@ -78,7 +80,7 @@ namespace ft_irc
 
 	std::string	Message::getParam(int idx) const
 	{
-		if (idx >= 0 && idx <= static_cast<int>(this->_params.size()))
+		if (idx >= 0 && idx < static_cast<int>(this->_params.size()))
 			return (this->_params[idx]);
 		throw std::out_of_range("Message::getParam");
 	}
@@ -95,7 +97,7 @@ namespace ft_irc
 
 	// setters
 
-	void	Message::setSender(const IRCClient& sender)
+	void	Message::setSender(IRCClient& sender)
 	{
 		this->_sender = sender;
 	}
