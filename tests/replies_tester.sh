@@ -31,4 +31,4 @@ assert_exec "echo NICK meow-ow | nc -q 1 $BIND_ADDR $PORT" "" "" 0
 
 # assert_exec "echo QUIT | nc -q 1 $BIND_ADDR $PORT" "" "" 0
 
-#kill $SERV_PID
+kill $SERV_PID
