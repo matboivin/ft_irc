@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/03 18:06:48 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/03 19:07:42 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,10 @@ namespace ft_irc
 	class Message;
 	class Channel;
 	class IRCClient;
+
+	// helpers
+	std::string	build_prefix(const std::string& sender);
+	std::string	build_full_client_id(const IRCClient& client);
 
 	// command responses
 	void	rpl_welcome(Message& msg); // 001

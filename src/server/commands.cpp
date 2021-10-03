@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 17:56:38 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/03 18:29:41 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/03 19:08:20 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <cctype>
 #include "Message.hpp"
 #include "client.hpp"
+#include "numeric_replies.hpp"
 #include "commands.hpp"
 
 namespace ft_irc
@@ -95,5 +96,22 @@ namespace ft_irc
 
 		if (it != m.end())
 			(*it->second)(msg);
+	}
+
+	// QUIT: A client session is terminated with a quit message
+	void	exec_quit_cmd(Message& msg)
+	{
+		if (!msg.getParams().empty())
+		{
+			// msg.setRecipient(users in channel);
+			msg.setResponse(
+				build_prefix( build_full_client_id( msg.getSender() ) )
+				+ " NOTICE " + "chan tmp" // TODO: not sure about notice and need target
+				+ msg.getSender().getNick() + " has quit IRC (" + msg.getParam(0) + ")"
+				);
+			msg.appendSeparator();
+		}
+
+		// TODO: The server acknowledges this by sending an ERROR message to the client
 	}
 } // namespace ft_irc

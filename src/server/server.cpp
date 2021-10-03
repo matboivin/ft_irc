@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/03 18:48:30 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/03 19:06:40 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -278,10 +278,7 @@ namespace ft_irc
 		{
 			this->disconnectClient(client);
 		}
-		else
-		{
-			exec_cmd(commands, msg);
-		}
+		exec_cmd(commands, msg);
 		return (0);
 	}
 

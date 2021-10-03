@@ -6,15 +6,15 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/03 18:06:40 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/03 19:07:53 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include <string>
-# include "numeric_replies.hpp"
-# include "client.hpp"
-# include "Channel.hpp"
-# include "Message.hpp"
+#include <string>
+#include "numeric_replies.hpp"
+#include "client.hpp"
+#include "Channel.hpp"
+#include "Message.hpp"
 
 namespace ft_irc
 {
@@ -23,12 +23,12 @@ namespace ft_irc
 	class Message;
 
 	// helpers
-	static std::string	build_prefix(const std::string& sender)
+	std::string	build_prefix(const std::string& sender)
 	{
 		return (":" + sender);
 	}
 
-	static std::string	build_full_client_id(const IRCClient& client)
+	std::string	build_full_client_id(const IRCClient& client)
 	{
 		return (
 			client.getNick() + "!" + client.getUsername()
