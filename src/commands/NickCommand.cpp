@@ -6,10 +6,12 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/02 19:09:25 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/02 20:07:43 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/03 14:53:27 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <string>
+#include <cctype>
 #include "Message.hpp"
 #include "client.hpp"
 #include "Command.hpp"
@@ -52,6 +54,39 @@ namespace ft_irc
 	{
 	}
 
+	// Special characters listed in the RFC grammar
+	static bool	is_special(char c)
+	{
+		return (
+			(c == '[') || (c == ']') || (c == '\\') || (c == '`')
+			|| (c == '_') || (c == '^') || (c == '{') || (c == '}') || (c == '|')
+			);
+	}
+
+	// Check whether a nickname format is valid
+	// A nickname is composed of 1 to 9 characters which can be digits, letters or special characters.
+	// It musn't start by a digit
+	bool	NickCommand::_nick_is_valid()
+	{
+		if (this->_newnick.size() > 9)
+			return (false);
+
+		std::string::const_iterator	it = this->_newnick.begin();
+
+		if (isalpha(*it) || is_special(*it))
+		{
+			++it;
+			while (it != this->_newnick.end())
+			{
+				if (!isalnum(*it) && !is_special(*it) && (*it != '-'))
+					return (false);
+				++it;
+			}
+			return (true);
+		}
+		return (false);
+	}
+
 	// getters
 	std::string	NickCommand::getNewNick() const
 	{
@@ -78,19 +113,20 @@ namespace ft_irc
 	{
 		if (!this->_newnick.empty())
 		{
-			// TODO
-			// nickname   =  ( letter / special ) *8( letter / digit / special / "-" )
-
-			// if not valid
+			if (!_nick_is_valid())
+			{
+				err_erroneusnickname(this->_msg, this->_newnick);
+			}
+			// else if nickname already exists
 			//    err_nicknameinuse(this->_msg);
-			// if nickname already exists
-			//    err_nicknameinuse(this->_msg);
-			// else
-			this->_msg.getSender().setNick(_newnick);
-
-			// debug
-			std::cout << "client " << this->_msg.getSender().getIpAddressStr() << " nick is now: "
-					  <<  this->_msg.getSender().getNick() << std::endl;
+			else
+			{
+				this->_msg.getSender().setNick(_newnick);
+				// debug
+				std::cout << "client " << this->_msg.getSender().getIpAddressStr()
+						  << " nick is now: " <<  this->_msg.getSender().getNick()
+						  << std::endl;
+			}
 		}
 	}
 } // namespace ft_irc

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/02 19:35:03 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/03 14:37:03 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -294,12 +294,12 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	err_erroneusnickname(Message& msg)
+	void	err_erroneusnickname(Message& msg, const std::string& nick)
 	{
 		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
-			+ " 432 " + msg.getSender().getNick() + " :Erroneous nickname"
+			+ " 432 " + nick + " :Erroneous nickname"
 			);
 		msg.appendSeparator();
 	}

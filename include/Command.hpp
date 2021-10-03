@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/02 19:09:34 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/02 19:54:07 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/03 14:33:57 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,9 @@ namespace ft_irc
 	private:
 		// attributes
 		std::string	_newnick;
-		Message&		_msg;
+		Message&	_msg;
+
+		bool		_nick_is_valid();
 
 	public:
 		// message constructor
