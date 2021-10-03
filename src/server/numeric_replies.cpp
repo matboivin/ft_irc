@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/03 19:10:22 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/04 01:33:41 by mbenjell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,27 +15,10 @@
 #include "client.hpp"
 #include "Channel.hpp"
 #include "Message.hpp"
+#include "server_operations.hpp"
 
 namespace ft_irc
 {
-	class IRCClient;
-	class Channel;
-	class Message;
-
-	// helpers
-	static std::string	build_prefix(const std::string& sender)
-	{
-		return (":" + sender);
-	}
-
-	static std::string	build_full_client_id(const IRCClient& client)
-	{
-		return (
-			client.getNick() + "!" + client.getUsername()
-			+ "@" + client.getIpAddressStr() // need host (ip only if couldn't resolve)
-			);
-	}
-
 	// command responses
 	void	rpl_welcome(Message& msg)
 	{
@@ -223,12 +206,12 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	err_cannotsendtochan(Message& msg, const std::string& chan_name)
+	void	err_cannotsendtochan(Message& msg)
 	{
 		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
-			+ " 404 " + chan_name + " :Cannot send to channel"
+			+ " 404 " + msg.getParam(0) + " :Cannot send to channel"
 			);
 		msg.appendSeparator();
 	}
@@ -299,7 +282,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
-			+ " 432 " + msg.getSender().getNick() + " :Erroneous nickname"
+			+ " 432 " + msg.getParam(0) + " :Erroneous nickname"
 			);
 		msg.appendSeparator();
 	}
@@ -310,18 +293,6 @@ namespace ft_irc
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 433 " + msg.getSender().getNick() + " :Nickname is already in use"
-			);
-		msg.appendSeparator();
-	}
-
-	void	err_nickcollision(Message& msg)
-	{
-		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 436 " + msg.getSender().getNick()
-			+ " :Nickname collision KILL from " + "usertmp"
-			+ "@" + msg.getSender().getIpAddressStr()
 			);
 		msg.appendSeparator();
 	}
@@ -375,7 +346,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
-			+ " 461 " + msg.getCommand() + ":Not enough parameters"
+			+ " 461 " + msg.getCommand() + " :Not enough parameters"
 			);
 		msg.appendSeparator();
 	}

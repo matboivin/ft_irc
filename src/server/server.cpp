@@ -6,11 +6,12 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/03 18:46:46 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/03 19:06:40 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
+#include "commands.hpp"
 #include "Parser.hpp"
 #include "Message.hpp"
 #include <string>
@@ -268,26 +269,16 @@ namespace ft_irc
 
 	int	IRCServer::executeCommand(Message& msg, IRCClient &client)
 	{
-		if (msg.getCommand() == "NICK")
-		{
-			client.setNick(msg.getParams()[0]);
-		}
-		else if (msg.getCommand() == "USER")
-		{
-			client.setRealName(msg.getParams()[0]);
-		}
-		else if (msg.getCommand() == "PASS")
-		{
-			client.setPassword(msg.getParams()[0]);
-		}
-		else if (msg.getCommand() == "LIST")
-		{
-			this->sendList(client);
-		}
-		else if (msg.getCommand() == "QUIT")
+		cmds_map	commands;
+
+		init_commands_map(commands); // init will move somewhere earlier in code
+
+		// msg.displayMessage();
+		if (msg.getCommand() == "QUIT")
 		{
 			this->disconnectClient(client);
 		}
+		exec_cmd(commands, msg);
 		return (0);
 	}
 
