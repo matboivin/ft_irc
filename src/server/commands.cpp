@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 17:56:38 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/03 19:27:55 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/03 19:38:52 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 #include <cctype>
 #include "Message.hpp"
 #include "client.hpp"
-#include "numeric_replies.hpp"
 #include "commands.hpp"
+#include "server_operations.hpp"
 
 namespace ft_irc
 {
@@ -102,6 +102,25 @@ namespace ft_irc
 		// TODO: The server acknowledges this by sending an ERROR message to the client
 	}
 
+	// NOTICE <msgtarget> :<message>
+	// Send messages to a user or a channel
+	// The server musn't reply to NOTICE message
+	void	exec_notice_cmd(Message& msg)
+	{
+		// sorry for this pseudo code ugliness
+
+		// if (msg.getParam(0)[0] != '#')
+		// 	msg.setRecipient(msg.getParam(0) to client);
+		// else
+		// 	add everyone from channel
+		// if (channel doesnt exist)
+		// 	create channel;
+		msg.setResponse(build_prefix( build_full_client_id( msg.getSender() ) ) + " PRIVMSG ");
+		for (std::size_t i = 0; i < msg.getParams().size(); i++)
+			msg.getResponse().append(msg.getParams()[i]);
+		msg.appendSeparator();
+	}
+
 	// PRIVMSG <msgtarget> :<message>
 	// Send messages to a user or a channel
 	void	exec_privmsg_cmd(Message& msg)
@@ -110,26 +129,12 @@ namespace ft_irc
 			err_norecipient(msg);
 		else if (msg.getParams().size() < 2)
 			err_notexttosend(msg);
-
-		// sorry for this pseudo code ugliness
-
 		// else if (msg.getParam(0) doesn't exist)
 		//	err_nosuchnick(msg, msg.getParam(0));
 		// else if (!msg.getSender().isOnChan(msg.getParam(0)))
 		// 	err_cannotsendtochan(msg);
 		// else
-		// {
-		// 	if (msg.getParam(0)[0] != '#')
-		// 		msg.setRecipient(msg.getParam(0));
-		// 	else
-		// 		add everyone from channel
-		// 	if (channel doesnt exist)
-		// 		create channel;
-		// 	msg.setResponse(build_prefix( build_full_client_id( msg.getSender() ) ) + " PRIVMSG ");
-		// 	for (std::size_t i = 0; i < msg.getParams().size(); i++)
-		// 		msg.getResponse().append(msg.getParams()[i]);
-		// 	msg.appendSeparator();
-		// }
+		// 	exec_notice_cmd(msg);
 	}
 
 	// Init the map containing the commands
@@ -139,6 +144,7 @@ namespace ft_irc
 		m["NICK"] = &exec_nick_cmd;
 		m["QUIT"] = &exec_quit_cmd;
 		m["PRIVMSG"] = &exec_privmsg_cmd;
+		m["NOTICE"] = &exec_notice_cmd;
 	}
 
 	// call command function
