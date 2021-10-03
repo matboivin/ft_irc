@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   IRCParser.hpp                                      :+:      :+:    :+:   */
+/*   Parser.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef IRCPARSER_HPP
-# define IRCPARSER_HPP
+#ifndef PARSER_HPP
+# define PARSER_HPP
 
 # include <string>
 # include "ft_irc.hpp"
@@ -22,7 +22,7 @@ namespace ft_irc
 	class Message;
 
 	// Parser for IRC protocol messages
-	class IRCParser
+	class Parser
 	{
 	private:
 		// internal alias
@@ -46,13 +46,13 @@ namespace ft_irc
 
 	public:
 		// default constructor
-						IRCParser();
+						Parser();
 		// copy constructor
-						IRCParser(const IRCParser& other);
+						Parser(const Parser& other);
 		// assignment operator
-		IRCParser		&operator=(const IRCParser& other);
+		Parser		&operator=(const Parser& other);
 		// destructor
-						~IRCParser();
+						~Parser();
 
 		// getters
 		str_const_it	getItStart() const;
@@ -69,4 +69,4 @@ namespace ft_irc
 	};
 } // !namespace ft_irc
 
-#endif // !IRCParser
+#endif // !Parser

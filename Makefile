@@ -12,7 +12,7 @@ INC_FILES = ft_irc.hpp \
 			Channel.hpp \
 			cli_parser.hpp \
 			client.hpp \
-			IRCParser.hpp \
+			Parser.hpp \
 			Message.hpp \
 			numeric_replies.hpp \
 			server.hpp
@@ -21,7 +21,7 @@ SRC_FILES = main.cpp \
 			Channel.cpp \
 			cli_parser.cpp \
 			client.cpp \
-			IRCParser.cpp \
+			Parser.cpp \
 			Message.cpp \
 			numeric_replies.cpp \
 			server.cpp \
