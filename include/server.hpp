@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/09/30 18:13:51 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/03 18:46:58 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@
 
 namespace ft_irc
 {
-	class IRCParser;
+	class Parser;
 	class Message;
 
 	class IRCServer
@@ -80,7 +80,7 @@ namespace ft_irc
 		int					sockGetLine(int sockfd, std::string &line, std::size_t max_bytes);
 		//awaitConnection
 		bool				awaitNewConnection();
-		bool				processClients(IRCParser& parser);
+		bool				processClients(Parser& parser);
 		bool				hasPendingConnections();
 		int					executeCommand(Message& msg, IRCClient &client);
 		int					sendList(IRCClient &client);

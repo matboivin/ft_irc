@@ -6,13 +6,13 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/03 18:30:28 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/03 18:48:30 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
 #include "commands.hpp"
-#include "IRCParser.hpp"
+#include "Parser.hpp"
 #include "Message.hpp"
 #include <string>
 
@@ -152,7 +152,7 @@ namespace ft_irc
 		}
 
 		// protocol parser
-		IRCParser	parser;
+		Parser	parser;
 
 		//accept incoming connections
 		while (true)
@@ -225,7 +225,7 @@ namespace ft_irc
 		return (true);
 	}
 
-	bool				IRCServer::processClients(IRCParser& parser)
+	bool				IRCServer::processClients(Parser& parser)
 	{
 		//process all clients
 		for (std::list<IRCClient>::iterator it = this->clients.begin();

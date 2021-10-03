@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/03 18:14:38 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/03 18:49:35 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@
 # include "client.hpp"
 # include "server.hpp"
 # include "Channel.hpp"
-# include "IRCParser.hpp"
+# include "Parser.hpp"
 # include "Message.hpp"
 
 void	displayUsage( const char* program_name );

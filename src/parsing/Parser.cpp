@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   IRCParser.cpp                                      :+:      :+:    :+:   */
+/*   Parser.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Cr_eated: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/30 16:54:50 by mboivin          ###   ########.fr       */
+/*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
+/*   Updated: 2021/10/03 18:48:41 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <algorithm>
 #include <cctype>
 #include <string>
-#include "IRCParser.hpp"
+#include "Parser.hpp"
 #include "client.hpp"
 #include "Message.hpp"
 #include "numeric_replies.hpp"
@@ -24,19 +24,19 @@ namespace ft_irc
 	// Parser for IRC protocol messages
 
 	// default constructor
-	IRCParser::IRCParser()
+	Parser::Parser()
 	: _start(), _current(), _end()
 	{
 	}
 
 	// copy constructor
-	IRCParser::IRCParser(const IRCParser& other)
+	Parser::Parser(const Parser& other)
 	: _start(other._start), _current(other._current), _end(other._end)
 	{
 	}
 
 	// assignment operator
-	IRCParser&	IRCParser::operator=(const IRCParser& other)
+	Parser&	Parser::operator=(const Parser& other)
 	{
 		if (this != &other)
 		{
@@ -48,43 +48,43 @@ namespace ft_irc
 	}
 
 	// destructor
-	IRCParser::~IRCParser()
+	Parser::~Parser()
 	{
 	}
 
 	// getters
-	IRCParser::str_const_it	IRCParser::getItStart() const
+	Parser::str_const_it	Parser::getItStart() const
 	{
 		return (this->_start);
 	}
 
-	IRCParser::str_const_it	IRCParser::getItCurrent() const
+	Parser::str_const_it	Parser::getItCurrent() const
 	{
 		return (this->_current);
 	}
 
-	IRCParser::str_const_it	IRCParser::getItEnd() const
+	Parser::str_const_it	Parser::getItEnd() const
 	{
 		return (this->_end);
 	}
 
 	// setters
-	void	IRCParser::setItStart(IRCParser::str_const_it start)
+	void	Parser::setItStart(Parser::str_const_it start)
 	{
 		this->_start = start;
 	}
 
-	void	IRCParser::setItCurrent(str_const_it current)
+	void	Parser::setItCurrent(str_const_it current)
 	{
 		this->_current = current;
 	}
 
-	void	IRCParser::setItEnd(IRCParser::str_const_it end)
+	void	Parser::setItEnd(Parser::str_const_it end)
 	{
 		this->_end = end;
 	}
 
-	void	IRCParser::setIterators(const std::string& str)
+	void	Parser::setIterators(const std::string& str)
 	{
 		this->setItStart(str.begin());
 		this->setItCurrent(str.begin());
@@ -92,7 +92,7 @@ namespace ft_irc
 	}
 
 	// Checks whether command name is valid
-	bool	IRCParser::_commandIsValid(Message& msg)
+	bool	Parser::_commandIsValid(Message& msg)
 	{
 		const std::string	cmds[] = {
 				"INVITE", "JOIN", "KICK", "KILL", "LIST", "MODE", "NAMES",
@@ -118,7 +118,7 @@ namespace ft_irc
 	// parsing helpers
 
 	// If the character is the one expected, advance in the string and returns true
-	bool	IRCParser::_eat(char expected)
+	bool	Parser::_eat(char expected)
 	{
 		if ((this->_current != this->_end) && (*this->_current == expected))
 		{
@@ -129,19 +129,19 @@ namespace ft_irc
 	}
 
 	// Checks whether the character pointed by it is not a NUL, CR, LF
-	bool	IRCParser::_nocrlf(IRCParser::str_const_it it)
+	bool	Parser::_nocrlf(Parser::str_const_it it)
 	{
 		return (it != this->_end && *it != '\r' && *it != '\n');
 	}
 
 	// Checks whether the character pointed by it is not a NUL, CR, LF, space or a colon
-	bool	IRCParser::_nospcrlfcl(IRCParser::str_const_it it)
+	bool	Parser::_nospcrlfcl(Parser::str_const_it it)
 	{
 		return (_nocrlf(it) && *it != ' ' && *it != ':');
 	}
 
 	// Checks whether the string contains the CRLF (carriage return + line feed) separator
-	bool	IRCParser::_parseSeparator()
+	bool	Parser::_parseSeparator()
 	{
 		if (_eat('\r'))
 			return (_eat('\n'));
@@ -151,7 +151,7 @@ namespace ft_irc
 	// Parses the trailing part of a message
 	// It starts by a ':' followed by a possibly empty sequence of octets not including
 	// NUL or CR or LF
-	bool	IRCParser::_parseTrailing(Message& msg)
+	bool	Parser::_parseTrailing(Message& msg)
 	{
 		while ((this->_current != this->_end) && (*this->_current != '\r'))
 		{
@@ -166,7 +166,7 @@ namespace ft_irc
 	// Parses the middle part of a message
 	// It musn't start by a ':'.
 	// It is a non-empty sequence of octets not including SPACE or NUL or CR or LF.
-	bool	IRCParser::_parseMiddle(Message& msg)
+	bool	Parser::_parseMiddle(Message& msg)
 	{
 		while (_nospcrlfcl(this->_current) || (*this->_current == ':'))
 			this->_current++;
@@ -180,7 +180,7 @@ namespace ft_irc
 	}
 
 	// Parses the command parameters
-	bool	IRCParser::_parseParams(Message& msg)
+	bool	Parser::_parseParams(Message& msg)
 	{
 		if (_eat(' '))
 		{
@@ -194,7 +194,7 @@ namespace ft_irc
 	}
 
 	// Parses the command name
-	bool	IRCParser::_parseCommand(Message& msg)
+	bool	Parser::_parseCommand(Message& msg)
 	{
 		if ((this->_current == this->_end) || !isalpha(*this->_current))
 			return (false);
@@ -207,7 +207,7 @@ namespace ft_irc
 	}
 
 	// Main parsing function
-	Message	IRCParser::parseMessage(const std::string& packet, IRCClient& sender)
+	Message	Parser::parseMessage(const std::string& packet, IRCClient& sender)
 	{
 		Message	msg(sender);
 

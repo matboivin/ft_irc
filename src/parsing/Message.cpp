@@ -6,14 +6,14 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/03 11:38:45 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/03 18:48:52 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
 #include <string>
 #include "Message.hpp"
-#include "IRCParser.hpp"
+#include "Parser.hpp"
 
 namespace ft_irc
 {
