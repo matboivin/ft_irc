@@ -6,13 +6,13 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/03 15:58:47 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/03 18:30:28 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
+#include "commands.hpp"
 #include "IRCParser.hpp"
-#include "Command.hpp"
 #include "Message.hpp"
 #include <string>
 
@@ -269,28 +269,18 @@ namespace ft_irc
 
 	int	IRCServer::executeCommand(Message& msg, IRCClient &client)
 	{
-		// TODO: map to avoid if forest
-		if (msg.getCommand() == "NICK")
-		{
-			NickCommand	cmd(msg);
-			cmd.execute();
-		}
-		else if (msg.getCommand() == "USER")
-		{
-			client.setRealName(msg.getParam(0));
-		}
-		else if (msg.getCommand() == "PASS")
-		{
-			PassCommand	cmd(msg);
-			cmd.execute();
-		}
-		else if (msg.getCommand() == "LIST")
-		{
-			this->sendList(client);
-		}
-		else if (msg.getCommand() == "QUIT")
+		cmds_map	commands;
+
+		init_commands_map(commands); // init will move somewhere earlier in code
+
+		// msg.displayMessage();
+		if (msg.getCommand() == "QUIT")
 		{
 			this->disconnectClient(client);
+		}
+		else
+		{
+			exec_cmd(commands, msg);
 		}
 		return (0);
 	}

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/03 14:37:14 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/03 18:06:48 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ namespace ft_irc
 	void	err_notexttosend(Message& msg); // 412
 	void	err_unknowncommand(Message& msg); // 421
 	void	err_nonicknamegiven(Message& msg); // 431
-	void	err_erroneusnickname(Message& msg, const std::string& nick); // 432
+	void	err_erroneusnickname(Message& msg); // 432
 	void	err_nicknameinuse(Message& msg); // 433
 	void	err_nickcollision(Message& msg); // 436
 	void	err_unavailresource(Message& msg, const std::string& target); // 437

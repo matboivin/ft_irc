@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/30 18:46:14 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/03 18:14:38 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 # include <netdb.h>
 # include <fcntl.h>
 # include <unistd.h>
+# include "commands.hpp"
 # include "numeric_replies.hpp"
 # include "client.hpp"
 # include "server.hpp"
