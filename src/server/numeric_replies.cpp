@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/03 19:07:53 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/03 19:18:53 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -223,12 +223,12 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	err_cannotsendtochan(Message& msg, const std::string& chan_name)
+	void	err_cannotsendtochan(Message& msg)
 	{
 		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
-			+ " 404 " + chan_name + " :Cannot send to channel"
+			+ " 404 " + msg.getParam(0) + " :Cannot send to channel"
 			);
 		msg.appendSeparator();
 	}
