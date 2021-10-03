@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:47:11 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/02 19:54:52 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/03 11:38:39 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ namespace ft_irc
 		std::vector<IRCClient>		getRecipients() const;
 
 		// setters
-		void		setSender(const IRCClient& sender);
+		void		setSender(IRCClient& sender);
 		void		setServHostname(const std::string& serv_hostname);
 		void		setResponse(const std::string& response);
 		void		setCommand(const std::string& command);

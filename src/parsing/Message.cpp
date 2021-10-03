@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/02 20:11:26 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/03 11:38:45 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ namespace ft_irc
 
 	// setters
 
-	void	Message::setSender(const IRCClient& sender)
+	void	Message::setSender(IRCClient& sender)
 	{
 		this->_sender = sender;
 	}
