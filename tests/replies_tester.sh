@@ -8,7 +8,7 @@ BIND_ADDR="0.0.0.0"
 PORT="2727"
 
 # run server in background
-./ircserv $BIND_ADDR $PORT "" &
+./$EXE $BIND_ADDR $PORT "" &
 # store PID
 SERV_PID=$!
 sleep 1
@@ -28,6 +28,8 @@ assert_exec "echo NICK me0w | nc -q 1 $BIND_ADDR $PORT" "" "" 0
 assert_exec 'echo NICK \`me0w | nc -q 1 $BIND_ADDR $PORT' "" "" 0
 assert_exec "echo NICK [me0w] | nc -q 1 $BIND_ADDR $PORT" "" "" 0
 assert_exec "echo NICK meow-ow | nc -q 1 $BIND_ADDR $PORT" "" "" 0
+# wrong password
+assert_exec "echo PASS | nc -q 1 $BIND_ADDR $PORT" ":irc.42.fr 461 PASS :Not enough parameters" "" 0
 
 # assert_exec "echo QUIT | nc -q 1 $BIND_ADDR $PORT" "" "" 0
 

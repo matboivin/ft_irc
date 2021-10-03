@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/03 14:37:03 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/03 15:37:50 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -363,7 +363,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
-			+ " 461 " + msg.getCommand() + ":Not enough parameters"
+			+ " 461 " + msg.getCommand() + " :Not enough parameters"
 			);
 		msg.appendSeparator();
 	}

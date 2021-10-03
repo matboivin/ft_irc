@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/02 20:09:02 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/03 15:58:47 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -272,7 +272,6 @@ namespace ft_irc
 		// TODO: map to avoid if forest
 		if (msg.getCommand() == "NICK")
 		{
-			msg.displayMessage();
 			NickCommand	cmd(msg);
 			cmd.execute();
 		}
@@ -282,7 +281,8 @@ namespace ft_irc
 		}
 		else if (msg.getCommand() == "PASS")
 		{
-			client.setPassword(msg.getParam(0));
+			PassCommand	cmd(msg);
+			cmd.execute();
 		}
 		else if (msg.getCommand() == "LIST")
 		{

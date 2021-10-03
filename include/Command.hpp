@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/02 19:09:34 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/03 14:33:57 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/03 15:34:37 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ namespace ft_irc
 
 	// Concrete commands
 
-	// Nick: Change a user nickname
+	// NICK: Change a user nickname
 	class NickCommand : public ICommand
 	{
 	private:
@@ -56,6 +56,31 @@ namespace ft_irc
 		Message		getMsg() const;
 		// setters
 		void	setNewNick(const std::string& newnick);
+		void	setMsg(const Message& msg);
+
+		void	execute();
+	};
+
+	// PASS: set a connection password
+	class PassCommand : public ICommand
+	{
+	private:
+		// attributes
+		Message&	_msg;
+
+	public:
+		// message constructor
+					PassCommand(Message& msg);
+		// copy constructor
+					PassCommand(const PassCommand& other);
+		// assignment operator
+		PassCommand&	operator=(const PassCommand& other);
+		// destructor
+					virtual ~PassCommand();
+		
+		// getters
+		Message	getMsg() const;
+		// setters
 		void	setMsg(const Message& msg);
 
 		void	execute();

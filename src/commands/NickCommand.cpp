@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/02 19:09:25 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/03 14:53:27 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/03 15:18:54 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 
 namespace ft_irc
 {
-	// nickname constructor
+	// message constructor
 	NickCommand::NickCommand(Message& msg)
 	: _newnick(""), _msg(msg)
 	{

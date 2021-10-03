@@ -30,7 +30,8 @@ SRC_FILES = main.cpp \
 
 # COMMANDS
 
-SRC_FILES += NickCommand.cpp
+SRC_FILES += NickCommand.cpp \
+			 PassCommand.cpp
 
 OBJ_FILES = $(SRC_FILES:%.cpp=%.o)
 
