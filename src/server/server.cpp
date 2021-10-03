@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/09/30 17:22:32 by root             ###   ########.fr       */
+/*   Updated: 2021/10/03 18:46:46 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
+#include "Parser.hpp"
+#include "Message.hpp"
 #include <string>
 
 int	setNonblocking(int fd);
@@ -147,12 +149,16 @@ namespace ft_irc
 		{
 			return (-1);
 		}
+
+		// protocol parser
+		Parser	parser;
+
 		//accept incoming connections
 		while (true)
 		{
 			if (hasPendingConnections() == true)
 				awaitNewConnection();
-			processClients();
+			processClients(parser);
 		}
 	}
 	int IRCServer::sockGetLine(int sockfd, std::string &line)
@@ -218,9 +224,7 @@ namespace ft_irc
 		return (true);
 	}
 
-
-	
-	bool				IRCServer::processClients()
+	bool				IRCServer::processClients(Parser& parser)
 	{
 		//process all clients
 		for (std::list<IRCClient>::iterator it = this->clients.begin();
@@ -232,7 +236,27 @@ namespace ft_irc
 			}
 			if (it->hasUnprocessedCommands() == true)
 			{
-				this->executeCommand(it->popUnprocessedCommand(), *it);
+				// parse the message
+				Message	msg = parser.parseMessage(it->popUnprocessedCommand(), *it);
+				// execute the command
+				this->executeCommand(msg, *it);
+				// send response to recipient(s)
+				if (!msg.getRecipients().empty())
+				{
+					// there can be many recipients (ex: broadcast to channel)
+					std::vector<IRCClient>	recipients = msg.getRecipients();
+
+					for (std::vector<IRCClient>::const_iterator	it = recipients.begin();
+						it != recipients.end();
+						++it)
+					{
+						//std::cout << "Sending: '" << msg.getResponse() << "' to " << it->getIpAddressStr() << std::endl;
+						if (send(it->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
+						{
+							throw std::runtime_error("send() failed");
+						}
+					}
+				}
 			}
 			if (it->getSocketFd() > 0)
 			{
@@ -241,38 +265,28 @@ namespace ft_irc
 		}
 		return (true);
 	}
-	
-	int	IRCServer::executeCommand(const std::string &command, IRCClient &client)
-	{
-		std::string cmd;
-		std::string params;
 
-		cmd = command.substr(0, command.find(" ") ? command.find(" ") : command.size());
-		params = command.substr(command.find(" ") + 1);
-		std::cout << cmd << "(" << params << ")" << std::endl;
-		if (cmd == "NICK")
+	int	IRCServer::executeCommand(Message& msg, IRCClient &client)
+	{
+		if (msg.getCommand() == "NICK")
 		{
-			client.setNick(params);
+			client.setNick(msg.getParams()[0]);
 		}
-		else if (cmd == "USER")
+		else if (msg.getCommand() == "USER")
 		{
-			client.setRealName(params);
+			client.setRealName(msg.getParams()[0]);
 		}
-		else if (cmd == "PASS")
+		else if (msg.getCommand() == "PASS")
 		{
-			client.setPassword(params);
+			client.setPassword(msg.getParams()[0]);
 		}
-		else if (cmd == "LIST")
+		else if (msg.getCommand() == "LIST")
 		{
 			this->sendList(client);
 		}
-		else if (cmd == "EXIT")
+		else if (msg.getCommand() == "QUIT")
 		{
 			this->disconnectClient(client);
-		}
-		else
-		{
-			this->sendError(client, "Unknown command " + command);
 		}
 		return (0);
 	}

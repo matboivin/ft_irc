@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_irc.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/04 01:08:39 by mbenjell         ###   ########.fr       */
+/*   Updated: 2021/10/04 01:23:58 by mbenjell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,12 @@
 # include <netdb.h>
 # include <fcntl.h>
 # include <unistd.h>
+# include "numeric_replies.hpp"
 # include "client.hpp"
 # include "server.hpp"
+# include "Channel.hpp"
+# include "Parser.hpp"
+# include "Message.hpp"
 
 void	displayUsage( const char* program_name );
 

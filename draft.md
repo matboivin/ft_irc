@@ -45,7 +45,7 @@ I. 2 Structures de données
 *** Ainsi que les classes associés à IRC ***
 
 > Channel/Direct Message
-> User
+> User (à bien distinguer de Client qui lui s'occupe de la partie transmission)
 > Operator
 > Command
 

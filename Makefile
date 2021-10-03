@@ -10,16 +10,23 @@ RM = /bin/rm
 
 INC_FILES = ft_irc.hpp \
 			UserInterface.hpp \
+			Channel.hpp \
 			cli_parser.hpp \
 			client.hpp \
-			server.hpp 
+			Parser.hpp \
+			Message.hpp \
+			numeric_replies.hpp \
+			server.hpp
 
 SRC_FILES = main.cpp \
-			utils.cpp \
+			Channel.cpp \
 			cli_parser.cpp \
 			client.cpp \
-			server.cpp
-
+			Parser.cpp \
+			Message.cpp \
+			numeric_replies.cpp \
+			server.cpp \
+			utils.cpp
 
 OBJ_FILES = $(SRC_FILES:%.cpp=%.o)
 
@@ -29,10 +36,12 @@ INC_DIR = include
 SRC_DIR = src
 OBJ_DIR = obj
 
-SUB_DIRS =	utils \
+SUB_DIRS =	channel \
 			cli_parser \
 			client \
-			server
+			parsing \
+			server \
+			utils
 
 SRC_SUBDIRS = $(addprefix $(SRC_DIR)/, $(SUB_DIRS))
 
@@ -77,7 +86,10 @@ $(NAME): $(OBJ_DIR) $(OBJ) $(INC)
 
 # DEBUG
 debug: $(NAME)
-	./$(NAME)
+	./$(NAME) 0.0.0.0 6667 test
+
+debug_replies:
+	./tests/replies_tester.sh
 
 show:
 	@echo "VPATH: $(VPATH)"
