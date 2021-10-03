@@ -13,13 +13,18 @@ INC_FILES = ft_irc.hpp \
 			singleton.hpp \
 			array.hpp \
 			UserInterface.hpp \
-			server.hpp
+			cli_parser.hpp \
+			client.hpp \
+			server.hpp 
 
 SRC_FILES = main.cpp \
 			utils.cpp \
 			bot.cpp \
 			singleton.cpp \
+			cli_parser.cpp \
+			client.cpp \
 			server.cpp
+
 
 OBJ_FILES = $(SRC_FILES:%.cpp=%.o)
 
@@ -29,7 +34,11 @@ INC_DIR = include
 SRC_DIR = src
 OBJ_DIR = obj
 
-SUB_DIRS = utils
+SUB_DIRS =	utils \
+			cli_parser \
+			client \
+			server
+
 SRC_SUBDIRS = $(addprefix $(SRC_DIR)/, $(SUB_DIRS))
 
 INC = $(addprefix $(INC_DIR)/, $(INC_FILES))
@@ -41,7 +50,7 @@ VPATH = $(SRC_DIR) $(SRC_SUBDIRS)
 
 CPPFLAGS = -I$(INC_DIR)
 CXX = clang++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -pedantic
+CXXFLAGS = -Wall -Wextra -Werror #-std=c++98 -pedantic A REMETTRE PLUS TARD APRES LE MERGE
 
 # COLORS
 

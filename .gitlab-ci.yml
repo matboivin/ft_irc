@@ -7,10 +7,10 @@ stages:
   - test
 
 variables:
-  EXE : "ircserv"
+  EXE : "./ircserv"
 
-#include:
-#  - template: Code-Quality.gitlab-ci.yml
+include:
+ - template: Code-Quality.gitlab-ci.yml
 
 
 # Try to compile our sample hello world app
@@ -22,12 +22,12 @@ build:
     paths:
     - "$EXE"
 
-#code_quality:
-#  stage: test
-#  before_script:
-#    - echo
-#  artifacts:
-#    paths: [gl-code-quality-report.json]
+code_quality:
+  stage: test
+  before_script:
+    - echo
+  artifacts:
+    paths: [gl-code-quality-report.json]
 
 
 test:
@@ -35,6 +35,10 @@ test:
   script:
     # Verify that our compiled executable exists
   - test -f "$EXE"
+  - ls ; pwd
+  - ./tests/usage.sh
+  - python3 ./tests/connect_tester.py 0.0.0.0 127.0.0.1 2727 ""
+
 
 
 
