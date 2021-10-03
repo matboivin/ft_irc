@@ -40,7 +40,6 @@ OBJ_DIR = obj
 SUB_DIRS =	channel \
 			cli_parser \
 			client \
-			execution \
 			parsing \
 			server \
 			utils
