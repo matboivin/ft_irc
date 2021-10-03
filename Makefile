@@ -9,9 +9,6 @@ RM = /bin/rm
 # FILES
 
 INC_FILES = ft_irc.hpp \
-			bot.hpp \
-			singleton.hpp \
-			array.hpp \
 			UserInterface.hpp \
 			cli_parser.hpp \
 			client.hpp \
@@ -19,8 +16,6 @@ INC_FILES = ft_irc.hpp \
 
 SRC_FILES = main.cpp \
 			utils.cpp \
-			bot.cpp \
-			singleton.cpp \
 			cli_parser.cpp \
 			client.cpp \
 			server.cpp
