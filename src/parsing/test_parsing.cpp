@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 12:25:08 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/04 14:05:41 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/04 14:43:21 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,16 @@ int	test_parsing()
 		assert(cmp_msg(msg, expected));
 	}
 
+	// Valid command
+	{
+		ft_irc::Message	expected(dummy_client);
+
+		msg = parser.parseMessage("QUIT", dummy_client);
+		expected.setCommand("QUIT");
+		assert(cmp_msg(msg, expected));
+	}
+
+	// Trailing parameter can contain spaces and colons
 	{
 		ft_irc::Message	expected(dummy_client);
 
@@ -97,20 +107,35 @@ int	test_parsing()
 		assert(cmp_msg(msg, expected));
 	}
 
+	// Trailing parameter must start with a colon
 	{
 		ft_irc::Message	expected(dummy_client);
 
-		msg = parser.parseMessage("QUIT", dummy_client);
-		expected.setCommand("QUIT");
+		msg = parser.parseMessage("PRIVMSG :trailing", dummy_client);
+		expected.setCommand("PRIVMSG");
+		expected.setParam(":trailing");
 		assert(cmp_msg(msg, expected));
 	}
 
 	{
 		ft_irc::Message	expected(dummy_client);
 
-		msg = parser.parseMessage("NICK foo", dummy_client);
-		expected.setCommand("NICK");
-		expected.setParam("foo");
+		msg = parser.parseMessage("PRIVMSG middle trailing", dummy_client);
+		expected.setCommand("PRIVMSG");
+		expected.setParam("middle");
+		assert(cmp_msg(msg, expected));
+	}
+
+	// Parameters checking
+	{
+		ft_irc::Message	expected(dummy_client);
+
+		msg = parser.parseMessage("JOIN  ", dummy_client);
+		expected.setCommand("JOIN");
+		assert(cmp_msg(msg, expected));
+
+		msg = parser.parseMessage("JOIN #general", dummy_client);
+		expected.setParam("#general");
 		assert(cmp_msg(msg, expected));
 	}
 

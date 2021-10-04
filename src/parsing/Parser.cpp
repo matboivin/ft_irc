@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/04 14:09:24 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/04 14:40:01 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,8 +170,11 @@ namespace ft_irc
 		msg.setParam(std::string(this->_start, this->_current));
 		if (_eat(' '))
 		{
-			this->_start = this->_current;
-			return (_parseTrailing(msg));
+			if (*this->_current == ':')
+			{
+				this->_start = this->_current;
+				return (_parseTrailing(msg));
+			}
 		}
 		return (_parseSeparator());
 	}
