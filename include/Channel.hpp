@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:42:14 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/04 16:39:25 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/04 16:51:26 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 namespace ft_irc
 {
 	class IRCClient;
+	class Message;
 
 	// IRC channel
 	class Channel
@@ -57,6 +58,9 @@ namespace ft_irc
 		bool		hasClient(IRCClient& client);
 		void		addClient(IRCClient& client);
 		void		removeClient(IRCClient& client);
+
+		// send a message to all clients in channel
+		void		broadcastMessage(const Message& msg);
 
 		// debug
 		void		displayClients();
