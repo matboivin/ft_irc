@@ -13,7 +13,6 @@ INC_FILES = ft_irc.hpp \
 			Channel.hpp \
 			cli_parser.hpp \
 			client.hpp \
-			commands.hpp \
 			Parser.hpp \
 			Message.hpp \
 			numeric_replies.hpp \
@@ -24,7 +23,6 @@ SRC_FILES = main.cpp \
 			Channel.cpp \
 			cli_parser.cpp \
 			client.cpp \
-			commands.cpp \
 			Parser.cpp \
 			Message.cpp \
 			numeric_replies.cpp \
@@ -40,8 +38,7 @@ INC_DIR = include
 SRC_DIR = src
 OBJ_DIR = obj
 
-SUB_DIRS =	channel \
-			cli_parser \
+SUB_DIRS =	cli_parser \
 			client \
 			parsing \
 			server \

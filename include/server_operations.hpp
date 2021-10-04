@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:35:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/03 19:39:13 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/04 10:18:47 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@
 namespace ft_irc
 {
 	class Message;
-	class Channel;
 	class IRCClient;
 
 	// helpers

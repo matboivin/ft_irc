@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:42:14 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/30 18:56:13 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/04 10:51:52 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,24 +28,24 @@ namespace ft_irc
 
 	public:
 		// default constructor
-				Channel();
+					Channel();
 		// name constructor
-				Channel(const std::string& name);
+					Channel(const std::string& name);
 		// copy constructor
-				Channel(const Channel& other);
+					Channel(const Channel& other);
 		// assignment operator
-		Channel	&operator=(const Channel& other);
+		Channel&	operator=(const Channel& other);
 		// destructor
-				~Channel();
+					~Channel();
 
-		// Channel getters
+		// getters
 		std::string	getName() const;
 		std::string	getTopic() const;
 		std::string	getMode() const;
-		// Channel setters
-		void	setName(const std::string& name);
-		void	setTopic(const std::string& topic);
-		void	setMode(const std::string& mode);
+		// setters
+		void		setName(const std::string& name);
+		void		setTopic(const std::string& topic);
+		void		setMode(const std::string& mode);
 	};
 }
 
