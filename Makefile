@@ -40,8 +40,7 @@ INC_DIR = include
 SRC_DIR = src
 OBJ_DIR = obj
 
-SUB_DIRS =	channel \
-			cli_parser \
+SUB_DIRS =	cli_parser \
 			client \
 			parsing \
 			server \
