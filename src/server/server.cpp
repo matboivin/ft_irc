@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/03 19:06:40 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/04 16:34:21 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,20 @@ namespace ft_irc
 		address.sin_port = htons(atoi(this->port.c_str()));
 		address.sin_addr.s_addr = inet_addr(this->bind_address.c_str());
 	}
-	
+
+	std::list<Channel>::iterator	IRCServer::getChannel(const std::string& chan_name)
+	{
+		std::list<Channel>::iterator	it = this->channels.begin();
+
+		while (it != this->channels.end())
+		{
+			if (it->getName() == chan_name)
+				break ;
+			++it;
+		}
+		return (it);
+	}
+
 	//IRCServer getters
 	std::string IRCServer::getBindAddress() const
 	{
@@ -64,6 +77,11 @@ namespace ft_irc
 	void IRCServer::setPassword(std::string password)
 	{
 		this->password = password;
+	}
+
+	void	IRCServer::addChannel(const std::string& name)
+	{
+		this->channels.push_back(Channel(name));
 	}
 
 	//copy constructor
@@ -330,5 +348,32 @@ namespace ft_irc
 			throw std::runtime_error("send() failed");
 		}
 		return (0);
+	}
+
+	// Channel operations
+
+	// Check whether a client is in a specific channel
+	bool	IRCServer::userInChannel(IRCClient &client, const std::string &chan_name)
+	{
+		std::list<Channel>::iterator	it = this->getChannel(chan_name);
+
+		if (it != this->channels.end())
+			return (it->hasClient(client));
+
+		return (false);
+	}
+
+	// Add a user to a channel (ex: JOIN command)
+	void	IRCServer::addUserToChannel(IRCClient &client, const std::string &chan_name)
+	{
+		if (!this->userInChannel(client, chan_name))
+			this->getChannel(chan_name)->addClient(client);
+	}
+
+	// Remove user from channel
+	void	IRCServer::removeUserFromChannel(IRCClient &client, const std::string &chan_name)
+	{
+		if (this->userInChannel(client, chan_name))
+			this->getChannel(chan_name)->removeClient(client);
 	}
 }

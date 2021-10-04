@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:42:14 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/04 16:01:27 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/04 16:39:25 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,10 +53,10 @@ namespace ft_irc
 		void		setClients(const std::list<IRCClient>& clients);
 
 		// manage clients in channel
-		std::list<IRCClient>::iterator	findClient(const std::string& nick);
-		bool		hasClient(const std::string& nick);
-		int			addClient(IRCClient& client);
-		int			removeClient(const std::string& nick);
+		std::list<IRCClient>::iterator	findClient(IRCClient& client);
+		bool		hasClient(IRCClient& client);
+		void		addClient(IRCClient& client);
+		void		removeClient(IRCClient& client);
 
 		// debug
 		void		displayClients();

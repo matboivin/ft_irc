@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:58:53 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/04 16:02:05 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/04 16:31:10 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,47 +100,29 @@ namespace ft_irc
 	// manage clients in channel
 
 	// Find a client using a nickname
-	std::list<IRCClient>::iterator	Channel::findClient(const std::string& nick)
+	std::list<IRCClient>::iterator	Channel::findClient(IRCClient& client)
 	{
-		std::list<IRCClient>::iterator	it = this->_clients.begin();
+		std::list<IRCClient>::iterator	it;
 
-		while (it != this->_clients.end())
-		{
-			if (it->getNick() == nick)
-				break ;
-			++it;
-		}
+		it = std::find(this->_clients.begin(), this->_clients.end(), client);
 		return (it);
 	}
 
 	// Check whether the given client is in the channel
-	bool	Channel::hasClient(const std::string& nick)
+	bool	Channel::hasClient(IRCClient& client)
 	{
-		std::list<IRCClient>::iterator	it;
-
-		it = this->findClient(nick);
-		return (it != this->_clients.end());
+		return (this->findClient(client) != this->_clients.end());
 	}
 
 	// Add a client to the channel
-	int	Channel::addClient(IRCClient& client)
+	void	Channel::addClient(IRCClient& client)
 	{
-		if (!this->hasClient(client.getNick()))
-		{
-			this->_clients.push_back(client);
-			return (EXIT_SUCCESS);
-		}
-		return (EXIT_FAILURE);
+		this->_clients.push_back(client);
 	}
 
-	int	Channel::removeClient(const std::string& nick)
+	void	Channel::removeClient(IRCClient& client)
 	{
-		if (this->hasClient(nick))
-		{
-			this->_clients.remove(*findClient(nick));
-			return (EXIT_SUCCESS);
-		}
-		return (EXIT_FAILURE);
+		this->_clients.remove(client);
 	}
 
 	// debug
