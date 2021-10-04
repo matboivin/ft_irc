@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:42:14 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/04 16:51:26 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/04 17:05:12 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ namespace ft_irc
 		// copy constructor
 					Channel(const Channel& other);
 		// assignment operator
-		Channel		&operator=(const Channel& other);
+		Channel&	operator=(const Channel& other);
 		// destructor
 					~Channel();
 
