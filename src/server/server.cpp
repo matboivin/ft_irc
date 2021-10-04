@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/04 10:39:42 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/04 15:16:56 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -463,7 +463,7 @@ namespace ft_irc
 	{
 		// sorry for this pseudo code ugliness
 
-		// if (msg.getParam(0)[0] != '#')
+		// if (msg.getParam(0) is not a channel)
 		// 	msg.setRecipient(msg.getParam(0) to client);
 		// else
 		// 	add everyone from channel
@@ -485,7 +485,7 @@ namespace ft_irc
 			err_notexttosend(msg);
 		// else if (msg.getParam(0) doesn't exist)
 		//	err_nosuchnick(msg, msg.getParam(0));
-		// else if (!msg.getSender().isOnChan(msg.getParam(0)))
+		// else if (!msg.getSender() is not in channel)
 		// 	err_cannotsendtochan(msg);
 		// else
 		// 	exec_notice_cmd(msg);
