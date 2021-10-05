@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 12:25:08 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/04 14:43:21 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 13:44:52 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,9 @@ static int	cmp_msg(const ft_irc::Message& msg, const ft_irc::Message& expected)
 
 int	test_parsing()
 {
-	ft_irc::Parser		parser;
-	ft_irc::IRCClient	dummy_client;
-	ft_irc::Message		msg(dummy_client);
+	ft_irc::Parser	parser;
+	ft_irc::Client	dummy_client;
+	ft_irc::Message	msg(dummy_client);
 
 	// Set dummy values to client
 	dummy_client.setNick("nick");
