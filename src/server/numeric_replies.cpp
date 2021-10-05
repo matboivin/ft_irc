@@ -6,13 +6,13 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/04 10:20:08 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 12:13:43 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <string>
 #include "numeric_replies.hpp"
-#include "client.hpp"
+#include "Client.hpp"
 #include "Channel.hpp"
 #include "Message.hpp"
 #include "server_operations.hpp"
@@ -143,7 +143,7 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	rpl_whoreply(Message& msg, const std::string& chan_name, IRCClient& target)
+	void	rpl_whoreply(Message& msg, const std::string& chan_name, Client& target)
 	{
 		msg.setRecipient(msg.getSender());
 		msg.setResponse(

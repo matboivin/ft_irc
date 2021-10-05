@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/04 01:31:22 by mbenjell         ###   ########.fr       */
+/*   Updated: 2021/10/05 12:13:43 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include <cctype>
 #include <string>
 #include "Parser.hpp"
-#include "client.hpp"
+#include "Client.hpp"
 #include "Message.hpp"
 #include "numeric_replies.hpp"
 
@@ -207,7 +207,7 @@ namespace ft_irc
 	}
 
 	// Main parsing function
-	Message	Parser::parseMessage(const std::string& packet, IRCClient& sender)
+	Message	Parser::parseMessage(const std::string& packet, Client& sender)
 	{
 		Message	msg(sender);
 

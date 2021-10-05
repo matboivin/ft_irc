@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:58:53 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/05 11:59:48 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 12:13:43 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include <iostream>
 #include <string>
 #include <sys/socket.h>
-#include "client.hpp"
+#include "Client.hpp"
 #include "Message.hpp"
 #include "Channel.hpp"
 
@@ -72,7 +72,7 @@ namespace ft_irc
 		return (this->_mode);
 	}
 
-	std::list<IRCClient>	Channel::getClients() const
+	std::list<Client>	Channel::getClients() const
 	{
 		return (this->_clients);
 	}
@@ -94,7 +94,7 @@ namespace ft_irc
 		this->_mode = mode;
 	}
 
-	void	Channel::setClients(const std::list<IRCClient>& clients)
+	void	Channel::setClients(const std::list<Client>& clients)
 	{
 		this->_clients = clients;
 	}
@@ -102,27 +102,27 @@ namespace ft_irc
 	// manage clients in channel
 
 	// Find a client using a nickname
-	std::list<IRCClient>::iterator	Channel::findClient(IRCClient& client)
+	std::list<Client>::iterator	Channel::findClient(Client& client)
 	{
-		std::list<IRCClient>::iterator	it;
+		std::list<Client>::iterator	it;
 
 		it = std::find(this->_clients.begin(), this->_clients.end(), client);
 		return (it);
 	}
 
 	// Check whether the given client is in the channel
-	bool	Channel::hasClient(IRCClient& client)
+	bool	Channel::hasClient(Client& client)
 	{
 		return (this->findClient(client) != this->_clients.end());
 	}
 
 	// Add a client to the channel
-	void	Channel::addClient(IRCClient& client)
+	void	Channel::addClient(Client& client)
 	{
 		this->_clients.push_back(client);
 	}
 
-	void	Channel::removeClient(IRCClient& client)
+	void	Channel::removeClient(Client& client)
 	{
 		this->_clients.remove(client);
 	}
@@ -130,7 +130,7 @@ namespace ft_irc
 	// send a message to all clients in channel
 	void	Channel::broadcastMessage(const Message& msg)
 	{
-		for (std::list<IRCClient>::const_iterator	it = this->_clients.begin();
+		for (std::list<Client>::const_iterator	it = this->_clients.begin();
 			it != this->_clients.end();
 			++it)
 		{
@@ -147,7 +147,7 @@ namespace ft_irc
 	{
 		std::cout << "Users in channel #" << this->getName() << ":\n";
 
-		for (std::list<IRCClient>::iterator	it = this->_clients.begin();
+		for (std::list<Client>::iterator	it = this->_clients.begin();
 			 it != this->_clients.end();
 			 ++it)
 		{

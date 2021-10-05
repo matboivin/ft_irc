@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/03 18:48:52 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 12:13:43 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,14 @@
 namespace ft_irc
 {
 	// default constructor
-	Message::Message(IRCClient& sender)
+	Message::Message(Client& sender)
 	: _sender(sender), _serv_hostname("irc.42.fr"),
 	  _response(), _command(), _params(), _recipients()
 	{
 	}
 
 	// server hostname constructor
-	Message::Message(IRCClient& sender, const std::string& serv_hostname)
+	Message::Message(Client& sender, const std::string& serv_hostname)
 	: _sender(sender), _serv_hostname(serv_hostname),
 	  _response(), _command(), _params(), _recipients()
 	{
@@ -58,7 +58,7 @@ namespace ft_irc
 	Message::~Message() {}
 
 	// getters
-	IRCClient&	Message::getSender() const
+	Client&	Message::getSender() const
 	{
 		return (this->_sender);
 	}
@@ -90,14 +90,14 @@ namespace ft_irc
 		return (this->_params);
 	}
 
-	std::vector<IRCClient>	Message::getRecipients() const
+	std::vector<Client>	Message::getRecipients() const
 	{
 		return (this->_recipients);
 	}
 
 	// setters
 
-	void	Message::setSender(IRCClient& sender)
+	void	Message::setSender(Client& sender)
 	{
 		this->_sender = sender;
 	}
@@ -123,12 +123,12 @@ namespace ft_irc
 			this->_params.push_back(param);
 	}
 
-	void	Message::setRecipient(const IRCClient& recipient)
+	void	Message::setRecipient(const Client& recipient)
 	{
 		this->_recipients.push_back(recipient);
 	}
 
-	void	Message::setRecipients(const std::vector<IRCClient>& recipients)
+	void	Message::setRecipients(const std::vector<Client>& recipients)
 	{
 		if (!this->_recipients.empty())
 			this->_recipients.clear();

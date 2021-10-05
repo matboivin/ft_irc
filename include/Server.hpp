@@ -1,34 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.hpp                                         :+:      :+:    :+:   */
+/*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/05 11:58:12 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 12:16:01 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
+# include <algorithm>
 # include <cstring>
 # include <cstdlib>
+# include <fcntl.h>
 # include <iostream>
+# include <list>
+# include <map>
+# include <poll.h>
 # include <string>
 # include <sys/socket.h>
-# include <netinet/in.h>
 # include <arpa/inet.h>
+# include <netinet/in.h>
 # include <netdb.h>
-# include <fcntl.h>
 # include <unistd.h>
 # include <vector>
-# include <map>
-# include <list>
-# include <poll.h>
-# include <algorithm>
-# include "client.hpp"
+# include "Client.hpp"
 # include "Parser.hpp"
 # include "server_operations.hpp"
 
@@ -37,11 +37,11 @@ namespace ft_irc
 	class Message;
 	class Channel;
 
-	class IRCServer
+	class Server
 	{
 	public:
 		// aliases
-		typedef void (IRCServer::*cmd_fun)(Message& msg); // pointer to command function
+		typedef void (Server::*cmd_fun)(Message& msg); // pointer to command function
 		typedef std::map<std::string, cmd_fun>	cmds_map; // commands functions
 
 	private:
@@ -56,28 +56,28 @@ namespace ft_irc
 		int						backlog_max;
 		Parser					parser;
 		cmds_map				commands;
-		std::list<IRCClient>	clients;
+		std::list<Client>	clients;
 		std::list<Channel>		channels;
 	public:
 		// constructor
-					IRCServer(std::string bind_address="0.0.0.0",
+					Server(std::string bind_address="0.0.0.0",
 							  std::string port="6697",
 							  std::string password="",
 							  std::string hostname="irc.42.fr",
 							  int backlog_max=5);
 		//copy constructor
-					IRCServer(const IRCServer &other);
+					Server(const Server &other);
 		//assignment operator
-		IRCServer&	operator=(const IRCServer &other);
+		Server&	operator=(const Server &other);
 		//destructor
-					~IRCServer();
-		//IRCServer getters
+					~Server();
+		//Server getters
 		std::string	getBindAddress() const;
 		std::string	getPort() const;
 		std::string	getPassword() const;
 		cmds_map	getCommands() const;
 
-		//IRCServer setters
+		//Server setters
 		void		setBindAddress(std::string bind_address);
 		void		setPort(std::string port);
 		void		setPassword(std::string password);
@@ -88,7 +88,7 @@ namespace ft_irc
 		void		exec_cmd(const cmds_map& m, Message& msg);
 
 		// execution helpers
-		Message		parse(const std::string& packet, IRCClient& sender);
+		Message		parse(const std::string& packet, Client& sender);
 
 		// commands functions
 		void		exec_pass_cmd(Message& msg);
@@ -100,9 +100,9 @@ namespace ft_irc
 		// Channel operations
 		std::list<Channel>::iterator	getChannel(const std::string& chan_name);
 		void				addChannel(const std::string& name);
-		bool				userInChannel(IRCClient &client, const std::string &chan_name);
-		void				addUserToChannel(IRCClient &client, const std::string &chan_name);
-		void				removeUserFromChannel(IRCClient &client, const std::string &chan_name);
+		bool				userInChannel(Client &client, const std::string &chan_name);
+		void				addUserToChannel(Client &client, const std::string &chan_name);
+		void				removeUserFromChannel(Client &client, const std::string &chan_name);
 
 	private:
 		//Function to create a socket.
@@ -115,10 +115,10 @@ namespace ft_irc
 		bool		awaitNewConnection();
 		bool		processClients();
 		bool		hasPendingConnections();
-		int			executeCommand(Message& msg, IRCClient &client);
-		int			sendList(IRCClient &client);
-		int			sendError(IRCClient &client, const std::string &error);
-		int			disconnectClient(IRCClient &client);
+		int			executeCommand(Message& msg, Client &client);
+		int			sendList(Client &client);
+		int			sendError(Client &client, const std::string &error);
+		int			disconnectClient(Client &client);
 	};
 }
 

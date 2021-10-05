@@ -6,31 +6,33 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/04 10:01:34 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 12:23:43 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_IRC_HPP
-#define FT_IRC_HPP
+# define FT_IRC_HPP
 
-# include <string>
 # include <iostream>
-# include <cstring>
 # include <cstdlib>
-# include <iostream>
+# include <cstring>
+# include <fcntl.h>
 # include <string>
 # include <sys/socket.h>
-# include <netinet/in.h>
 # include <arpa/inet.h>
+# include <netinet/in.h>
 # include <netdb.h>
-# include <fcntl.h>
 # include <unistd.h>
-# include "numeric_replies.hpp"
-# include "client.hpp"
-# include "server.hpp"
+
 # include "Channel.hpp"
-# include "Parser.hpp"
+# include "Client.hpp"
+# include "CLIParser.hpp"
 # include "Message.hpp"
+# include "numeric_replies.hpp"
+# include "Parser.hpp"
+# include "Server.hpp"
+# include "server_operations.hpp"
+# include "UserInterface.hpp"
 
 void	displayUsage( const char* program_name );
 
@@ -41,8 +43,8 @@ enum Status
 	e_member
 };
 
-#ifndef nullptr
-# define nullptr NULL
-#endif // !nullpt
+# ifndef nullptr
+#  define nullptr NULL
+# endif // !nullpt
 
 #endif

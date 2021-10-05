@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/03 19:36:44 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 12:13:49 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ namespace ft_irc
 {
 	class Message;
 	class Channel;
-	class IRCClient;
+	class Client;
 
 	// command responses
 	void	rpl_welcome(Message& msg); // 001
@@ -35,7 +35,7 @@ namespace ft_irc
 	void	rpl_notopic(Message& msg, const std::string& chan_name); // 331
 	void	rpl_topic(Message& msg, Channel& channel); // 332
 	void	rpl_inviting(Message& msg, const std::string& chan_name, const std::string& nick); // 341
-	void	rpl_whoreply(Message& msg, const std::string& chan_name, IRCClient& target); // 352
+	void	rpl_whoreply(Message& msg, const std::string& chan_name, Client& target); // 352
 	void	rpl_namreply(Message& msg); // 353
 	void	rpl_endofnames(Message& msg, const std::string& chan_name); // 366
 	void	rpl_youreoper(Message& msg); // 381

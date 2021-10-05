@@ -6,13 +6,13 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:21 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/04 16:56:22 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 12:23:47 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_irc.hpp"
-#include "client.hpp"
-#include "cli_parser.hpp"
+#include "Client.hpp"
+#include "CLIParser.hpp"
 
 int	main( int argc, char** argv )
 {
@@ -21,7 +21,7 @@ int	main( int argc, char** argv )
 		ft_irc::CLIParser CLI_parser(argc, argv);
 		try
 		{
-			ft_irc::IRCServer server(CLI_parser.getBindAddress(),
+			ft_irc::Server server(CLI_parser.getBindAddress(),
 			CLI_parser.getPort(), CLI_parser.getPassword());
 			server.run();
 		}

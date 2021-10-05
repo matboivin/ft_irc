@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.cpp                                         :+:      :+:    :+:   */
+/*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/05 11:57:08 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 12:15:06 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <string>
-#include "server.hpp"
-#include "client.hpp"
+#include "Server.hpp"
+#include "Client.hpp"
 #include "Parser.hpp"
 #include "Message.hpp"
 #include "Channel.hpp"
@@ -22,7 +22,7 @@ int	setNonblocking(int fd);
 
 namespace ft_irc
 {
-	IRCServer::IRCServer(std::string bind_address,
+	Server::Server(std::string bind_address,
 						std::string port,
 						std::string password,
 						std::string hostname,
@@ -43,7 +43,7 @@ namespace ft_irc
 		this->init_commands_map(commands);
 	}
 
-	std::list<Channel>::iterator	IRCServer::getChannel(const std::string& chan_name)
+	std::list<Channel>::iterator	Server::getChannel(const std::string& chan_name)
 	{
 		std::list<Channel>::iterator	it = this->channels.begin();
 
@@ -56,50 +56,50 @@ namespace ft_irc
 		return (it);
 	}
 
-	//IRCServer getters
-	std::string IRCServer::getBindAddress() const
+	//Server getters
+	std::string Server::getBindAddress() const
 	{
 		return (this->bind_address);
 	}
 
-	std::string IRCServer::getPort() const
+	std::string Server::getPort() const
 	{
 		return (this->port);
 	}
 
-	std::string IRCServer::getPassword() const
+	std::string Server::getPassword() const
 	{
 		return (this->password);
 	}
 
-	IRCServer::cmds_map	IRCServer::getCommands() const
+	Server::cmds_map	Server::getCommands() const
 	{
 		return (this->commands);
 	}
 
-	//IRCServer setters
-	void IRCServer::setBindAddress(std::string bind_address)
+	//Server setters
+	void Server::setBindAddress(std::string bind_address)
 	{
 		this->bind_address = bind_address;
 	}
 
-	void IRCServer::setPort(std::string port)
+	void Server::setPort(std::string port)
 	{
 		this->port = port;
 	}
 
-	void IRCServer::setPassword(std::string password)
+	void Server::setPassword(std::string password)
 	{
 		this->password = password;
 	}
 
-	void	IRCServer::addChannel(const std::string& name)
+	void	Server::addChannel(const std::string& name)
 	{
 		this->channels.push_back(Channel(name));
 	}
 
 	//copy constructor
-	IRCServer::IRCServer(const IRCServer &other)
+	Server::Server(const Server &other)
 	{
 		this->bind_address = other.bind_address;
 		this->port = other.port;
@@ -111,7 +111,7 @@ namespace ft_irc
 		this->commands = other.commands;
 	}
 	//assignment operator
-	IRCServer &IRCServer::operator=(const IRCServer &other)
+	Server &Server::operator=(const Server &other)
 	{
 		if (this != &other)
 		{
@@ -126,7 +126,7 @@ namespace ft_irc
 		return (*this);
 	}
 	//destructor
-	IRCServer::~IRCServer()
+	Server::~Server()
 	{
 	}
 	//Function to create a socket.
@@ -137,7 +137,7 @@ namespace ft_irc
 	//AF_INET: IPv4
 	//SOCK_STREAM: TCP
 	//IPPROTO_TCP: TCP protocol
-	bool IRCServer::createSocket()
+	bool Server::createSocket()
 	{
 		//Create a socket.
 		this->sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -168,7 +168,7 @@ namespace ft_irc
 		}
 		return (true);
 	}
-	bool				IRCServer::hasPendingConnections()
+	bool				Server::hasPendingConnections()
 	{
 		//Check if there are pending connections. (poll)
 		struct pollfd		poll_fd = {this->sockfd, POLLIN, 0};
@@ -183,7 +183,7 @@ namespace ft_irc
 		return (true);
 	}
 
-	int IRCServer::run()
+	int Server::run()
 	{
 		if (createSocket() == false)
 		{
@@ -198,7 +198,7 @@ namespace ft_irc
 			processClients();
 		}
 	}
-	int IRCServer::sockGetLine(int sockfd, std::string &line)
+	int Server::sockGetLine(int sockfd, std::string &line)
 	{
 		//read char by char
 		char c;
@@ -218,7 +218,7 @@ namespace ft_irc
 		return (true);
 	}
 
-	int IRCServer::sockGetLine(int sockfd, std::string &line, std::size_t max_bytes)
+	int Server::sockGetLine(int sockfd, std::string &line, std::size_t max_bytes)
 	{
 		//read char by char
 		char c;
@@ -243,9 +243,9 @@ namespace ft_irc
 	}
 	//awaitNewConnection
 	//accepts a new connection
-	bool				IRCServer::awaitNewConnection()
+	bool				Server::awaitNewConnection()
 	{
-		IRCClient new_client;
+		Client new_client;
 
 		//accept a new connection
 		
@@ -261,10 +261,10 @@ namespace ft_irc
 		return (true);
 	}
 
-	bool				IRCServer::processClients()
+	bool				Server::processClients()
 	{
 		//process all clients
-		for (std::list<IRCClient>::iterator it = this->clients.begin();
+		for (std::list<Client>::iterator it = this->clients.begin();
 		 it != this->clients.end(); ++it)
 		{
 			if (it->updateOutBuffer())
@@ -281,9 +281,9 @@ namespace ft_irc
 				if (!msg.getRecipients().empty())
 				{
 					// there can be many recipients (ex: broadcast to channel)
-					std::vector<IRCClient>	recipients = msg.getRecipients();
+					std::vector<Client>	recipients = msg.getRecipients();
 
-					for (std::vector<IRCClient>::const_iterator	it = recipients.begin();
+					for (std::vector<Client>::const_iterator	it = recipients.begin();
 						it != recipients.end();
 						++it)
 					{
@@ -303,7 +303,7 @@ namespace ft_irc
 		return (true);
 	}
 
-	int	IRCServer::executeCommand(Message& msg, IRCClient &client)
+	int	Server::executeCommand(Message& msg, Client &client)
 	{
 		// msg.displayMessage();
 		if (msg.getCommand() == "QUIT")
@@ -314,9 +314,9 @@ namespace ft_irc
 		return (0);
 	}
 
-	int	IRCServer::disconnectClient(IRCClient &client)
+	int	Server::disconnectClient(Client &client)
 	{
-		std::list<IRCClient>::iterator it = std::find(this->clients.begin(), this->clients.end(), client);
+		std::list<Client>::iterator it = std::find(this->clients.begin(), this->clients.end(), client);
 		//log the closing of the connection
 		std::cout << "Closing connection to " << it->getIpAddressStr() << std::endl
 		<< "---------------------------------------------------------" << std::endl;
@@ -325,9 +325,9 @@ namespace ft_irc
 		return (0);
 	}
 
-	int	IRCServer::sendList(IRCClient &client)
+	int	Server::sendList(Client &client)
 	{
-		for (std::list<IRCClient>::iterator it = this->clients.begin();
+		for (std::list<Client>::iterator it = this->clients.begin();
 		 it != this->clients.end(); ++it)
 		{
 			std::string response = ":";
@@ -348,7 +348,7 @@ namespace ft_irc
 		return (0);
 	}
 
-	int					IRCServer::sendError(IRCClient &client, const std::string &error)
+	int					Server::sendError(Client &client, const std::string &error)
 	{
 		std::string response = ":" + hostname + " 451 ";
 		response += client.getNick();
@@ -367,7 +367,7 @@ namespace ft_irc
 	// Channel operations
 
 	// Check whether a client is in a specific channel
-	bool	IRCServer::userInChannel(IRCClient &client, const std::string &chan_name)
+	bool	Server::userInChannel(Client &client, const std::string &chan_name)
 	{
 		std::list<Channel>::iterator	it = this->getChannel(chan_name);
 
@@ -378,14 +378,14 @@ namespace ft_irc
 	}
 
 	// Add a user to a channel (ex: JOIN command)
-	void	IRCServer::addUserToChannel(IRCClient &client, const std::string &chan_name)
+	void	Server::addUserToChannel(Client &client, const std::string &chan_name)
 	{
 		if (!this->userInChannel(client, chan_name))
 			this->getChannel(chan_name)->addClient(client);
 	}
 
 	// Remove user from channel
-	void	IRCServer::removeUserFromChannel(IRCClient &client, const std::string &chan_name)
+	void	Server::removeUserFromChannel(Client &client, const std::string &chan_name)
 	{
 		if (this->userInChannel(client, chan_name))
 			this->getChannel(chan_name)->removeClient(client);
@@ -393,17 +393,17 @@ namespace ft_irc
 
 	// Map of commands helpers
 	// Init the map containing the commands
-	void	IRCServer::init_commands_map(cmds_map& m)
+	void	Server::init_commands_map(cmds_map& m)
 	{
-		m["PASS"]    = &IRCServer::exec_pass_cmd;
-		m["NICK"]    = &IRCServer::exec_nick_cmd;
-		m["QUIT"]    = &IRCServer::exec_quit_cmd;
-		m["PRIVMSG"] = &IRCServer::exec_privmsg_cmd;
-		m["NOTICE"]  = &IRCServer::exec_notice_cmd;
+		m["PASS"]    = &Server::exec_pass_cmd;
+		m["NICK"]    = &Server::exec_nick_cmd;
+		m["QUIT"]    = &Server::exec_quit_cmd;
+		m["PRIVMSG"] = &Server::exec_privmsg_cmd;
+		m["NOTICE"]  = &Server::exec_notice_cmd;
 	}
 
 	// call command function
-	void	IRCServer::exec_cmd(const cmds_map& m, Message& msg)
+	void	Server::exec_cmd(const cmds_map& m, Message& msg)
 	{
 		cmds_map::const_iterator	it = m.find(msg.getCommand());
 
@@ -412,7 +412,7 @@ namespace ft_irc
 	}
 
 	// Execution helpers
-	Message		IRCServer::parse(const std::string& packet, IRCClient& sender)
+	Message		Server::parse(const std::string& packet, Client& sender)
 	{
 		return (this->parser.parseMessage(packet, sender));
 	}
@@ -421,7 +421,7 @@ namespace ft_irc
 
 	// PASS <password>
 	// set a connection password
-	void	IRCServer::exec_pass_cmd(Message& msg)
+	void	Server::exec_pass_cmd(Message& msg)
 	{
 		if (msg.getParams().empty())
 			err_needmoreparams(msg);
@@ -466,7 +466,7 @@ namespace ft_irc
 
 	// NICK <nickname>
 	// Change a user nickname
-	void	IRCServer::exec_nick_cmd(Message& msg)
+	void	Server::exec_nick_cmd(Message& msg)
 	{
 		if (msg.getParams().empty())
 			err_nonicknamegiven(msg);
@@ -486,7 +486,7 @@ namespace ft_irc
 
 	// QUIT [<message>]
 	// A client session is terminated with a quit message
-	void	IRCServer::exec_quit_cmd(Message& msg)
+	void	Server::exec_quit_cmd(Message& msg)
 	{
 		if (!msg.getParams().empty())
 		{
@@ -505,7 +505,7 @@ namespace ft_irc
 	// NOTICE <msgtarget> :<message>
 	// Send messages to a user or a channel
 	// The server musn't reply to NOTICE message
-	void	IRCServer::exec_notice_cmd(Message& msg)
+	void	Server::exec_notice_cmd(Message& msg)
 	{
 		// sorry for this pseudo code ugliness
 
@@ -523,7 +523,7 @@ namespace ft_irc
 
 	// PRIVMSG <msgtarget> :<message>
 	// Send messages to a user or a channel
-	void	IRCServer::exec_privmsg_cmd(Message& msg)
+	void	Server::exec_privmsg_cmd(Message& msg)
 	{
 		if (msg.getParams().empty())
 			err_norecipient(msg);
