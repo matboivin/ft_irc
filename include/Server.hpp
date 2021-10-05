@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/05 14:48:57 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 15:28:02 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ namespace ft_irc
 		// Channel operations
 		std::list<Channel>::iterator	getChannel(const std::string& chan_name);
 		void		addChannel(const std::string& name);
-		bool		userInChannel(Client& client, const std::string& chan_name);
+		bool		userOnChannel(Client& client, const std::string& chan_name);
 		void		addUserToChannel(Client& client, const std::string& chan_name);
 		void		removeUserFromChannel(Client& client, const std::string& chan_name);
 
@@ -88,6 +88,8 @@ namespace ft_irc
 		void		exec_quit_cmd(Message& msg);
 		void		exec_notice_cmd(Message& msg);
 		void		exec_privmsg_cmd(Message& msg);
+		void		exec_join_cmd(Message& msg);
+		void		exec_part_cmd(Message& msg);
 
 	private:
 		//Function to create a socket.
