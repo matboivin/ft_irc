@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/10/05 12:57:09 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 14:12:19 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,31 +23,31 @@ namespace ft_irc
 				   std::string realname,
 				   std::string username,
 				   std::string password)
-	: nick(nick), realname(realname), username(username),
-	  mode(),
-	  joined_channels(),
-	  password(password),
-	  address(address),
-	  address_size(sizeof(address)), address_str(inet_ntoa(address.sin_addr)),
-	  timeout(), socket_fd(-1),
-	  connected(false),
-	  in_buffer(), out_buffer(),
-	  max_cmd_length(512)
+	: _nick(nick), _realname(realname), _username(username),
+	  _mode(),
+	  _joined_channels(),
+	  _password(password),
+	  _address(address),
+	  _address_size(sizeof(address)), _address_str(inet_ntoa(address.sin_addr)),
+	  _timeout(), _socket_fd(-1),
+	  _connected(false),
+	  _in_buffer(), _out_buffer(),
+	  _max_cmd_length(512)
 	{
-		this->timeout = (struct timeval){.tv_sec = 0, .tv_usec = 50};
+		this->_timeout = (struct timeval){.tv_sec = 0, .tv_usec = 50};
 	}
 
 	// copy constructor
 	Client::Client(const Client& other)
-	: nick(other.nick), realname(other.realname), username(other.username),
-	  mode(other.mode),
-	  joined_channels(other.joined_channels),
-	  password(other.password), address(other.address),
-	  address_size(other.address_size), address_str(other.address_str),
-	  timeout(other.timeout), socket_fd(other.socket_fd),
-	  connected(other.connected),
-	  in_buffer(other.in_buffer), out_buffer(other.out_buffer),
-	  max_cmd_length(other.max_cmd_length)
+	: _nick(other._nick), _realname(other._realname), _username(other._username),
+	  _mode(other._mode),
+	  _joined_channels(other._joined_channels),
+	  _password(other._password), _address(other._address),
+	  _address_size(other._address_size), _address_str(other._address_str),
+	  _timeout(other._timeout), _socket_fd(other._socket_fd),
+	  _connected(other._connected),
+	  _in_buffer(other._in_buffer), _out_buffer(other._out_buffer),
+	  _max_cmd_length(other._max_cmd_length)
 	{
 	}
 
@@ -56,17 +56,17 @@ namespace ft_irc
 	{
 		if (this != &other)
 		{
-			this->nick = other.getNick();
-			this->realname = other.getRealName();
-			this->username = other.getUsername();
-			this->joined_channels = other.getJoinedChannels();
-			this->password = other.getPassword();
-			this->address = other.address;
-			this->address_str = other.address_str;
-			this->address_size = other.address_size;
-			this->timeout = other.timeout;
-			this->socket_fd = other.getSocketFd();
-			this->connected = other.connected;
+			this->_nick = other.getNick();
+			this->_realname = other.getRealName();
+			this->_username = other.getUsername();
+			this->_joined_channels = other.getJoinedChannels();
+			this->_password = other.getPassword();
+			this->_address = other._address;
+			this->_address_str = other._address_str;
+			this->_address_size = other._address_size;
+			this->_timeout = other._timeout;
+			this->_socket_fd = other.getSocketFd();
+			this->_connected = other._connected;
 		}
 		return (*this);
 	}
@@ -80,111 +80,111 @@ namespace ft_irc
 
 	std::string	Client::getNick() const
 	{
-		return (this->nick);
+		return (this->_nick);
 	}
 
 	std::string	Client::getRealName() const
 	{
-		return (this->realname);
+		return (this->_realname);
 	}
 
 	std::string	Client::getUsername() const
 	{
-		return (this->username);
+		return (this->_username);
 	}
 
 	std::string	Client::getJoinedChannels() const
 	{
-		return (this->joined_channels);
+		return (this->_joined_channels);
 	}
 
 	std::string	Client::getPassword() const
 	{
-		return (this->password);
+		return (this->_password);
 	}
 
 	struct sockaddr_in&	Client::getAddress()
 	{
-		return (this->address);
+		return (this->_address);
 	}
 
 	std::string	Client::getIpAddressStr() const
 	{
-		return (this->address_str);
+		return (this->_address_str);
 	}
 
 	socklen_t&	Client::getAddressSize()
 	{
-		return (this->address_size);
+		return (this->_address_size);
 	}
 
 	int	Client::getSocketFd() const
 	{
-		return (this->socket_fd);
+		return (this->_socket_fd);
 	}
 
 	// setters
 
 	void	Client::setNick(const std::string& nick)
 	{
-		this->nick = nick;
+		this->_nick = nick;
 	}
 
 	void	Client::setRealName(const std::string& realname)
 	{
-		this->realname = realname;
+		this->_realname = realname;
 	}
 
 	void	Client::setUsername(const std::string& username)
 	{
-		this->username = username;
+		this->_username = username;
 	}
 
 	void	Client::setJoinedChannels(const std::string& joined_channels)
 	{
-		this->joined_channels = joined_channels;
+		this->_joined_channels = joined_channels;
 	}
 
 	void	Client::setPassword(const std::string& password)
 	{
-		this->password = password;
+		this->_password = password;
 	}
 	
 	void	Client::setSocketFd(int socket_fd)
 	{
-		this->socket_fd = socket_fd;
+		this->_socket_fd = socket_fd;
 	}
 
 	// helpers
 
 	bool	Client::isRegistered() const
 	{
-		return (!(this->nick.empty() || this->realname.empty()));
+		return (!(this->_nick.empty() || this->_realname.empty()));
 	}
 
 	bool	Client::isConnected() const
 	{
-		return (this->socket_fd != -1);
+		return (this->_socket_fd != -1);
 	}
 
 	int	Client::awaitConnection(int socket_fd)
 	{
-		this->socket_fd = accept(socket_fd, (struct sockaddr *)&this->address,
-								 &this->address_size);
+		this->_socket_fd = accept(socket_fd, (struct sockaddr *)&this->_address,
+								 &this->_address_size);
 
-		if (this->socket_fd == -1)
+		if (this->_socket_fd == -1)
 			throw std::runtime_error("accept() failed");
 
-		setNonblocking(this->socket_fd);
-		this->address_str = inet_ntoa(this->address.sin_addr);
-		return (this->socket_fd);
+		setNonblocking(this->_socket_fd);
+		this->_address_str = inet_ntoa(this->_address.sin_addr);
+		return (this->_socket_fd);
 	}
 
 	//poll
 	bool	Client::hasNewEvents()
 	{
-		struct pollfd	poll_fd = {.fd = this->socket_fd, .events = POLLIN};
-		int				ret = poll(&poll_fd, 1, this->timeout.tv_usec);
+		struct pollfd	poll_fd = {.fd = this->_socket_fd, .events = POLLIN};
+		int				ret = poll(&poll_fd, 1, this->_timeout.tv_usec);
 
 		if (ret == -1)
 			throw std::runtime_error("poll() failed");
@@ -194,14 +194,14 @@ namespace ft_irc
 	bool	Client::hasUnprocessedCommands()
 	{
 		//if \r\n is in the in_buffer, return true
-		return (this->in_buffer.find(CRLF) != std::string::npos);
+		return (this->_in_buffer.find(CRLF) != std::string::npos);
 	}
 
 	std::string	Client::popUnprocessedCommand()
 	{
-		std::string	cmd = this->in_buffer.substr(0, this->in_buffer.find(CRLF));
+		std::string	cmd = this->_in_buffer.substr(0, this->_in_buffer.find(CRLF));
 		
-		this->in_buffer.erase(0, this->in_buffer.find(CRLF) + sizeof(CRLF) - 1);
+		this->_in_buffer.erase(0, this->_in_buffer.find(CRLF) + sizeof(CRLF) - 1);
 		return (cmd);
 	}
 
@@ -210,8 +210,8 @@ namespace ft_irc
 	{
 		char					bytes_buffer[MAX_COMMAND_SIZE];
 		int						ret;
-		struct pollfd			poll_fd = {.fd = this->socket_fd, .events = POLLIN};
-		int						poll_ret = poll(&poll_fd, 1, this->timeout.tv_usec);
+		struct pollfd			poll_fd = {.fd = this->_socket_fd, .events = POLLIN};
+		int						poll_ret = poll(&poll_fd, 1, this->_timeout.tv_usec);
 		std::string::size_type	found;
 
 		if (poll_ret == -1)
@@ -219,20 +219,20 @@ namespace ft_irc
 		if (poll_ret == 0)
 			return (0);
 		//read
-		ret = recv(this->socket_fd, bytes_buffer, MAX_COMMAND_SIZE, 0);
+		ret = recv(this->_socket_fd, bytes_buffer, MAX_COMMAND_SIZE, 0);
 		if (ret == -1)
 			throw std::runtime_error("recv() failed");
 		if (ret == 0)
 			return (0);
 		//std::cerr.write(bytes_buffer, ret);
 		//append to in_buffer
-		this->in_buffer.append(bytes_buffer, ret);
+		this->_in_buffer.append(bytes_buffer, ret);
 		//if there's not \r\n in the first 512 bytes, insert a \r\n at offset 512
-		if (this->in_buffer.size() > this->max_cmd_length)
+		if (this->_in_buffer.size() > this->_max_cmd_length)
 		{
-			found = this->in_buffer.find(CRLF);
-			if (found == std::string::npos || found > this->max_cmd_length)
-				this->in_buffer.insert(this->max_cmd_length, CRLF);
+			found = this->_in_buffer.find(CRLF);
+			if (found == std::string::npos || found > this->_max_cmd_length)
+				this->_in_buffer.insert(this->_max_cmd_length, CRLF);
 		}
 		return (ret);
 	}
@@ -243,24 +243,24 @@ namespace ft_irc
 		size_t	size;		
 		
 		//write 512 bytes at most and removes them from the out_buffer
-		size = std::min(this->out_buffer.size(), this->max_cmd_length);
+		size = std::min(this->_out_buffer.size(), this->_max_cmd_length);
 		if (!size)
 			return (0);
-		ret = send(this->socket_fd, this->out_buffer.c_str(), size, 0);
+		ret = send(this->_socket_fd, this->_out_buffer.c_str(), size, 0);
 		if (ret == -1)
 			throw std::runtime_error("send() failed");
-		this->out_buffer.erase(0, ret);
+		this->_out_buffer.erase(0, ret);
 		return (ret);
 	}
 
 	void	Client::sendCommand(std::string cmd)
 	{
-		this->out_buffer += cmd;
+		this->_out_buffer += cmd;
 	}
 
 	//friend operator ==
 	bool	operator==(const Client& lhs, const Client& rhs)
 	{
-		return ((lhs.socket_fd == rhs.socket_fd && lhs.nick == rhs.nick));
+		return ((lhs._socket_fd == rhs._socket_fd && lhs._nick == rhs._nick));
 	}
 } // namespace ft_irc

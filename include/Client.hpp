@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/10/05 13:46:58 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 14:09:14 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,21 +34,21 @@ namespace ft_irc
 	{
 	private:
 		// attributes
-		std::string			nick;
-		std::string			realname;
-		std::string			username;
-		std::string			mode;
-		std::string			joined_channels;
-		std::string			password;
-		struct sockaddr_in	address;			//IPv4 address		
-		socklen_t 			address_size;		//IPv4 address size
-		std::string			address_str;		//IPv4 address as string
-		struct timeval		timeout;			//timeout for select()
-		int					socket_fd;			//socket file descriptor
-		bool				connected;		//is the client connected to the server?
-		std::string			in_buffer;			//buffer for incoming data
-		std::string			out_buffer;		//buffer for outgoing data
-		const size_t		max_cmd_length;	//max length of a command
+		std::string			_nick;
+		std::string			_realname;
+		std::string			_username;
+		std::string			_mode;
+		std::string			_joined_channels;
+		std::string			_password;
+		struct sockaddr_in	_address;			//IPv4 address		
+		socklen_t 			_address_size;		//IPv4 address size
+		std::string			_address_str;		//IPv4 address as string
+		struct timeval		_timeout;			//timeout for select()
+		int					_socket_fd;			//socket file descriptor
+		bool				_connected;		//is the client connected to the server?
+		std::string			_in_buffer;			//buffer for incoming data
+		std::string			_out_buffer;		//buffer for outgoing data
+		const size_t		_max_cmd_length;	//max length of a command
 
 	public:
 		// constructor

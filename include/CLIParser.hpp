@@ -12,11 +12,11 @@ namespace ft_irc
 	{
 	private:
 		// attributes
-		char**			argv;
-		int				argc;
-		std::string		bind_address;
-		std::string		port;
-		std::string		password;
+		char**		_argv;
+		int			_argc;
+		std::string	_bind_address;
+		std::string	_port;
+		std::string	_password;
 
 	public:
 		// default constructor

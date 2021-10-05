@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/05 14:04:53 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 14:23:29 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,19 +46,19 @@ namespace ft_irc
 
 	private:
 		// attributes
-		std::string			hostname;
-		std::string			bind_address;
-		std::string			port;
-		std::string			password;
+		std::string			_hostname;
+		std::string			_bind_address;
+		std::string			_port;
+		std::string			_password;
 		//Structure describing an Internet socket address.
-		struct sockaddr_in	address;
+		struct sockaddr_in	_address;
 		//Socket descriptor.
-		int					sockfd;
-		int					backlog_max;
-		Parser				parser;
-		cmds_map			commands;
-		std::list<Client>	clients;
-		std::list<Channel>	channels;
+		int					_sockfd;
+		int					_backlog_max;
+		Parser				_parser;
+		cmds_map			_commands;
+		std::list<Client>	_clients;
+		std::list<Channel>	_channels;
 
 	public:
 		// constructor
@@ -88,13 +88,6 @@ namespace ft_irc
 		// main loop
 		int			run();
 
-		// map of commands helpers
-		void		init_commands_map(cmds_map& m);
-		void		exec_cmd(const cmds_map& m, Message& msg);
-
-		// execution helpers
-		Message		parse(const std::string& packet, Client& sender);
-
 		// Channel operations
 		std::list<Channel>::iterator	getChannel(const std::string& chan_name);
 		void		addChannel(const std::string& name);
@@ -102,7 +95,7 @@ namespace ft_irc
 		void		addUserToChannel(Client& client, const std::string& chan_name);
 		void		removeUserFromChannel(Client& client, const std::string& chan_name);
 
-		// commands functions
+		// Commands
 		void		exec_pass_cmd(Message& msg);
 		void		exec_nick_cmd(Message& msg);
 		void		exec_quit_cmd(Message& msg);
@@ -113,19 +106,26 @@ namespace ft_irc
 		//Function to create a socket.
 		//create a new listening tcp s	ocket and bind it to the given address and port
 		//https://www.geeksforgeeks.org/socket-programming-cc/
-		bool		createSocket();
-		int			sockGetLine(int sockfd, std::string& line);
-		int			sockGetLine(int sockfd, std::string& line, std::size_t max_bytes);
+		bool		_createSocket();
+		int			_sockGetLine(int sockfd, std::string& line);
+		int			_sockGetLine(int sockfd, std::string& line, std::size_t max_bytes);
 		//awaitConnection
-		bool		awaitNewConnection();
-		bool		hasPendingConnections();
-		bool		processClients();
-		int			disconnectClient(Client& client);
-		int			executeCommand(Message& msg, Client& client);
+		bool		_awaitNewConnection();
+		bool		_hasPendingConnections();
+		bool		_processClients();
+		int			_disconnectClient(Client& client);
+
+		// parsing
+		Message		_parse(const std::string& packet, Client& sender);
+
+		// commands execution
+		void		_init_commands_map(cmds_map& m);
+		int			_executeCommand(Message& msg, Client& client);
+		void		_callCommandFunc(const cmds_map& m, Message& msg);
 
 		// debug
-		int			sendList(Client& client);
-		int			sendError(Client& client, const std::string& error);
+		int			_sendList(Client& client);
+		int			_sendError(Client& client, const std::string& error);
 	};
 }
 

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:34:20 by root              #+#    #+#             */
-/*   Updated: 2021/10/05 12:53:07 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 14:08:34 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,17 @@ namespace ft_irc
 {
 	// default constructor
 	CLIParser::CLIParser()
-	: argv(), argc(0), bind_address(""), port(""), password("")
+	: _argv(), _argc(0), _bind_address(""), _port(""), _password("")
 	{
-		this->argv = nullptr;
+		this->_argv = nullptr;
 	}
 	// copy constructor
 	CLIParser::CLIParser(const CLIParser& other)
-	: argv(), argc(other.argc),
-	  bind_address(other.bind_address), port(other.port), password(other.password)
+	: _argv(), _argc(other._argc),
+	  _bind_address(other._bind_address), _port(other._port),
+	  _password(other._password)
 	{
-		this->argv = nullptr;
+		this->_argv = nullptr;
 	}
 
 	// arg constructor
@@ -48,10 +49,10 @@ namespace ft_irc
 	{
 		if (this != &other)
 		{
-			this->argc = other.argc;
-			this->bind_address = other.getBindAddress();
-			this->port = other.getPort();
-			this->password = other.getPassword();
+			this->_argc = other._argc;
+			this->_bind_address = other.getBindAddress();
+			this->_port = other.getPort();
+			this->_password = other.getPassword();
 		}
 		return (*this);
 	}
@@ -65,25 +66,25 @@ namespace ft_irc
 
 	std::string	CLIParser::getBindAddress() const
 	{
-		return (this->bind_address);
+		return (this->_bind_address);
 	}
 
 	std::string	CLIParser::getPort() const
 	{
-		return (this->port);
+		return (this->_port);
 	}
 
 	std::string	CLIParser::getPassword() const
 	{
-		return (this->password);
+		return (this->_password);
 	}
 
 	// parse the command line arguments
 	void	CLIParser::parse(const char* bind_address, const char* port,
 							 const char* password)
 	{
-		this->bind_address = bind_address;
-		this->port = port;
-		this->password = password;
+		this->_bind_address = bind_address;
+		this->_port = port;
+		this->_password = password;
 	}
 }
