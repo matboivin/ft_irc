@@ -6,16 +6,14 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:58:53 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/05 12:13:43 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 14:58:13 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <algorithm>
-#include <cstdlib>
 #include <list>
 #include <iostream>
 #include <string>
-#include <sys/socket.h>
 #include "Client.hpp"
 #include "Message.hpp"
 #include "Channel.hpp"

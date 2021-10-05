@@ -6,13 +6,13 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/05 14:39:44 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 14:59:38 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
 #include <algorithm>
 #include <cctype>
+#include <iostream>
 #include <string>
 #include "Parser.hpp"
 #include "Client.hpp"
