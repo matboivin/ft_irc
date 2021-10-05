@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/04 15:16:56 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 11:57:08 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "client.hpp"
 #include "Parser.hpp"
 #include "Message.hpp"
+#include "Channel.hpp"
 #include "server_operations.hpp"
 
 int	setNonblocking(int fd);
@@ -41,7 +42,20 @@ namespace ft_irc
 		// init map of commands
 		this->init_commands_map(commands);
 	}
-	
+
+	std::list<Channel>::iterator	IRCServer::getChannel(const std::string& chan_name)
+	{
+		std::list<Channel>::iterator	it = this->channels.begin();
+
+		while (it != this->channels.end())
+		{
+			if (it->getName() == chan_name)
+				break ;
+			++it;
+		}
+		return (it);
+	}
+
 	//IRCServer getters
 	std::string IRCServer::getBindAddress() const
 	{
@@ -77,6 +91,11 @@ namespace ft_irc
 	void IRCServer::setPassword(std::string password)
 	{
 		this->password = password;
+	}
+
+	void	IRCServer::addChannel(const std::string& name)
+	{
+		this->channels.push_back(Channel(name));
 	}
 
 	//copy constructor
@@ -343,6 +362,33 @@ namespace ft_irc
 			throw std::runtime_error("send() failed");
 		}
 		return (0);
+	}
+
+	// Channel operations
+
+	// Check whether a client is in a specific channel
+	bool	IRCServer::userInChannel(IRCClient &client, const std::string &chan_name)
+	{
+		std::list<Channel>::iterator	it = this->getChannel(chan_name);
+
+		if (it != this->channels.end())
+			return (it->hasClient(client));
+
+		return (false);
+	}
+
+	// Add a user to a channel (ex: JOIN command)
+	void	IRCServer::addUserToChannel(IRCClient &client, const std::string &chan_name)
+	{
+		if (!this->userInChannel(client, chan_name))
+			this->getChannel(chan_name)->addClient(client);
+	}
+
+	// Remove user from channel
+	void	IRCServer::removeUserFromChannel(IRCClient &client, const std::string &chan_name)
+	{
+		if (this->userInChannel(client, chan_name))
+			this->getChannel(chan_name)->removeClient(client);
 	}
 
 	// Map of commands helpers

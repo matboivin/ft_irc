@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:42:14 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/04 10:51:52 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 11:56:18 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,21 @@
 # define CHANNEL_HPP
 
 # include <string>
+# include <list>
+# include "client.hpp"
 
 namespace ft_irc
 {
+	class Message;
+
 	// IRC channel
 	class Channel
 	{
 	private:
-		std::string	_name;
-		std::string	_topic;
-		std::string	_mode;
-		// users in the channel, etc
+		std::string				_name;
+		std::string				_topic;
+		std::string				_mode;
+		std::list<IRCClient>	_clients;
 
 	public:
 		// default constructor
@@ -42,10 +46,24 @@ namespace ft_irc
 		std::string	getName() const;
 		std::string	getTopic() const;
 		std::string	getMode() const;
+		std::list<IRCClient>	getClients() const;
 		// setters
 		void		setName(const std::string& name);
 		void		setTopic(const std::string& topic);
 		void		setMode(const std::string& mode);
+		void		setClients(const std::list<IRCClient>& clients);
+
+		// manage clients in channel
+		std::list<IRCClient>::iterator	findClient(IRCClient& client);
+		bool		hasClient(IRCClient& client);
+		void		addClient(IRCClient& client);
+		void		removeClient(IRCClient& client);
+
+		// send a message to all clients in channel
+		void		broadcastMessage(const Message& msg);
+
+		// debug
+		void		displayClients();
 	};
 }
 

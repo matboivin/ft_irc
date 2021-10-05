@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/04 10:50:12 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 11:58:12 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ namespace ft_irc
 {
 	class Message;
 	class Channel;
-	class IRCClient;
 
 	class IRCServer
 	{
@@ -58,7 +57,7 @@ namespace ft_irc
 		Parser					parser;
 		cmds_map				commands;
 		std::list<IRCClient>	clients;
-
+		std::list<Channel>		channels;
 	public:
 		// constructor
 					IRCServer(std::string bind_address="0.0.0.0",
@@ -97,6 +96,13 @@ namespace ft_irc
 		void		exec_quit_cmd(Message& msg);
 		void		exec_notice_cmd(Message& msg);
 		void		exec_privmsg_cmd(Message& msg);
+
+		// Channel operations
+		std::list<Channel>::iterator	getChannel(const std::string& chan_name);
+		void				addChannel(const std::string& name);
+		bool				userInChannel(IRCClient &client, const std::string &chan_name);
+		void				addUserToChannel(IRCClient &client, const std::string &chan_name);
+		void				removeUserFromChannel(IRCClient &client, const std::string &chan_name);
 
 	private:
 		//Function to create a socket.
