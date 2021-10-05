@@ -33,25 +33,25 @@ namespace ft_irc
 		str_const_it	_end;
 
 		// helpers
-		bool			_commandIsValid(Message& msg);
-		bool			_eat(char expected);
-		bool			_nocrlf(str_const_it it);
-		bool			_nospcrlfcl(str_const_it it);
-		bool			_parseSeparator();
-		bool			_parseTrailing(Message& msg);
-		bool			_parseMiddle(Message& msg);
-		bool			_parseParams(Message& msg);
-		bool			_parseCommand(Message& msg);
+		bool	_commandIsValid(Message& msg);
+		bool	_eat(char expected);
+		bool	_nocrlf(str_const_it it);
+		bool	_nospcrlfcl(str_const_it it);
+		bool	_parseSeparator();
+		bool	_parseTrailing(Message& msg);
+		bool	_parseMiddle(Message& msg);
+		bool	_parseParams(Message& msg);
+		bool	_parseCommand(Message& msg);
 
 	public:
 		// default constructor
-						Parser();
+				Parser();
 		// copy constructor
-						Parser(const Parser& other);
+				Parser(const Parser& other);
 		// assignment operator
-		Parser&			operator=(const Parser& other);
+		Parser&	operator=(const Parser& other);
 		// destructor
-						~Parser();
+				~Parser();
 
 		// getters
 		str_const_it	getItStart() const;
@@ -59,13 +59,13 @@ namespace ft_irc
 		str_const_it	getItEnd() const;
 
 		// setters
-		void			setItStart(str_const_it start);
-		void			setItCurrent(str_const_it current);
-		void			setItEnd(str_const_it end);
-		void			setIterators(const std::string& str);
+		void	setItStart(str_const_it start);
+		void	setItCurrent(str_const_it current);
+		void	setItEnd(str_const_it end);
+		void	setIterators(const std::string& str);
 
 		// main parsing function
-		Message			parseMessage(const std::string& packet, Client& sender);
+		Message	parseMessage(const std::string& packet, Client& sender);
 	};
 } // !namespace ft_irc
 

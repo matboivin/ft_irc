@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/05 12:23:43 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 13:48:51 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@
 # include "server_operations.hpp"
 # include "UserInterface.hpp"
 
-void	displayUsage( const char* program_name );
+void	displayUsage(const char* program_name);
 
 enum Status
 {

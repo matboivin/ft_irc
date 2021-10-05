@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/10/05 12:58:00 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 13:46:58 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,28 +77,28 @@ namespace ft_irc
 		int					getSocketFd() const;
 
 		// setters
-		void				setNick(const std::string& nick);
-		void				setRealName(const std::string& realname);
-		void				setUsername(const std::string& username);
-		void				setJoinedChannels(const std::string& joined_channels);
-		void				setPassword(const std::string& password);
-		void				setSocketFd(int socket_fd);
+		void		setNick(const std::string& nick);
+		void		setRealName(const std::string& realname);
+		void		setUsername(const std::string& username);
+		void		setJoinedChannels(const std::string& joined_channels);
+		void		setPassword(const std::string& password);
+		void		setSocketFd(int socket_fd);
 
 		// helpers
-		bool				isRegistered() const;
-		bool				isConnected() const;
-		int					awaitConnection(int socket_fd);
-		bool				hasNewEvents();
-		bool				hasUnprocessedCommands();
-		std::string			popUnprocessedCommand();
-		int					updateInBuffer();
-		int					updateOutBuffer();
+		bool		isRegistered() const;
+		bool		isConnected() const;
+		int			awaitConnection(int socket_fd);
+		bool		hasNewEvents();
+		bool		hasUnprocessedCommands();
+		std::string	popUnprocessedCommand();
+		int			updateInBuffer();
+		int			updateOutBuffer();
 
 		//add response to the output buffer
-		void				sendCommand(std::string cmd);
+		void		sendCommand(std::string cmd);
 
 		//operator==
-		friend bool			operator==(const Client& lhs, const Client& rhs);
+		friend bool	operator==(const Client& lhs, const Client& rhs);
 	};
 } // namespace ft_irc
 

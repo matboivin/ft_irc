@@ -6,68 +6,92 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/05 13:03:34 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 14:03:37 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <string>
-#include "Server.hpp"
 #include "Client.hpp"
-#include "Parser.hpp"
-#include "Message.hpp"
 #include "Channel.hpp"
+#include "Message.hpp"
+#include "Parser.hpp"
+#include "Server.hpp"
 #include "server_operations.hpp"
 
 int	setNonblocking(int fd);
 
 namespace ft_irc
 {
+	// constructor
 	Server::Server(std::string bind_address,
-						std::string port,
-						std::string password,
-						std::string hostname,
-						int backlog_max)
-	: parser()
+				   std::string port,
+				   std::string password,
+				   std::string hostname,
+				   int backlog_max)
+	: hostname(hostname),
+	  bind_address(bind_address), port(port),
+	  password(password), address(),
+	  sockfd(-1), backlog_max(backlog_max),
+	  parser(), commands(),
+	  clients(), channels()
 	{
-		this->hostname = hostname;
-		this->bind_address = bind_address;
-		this->port = port;
-		this->password = password;
-		this->sockfd = -1;
-		this->backlog_max = backlog_max;
-		//create a new address struct
+		// create a new address struct
 		address.sin_family = AF_INET;
 		address.sin_port = htons(atoi(this->port.c_str()));
 		address.sin_addr.s_addr = inet_addr(this->bind_address.c_str());
+
 		// init map of commands
 		this->init_commands_map(commands);
 	}
 
-	std::list<Channel>::iterator	Server::getChannel(const std::string& chan_name)
+	// copy constructor
+	Server::Server(const Server& other)
+	: hostname(other.hostname),
+	  bind_address(other.bind_address), port(other.port),
+	  password(other.password), address(other.address),
+	  sockfd(other.sockfd), backlog_max(other.backlog_max),
+	  parser(other.parser), commands(other.commands),
+	  clients(other.clients), channels(other.channels)
 	{
-		std::list<Channel>::iterator	it = this->channels.begin();
-
-		while (it != this->channels.end())
-		{
-			if (it->getName() == chan_name)
-				break ;
-			++it;
-		}
-		return (it);
 	}
 
-	//Server getters
-	std::string Server::getBindAddress() const
+	// assignment operator
+	Server &Server::operator=(const Server& other)
+	{
+		if (this != &other)
+		{
+			this->hostname = other.hostname;
+			this->bind_address = other.bind_address;
+			this->port = other.port;
+			this->password = other.password;
+			this->sockfd = other.sockfd;
+			this->backlog_max = other.backlog_max;
+			this->parser = other.parser;
+			this->commands = other.commands;
+			this->clients = other.clients;
+			this->channels = other.channels;
+		}
+		return (*this);
+	}
+
+	// destructor
+	Server::~Server()
+	{
+	}
+
+	// getters
+
+	std::string	Server::getBindAddress() const
 	{
 		return (this->bind_address);
 	}
 
-	std::string Server::getPort() const
+	std::string	Server::getPort() const
 	{
 		return (this->port);
 	}
 
-	std::string Server::getPassword() const
+	std::string	Server::getPassword() const
 	{
 		return (this->password);
 	}
@@ -77,58 +101,40 @@ namespace ft_irc
 		return (this->commands);
 	}
 
-	//Server setters
-	void Server::setBindAddress(std::string bind_address)
+	// setters
+
+	void	Server::setBindAddress(const std::string& bind_address)
 	{
 		this->bind_address = bind_address;
 	}
 
-	void Server::setPort(std::string port)
+	void	Server::setPort(const std::string& port)
 	{
 		this->port = port;
 	}
 
-	void Server::setPassword(std::string password)
+	void	Server::setPassword(const std::string& password)
 	{
 		this->password = password;
 	}
 
-	void	Server::addChannel(const std::string& name)
+	// main loop
+	int	Server::run()
 	{
-		this->channels.push_back(Channel(name));
+		if (createSocket() == false)
+		{
+			return (-1);
+		}
+
+		//accept incoming connections
+		while (true)
+		{
+			if (hasPendingConnections() == true)
+				awaitNewConnection();
+			processClients();
+		}
 	}
 
-	//copy constructor
-	Server::Server(const Server& other)
-	{
-		this->bind_address = other.bind_address;
-		this->port = other.port;
-		this->password = other.password;
-		this->sockfd = other.sockfd;
-		this->backlog_max = other.backlog_max;
-		this->address = other.address;
-		this->parser = other.parser;
-		this->commands = other.commands;
-	}
-	//assignment operator
-	Server &Server::operator=(const Server& other)
-	{
-		if (this != &other)
-		{
-			this->bind_address = other.bind_address;
-			this->port = other.port;
-			this->password = other.password;
-			this->sockfd = other.sockfd;
-			this->backlog_max = other.backlog_max;
-			this->parser = other.parser;
-			this->commands = other.commands;
-		}
-		return (*this);
-	}
-	//destructor
-	Server::~Server()
-	{
-	}
 	//Function to create a socket.
 	//create a new listening tcp s	ocket and bind it to the given address and port
 	//https://www.geeksforgeeks.org/socket-programming-cc/
@@ -137,7 +143,7 @@ namespace ft_irc
 	//AF_INET: IPv4
 	//SOCK_STREAM: TCP
 	//IPPROTO_TCP: TCP protocol
-	bool Server::createSocket()
+	bool	Server::createSocket()
 	{
 		//Create a socket.
 		this->sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -147,8 +153,9 @@ namespace ft_irc
 			return (false);
 		}
 		setNonblocking(this->sockfd);
+
 		//Set socket options.
-		int optval = 1;
+		int	optval = 1;
 		if (setsockopt(this->sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) < 0)
 		{
 			std::cerr << "Error: Could not set socket options." << std::endl;
@@ -168,40 +175,13 @@ namespace ft_irc
 		}
 		return (true);
 	}
-	bool				Server::hasPendingConnections()
-	{
-		//Check if there are pending connections. (poll)
-		struct pollfd		poll_fd = {this->sockfd, POLLIN, 0};
-		int					poll_result = poll(&poll_fd, 1, 0);
-		if (poll_result < 0)
-		{
-			std::cerr << "Error: Could not poll socket." << std::endl;
-			return (false);
-		}
-		if (poll_result == 0)
-			return (false);
-		return (true);
-	}
 
-	int Server::run()
+	// read char by char
+	int	Server::sockGetLine(int sockfd, std::string& line)
 	{
-		if (createSocket() == false)
-		{
-			return (-1);
-		}
+	
+		char	c;
 
-		//accept incoming connections
-		while (true)
-		{
-			if (hasPendingConnections() == true)
-				awaitNewConnection();
-			processClients();
-		}
-	}
-	int Server::sockGetLine(int sockfd, std::string& line)
-	{
-		//read char by char
-		char c;
 		line = "";
 		while (true)
 		{
@@ -218,10 +198,11 @@ namespace ft_irc
 		return (true);
 	}
 
-	int Server::sockGetLine(int sockfd, std::string& line, std::size_t max_bytes)
+	// read char by char
+	int	Server::sockGetLine(int sockfd, std::string& line, std::size_t max_bytes)
 	{
-		//read char by char
-		char c;
+		char	c;
+
 		line = "";
 		while (true)
 		{
@@ -241,31 +222,49 @@ namespace ft_irc
 		}
 		return (true);
 	}
-	//awaitNewConnection
-	//accepts a new connection
-	bool				Server::awaitNewConnection()
+
+	// accepts a new connection
+	bool	Server::awaitNewConnection()
 	{
 		Client new_client;
 
 		//accept a new connection
-		
 		new_client.awaitConnection(this->sockfd);
 		if (new_client.getSocketFd() < 0)
 		{
 			throw std::runtime_error("accept() failed");
 		}
+
 		//log the clients IP address
 		std::cout << "Client " << new_client.getIpAddressStr()
-		<< " connected" << std::endl;
+				  << " connected" << std::endl;
+
 		this->clients.push_back(new_client);
 		return (true);
 	}
 
-	bool				Server::processClients()
+	// Check if there are pending connections. (poll)
+	bool	Server::hasPendingConnections()
 	{
-		//process all clients
+		struct pollfd	poll_fd = {this->sockfd, POLLIN, 0};
+		int				poll_result = poll(&poll_fd, 1, 0);
+
+		if (poll_result < 0)
+		{
+			std::cerr << "Error: Could not poll socket." << std::endl;
+			return (false);
+		}
+		if (poll_result == 0)
+			return (false);
+		return (true);
+	}
+
+	// process all clients
+	bool	Server::processClients()
+	{
 		for (std::list<Client>::iterator it = this->clients.begin();
-		 it != this->clients.end(); ++it)
+			 it != this->clients.end();
+			 ++it)
 		{
 			if (it->updateOutBuffer())
 			{
@@ -303,9 +302,22 @@ namespace ft_irc
 		return (true);
 	}
 
-	int	Server::executeCommand(Message& msg, Client &client)
+	int	Server::disconnectClient(Client& client)
 	{
-		// msg.displayMessage();
+		std::list<Client>::iterator	it = std::find(this->clients.begin(), this->clients.end(), client);
+
+		//log the closing of the connection
+		std::cout << "Closing connection to " << it->getIpAddressStr() << std::endl
+				  << "---------------------------------------------------------"
+				  << std::endl;
+
+		close(it->getSocketFd());
+		it = this->clients.erase(it);
+		return (0);
+	}
+
+	int	Server::executeCommand(Message& msg, Client& client)
+	{
 		if (msg.getCommand() == "QUIT")
 		{
 			this->disconnectClient(client);
@@ -314,18 +326,7 @@ namespace ft_irc
 		return (0);
 	}
 
-	int	Server::disconnectClient(Client &client)
-	{
-		std::list<Client>::iterator it = std::find(this->clients.begin(), this->clients.end(), client);
-		//log the closing of the connection
-		std::cout << "Closing connection to " << it->getIpAddressStr() << std::endl
-		<< "---------------------------------------------------------" << std::endl;
-		close(it->getSocketFd());
-		it = this->clients.erase(it);
-		return (0);
-	}
-
-	int	Server::sendList(Client &client)
+	int	Server::sendList(Client& client)
 	{
 		for (std::list<Client>::iterator it = this->clients.begin();
 		 it != this->clients.end(); ++it)
@@ -348,7 +349,7 @@ namespace ft_irc
 		return (0);
 	}
 
-	int					Server::sendError(Client &client, const std::string& error)
+	int	Server::sendError(Client& client, const std::string& error)
 	{
 		std::string response = ":" + hostname + " 451 ";
 		response += client.getNick();
@@ -364,34 +365,8 @@ namespace ft_irc
 		return (0);
 	}
 
-	// Channel operations
-
-	// Check whether a client is in a specific channel
-	bool	Server::userInChannel(Client &client, const std::string& chan_name)
-	{
-		std::list<Channel>::iterator	it = this->getChannel(chan_name);
-
-		if (it != this->channels.end())
-			return (it->hasClient(client));
-
-		return (false);
-	}
-
-	// Add a user to a channel (ex: JOIN command)
-	void	Server::addUserToChannel(Client &client, const std::string& chan_name)
-	{
-		if (!this->userInChannel(client, chan_name))
-			this->getChannel(chan_name)->addClient(client);
-	}
-
-	// Remove user from channel
-	void	Server::removeUserFromChannel(Client &client, const std::string& chan_name)
-	{
-		if (this->userInChannel(client, chan_name))
-			this->getChannel(chan_name)->removeClient(client);
-	}
-
 	// Map of commands helpers
+
 	// Init the map containing the commands
 	void	Server::init_commands_map(cmds_map& m)
 	{
@@ -415,6 +390,51 @@ namespace ft_irc
 	Message		Server::parse(const std::string& packet, Client& sender)
 	{
 		return (this->parser.parseMessage(packet, sender));
+	}
+
+	// Channel operations
+
+	std::list<Channel>::iterator	Server::getChannel(const std::string& chan_name)
+	{
+		std::list<Channel>::iterator	it = this->channels.begin();
+
+		while (it != this->channels.end())
+		{
+			if (it->getName() == chan_name)
+				break ;
+			++it;
+		}
+		return (it);
+	}
+
+	void	Server::addChannel(const std::string& name)
+	{
+		this->channels.push_back(Channel(name));
+	}
+
+	// Check whether a client is in a specific channel
+	bool	Server::userInChannel(Client& client, const std::string& chan_name)
+	{
+		std::list<Channel>::iterator	it = this->getChannel(chan_name);
+
+		if (it != this->channels.end())
+			return (it->hasClient(client));
+
+		return (false);
+	}
+
+	// Add a user to a channel (ex: JOIN command)
+	void	Server::addUserToChannel(Client& client, const std::string& chan_name)
+	{
+		if (!this->userInChannel(client, chan_name))
+			this->getChannel(chan_name)->addClient(client);
+	}
+
+	// Remove user from channel
+	void	Server::removeUserFromChannel(Client& client, const std::string& chan_name)
+	{
+		if (this->userInChannel(client, chan_name))
+			this->getChannel(chan_name)->removeClient(client);
 	}
 
 	// Commands
