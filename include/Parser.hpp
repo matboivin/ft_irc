@@ -14,7 +14,6 @@
 # define PARSER_HPP
 
 # include <string>
-# include "ft_irc.hpp"
 
 namespace ft_irc
 {
@@ -50,7 +49,7 @@ namespace ft_irc
 		// copy constructor
 						Parser(const Parser& other);
 		// assignment operator
-		Parser		&operator=(const Parser& other);
+		Parser&			operator=(const Parser& other);
 		// destructor
 						~Parser();
 

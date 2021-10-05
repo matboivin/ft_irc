@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/04 16:38:54 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 11:58:12 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,21 +23,27 @@
 # include <netdb.h>
 # include <fcntl.h>
 # include <unistd.h>
-# include "client.hpp"
 # include <vector>
+# include <map>
 # include <list>
 # include <poll.h>
 # include <algorithm>
-
+# include "client.hpp"
+# include "Parser.hpp"
+# include "server_operations.hpp"
 
 namespace ft_irc
 {
-	class Parser;
 	class Message;
 	class Channel;
 
 	class IRCServer
 	{
+	public:
+		// aliases
+		typedef void (IRCServer::*cmd_fun)(Message& msg); // pointer to command function
+		typedef std::map<std::string, cmd_fun>	cmds_map; // commands functions
+
 	private:
 		std::string				hostname;
 		std::string				bind_address;
@@ -48,30 +54,48 @@ namespace ft_irc
 		//Socket descriptor.
 		int						sockfd;
 		int						backlog_max;
+		Parser					parser;
+		cmds_map				commands;
 		std::list<IRCClient>	clients;
 		std::list<Channel>		channels;
 	public:
-							IRCServer(std::string bind_address="0.0.0.0",
-									std::string port="6697",
-									std::string password="",
-									std::string hostname="irc.42.fr",
-									int backlog_max=5);
+		// constructor
+					IRCServer(std::string bind_address="0.0.0.0",
+							  std::string port="6697",
+							  std::string password="",
+							  std::string hostname="irc.42.fr",
+							  int backlog_max=5);
 		//copy constructor
-							IRCServer(const IRCServer &other);
+					IRCServer(const IRCServer &other);
 		//assignment operator
-		IRCServer 			&operator=(const IRCServer &other);
+		IRCServer&	operator=(const IRCServer &other);
 		//destructor
-							~IRCServer();
+					~IRCServer();
 		//IRCServer getters
-		std::string			getBindAddress() const;
-		std::string			getPort() const;
-		std::string			getPassword() const;
+		std::string	getBindAddress() const;
+		std::string	getPort() const;
+		std::string	getPassword() const;
+		cmds_map	getCommands() const;
 
 		//IRCServer setters
-		void				setBindAddress(std::string bind_address);
-		void				setPort(std::string port);
-		void				setPassword(std::string password);
-		int					run();
+		void		setBindAddress(std::string bind_address);
+		void		setPort(std::string port);
+		void		setPassword(std::string password);
+		int			run();
+
+		// map of commands helpers
+		void		init_commands_map(cmds_map& m);
+		void		exec_cmd(const cmds_map& m, Message& msg);
+
+		// execution helpers
+		Message		parse(const std::string& packet, IRCClient& sender);
+
+		// commands functions
+		void		exec_pass_cmd(Message& msg);
+		void		exec_nick_cmd(Message& msg);
+		void		exec_quit_cmd(Message& msg);
+		void		exec_notice_cmd(Message& msg);
+		void		exec_privmsg_cmd(Message& msg);
 
 		// Channel operations
 		std::list<Channel>::iterator	getChannel(const std::string& chan_name);
@@ -84,17 +108,17 @@ namespace ft_irc
 		//Function to create a socket.
 		//create a new listening tcp s	ocket and bind it to the given address and port
 		//https://www.geeksforgeeks.org/socket-programming-cc/
-		bool				createSocket();
-		int					sockGetLine(int sockfd, std::string &line);
-		int					sockGetLine(int sockfd, std::string &line, std::size_t max_bytes);
+		bool		createSocket();
+		int			sockGetLine(int sockfd, std::string &line);
+		int			sockGetLine(int sockfd, std::string &line, std::size_t max_bytes);
 		//awaitConnection
-		bool				awaitNewConnection();
-		bool				processClients(Parser& parser);
-		bool				hasPendingConnections();
-		int					executeCommand(Message& msg, IRCClient &client);
-		int					sendList(IRCClient &client);
-		int					sendError(IRCClient &client, const std::string &error);
-		int					disconnectClient(IRCClient &client);
+		bool		awaitNewConnection();
+		bool		processClients();
+		bool		hasPendingConnections();
+		int			executeCommand(Message& msg, IRCClient &client);
+		int			sendList(IRCClient &client);
+		int			sendError(IRCClient &client, const std::string &error);
+		int			disconnectClient(IRCClient &client);
 	};
 }
 

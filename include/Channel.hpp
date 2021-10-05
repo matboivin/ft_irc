@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:42:14 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/04 17:05:12 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 11:56:18 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 
 # include <string>
 # include <list>
+# include "client.hpp"
 
 namespace ft_irc
 {
-	class IRCClient;
 	class Message;
 
 	// IRC channel
