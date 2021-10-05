@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/05 12:13:43 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/04 14:40:01 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ namespace ft_irc
 	{
 		if ((this->_current != this->_end) && (*this->_current == expected))
 		{
-			this->_current++;
+			++this->_current;
 			return (true);
 		}
 		return (false);
@@ -153,12 +153,9 @@ namespace ft_irc
 	// NUL or CR or LF
 	bool	Parser::_parseTrailing(Message& msg)
 	{
-		while ((this->_current != this->_end) && (*this->_current != '\r'))
-		{
-			if (!_nocrlf(this->_current))
-				break ;
-			this->_current++;
-		}
+		while (_nocrlf(this->_current))
+			++this->_current;
+
 		msg.setParam(std::string(this->_start, this->_current));
 		return (_parseSeparator());
 	}
@@ -169,12 +166,15 @@ namespace ft_irc
 	bool	Parser::_parseMiddle(Message& msg)
 	{
 		while (_nospcrlfcl(this->_current) || (*this->_current == ':'))
-			this->_current++;
+			++this->_current;
 		msg.setParam(std::string(this->_start, this->_current));
 		if (_eat(' '))
 		{
-			this->_start = this->_current;
-			return (_parseTrailing(msg));
+			if (*this->_current == ':')
+			{
+				this->_start = this->_current;
+				return (_parseTrailing(msg));
+			}
 		}
 		return (_parseSeparator());
 	}
@@ -199,7 +199,7 @@ namespace ft_irc
 		if ((this->_current == this->_end) || !isalpha(*this->_current))
 			return (false);
 		while ((this->_current != this->_end) && isalpha(*this->_current))
-			this->_current++;
+			++this->_current;
 
 		std::string	cmd(this->_start, this->_current);
 		msg.setCommand(cmd);
