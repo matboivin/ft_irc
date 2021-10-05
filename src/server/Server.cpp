@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/05 14:49:04 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 14:57:11 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -296,12 +296,12 @@ namespace ft_irc
 					// there can be many recipients (ex: broadcast to channel)
 					std::vector<Client>	recipients = msg.getRecipients();
 
-					for (std::vector<Client>::const_iterator	it = recipients.begin();
-						it != recipients.end();
-						++it)
+					for (std::vector<Client>::const_iterator	dst = recipients.begin();
+						dst != recipients.end();
+						++dst)
 					{
-						std::cout << "Sending: '" << msg.getResponse() << "' to " << it->getIpAddressStr() << std::endl;
-						if (send(it->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
+						std::cout << "Sending: '" << msg.getResponse() << "' to " << dst->getIpAddressStr() << std::endl;
+						if (send(dst->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
 						{
 							throw std::runtime_error("send() failed");
 						}
