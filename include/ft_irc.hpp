@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/05 13:48:51 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 14:05:23 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@
 # include "UserInterface.hpp"
 
 void	displayUsage(const char* program_name);
+int		test_parsing();
 
 enum Status
 {

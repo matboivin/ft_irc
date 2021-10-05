@@ -30,6 +30,9 @@ SRC_FILES = main.cpp \
 			server_operations.cpp \
 			utils.cpp
 
+# tests
+SRC_FILES += test_parsing.cpp
+
 OBJ_FILES = $(SRC_FILES:%.cpp=%.o)
 
 # DIRS AND PATHS

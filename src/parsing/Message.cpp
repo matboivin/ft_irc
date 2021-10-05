@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/05 12:13:43 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/04 13:46:35 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,11 +144,11 @@ namespace ft_irc
 	// debug
 	void	Message::displayMessage() const
 	{
-		std::cout << "command: " << getCommand() << '\n'
-				  << "params:  ";
+		std::cout << "command:  " << getCommand() << '\n'
+				  << "params:   ";
 		
 		for (std::size_t i = 0; i < this->_params.size(); i++)
 			std::cout << "'" << this->_params[i] << "' ";
-		std::cout << std::endl;
+		std::cout << "\nresponse: " << this->_response << std::endl;
 	}
 } // !namespace ft_irc
