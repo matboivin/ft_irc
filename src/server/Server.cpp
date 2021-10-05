@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/05 12:15:06 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 13:03:34 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ namespace ft_irc
 	}
 
 	//copy constructor
-	Server::Server(const Server &other)
+	Server::Server(const Server& other)
 	{
 		this->bind_address = other.bind_address;
 		this->port = other.port;
@@ -111,7 +111,7 @@ namespace ft_irc
 		this->commands = other.commands;
 	}
 	//assignment operator
-	Server &Server::operator=(const Server &other)
+	Server &Server::operator=(const Server& other)
 	{
 		if (this != &other)
 		{
@@ -198,7 +198,7 @@ namespace ft_irc
 			processClients();
 		}
 	}
-	int Server::sockGetLine(int sockfd, std::string &line)
+	int Server::sockGetLine(int sockfd, std::string& line)
 	{
 		//read char by char
 		char c;
@@ -218,7 +218,7 @@ namespace ft_irc
 		return (true);
 	}
 
-	int Server::sockGetLine(int sockfd, std::string &line, std::size_t max_bytes)
+	int Server::sockGetLine(int sockfd, std::string& line, std::size_t max_bytes)
 	{
 		//read char by char
 		char c;
@@ -348,7 +348,7 @@ namespace ft_irc
 		return (0);
 	}
 
-	int					Server::sendError(Client &client, const std::string &error)
+	int					Server::sendError(Client &client, const std::string& error)
 	{
 		std::string response = ":" + hostname + " 451 ";
 		response += client.getNick();
@@ -367,7 +367,7 @@ namespace ft_irc
 	// Channel operations
 
 	// Check whether a client is in a specific channel
-	bool	Server::userInChannel(Client &client, const std::string &chan_name)
+	bool	Server::userInChannel(Client &client, const std::string& chan_name)
 	{
 		std::list<Channel>::iterator	it = this->getChannel(chan_name);
 
@@ -378,14 +378,14 @@ namespace ft_irc
 	}
 
 	// Add a user to a channel (ex: JOIN command)
-	void	Server::addUserToChannel(Client &client, const std::string &chan_name)
+	void	Server::addUserToChannel(Client &client, const std::string& chan_name)
 	{
 		if (!this->userInChannel(client, chan_name))
 			this->getChannel(chan_name)->addClient(client);
 	}
 
 	// Remove user from channel
-	void	Server::removeUserFromChannel(Client &client, const std::string &chan_name)
+	void	Server::removeUserFromChannel(Client &client, const std::string& chan_name)
 	{
 		if (this->userInChannel(client, chan_name))
 			this->getChannel(chan_name)->removeClient(client);

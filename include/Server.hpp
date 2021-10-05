@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/05 12:16:01 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 13:02:26 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ namespace ft_irc
 		typedef std::map<std::string, cmd_fun>	cmds_map; // commands functions
 
 	private:
+		// attributes
 		std::string				hostname;
 		std::string				bind_address;
 		std::string				port;
@@ -56,31 +57,35 @@ namespace ft_irc
 		int						backlog_max;
 		Parser					parser;
 		cmds_map				commands;
-		std::list<Client>	clients;
+		std::list<Client>		clients;
 		std::list<Channel>		channels;
+
 	public:
 		// constructor
 					Server(std::string bind_address="0.0.0.0",
-							  std::string port="6697",
-							  std::string password="",
-							  std::string hostname="irc.42.fr",
-							  int backlog_max=5);
-		//copy constructor
-					Server(const Server &other);
-		//assignment operator
-		Server&	operator=(const Server &other);
-		//destructor
+						   std::string port="6697",
+						   std::string password="",
+						   std::string hostname="irc.42.fr",
+						   int backlog_max=5);
+		// copy constructor
+					Server(const Server& other);
+		// assignment operator
+		Server&		operator=(const Server& other);
+		// destructor
 					~Server();
-		//Server getters
+
+		// getters
 		std::string	getBindAddress() const;
 		std::string	getPort() const;
 		std::string	getPassword() const;
 		cmds_map	getCommands() const;
 
-		//Server setters
-		void		setBindAddress(std::string bind_address);
-		void		setPort(std::string port);
-		void		setPassword(std::string password);
+		// setters
+		void		setBindAddress(const std::string& bind_address);
+		void		setPort(const std::string& port);
+		void		setPassword(const std::string& password);
+
+		// run loop
 		int			run();
 
 		// map of commands helpers
@@ -99,26 +104,26 @@ namespace ft_irc
 
 		// Channel operations
 		std::list<Channel>::iterator	getChannel(const std::string& chan_name);
-		void				addChannel(const std::string& name);
-		bool				userInChannel(Client &client, const std::string &chan_name);
-		void				addUserToChannel(Client &client, const std::string &chan_name);
-		void				removeUserFromChannel(Client &client, const std::string &chan_name);
+		void		addChannel(const std::string& name);
+		bool		userInChannel(Client& client, const std::string& chan_name);
+		void		addUserToChannel(Client& client, const std::string& chan_name);
+		void		removeUserFromChannel(Client& client, const std::string& chan_name);
 
 	private:
 		//Function to create a socket.
 		//create a new listening tcp s	ocket and bind it to the given address and port
 		//https://www.geeksforgeeks.org/socket-programming-cc/
 		bool		createSocket();
-		int			sockGetLine(int sockfd, std::string &line);
-		int			sockGetLine(int sockfd, std::string &line, std::size_t max_bytes);
+		int			sockGetLine(int sockfd, std::string& line);
+		int			sockGetLine(int sockfd, std::string& line, std::size_t max_bytes);
 		//awaitConnection
 		bool		awaitNewConnection();
 		bool		processClients();
 		bool		hasPendingConnections();
-		int			executeCommand(Message& msg, Client &client);
-		int			sendList(Client &client);
-		int			sendError(Client &client, const std::string &error);
-		int			disconnectClient(Client &client);
+		int			executeCommand(Message& msg, Client& client);
+		int			sendList(Client& client);
+		int			sendError(Client& client, const std::string& error);
+		int			disconnectClient(Client& client);
 	};
 }
 

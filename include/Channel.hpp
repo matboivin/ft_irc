@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:42:14 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/05 12:33:41 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 13:01:29 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ namespace ft_irc
 		std::string			getTopic() const;
 		std::string			getMode() const;
 		std::list<Client>	getClients() const;
+
 		// setters
 		void	setName(const std::string& name);
 		void	setTopic(const std::string& topic);
@@ -61,7 +62,7 @@ namespace ft_irc
 		void	removeClient(Client& client);
 
 		// send a message to all clients in channel
-		void		broadcastMessage(const Message& msg);
+		void	broadcastMessage(const Message& msg);
 
 		// debug
 		void	displayClients();

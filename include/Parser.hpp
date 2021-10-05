@@ -57,6 +57,7 @@ namespace ft_irc
 		str_const_it	getItStart() const;
 		str_const_it	getItCurrent() const;
 		str_const_it	getItEnd() const;
+
 		// setters
 		void			setItStart(str_const_it start);
 		void			setItCurrent(str_const_it current);

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/10/05 12:54:34 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 12:58:00 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,18 @@
 
 # define MAX_COMMAND_SIZE 512
 # define CRLF "\n"
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <arpa/inet.h>
-# include <netdb.h>
+
 # include <fcntl.h>
-# include <unistd.h>
-# include <string>
-# include <sys/time.h>
-# include <stdexcept>
-# include <poll.h>
 # include <iostream>
+# include <poll.h>
+# include <string>
+# include <stdexcept>
+# include <arpa/inet.h>
+# include <netinet/in.h>
+# include <netdb.h>
+# include <sys/socket.h>
+# include <sys/time.h>
+# include <unistd.h>
 
 namespace ft_irc
 {
