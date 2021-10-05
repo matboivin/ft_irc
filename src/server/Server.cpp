@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/05 15:33:03 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 15:47:39 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -415,42 +415,37 @@ namespace ft_irc
 		return (it);
 	}
 
-	void	Server::addChannel(const std::string& name)
+	Channel&	Server::addChannel(const std::string& name)
 	{
 		this->_channels.push_back(Channel(name));
+		return (this->_channels.back());
 	}
 
 	// Check whether a client is in a specific channel
-	bool	Server::userOnChannel(Client& client, const std::string& chan_name)
+	bool	Server::userOnChannel(Client& client, Channel& channel)
 	{
-		std::list<Channel>::iterator	it = this->getChannel(chan_name);
-
-		if (it != this->_channels.end())
-		{
-			std::cout << client.getNick() << " is on channel #" << chan_name << std::endl;
-			return (it->hasClient(client));
-		}
-		std::cout << client.getNick() << " is NOT on channel #" << chan_name << std::endl;
-		return (false);
+		return (channel.hasClient(client));
 	}
 
 	// Add a user to a channel (ex: JOIN command)
-	void	Server::addUserToChannel(Client& client, const std::string& chan_name)
+	void	Server::addUserToChannel(Client& client, Channel& channel)
 	{
-		if (!this->userOnChannel(client, chan_name))
+		if (!userOnChannel(client, channel))
 		{
-			std::cout << "Add " << client.getNick() << " to channel #" << chan_name << std::endl;
-			this->getChannel(chan_name)->addClient(client);
+			std::cout << "Add " << client.getNick() << " to channel #"
+					  << channel.getName() << std::endl;
+			channel.addClient(client);
 		}
 	}
 
 	// Remove user from channel
-	void	Server::removeUserFromChannel(Client& client, const std::string& chan_name)
+	void	Server::removeUserFromChannel(Client& client, Channel& channel)
 	{
-		if (this->userOnChannel(client, chan_name))
+		if (userOnChannel(client, channel))
 		{
-			std::cout << "Remove " << client.getNick() << " from channel #" << chan_name << std::endl;
-			this->getChannel(chan_name)->removeClient(client);
+			std::cout << "Remove " << client.getNick() << " from channel #"
+					  << channel.getName() << std::endl;
+			channel.removeClient(client);
 		}
 	}
 
@@ -588,8 +583,9 @@ namespace ft_irc
 
 		// if channel doesn't exist, create it
 		if (it == this->_channels.end())
-			addChannel(msg.getParam(0));
-		addUserToChannel(msg.getSender(), msg.getParam(0));
+			addUserToChannel(msg.getSender(), addChannel(msg.getParam(0)));
+		else
+			addUserToChannel(msg.getSender(), *it);
 	}
 
 	// PART <channels> [<message>]
@@ -607,7 +603,7 @@ namespace ft_irc
 		if (it == this->_channels.end())
 			err_nosuchchannel(msg, msg.getParam(0));
 		// else if user not on channel
-		else if (!userOnChannel(msg.getSender(), msg.getParam(0)))
+		else if (!userOnChannel(msg.getSender(), *it))
 			err_notonchannel(msg, msg.getParam(0));
 		else
 		{
@@ -616,7 +612,7 @@ namespace ft_irc
 				// TODO: format broadcast message then send it
 			// 	it->broadcastMessage(const Message& msg);
 			// }
-			removeUserFromChannel(msg.getSender(), msg.getParam(0));
+			removeUserFromChannel(msg.getSender(), *it);
 		}
 	}
 }
