@@ -17,7 +17,7 @@
 
 namespace ft_irc
 {
-	class IRCClient;
+	class Client;
 	class Message;
 
 	// Parser for IRC protocol messages
@@ -64,7 +64,7 @@ namespace ft_irc
 		void			setIterators(const std::string& str);
 
 		// main parsing function
-		Message			parseMessage(const std::string& packet, IRCClient& sender);
+		Message			parseMessage(const std::string& packet, Client& sender);
 	};
 } // !namespace ft_irc
 

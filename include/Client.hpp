@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.hpp                                         :+:      :+:    :+:   */
+/*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/10/04 00:23:52 by mbenjell         ###   ########.fr       */
+/*   Updated: 2021/10/05 12:54:34 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,10 @@
 
 namespace ft_irc
 {
-	class IRCClient
+	class Client
 	{
 	private:
+		// attributes
 		std::string			nick;
 		std::string			realname;
 		std::string			username;
@@ -46,32 +47,43 @@ namespace ft_irc
 		bool				connected;		//is the client connected to the server?
 		std::string			in_buffer;			//buffer for incoming data
 		std::string			out_buffer;		//buffer for outgoing data
-		size_t				max_cmd_length;	//max length of a command
+		const size_t		max_cmd_length;	//max length of a command
+
 	public:
-							IRCClient(struct sockaddr_in address=(struct sockaddr_in){0,0,{0},{0}},
-		std::string nick="", std::string realname="", std::string username="", std::string password="");
-							IRCClient(const IRCClient &other);
-		IRCClient 			&operator=(const IRCClient &other);
-							~IRCClient();
-		//IRCClient ge/tters
+		// constructor
+				Client(struct sockaddr_in address=(struct sockaddr_in){0,0,{0},{0}},
+					   std::string nick="",
+					   std::string realname="",
+					   std::string username="",
+					   std::string password="");
+
+		// copy constructor
+				Client(const Client& other);
+		// assignment operator
+		Client&	operator=(const Client& other);
+		// destructor
+				~Client();
+
+		// getters
 		std::string			getNick() const;
 		std::string			getRealName() const;
+		std::string			getUsername() const;
 		std::string			getJoinedChannels() const;
 		std::string			getPassword() const;
 		std::string			getIpAddressStr() const;
-		int 				getSocketFd() const;
-		struct sockaddr_in	&getAddress();
-		socklen_t 			&getAddressSize();
-		//get username
-		std::string			getUsername() const;
-		//set
-		void				setUsername(std::string username);
-		//IRCClient se/tters
-		void				setNick(std::string nick);
-		void				setRealName(std::string realname);
-		void				setJoinedChannels(std::string joined_channels);
-		void				setPassword(std::string password);
+		struct sockaddr_in&	getAddress();
+		socklen_t&			getAddressSize();
+		int					getSocketFd() const;
+
+		// setters
+		void				setNick(const std::string& nick);
+		void				setRealName(const std::string& realname);
+		void				setUsername(const std::string& username);
+		void				setJoinedChannels(const std::string& joined_channels);
+		void				setPassword(const std::string& password);
 		void				setSocketFd(int socket_fd);
+
+		// helpers
 		bool				isRegistered() const;
 		bool				isConnected() const;
 		int					awaitConnection(int socket_fd);
@@ -80,12 +92,13 @@ namespace ft_irc
 		std::string			popUnprocessedCommand();
 		int					updateInBuffer();
 		int					updateOutBuffer();
+
 		//add response to the output buffer
-		void				sendCommand(std::string response);
+		void				sendCommand(std::string cmd);
 
 		//operator==
-		friend bool			operator==(const IRCClient &lhs, const IRCClient &rhs);
+		friend bool			operator==(const Client& lhs, const Client& rhs);
 	};
-}
+} // namespace ft_irc
 
 #endif // !IRC_CLIENT

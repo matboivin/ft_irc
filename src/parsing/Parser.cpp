@@ -15,7 +15,7 @@
 #include <cctype>
 #include <string>
 #include "Parser.hpp"
-#include "client.hpp"
+#include "Client.hpp"
 #include "Message.hpp"
 #include "numeric_replies.hpp"
 
@@ -207,7 +207,7 @@ namespace ft_irc
 	}
 
 	// Main parsing function
-	Message	Parser::parseMessage(const std::string& packet, IRCClient& sender)
+	Message	Parser::parseMessage(const std::string& packet, Client& sender)
 	{
 		Message	msg(sender);
 

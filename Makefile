@@ -11,23 +11,23 @@ RM = /bin/rm
 INC_FILES = ft_irc.hpp \
 			UserInterface.hpp \
 			Channel.hpp \
-			cli_parser.hpp \
-			client.hpp \
+			Client.hpp \
+			CLIParser.hpp \
 			Parser.hpp \
 			Message.hpp \
 			numeric_replies.hpp \
-			server_operations.hpp \
-			server.hpp
+			Server.hpp \
+			server_operations.hpp
 
 SRC_FILES = main.cpp \
 			Channel.cpp \
-			cli_parser.cpp \
-			client.cpp \
+			Client.cpp \
+			CLIParser.cpp \
 			Parser.cpp \
 			Message.cpp \
 			numeric_replies.cpp \
+			Server.cpp \
 			server_operations.cpp \
-			server.cpp \
 			utils.cpp
 
 # tests

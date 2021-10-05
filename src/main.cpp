@@ -11,8 +11,8 @@
 /* ************************************************************************** */
 
 #include "ft_irc.hpp"
-#include "client.hpp"
-#include "cli_parser.hpp"
+#include "Client.hpp"
+#include "CLIParser.hpp"
 
 int	main( int argc, char** argv )
 {
@@ -21,7 +21,7 @@ int	main( int argc, char** argv )
 		ft_irc::CLIParser CLI_parser(argc, argv);
 		try
 		{
-			ft_irc::IRCServer server(CLI_parser.getBindAddress(),
+			ft_irc::Server server(CLI_parser.getBindAddress(),
 			CLI_parser.getPort(), CLI_parser.getPassword());
 			server.run();
 		}

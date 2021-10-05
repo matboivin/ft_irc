@@ -6,12 +6,12 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:37:26 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/04 10:19:00 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 12:13:43 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <string>
-#include "client.hpp"
+#include "Client.hpp"
 #include "Message.hpp"
 #include "server_operations.hpp"
 
@@ -23,7 +23,7 @@ namespace ft_irc
 		return (":" + sender);
 	}
 
-	std::string	build_full_client_id(const IRCClient& client)
+	std::string	build_full_client_id(const Client& client)
 	{
 		return (
 			client.getNick() + "!" + client.getUsername()
