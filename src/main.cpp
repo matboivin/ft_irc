@@ -6,15 +6,15 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:21 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/05 12:08:06 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 14:53:43 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <iostream>
+#include <unistd.h>
 #include "ft_irc.hpp"
-#include "Client.hpp"
-#include "CLIParser.hpp"
 
-int	main( int argc, char** argv )
+int	main(int argc, char** argv)
 {
 	try
 	{

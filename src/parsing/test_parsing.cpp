@@ -6,15 +6,16 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 12:25:08 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/05 13:44:52 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 14:52:05 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <assert.h>
 #include <iostream>
 #include <string>
-#include "Parser.hpp"
+#include "Client.hpp"
 #include "Message.hpp"
+#include "Parser.hpp"
 
 // Compare Messages and display only values that differe
 
@@ -65,7 +66,7 @@ int	test_parsing()
 	{
 		ft_irc::Message	expected(dummy_client);
 
-		msg = parser.parseMessage("123", dummy_client);
+		msg = parser.parseMessage(dummy_client, "123");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -73,7 +74,7 @@ int	test_parsing()
 	{
 		ft_irc::Message	expected(dummy_client);
 
-		msg = parser.parseMessage("foo", dummy_client);
+		msg = parser.parseMessage(dummy_client, "foo");
 		expected.setCommand("foo");
 		expected.setResponse(":irc.42.fr 421 foo :Unknown command\r\n");
 		assert(cmp_msg(msg, expected));
@@ -83,7 +84,7 @@ int	test_parsing()
 	{
 		ft_irc::Message	expected(dummy_client);
 
-		msg = parser.parseMessage("PArt", dummy_client);
+		msg = parser.parseMessage(dummy_client, "PArt");
 		expected.setCommand("PART");
 		assert(cmp_msg(msg, expected));
 	}
@@ -92,7 +93,7 @@ int	test_parsing()
 	{
 		ft_irc::Message	expected(dummy_client);
 
-		msg = parser.parseMessage("QUIT", dummy_client);
+		msg = parser.parseMessage(dummy_client, "QUIT");
 		expected.setCommand("QUIT");
 		assert(cmp_msg(msg, expected));
 	}
@@ -101,7 +102,7 @@ int	test_parsing()
 	{
 		ft_irc::Message	expected(dummy_client);
 
-		msg = parser.parseMessage("PRIVMSG :long_trailing :foo : foo", dummy_client);
+		msg = parser.parseMessage(dummy_client, "PRIVMSG :long_trailing :foo : foo");
 		expected.setCommand("PRIVMSG");
 		expected.setParam(":long_trailing :foo : foo");
 		assert(cmp_msg(msg, expected));
@@ -111,7 +112,7 @@ int	test_parsing()
 	{
 		ft_irc::Message	expected(dummy_client);
 
-		msg = parser.parseMessage("PRIVMSG :trailing", dummy_client);
+		msg = parser.parseMessage(dummy_client, "PRIVMSG :trailing");
 		expected.setCommand("PRIVMSG");
 		expected.setParam(":trailing");
 		assert(cmp_msg(msg, expected));
@@ -120,7 +121,7 @@ int	test_parsing()
 	{
 		ft_irc::Message	expected(dummy_client);
 
-		msg = parser.parseMessage("PRIVMSG middle trailing", dummy_client);
+		msg = parser.parseMessage(dummy_client, "PRIVMSG middle trailing");
 		expected.setCommand("PRIVMSG");
 		expected.setParam("middle");
 		assert(cmp_msg(msg, expected));
@@ -130,11 +131,11 @@ int	test_parsing()
 	{
 		ft_irc::Message	expected(dummy_client);
 
-		msg = parser.parseMessage("JOIN  ", dummy_client);
+		msg = parser.parseMessage(dummy_client, "JOIN  ");
 		expected.setCommand("JOIN");
 		assert(cmp_msg(msg, expected));
 
-		msg = parser.parseMessage("JOIN #general", dummy_client);
+		msg = parser.parseMessage(dummy_client, "JOIN #general");
 		expected.setParam("#general");
 		assert(cmp_msg(msg, expected));
 	}

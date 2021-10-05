@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/04 14:40:01 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 14:39:44 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,11 +207,11 @@ namespace ft_irc
 	}
 
 	// Main parsing function
-	Message	Parser::parseMessage(const std::string& packet, Client& sender)
+	Message	Parser::parseMessage(Client& sender, const std::string& cmd)
 	{
 		Message	msg(sender);
 
-		setIterators(packet);
+		setIterators(cmd);
 
 		if (_parseCommand(msg)) // wrong command name format is silently ignored
 		{

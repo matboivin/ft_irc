@@ -65,7 +65,7 @@ namespace ft_irc
 		void	setIterators(const std::string& str);
 
 		// main parsing function
-		Message	parseMessage(const std::string& packet, Client& sender);
+		Message	parseMessage(Client& sender, const std::string& cmd);
 	};
 } // !namespace ft_irc
 

@@ -6,10 +6,13 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:34:20 by root              #+#    #+#             */
-/*   Updated: 2021/10/05 14:08:34 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 14:54:34 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <cstring>
+#include <string>
+#include "ft_irc.hpp"
 #include "CLIParser.hpp"
 
 namespace ft_irc

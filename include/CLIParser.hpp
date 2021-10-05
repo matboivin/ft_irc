@@ -1,7 +1,7 @@
 #ifndef CLI_PARSER_HPP
 # define CLI_PARSER_HPP
 
-# include "ft_irc.hpp"
+# include <string>
 
 namespace ft_irc
 {
@@ -26,7 +26,7 @@ namespace ft_irc
 		// arg constructor
 					CLIParser(int argc, char** argv);
 		// assignment operator
-		CLIParser	&operator=(const CLIParser& other);
+		CLIParser&	operator=(const CLIParser& other);
 		// destructor
 					~CLIParser();
 

@@ -6,23 +6,12 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/05 14:05:23 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 14:53:57 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_IRC_HPP
 # define FT_IRC_HPP
-
-# include <iostream>
-# include <cstdlib>
-# include <cstring>
-# include <fcntl.h>
-# include <string>
-# include <sys/socket.h>
-# include <arpa/inet.h>
-# include <netinet/in.h>
-# include <netdb.h>
-# include <unistd.h>
 
 # include "Channel.hpp"
 # include "Client.hpp"

@@ -6,36 +6,23 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/05 14:23:29 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 14:48:57 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-# include <algorithm>
-# include <cstring>
-# include <cstdlib>
-# include <fcntl.h>
-# include <iostream>
 # include <list>
 # include <map>
-# include <poll.h>
 # include <string>
-# include <sys/socket.h>
-# include <arpa/inet.h>
-# include <netinet/in.h>
-# include <netdb.h>
-# include <unistd.h>
-# include <vector>
-# include "Client.hpp"
-# include "Parser.hpp"
-# include "server_operations.hpp"
 
 namespace ft_irc
 {
 	class Message;
 	class Channel;
+	class Client;
+	class Parser;
 
 	class Server
 	{
@@ -116,12 +103,11 @@ namespace ft_irc
 		int			_disconnectClient(Client& client);
 
 		// parsing
-		Message		_parse(const std::string& packet, Client& sender);
+		Message		_parse(Client& sender, const std::string& cmd);
 
 		// commands execution
-		void		_init_commands_map(cmds_map& m);
-		int			_executeCommand(Message& msg, Client& client);
-		void		_callCommandFunc(const cmds_map& m, Message& msg);
+		void		_init_commands_map();
+		int			_executeCommand(Message& msg);
 
 		// debug
 		int			_sendList(Client& client);

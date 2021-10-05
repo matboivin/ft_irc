@@ -6,15 +6,29 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/05 14:27:51 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 14:49:04 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <algorithm>
+#include <cstring>
+#include <cstdlib>
+#include <fcntl.h>
+#include <iostream>
+#include <list>
+#include <map>
+#include <poll.h>
 #include <string>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <unistd.h>
 #include "Client.hpp"
 #include "Channel.hpp"
 #include "Message.hpp"
 #include "Parser.hpp"
+#include "numeric_replies.hpp"
 #include "Server.hpp"
 #include "server_operations.hpp"
 
@@ -41,7 +55,7 @@ namespace ft_irc
 		this->_address.sin_addr.s_addr = inet_addr(this->_bind_address.c_str());
 
 		// init map of commands
-		_init_commands_map(this->_commands);
+		_init_commands_map();
 	}
 
 	// copy constructor
@@ -272,10 +286,10 @@ namespace ft_irc
 			if (it->hasUnprocessedCommands() == true)
 			{
 				// parse the message
-				Message	msg = this->_parse(it->popUnprocessedCommand(), *it);
+				Message	msg = _parse(*it, it->popUnprocessedCommand());
 
 				// execute the command
-				this->_executeCommand(msg, *it);
+				_executeCommand(msg);
 				// send response to recipient(s)
 				if (!msg.getRecipients().empty())
 				{
@@ -317,39 +331,30 @@ namespace ft_irc
 	}
 
 	// Call Parser method to process a message
-	Message	Server::_parse(const std::string& packet, Client& sender)
+	Message	Server::_parse(Client& sender, const std::string& cmd)
 	{
-		return (this->_parser.parseMessage(packet, sender));
+		return (this->_parser.parseMessage(sender, cmd));
 	}
 
 	// Command execution
-	int	Server::_executeCommand(Message& msg, Client& client)
+	int	Server::_executeCommand(Message& msg)
 	{
-		if (msg.getCommand() == "QUIT")
-		{
-			this->_disconnectClient(client);
-		}
-		_callCommandFunc(this->_commands, msg);
+		cmds_map::const_iterator	it = this->_commands.find(msg.getCommand());
+
+		if (it != this->_commands.end())
+			(this->*it->second)(msg);
+
 		return (0);
 	}
 
 	// Init the map containing the commands
-	void	Server::_init_commands_map(cmds_map& m)
+	void	Server::_init_commands_map()
 	{
-		m["PASS"]    = &Server::exec_pass_cmd;
-		m["NICK"]    = &Server::exec_nick_cmd;
-		m["QUIT"]    = &Server::exec_quit_cmd;
-		m["PRIVMSG"] = &Server::exec_privmsg_cmd;
-		m["NOTICE"]  = &Server::exec_notice_cmd;
-	}
-
-	// call command function
-	void	Server::_callCommandFunc(const cmds_map& m, Message& msg)
-	{
-		cmds_map::const_iterator	it = m.find(msg.getCommand());
-
-		if (it != m.end())
-			(this->*it->second)(msg);
+		this->_commands["PASS"]    = &Server::exec_pass_cmd;
+		this->_commands["NICK"]    = &Server::exec_nick_cmd;
+		this->_commands["QUIT"]    = &Server::exec_quit_cmd;
+		this->_commands["PRIVMSG"] = &Server::exec_privmsg_cmd;
+		this->_commands["NOTICE"]  = &Server::exec_notice_cmd;
 	}
 
 	// debug
@@ -520,6 +525,7 @@ namespace ft_irc
 			msg.appendSeparator();
 		}
 
+		_disconnectClient(msg.getSender());
 		// TODO: The server acknowledges this by sending an ERROR message to the client
 	}
 
