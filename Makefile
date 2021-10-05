@@ -41,8 +41,7 @@ INC_DIR = include
 SRC_DIR = src
 OBJ_DIR = obj
 
-SUB_DIRS =	cli_parser \
-			client \
+SUB_DIRS =	client \
 			parsing \
 			server \
 			utils
