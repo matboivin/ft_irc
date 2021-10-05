@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/05 15:28:23 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/05 15:33:03 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -600,6 +600,7 @@ namespace ft_irc
 			err_needmoreparams(msg);
 			return ;
 		}
+
 		std::list<Channel>::iterator	it = getChannel(msg.getParam(0));
 
 		// if channel doesn't exist
@@ -609,6 +610,13 @@ namespace ft_irc
 		else if (!userOnChannel(msg.getSender(), msg.getParam(0)))
 			err_notonchannel(msg, msg.getParam(0));
 		else
+		{
+			// if (msg.getParams().size() > 1)
+			// {
+				// TODO: format broadcast message then send it
+			// 	it->broadcastMessage(const Message& msg);
+			// }
 			removeUserFromChannel(msg.getSender(), msg.getParam(0));
+		}
 	}
 }
