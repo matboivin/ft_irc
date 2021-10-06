@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/06 12:28:54 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/06 12:42:14 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -402,6 +402,7 @@ namespace ft_irc
 
 	// Channel operations
 
+	// Find a channel using its name
 	std::list<Channel>::iterator	Server::getChannel(const std::string& chan_name)
 	{
 		std::list<Channel>::iterator	it = this->_channels.begin();
@@ -415,12 +416,14 @@ namespace ft_irc
 		return (it);
 	}
 
+	// Add a new channel to the server's list
 	Channel&	Server::addChannel(const std::string& name)
 	{
 		this->_channels.push_back(Channel(name));
 		return (this->_channels.back());
 	}
 
+	// Remove a channel from the server's list
 	void	Server::removeChannel(std::list<Channel>::iterator channel)
 	{
 		std::cout << "Remove channel " << channel->getName() << std::endl;
@@ -467,39 +470,6 @@ namespace ft_irc
 			err_alreadyregistered(msg);
 		else
 			msg.getSender().setPassword(msg.getParam(0));
-	}
-
-	// NICK helper: Special characters listed in the RFC grammar
-	static bool	is_special(char c)
-	{
-		return (
-			(c == '[') || (c == ']') || (c == '\\') || (c == '`')
-			|| (c == '_') || (c == '^') || (c == '{') || (c == '}') || (c == '|')
-			);
-	}
-
-	// NICK helper: Check whether a nickname format is valid
-	// A nickname is composed of 1 to 9 characters which can be digits, letters or special characters.
-	// It musn't start by a digit
-	static bool	nick_is_valid(const std::string& newnick)
-	{
-		if (newnick.size() < 10)
-		{
-			std::string::const_iterator	it = newnick.begin();
-
-			if (isalpha(*it) || is_special(*it))
-			{
-				++it;
-				while (it != newnick.end())
-				{
-					if (!isalnum(*it) && !is_special(*it) && (*it != '-'))
-						return (false);
-					++it;
-				}
-				return (true);
-			}
-		}
-		return (false);
 	}
 
 	// NICK <nickname>
@@ -584,6 +554,9 @@ namespace ft_irc
 			err_needmoreparams(msg);
 			return ;
 		}
+
+		// if (msg.getParam(0) == 0)
+			// QUIT ALL CHANNELS
 
 		for (std::vector<std::string>::const_iterator param = msg.getParams().begin();
 			 param != msg.getParams().end();
