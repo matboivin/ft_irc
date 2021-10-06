@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/06 13:28:10 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/06 13:33:13 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -563,15 +563,18 @@ namespace ft_irc
 			 param != msg.getParams().end();
 			 ++param)
 		{
-			std::list<Channel>::iterator	channel = getChannel(*param);
-
 			if (!channel_is_valid(*param))
 				err_nosuchchannel(msg, *param);
-			// if channel doesn't exist, create it
-			else if (channel == this->_channels.end())
-				addUserToChannel(msg.getSender(), addChannel(*param));
 			else
-				addUserToChannel(msg.getSender(), *channel);
+			{
+				std::list<Channel>::iterator	channel = getChannel(*param);
+
+				// if channel doesn't exist, create it
+				if (channel == this->_channels.end())
+					addUserToChannel(msg.getSender(), addChannel(*param));
+				else
+					addUserToChannel(msg.getSender(), *channel);
+			}
 		}
 	}
 
