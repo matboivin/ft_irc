@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/05 14:51:27 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/06 12:22:48 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,12 +86,12 @@ namespace ft_irc
 		throw std::out_of_range("Message::getParam");
 	}
 
-	std::vector<std::string>	Message::getParams() const
+	const std::vector<std::string>&	Message::getParams() const
 	{
 		return (this->_params);
 	}
 
-	std::vector<Client>	Message::getRecipients() const
+	const std::vector<Client>&	Message::getRecipients() const
 	{
 		return (this->_recipients);
 	}

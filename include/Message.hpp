@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:47:11 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/05 14:50:41 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/06 12:22:54 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,8 @@ namespace ft_irc
 		std::string					getResponse() const;
 		std::string					getCommand() const;
 		std::string					getParam(int idx) const;
-		std::vector<std::string>	getParams() const;
-		std::vector<Client>			getRecipients() const;
+		const std::vector<std::string>&	getParams() const;
+		const std::vector<Client>&		getRecipients() const;
 
 		// setters
 		void	setSender(Client& sender);

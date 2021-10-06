@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/06 11:50:42 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/06 12:28:54 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -423,7 +423,7 @@ namespace ft_irc
 
 	void	Server::removeChannel(std::list<Channel>::iterator channel)
 	{
-		std::cout << "Remove channel #" << channel->getName() << std::endl;
+		std::cout << "Remove channel " << channel->getName() << std::endl;
 		this->_channels.erase(channel);
 	}
 
@@ -438,7 +438,7 @@ namespace ft_irc
 	{
 		if (!userOnChannel(client, channel))
 		{
-			std::cout << "Add " << client.getNick() << " to channel #"
+			std::cout << "Add " << client.getNick() << " to channel "
 					  << channel.getName() << std::endl;
 			channel.addClient(client);
 		}
@@ -448,7 +448,11 @@ namespace ft_irc
 	void	Server::removeUserFromChannel(Client& client, Channel& channel)
 	{
 		if (userOnChannel(client, channel))
+		{
+			std::cout << "Remove " << client.getNick() << " from channel "
+					  << channel.getName() << std::endl;
 			channel.removeClient(client);
+		}
 	}
 
 	// Commands
@@ -581,13 +585,18 @@ namespace ft_irc
 			return ;
 		}
 
-		std::list<Channel>::iterator	it = getChannel(msg.getParam(0));
+		for (std::vector<std::string>::const_iterator param = msg.getParams().begin();
+			 param != msg.getParams().end();
+			 ++param)
+		{
+			std::list<Channel>::iterator	channel = getChannel(*param);
 
-		// if channel doesn't exist, create it
-		if (it == this->_channels.end())
-			addUserToChannel(msg.getSender(), addChannel(msg.getParam(0)));
-		else
-			addUserToChannel(msg.getSender(), *it);
+			// if channel doesn't exist, create it
+			if (channel == this->_channels.end())
+				addUserToChannel(msg.getSender(), addChannel(*param));
+			else
+				addUserToChannel(msg.getSender(), *channel);
+		}
 	}
 
 	// PART <channels> [<message>]
@@ -599,25 +608,30 @@ namespace ft_irc
 			return ;
 		}
 
-		std::list<Channel>::iterator	it = getChannel(msg.getParam(0));
-
-		// if channel doesn't exist
-		if (it == this->_channels.end())
-			err_nosuchchannel(msg, msg.getParam(0));
-		// else if user not on channel
-		else if (!userOnChannel(msg.getSender(), *it))
-			err_notonchannel(msg, msg.getParam(0));
-		else
+		for (std::vector<std::string>::const_iterator param = msg.getParams().begin();
+			 param != msg.getParams().end();
+			 ++param)
 		{
-			// if (msg.getParams().size() > 1)
-			// {
-				// TODO: format broadcast message then send it
-			// 	it->broadcastMessage(const Message& msg);
-			// }
-			removeUserFromChannel(msg.getSender(), *it);
-			// Remove Channel if empty
-			if (it->isEmpty())
-				removeChannel(it);
+			std::list<Channel>::iterator	channel = getChannel(*param);
+
+			// if channel doesn't exist
+			if (channel == this->_channels.end())
+				err_nosuchchannel(msg, *param);
+			// else if user not on channel
+			else if (!userOnChannel(msg.getSender(), *channel))
+				err_notonchannel(msg, *param);
+			else
+			{
+				// if (msg.getParams().size() > 1)
+				// {
+					// TODO: format broadcast message then send it
+				// 	channel->broadcastMessage(const Message& msg);
+				// }
+				removeUserFromChannel(msg.getSender(), *channel);
+				// Remove Channel if empty
+				if (channel->isEmpty())
+					removeChannel(channel);
+			}
 		}
 	}
 }
