@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/06 12:42:14 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/06 13:28:10 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -555,7 +555,8 @@ namespace ft_irc
 			return ;
 		}
 
-		// if (msg.getParam(0) == 0)
+		// JOIN 0
+		// if (msg.getParam(0) == "0")
 			// QUIT ALL CHANNELS
 
 		for (std::vector<std::string>::const_iterator param = msg.getParams().begin();
@@ -564,8 +565,10 @@ namespace ft_irc
 		{
 			std::list<Channel>::iterator	channel = getChannel(*param);
 
+			if (!channel_is_valid(*param))
+				err_nosuchchannel(msg, *param);
 			// if channel doesn't exist, create it
-			if (channel == this->_channels.end())
+			else if (channel == this->_channels.end())
 				addUserToChannel(msg.getSender(), addChannel(*param));
 			else
 				addUserToChannel(msg.getSender(), *channel);
@@ -588,7 +591,7 @@ namespace ft_irc
 			std::list<Channel>::iterator	channel = getChannel(*param);
 
 			// if channel doesn't exist
-			if (channel == this->_channels.end())
+			if (!(channel_is_valid(*param)) || (channel == this->_channels.end()))
 				err_nosuchchannel(msg, *param);
 			// else if user not on channel
 			else if (!userOnChannel(msg.getSender(), *channel))

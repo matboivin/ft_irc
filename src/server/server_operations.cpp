@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:37:26 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/06 12:44:09 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/06 13:26:29 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ namespace ft_irc
 			);
 	}
 
+	// Late parsing helpers
+
 	// Special characters listed in the RFC grammar
 	bool	is_special(char c)
 	{
@@ -40,8 +42,6 @@ namespace ft_irc
 			|| (c == '_') || (c == '^') || (c == '{') || (c == '}') || (c == '|')
 			);
 	}
-
-	// Late parsing helpers
 
 	// Check whether a nickname format is valid
 	// A nickname is composed of 1 to 9 characters which can be digits, letters
@@ -65,5 +65,13 @@ namespace ft_irc
 			}
 		}
 		return (false);
+	}
+
+	// Check channel name
+	// ( "#" / "+" / ( "!" channelid ) / "&" ) chanstring [ ":" chanstring ]
+	bool	channel_is_valid(const std::string& chan_name)
+	{
+		return ((chan_name[0] == '#') || (chan_name[0] == '+')
+				|| (chan_name[0] == '!') || (chan_name[0] == '&'));
 	}
 } // namespace ft_irc
