@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/05 14:59:38 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/06 12:12:47 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,44 +151,35 @@ namespace ft_irc
 	// Parses the trailing part of a message
 	// It starts by a ':' followed by a possibly empty sequence of octets not including
 	// NUL or CR or LF
-	bool	Parser::_parseTrailing(Message& msg)
+	void	Parser::_parseTrailing(Message& msg)
 	{
 		while (_nocrlf(this->_current))
 			++this->_current;
 
-		msg.setParam(std::string(this->_start, this->_current));
-		return (_parseSeparator());
+		msg.setParam(std::string(this->_start, this->_current));;
 	}
 
 	// Parses the middle part of a message
 	// It musn't start by a ':'.
 	// It is a non-empty sequence of octets not including SPACE or NUL or CR or LF.
-	bool	Parser::_parseMiddle(Message& msg)
+	void	Parser::_parseMiddle(Message& msg)
 	{
-		while (_nospcrlfcl(this->_current) || (*this->_current == ':'))
+		while ((_nospcrlfcl(this->_current) || (*this->_current == ':')) && (*this->_current != ','))
 			++this->_current;
 		msg.setParam(std::string(this->_start, this->_current));
-		if (_eat(' '))
-		{
-			if (*this->_current == ':')
-			{
-				this->_start = this->_current;
-				return (_parseTrailing(msg));
-			}
-		}
-		return (_parseSeparator());
 	}
 
 	// Parses the command parameters
 	bool	Parser::_parseParams(Message& msg)
 	{
-		if (_eat(' '))
+		// the comma means it's a list of parameters (e.g., <channel>,<channel>)
+		while (_eat(' ') || _eat(','))
 		{
 			this->_start = this->_current;
 			if ((this->_current != this->_end) && (*this->_current == ':'))
-				return (_parseTrailing(msg));
+				_parseTrailing(msg);
 			else if (_current != _end)
-				return (_parseMiddle(msg));
+				_parseMiddle(msg);
 		}
 		return (_parseSeparator());
 	}
