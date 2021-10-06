@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:58:53 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/05 14:58:13 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/06 11:37:53 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,12 @@ namespace ft_irc
 	void	Channel::setClients(const std::list<Client>& clients)
 	{
 		this->_clients = clients;
+	}
+
+	// helpers
+	bool	Channel::isEmpty() const
+	{
+		return (this->_clients.empty());
 	}
 
 	// manage clients in channel

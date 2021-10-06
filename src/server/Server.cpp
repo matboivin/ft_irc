@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/05 15:47:39 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/06 11:50:42 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -421,6 +421,12 @@ namespace ft_irc
 		return (this->_channels.back());
 	}
 
+	void	Server::removeChannel(std::list<Channel>::iterator channel)
+	{
+		std::cout << "Remove channel #" << channel->getName() << std::endl;
+		this->_channels.erase(channel);
+	}
+
 	// Check whether a client is in a specific channel
 	bool	Server::userOnChannel(Client& client, Channel& channel)
 	{
@@ -442,11 +448,7 @@ namespace ft_irc
 	void	Server::removeUserFromChannel(Client& client, Channel& channel)
 	{
 		if (userOnChannel(client, channel))
-		{
-			std::cout << "Remove " << client.getNick() << " from channel #"
-					  << channel.getName() << std::endl;
 			channel.removeClient(client);
-		}
 	}
 
 	// Commands
@@ -613,6 +615,9 @@ namespace ft_irc
 			// 	it->broadcastMessage(const Message& msg);
 			// }
 			removeUserFromChannel(msg.getSender(), *it);
+			// Remove Channel if empty
+			if (it->isEmpty())
+				removeChannel(it);
 		}
 	}
 }
