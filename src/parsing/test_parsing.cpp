@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 12:25:08 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/05 14:52:05 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/06 12:13:02 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,36 +98,7 @@ int	test_parsing()
 		assert(cmp_msg(msg, expected));
 	}
 
-	// Trailing parameter can contain spaces and colons
-	{
-		ft_irc::Message	expected(dummy_client);
-
-		msg = parser.parseMessage(dummy_client, "PRIVMSG :long_trailing :foo : foo");
-		expected.setCommand("PRIVMSG");
-		expected.setParam(":long_trailing :foo : foo");
-		assert(cmp_msg(msg, expected));
-	}
-
-	// Trailing parameter must start with a colon
-	{
-		ft_irc::Message	expected(dummy_client);
-
-		msg = parser.parseMessage(dummy_client, "PRIVMSG :trailing");
-		expected.setCommand("PRIVMSG");
-		expected.setParam(":trailing");
-		assert(cmp_msg(msg, expected));
-	}
-
-	{
-		ft_irc::Message	expected(dummy_client);
-
-		msg = parser.parseMessage(dummy_client, "PRIVMSG middle trailing");
-		expected.setCommand("PRIVMSG");
-		expected.setParam("middle");
-		assert(cmp_msg(msg, expected));
-	}
-
-	// Parameters checking
+	// Simple parameter checking
 	{
 		ft_irc::Message	expected(dummy_client);
 
@@ -137,6 +108,78 @@ int	test_parsing()
 
 		msg = parser.parseMessage(dummy_client, "JOIN #general");
 		expected.setParam("#general");
+		assert(cmp_msg(msg, expected));
+	}
+
+	// Trailing parameter can contain spaces and colons
+	{
+		ft_irc::Message	expected(dummy_client);
+
+		msg = parser.parseMessage(dummy_client, "QUIT :Gone to have lunch at: MyFavPlace");
+		expected.setCommand("QUIT");
+		expected.setParam(":Gone to have lunch at: MyFavPlace");
+		assert(cmp_msg(msg, expected));
+	}
+
+	// Trailing parameter must start with a colon
+	{
+		ft_irc::Message	expected(dummy_client);
+
+		msg = parser.parseMessage(dummy_client, "QUIT :Gone to have lunch");
+		expected.setCommand("QUIT");
+		expected.setParam(":Gone to have lunch");
+		assert(cmp_msg(msg, expected));
+	}
+
+	{
+		ft_irc::Message	expected(dummy_client);
+
+		msg = parser.parseMessage(dummy_client, "TOPIC #test :another topic");
+		expected.setCommand("TOPIC");
+		expected.setParam("#test");
+		expected.setParam(":another topic");
+		assert(cmp_msg(msg, expected));
+	}
+
+	// Many middle parameters
+	{
+		ft_irc::Message	expected(dummy_client);
+
+		msg = parser.parseMessage(dummy_client, "KICK #Finnish John :Speaking English");
+		expected.setCommand("KICK");
+		expected.setParam("#Finnish");
+		expected.setParam("John");
+		expected.setParam(":Speaking English");
+		assert(cmp_msg(msg, expected));
+	}
+
+	// List of middle parameters
+	{
+		ft_irc::Message	expected(dummy_client);
+
+		msg = parser.parseMessage(dummy_client, "JOIN #foo,#bar");
+		expected.setCommand("JOIN");
+		expected.setParam("#foo");
+		expected.setParam("#bar");
+		assert(cmp_msg(msg, expected));
+	}
+
+	{
+		ft_irc::Message	expected(dummy_client);
+
+		msg = parser.parseMessage(dummy_client, "JOIN #foo, #bar");
+		expected.setCommand("JOIN");
+		expected.setParam("#foo");
+		expected.setParam("#bar");
+		assert(cmp_msg(msg, expected));
+	}
+
+	{
+		ft_irc::Message	expected(dummy_client);
+
+		msg = parser.parseMessage(dummy_client, "QUIT :#foo,#bar");
+		expected.setCommand("QUIT");
+		expected.setParam(":#foo,#bar");
 		assert(cmp_msg(msg, expected));
 	}
 
