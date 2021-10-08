@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/10/08 15:27:38 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 20:09:25 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,14 +69,14 @@ namespace ft_irc
 				~Client();
 
 		// getters
-		std::string			getNick() const;
-		std::string			getRealName() const;
-		std::string			getUsername() const;
-		std::string			getPassword() const;
-		std::string			getIpAddressStr() const;
-		struct sockaddr_in&	getAddress();
-		socklen_t&			getAddressSize();
-		int					getSocketFd() const;
+		std::string					getNick() const;
+		std::string					getRealName() const;
+		std::string					getUsername() const;
+		std::string					getPassword() const;
+		std::string					getIpAddressStr() const;
+		struct sockaddr_in&			getAddress();
+		socklen_t&					getAddressSize();
+		int							getSocketFd() const;
 		const std::list<Channel*>&	getJoinedChannels() const;
 
 		// setters

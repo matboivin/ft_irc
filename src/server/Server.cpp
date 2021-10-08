@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/08 17:15:27 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 20:08:29 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -356,10 +356,8 @@ namespace ft_irc
 		this->_commands["PASS"]    = &Server::exec_pass_cmd;
 		this->_commands["NICK"]    = &Server::exec_nick_cmd;
 		this->_commands["QUIT"]    = &Server::exec_quit_cmd;
-		this->_commands["PRIVMSG"] = &Server::exec_privmsg_cmd;
 		this->_commands["NOTICE"]  = &Server::exec_notice_cmd;
-		this->_commands["JOIN"]    = &Server::exec_join_cmd;
-		this->_commands["PART"]    = &Server::exec_part_cmd;
+		this->_commands["PRIVMSG"] = &Server::exec_privmsg_cmd;
 	}
 
 	// Command execution
@@ -538,63 +536,6 @@ namespace ft_irc
 			err_nosuchnick(msg, msg.getParams().front());
 		else
 			_configResponse(msg, "PRIVMSG");
-	}
-
-	// JOIN <channels>
-	void	Server::exec_join_cmd(Message& msg)
-	{
-		if (msg.getParams().empty())
-		{
-			err_needmoreparams(msg);
-			return ;
-		}
-
-		// JOIN 0
-		// if (msg.getParams().front() == "0")
-			// QUIT ALL CHANNELS
-
-		for (std::list<std::string>::const_iterator param = msg.getParams().begin();
-			 param != msg.getParams().end();
-			 ++param)
-		{
-			std::list<Channel>::iterator	channel = getChannel(*param);
-
-			if (!channel_is_valid(*param))
-				err_nosuchchannel(msg, *param);
-			if (channel == this->_channels.end())
-				_addUserToChannel(msg.getSender(), _addChannel(*param));
-			else
-				_addUserToChannel(msg.getSender(), *channel);
-		}
-	}
-
-	// PART <channels> [<message>]
-	// TODO: handle broadcast message then send it
-	void	Server::exec_part_cmd(Message& msg)
-	{
-		if (msg.getParams().empty())
-		{
-			err_needmoreparams(msg);
-			return ;
-		}
-
-		for (std::list<std::string>::const_iterator param = msg.getParams().begin();
-			 param != msg.getParams().end();
-			 ++param)
-		{
-			std::list<Channel>::iterator	channel = getChannel(*param);
-
-			if (channel == this->_channels.end())
-				err_nosuchchannel(msg, *param);
-			else if (!_userOnChannel(msg.getSender(), *channel))
-				err_notonchannel(msg, *param);
-			else
-			{
-				_removeUserFromChannel(msg.getSender(), *channel);
-				if (channel->isEmpty())
-					_removeChannel(channel);
-			}
-		}
 	}
 
 	// debug
