@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/08 17:07:38 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 17:15:27 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -534,7 +534,7 @@ namespace ft_irc
 			err_notexttosend(msg);
 		else if (channel_is_valid(msg.getParams().front()) && !_userOnChannel( msg.getSender(), msg.getParams().front() ))
 			err_cannotsendtochan(msg);
-		else if ( getClient( msg.getParams().front() ) == this->_clients.end() )
+		else if (!channel_is_valid(msg.getParams().front()) && getClient( msg.getParams().front() ) == this->_clients.end() )
 			err_nosuchnick(msg, msg.getParams().front());
 		else
 			_configResponse(msg, "PRIVMSG");
