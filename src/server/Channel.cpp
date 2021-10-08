@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:58:53 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/06 11:37:53 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 15:08:23 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ namespace ft_irc
 		return (this->_mode);
 	}
 
-	std::list<Client>	Channel::getClients() const
+	std::list<Client*>	Channel::getClients() const
 	{
 		return (this->_clients);
 	}
@@ -92,7 +92,7 @@ namespace ft_irc
 		this->_mode = mode;
 	}
 
-	void	Channel::setClients(const std::list<Client>& clients)
+	void	Channel::setClients(std::list<Client*>& clients)
 	{
 		this->_clients = clients;
 	}
@@ -106,11 +106,11 @@ namespace ft_irc
 	// manage clients in channel
 
 	// Find a client using a nickname
-	std::list<Client>::iterator	Channel::findClient(Client& client)
+	std::list<Client*>::iterator	Channel::findClient(Client& client)
 	{
-		std::list<Client>::iterator	it;
+		std::list<Client*>::iterator	it;
 
-		it = std::find(this->_clients.begin(), this->_clients.end(), client);
+		it = std::find(this->_clients.begin(), this->_clients.end(), &client);
 		return (it);
 	}
 
@@ -123,23 +123,23 @@ namespace ft_irc
 	// Add a client to the channel
 	void	Channel::addClient(Client& client)
 	{
-		this->_clients.push_back(client);
+		this->_clients.push_back(&client);
 	}
 
 	void	Channel::removeClient(Client& client)
 	{
-		this->_clients.remove(client);
+		this->_clients.remove(&client);
 	}
 
 	// send a message to all clients in channel
 	void	Channel::broadcastMessage(const Message& msg)
 	{
-		for (std::list<Client>::const_iterator	it = this->_clients.begin();
+		for (std::list<Client*>::const_iterator	it = this->_clients.begin();
 			it != this->_clients.end();
 			++it)
 		{
 			//std::cout << "Sending: '" << msg.getResponse() << "' to " << it->getIpAddressStr() << std::endl;
-			if (send(it->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
+			if (send((*it)->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
 			{
 				throw std::runtime_error("send() failed");
 			}
@@ -149,13 +149,13 @@ namespace ft_irc
 	// debug
 	void	Channel::displayClients()
 	{
-		std::cout << "Users in channel #" << this->getName() << ":\n";
+		std::cout << "Users in channel " << this->getName() << ":\n";
 
-		for (std::list<Client>::iterator	it = this->_clients.begin();
+		for (std::list<Client*>::iterator	it = this->_clients.begin();
 			 it != this->_clients.end();
 			 ++it)
 		{
-			std::cout << "- " << it->getNick() << '\n';
+			std::cout << "- " << (*it)->getNick() << '\n';
 		}
 	}
 } // !namespace ft_irc

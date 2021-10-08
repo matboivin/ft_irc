@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/06 13:33:13 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 15:12:40 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -444,6 +444,9 @@ namespace ft_irc
 			std::cout << "Add " << client.getNick() << " to channel "
 					  << channel.getName() << std::endl;
 			channel.addClient(client);
+			client.joinChannel(channel);
+			channel.displayClients(); // debug
+			client.displayJoinedChannels();
 		}
 	}
 
@@ -455,6 +458,9 @@ namespace ft_irc
 			std::cout << "Remove " << client.getNick() << " from channel "
 					  << channel.getName() << std::endl;
 			channel.removeClient(client);
+			client.partChannel(channel);
+			channel.displayClients(); // debug
+			client.displayJoinedChannels();
 		}
 	}
 

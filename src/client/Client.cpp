@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/10/08 14:44:31 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 15:11:34 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,7 +152,7 @@ namespace ft_irc
 		this->_socket_fd = socket_fd;
 	}
 
-	void	Client::setJoinedChannels(std::list<Channel*> joined_channels)
+	void	Client::setJoinedChannels(std::list<Channel*>& joined_channels)
 	{
 		this->_joined_channels = joined_channels;
 	}
@@ -160,6 +160,11 @@ namespace ft_irc
 	void	Client::joinChannel(Channel& channel)
 	{
 		this->_joined_channels.push_back(&channel);
+	}
+
+	void	Client::partChannel(Channel& channel)
+	{
+		this->_joined_channels.remove(&channel);
 	}
 
 	// helpers
@@ -269,5 +274,18 @@ namespace ft_irc
 	bool	operator==(const Client& lhs, const Client& rhs)
 	{
 		return ((lhs._socket_fd == rhs._socket_fd && lhs._nick == rhs._nick));
+	}
+
+	// debug
+	void	Client::displayJoinedChannels()
+	{
+		std::cout << this->getNick() << " joined channels:\n";
+
+		for (std::list<Channel*>::iterator	it = this->_joined_channels.begin();
+			 it != this->_joined_channels.end();
+			 ++it)
+		{
+			std::cout << "- " << (*it)->getName() << '\n';
+		}
 	}
 } // namespace ft_irc

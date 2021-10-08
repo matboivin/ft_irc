@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:42:14 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/06 11:37:23 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 15:01:14 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ namespace ft_irc
 		std::string			_name;
 		std::string			_topic;
 		std::string			_mode;
-		std::list<Client>	_clients;
+		std::list<Client*>	_clients;
 
 	public:
 		// default constructor
@@ -47,19 +47,19 @@ namespace ft_irc
 		std::string			getName() const;
 		std::string			getTopic() const;
 		std::string			getMode() const;
-		std::list<Client>	getClients() const;
+		std::list<Client*>	getClients() const;
 
 		// setters
 		void	setName(const std::string& name);
 		void	setTopic(const std::string& topic);
 		void	setMode(const std::string& mode);
-		void	setClients(const std::list<Client>& clients);
+		void	setClients(std::list<Client*>& clients);
 
 		// helpers
 		bool	isEmpty() const;
 
 		// manage clients in channel
-		std::list<Client>::iterator	findClient(Client& client);
+		std::list<Client*>::iterator	findClient(Client& client);
 		bool	hasClient(Client& client);
 		void	addClient(Client& client);
 		void	removeClient(Client& client);

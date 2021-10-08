@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/10/08 14:42:40 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 15:06:19 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,11 @@ namespace ft_irc
 		std::string			_mode;
 		std::string			_password;
 		struct sockaddr_in	_address;			//IPv4 address		
-		socklen_t 			_address_size;		//IPv4 address size
+		socklen_t			_address_size;		//IPv4 address size
 		std::string			_address_str;		//IPv4 address as string
 		struct timeval		_timeout;			//timeout for select()
 		int					_socket_fd;			//socket file descriptor
-		bool				_connected;		//is the client connected to the server?
+		bool				_connected;			//is the client connected to the server?
 		std::string			_in_buffer;			//buffer for incoming data
 		std::string			_out_buffer;		//buffer for outgoing data
 		const size_t		_max_cmd_length;	//max length of a command
@@ -85,8 +85,9 @@ namespace ft_irc
 		void		setUsername(const std::string& username);
 		void		setPassword(const std::string& password);
 		void		setSocketFd(int socket_fd);
-		void		setJoinedChannels(std::list<Channel*> joined_channels);
+		void		setJoinedChannels(std::list<Channel*>& joined_channels);
 		void		joinChannel(Channel& channel);
+		void		partChannel(Channel& channel);
 
 		// helpers
 		bool		isRegistered() const;
@@ -103,6 +104,9 @@ namespace ft_irc
 
 		//operator==
 		friend bool	operator==(const Client& lhs, const Client& rhs);
+
+		// debug
+		void		displayJoinedChannels();
 	};
 } // namespace ft_irc
 
