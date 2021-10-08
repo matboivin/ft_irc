@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/08 15:34:28 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 17:02:26 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,11 @@ namespace ft_irc
 	void	Message::setRecipient(Client& recipient)
 	{
 		this->_recipients.push_back(&recipient);
+	}
+
+	void	Message::addRecipients(const std::list<Client*>& recipients)
+	{
+		this->_recipients.insert(this->_recipients.end(), recipients.begin(), recipients.end());
 	}
 
 	// end message with CRLF

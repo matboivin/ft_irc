@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:47:11 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/08 15:30:53 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 17:01:14 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,8 @@ namespace ft_irc
 		void	setParam(const std::string& param);
 		void	setRecipients(const std::list<Client*>& recipients);
 		void	setRecipient(Client& recipient);
+
+		void	addRecipients(const std::list<Client*>& recipients);
 
 		// end message with CRLF
 		void	appendSeparator();
