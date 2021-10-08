@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/08 16:07:13 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 16:26:04 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -400,6 +400,20 @@ namespace ft_irc
 		return (0);
 	}
 
+	// Clients operations
+	std::list<Client>::iterator	Server::getClient(const std::string& nick)
+	{
+		std::list<Client>::iterator	it = this->_clients.begin();
+
+		while (it != this->_clients.end())
+		{
+			if (it->getNick() == nick)
+				break ;
+			++it;
+		}
+		return (it);
+	}
+
 	// Channel operations
 
 	// Find a channel using its name
@@ -437,6 +451,15 @@ namespace ft_irc
 	bool	Server::userOnChannel(Client& client, Channel& channel)
 	{
 		return (channel.hasClient(client)); 
+	}
+
+	bool	Server::userOnChannel(Client& client, const std::string& chan_name)
+	{
+		std::list<Channel>::iterator	channel = getChannel(chan_name);
+
+		if (channel != this->_channels.end())
+			return (channel->hasClient(client));
+		return (false);
 	}
 
 	// Add a user to a channel (ex: JOIN command)
@@ -507,13 +530,7 @@ namespace ft_irc
 	{
 		if (!msg.getParams().empty())
 		{
-			// msg.setRecipient(users in channel);
-			msg.setResponse(
-				build_prefix( build_full_client_id( msg.getSender() ) )
-				+ " NOTICE " + "chan tmp" // TODO: not sure about notice and need target
-				+ msg.getSender().getNick() + " has quit IRC (" + msg.getParams().front() + ")"
-				);
-			msg.appendSeparator();
+			// TODO
 		}
 
 		_disconnectClient(msg.getSender());
@@ -533,9 +550,7 @@ namespace ft_irc
 		// 	add everyone from channel
 		// if (channel doesnt exist)
 		// 	create channel;
-		msg.setResponse(build_prefix( build_full_client_id( msg.getSender() ) ) + " PRIVMSG ");
-		// TODO
-		msg.appendSeparator();
+		msg.setResponse(fill_msg_response(msg, "NOTICE"));
 	}
 
 	// PRIVMSG <msgtarget> :<message>
@@ -546,12 +561,12 @@ namespace ft_irc
 			err_norecipient(msg);
 		else if (msg.getParams().size() < 2)
 			err_notexttosend(msg);
-		// else if (msg.getParams().front() doesn't exist)
-		// 	err_nosuchnick(msg, msg.getParams().front());
-		// else if (!msg.getSender() is not in channel)
-		// 	err_cannotsendtochan(msg);
-		// else
-		// 	exec_notice_cmd(msg);
+		else if (channel_is_valid(msg.getParams().front()) && !userOnChannel( msg.getSender(), msg.getParams().front() ))
+			err_cannotsendtochan(msg);
+		else if ( getClient( msg.getParams().front() ) == this->_clients.end() )
+			err_nosuchnick(msg, msg.getParams().front());
+		else
+			msg.setResponse(fill_msg_response(msg, "PRIVMSG"));
 	}
 
 	// JOIN <channels>

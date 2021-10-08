@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/08 15:57:33 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 16:23:18 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,11 +75,15 @@ namespace ft_irc
 		// main loop
 		int			run();
 
+		// Clients operations
+		std::list<Client>::iterator	getClient(const std::string& nick);
+
 		// Channel operations
 		std::list<Channel>::iterator	getChannel(const std::string& chan_name);
 		Channel&	addChannel(const std::string& name);
 		void		removeChannel(std::list<Channel>::iterator channel);
 		bool		userOnChannel(Client& client, Channel& channel);
+		bool		userOnChannel(Client& client, const std::string& chan_name);
 		void		addUserToChannel(Client& client, Channel& channel);
 		void		removeUserFromChannel(Client& client, Channel& channel);
 
