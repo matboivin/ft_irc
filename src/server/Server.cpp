@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/08 16:26:04 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 16:29:59 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -514,13 +514,10 @@ namespace ft_irc
 		{
 			if (!nick_is_valid(msg.getParams().front()))
 				err_erroneusnickname(msg);
-			// else if nickname already exists
-			//    err_nicknameinuse(msg);
+			else if (getClient(msg.getParams().front()) != this->_clients.end())
+				err_nicknameinuse(msg);
 			else
-			{
 				msg.getSender().setNick(msg.getParams().front());
-				std::cout << "new nick is: " << msg.getSender().getNick() << '\n'; // debug
-			}
 		}
 	}
 
