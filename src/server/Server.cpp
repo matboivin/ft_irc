@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/08 15:58:13 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 16:07:13 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -405,6 +405,9 @@ namespace ft_irc
 	// Find a channel using its name
 	std::list<Channel>::iterator	Server::getChannel(const std::string& chan_name)
 	{
+		if (!channel_is_valid(chan_name))
+			return (this->_channels.end());
+
 		std::list<Channel>::iterator	it = this->_channels.begin();
 
 		while (it != this->_channels.end())
@@ -544,7 +547,7 @@ namespace ft_irc
 		else if (msg.getParams().size() < 2)
 			err_notexttosend(msg);
 		// else if (msg.getParams().front() doesn't exist)
-		//	err_nosuchnick(msg, msg.getParams().front());
+		// 	err_nosuchnick(msg, msg.getParams().front());
 		// else if (!msg.getSender() is not in channel)
 		// 	err_cannotsendtochan(msg);
 		// else
@@ -568,18 +571,14 @@ namespace ft_irc
 			 param != msg.getParams().end();
 			 ++param)
 		{
+			std::list<Channel>::iterator	channel = getChannel(*param);
+
 			if (!channel_is_valid(*param))
 				err_nosuchchannel(msg, *param);
+			if (channel == this->_channels.end())
+				addUserToChannel(msg.getSender(), addChannel(*param));
 			else
-			{
-				std::list<Channel>::iterator	channel = getChannel(*param);
-
-				// if channel doesn't exist, create it
-				if (channel == this->_channels.end())
-					addUserToChannel(msg.getSender(), addChannel(*param));
-				else
-					addUserToChannel(msg.getSender(), *channel);
-			}
+				addUserToChannel(msg.getSender(), *channel);
 		}
 	}
 
@@ -599,16 +598,13 @@ namespace ft_irc
 		{
 			std::list<Channel>::iterator	channel = getChannel(*param);
 
-			// if channel doesn't exist
-			if (!(channel_is_valid(*param)) || (channel == this->_channels.end()))
+			if (channel == this->_channels.end())
 				err_nosuchchannel(msg, *param);
-			// else if user not on channel
 			else if (!userOnChannel(msg.getSender(), *channel))
 				err_notonchannel(msg, *param);
 			else
 			{
 				removeUserFromChannel(msg.getSender(), *channel);
-				// Remove Channel if empty
 				if (channel->isEmpty())
 					removeChannel(channel);
 			}
