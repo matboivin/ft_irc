@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/08 15:40:26 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 15:58:13 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -433,7 +433,7 @@ namespace ft_irc
 	// Check whether a client is in a specific channel
 	bool	Server::userOnChannel(Client& client, Channel& channel)
 	{
-		return (channel.hasClient(client));
+		return (channel.hasClient(client)); 
 	}
 
 	// Add a user to a channel (ex: JOIN command)
@@ -584,6 +584,7 @@ namespace ft_irc
 	}
 
 	// PART <channels> [<message>]
+	// TODO: handle broadcast message then send it
 	void	Server::exec_part_cmd(Message& msg)
 	{
 		if (msg.getParams().empty())
@@ -606,11 +607,6 @@ namespace ft_irc
 				err_notonchannel(msg, *param);
 			else
 			{
-				// if (msg.getParams().size() > 1)
-				// {
-					// TODO: format broadcast message then send it
-				// 	channel->broadcastMessage(const Message& msg);
-				// }
 				removeUserFromChannel(msg.getSender(), *channel);
 				// Remove Channel if empty
 				if (channel->isEmpty())
