@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/10/08 15:11:34 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 15:27:31 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ namespace ft_irc
 		return (this->_socket_fd);
 	}
 
-	std::list<Channel*>	Client::getJoinedChannels() const
+	const std::list<Channel*>&	Client::getJoinedChannels() const
 	{
 		return (this->_joined_channels);
 	}
@@ -152,7 +152,7 @@ namespace ft_irc
 		this->_socket_fd = socket_fd;
 	}
 
-	void	Client::setJoinedChannels(std::list<Channel*>& joined_channels)
+	void	Client::setJoinedChannels(const std::list<Channel*>& joined_channels)
 	{
 		this->_joined_channels = joined_channels;
 	}

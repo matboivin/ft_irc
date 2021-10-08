@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/05 12:13:43 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 15:35:43 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,7 +211,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
-			+ " 404 " + msg.getParam(0) + " :Cannot send to channel"
+			+ " 404 " + msg.getParams().front() + " :Cannot send to channel"
 			);
 		msg.appendSeparator();
 	}
@@ -282,7 +282,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
-			+ " 432 " + msg.getParam(0) + " :Erroneous nickname"
+			+ " 432 " + msg.getParams().front() + " :Erroneous nickname"
 			);
 		msg.appendSeparator();
 	}

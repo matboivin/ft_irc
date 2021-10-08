@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:58:53 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/08 15:08:23 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 15:27:03 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ namespace ft_irc
 		return (this->_mode);
 	}
 
-	std::list<Client*>	Channel::getClients() const
+	const std::list<Client*>&	Channel::getClients() const
 	{
 		return (this->_clients);
 	}
@@ -92,7 +92,7 @@ namespace ft_irc
 		this->_mode = mode;
 	}
 
-	void	Channel::setClients(std::list<Client*>& clients)
+	void	Channel::setClients(const std::list<Client*>& clients)
 	{
 		this->_clients = clients;
 	}

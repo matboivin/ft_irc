@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/08 15:12:40 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 15:40:26 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -294,14 +294,14 @@ namespace ft_irc
 				if (!msg.getRecipients().empty())
 				{
 					// there can be many recipients (ex: broadcast to channel)
-					std::vector<Client>	recipients = msg.getRecipients();
+					std::list<Client*>	recipients = msg.getRecipients();
 
-					for (std::vector<Client>::const_iterator	dst = recipients.begin();
+					for (std::list<Client*>::const_iterator	dst = recipients.begin();
 						dst != recipients.end();
 						++dst)
 					{
-						std::cout << "Sending: '" << msg.getResponse() << "' to " << dst->getIpAddressStr() << std::endl;
-						if (send(dst->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
+						std::cout << "Sending: '" << msg.getResponse() << "' to " << (*dst)->getIpAddressStr() << std::endl;
+						if (send((*dst)->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
 						{
 							throw std::runtime_error("send() failed");
 						}
@@ -475,7 +475,7 @@ namespace ft_irc
 		else if (msg.getSender().isRegistered())
 			err_alreadyregistered(msg);
 		else
-			msg.getSender().setPassword(msg.getParam(0));
+			msg.getSender().setPassword(msg.getParams().front());
 	}
 
 	// NICK <nickname>
@@ -486,13 +486,13 @@ namespace ft_irc
 			err_nonicknamegiven(msg);
 		else
 		{
-			if (!nick_is_valid(msg.getParam(0)))
+			if (!nick_is_valid(msg.getParams().front()))
 				err_erroneusnickname(msg);
 			// else if nickname already exists
 			//    err_nicknameinuse(msg);
 			else
 			{
-				msg.getSender().setNick(msg.getParam(0));
+				msg.getSender().setNick(msg.getParams().front());
 				std::cout << "new nick is: " << msg.getSender().getNick() << '\n'; // debug
 			}
 		}
@@ -508,7 +508,7 @@ namespace ft_irc
 			msg.setResponse(
 				build_prefix( build_full_client_id( msg.getSender() ) )
 				+ " NOTICE " + "chan tmp" // TODO: not sure about notice and need target
-				+ msg.getSender().getNick() + " has quit IRC (" + msg.getParam(0) + ")"
+				+ msg.getSender().getNick() + " has quit IRC (" + msg.getParams().front() + ")"
 				);
 			msg.appendSeparator();
 		}
@@ -524,15 +524,14 @@ namespace ft_irc
 	{
 		// sorry for this pseudo code ugliness
 
-		// if (msg.getParam(0) is not a channel)
-		// 	msg.setRecipient(msg.getParam(0) to client);
+		// if (msg.getParams().front() is not a channel)
+		// 	msg.setRecipient(msg.getParams().front() to client);
 		// else
 		// 	add everyone from channel
 		// if (channel doesnt exist)
 		// 	create channel;
 		msg.setResponse(build_prefix( build_full_client_id( msg.getSender() ) ) + " PRIVMSG ");
-		for (std::size_t i = 0; i < msg.getParams().size(); ++i)
-			msg.getResponse().append(msg.getParams()[i]);
+		// TODO
 		msg.appendSeparator();
 	}
 
@@ -544,8 +543,8 @@ namespace ft_irc
 			err_norecipient(msg);
 		else if (msg.getParams().size() < 2)
 			err_notexttosend(msg);
-		// else if (msg.getParam(0) doesn't exist)
-		//	err_nosuchnick(msg, msg.getParam(0));
+		// else if (msg.getParams().front() doesn't exist)
+		//	err_nosuchnick(msg, msg.getParams().front());
 		// else if (!msg.getSender() is not in channel)
 		// 	err_cannotsendtochan(msg);
 		// else
@@ -562,10 +561,10 @@ namespace ft_irc
 		}
 
 		// JOIN 0
-		// if (msg.getParam(0) == "0")
+		// if (msg.getParams().front() == "0")
 			// QUIT ALL CHANNELS
 
-		for (std::vector<std::string>::const_iterator param = msg.getParams().begin();
+		for (std::list<std::string>::const_iterator param = msg.getParams().begin();
 			 param != msg.getParams().end();
 			 ++param)
 		{
@@ -593,7 +592,7 @@ namespace ft_irc
 			return ;
 		}
 
-		for (std::vector<std::string>::const_iterator param = msg.getParams().begin();
+		for (std::list<std::string>::const_iterator param = msg.getParams().begin();
 			 param != msg.getParams().end();
 			 ++param)
 		{

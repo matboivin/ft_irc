@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/10/08 15:06:19 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 15:27:38 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ namespace ft_irc
 		struct sockaddr_in&	getAddress();
 		socklen_t&			getAddressSize();
 		int					getSocketFd() const;
-		std::list<Channel*>	getJoinedChannels() const;
+		const std::list<Channel*>&	getJoinedChannels() const;
 
 		// setters
 		void		setNick(const std::string& nick);
@@ -85,7 +85,7 @@ namespace ft_irc
 		void		setUsername(const std::string& username);
 		void		setPassword(const std::string& password);
 		void		setSocketFd(int socket_fd);
-		void		setJoinedChannels(std::list<Channel*>& joined_channels);
+		void		setJoinedChannels(const std::list<Channel*>& joined_channels);
 		void		joinChannel(Channel& channel);
 		void		partChannel(Channel& channel);
 

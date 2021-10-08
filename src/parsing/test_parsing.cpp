@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 12:25:08 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/06 12:13:02 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 15:42:29 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,20 @@ static int	cmp_msg(const ft_irc::Message& msg, const ft_irc::Message& expected)
 	if (msg.getParams() != expected.getParams())
 	{
 		std::cout << "   Message params:  ";
-		for (std::size_t i = 0; i < msg.getParams().size(); i++)
-			std::cout << "'" <<  msg.getParam(i) << "' ";
+		for (std::list<std::string>::const_iterator it = msg.getParams().begin();
+			 it != msg.getParams().end();
+			 ++it)
+		{
+			std::cout << "'" << *it << "' ";
+		}
 
 		std::cout << "\n-> Expected params: ";
-		for (std::size_t i = 0; i < expected.getParams().size(); i++)
-			std::cout << "'" <<  expected.getParam(i) << "' ";
+		for (std::list<std::string>::const_iterator it = expected.getParams().begin();
+			 it != expected.getParams().end();
+			 ++it)
+		{
+			std::cout << "'" << *it << "' ";
+		}
 		std::cout << std::endl;
 		ret = 0;
 	}
