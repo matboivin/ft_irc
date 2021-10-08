@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/08 16:29:59 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 17:00:28 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,35 @@ namespace ft_irc
 	Server::cmds_map	Server::getCommands() const
 	{
 		return (this->_commands);
+	}
+
+	std::list<Client>::iterator	Server::getClient(const std::string& nick)
+	{
+		std::list<Client>::iterator	it = this->_clients.begin();
+
+		while (it != this->_clients.end())
+		{
+			if (it->getNick() == nick)
+				break ;
+			++it;
+		}
+		return (it);
+	}
+
+	std::list<Channel>::iterator	Server::getChannel(const std::string& chan_name)
+	{
+		if (!channel_is_valid(chan_name))
+			return (this->_channels.end());
+
+		std::list<Channel>::iterator	it = this->_channels.begin();
+
+		while (it != this->_channels.end())
+		{
+			if (it->getName() == chan_name)
+				break ;
+			++it;
+		}
+		return (it);
 	}
 
 	// setters
@@ -400,60 +429,28 @@ namespace ft_irc
 		return (0);
 	}
 
-	// Clients operations
-	std::list<Client>::iterator	Server::getClient(const std::string& nick)
-	{
-		std::list<Client>::iterator	it = this->_clients.begin();
-
-		while (it != this->_clients.end())
-		{
-			if (it->getNick() == nick)
-				break ;
-			++it;
-		}
-		return (it);
-	}
-
 	// Channel operations
 
-	// Find a channel using its name
-	std::list<Channel>::iterator	Server::getChannel(const std::string& chan_name)
-	{
-		if (!channel_is_valid(chan_name))
-			return (this->_channels.end());
-
-		std::list<Channel>::iterator	it = this->_channels.begin();
-
-		while (it != this->_channels.end())
-		{
-			if (it->getName() == chan_name)
-				break ;
-			++it;
-		}
-		return (it);
-	}
-
 	// Add a new channel to the server's list
-	Channel&	Server::addChannel(const std::string& name)
+	Channel&	Server::_addChannel(const std::string& name)
 	{
 		this->_channels.push_back(Channel(name));
 		return (this->_channels.back());
 	}
 
 	// Remove a channel from the server's list
-	void	Server::removeChannel(std::list<Channel>::iterator channel)
+	void	Server::_removeChannel(std::list<Channel>::iterator channel)
 	{
-		std::cout << "Remove channel " << channel->getName() << std::endl;
 		this->_channels.erase(channel);
 	}
 
 	// Check whether a client is in a specific channel
-	bool	Server::userOnChannel(Client& client, Channel& channel)
+	bool	Server::_userOnChannel(Client& client, Channel& channel)
 	{
 		return (channel.hasClient(client)); 
 	}
 
-	bool	Server::userOnChannel(Client& client, const std::string& chan_name)
+	bool	Server::_userOnChannel(Client& client, const std::string& chan_name)
 	{
 		std::list<Channel>::iterator	channel = getChannel(chan_name);
 
@@ -463,9 +460,9 @@ namespace ft_irc
 	}
 
 	// Add a user to a channel (ex: JOIN command)
-	void	Server::addUserToChannel(Client& client, Channel& channel)
+	void	Server::_addUserToChannel(Client& client, Channel& channel)
 	{
-		if (!userOnChannel(client, channel))
+		if (!_userOnChannel(client, channel))
 		{
 			std::cout << "Add " << client.getNick() << " to channel "
 					  << channel.getName() << std::endl;
@@ -473,13 +470,14 @@ namespace ft_irc
 			client.joinChannel(channel);
 			channel.displayClients(); // debug
 			client.displayJoinedChannels();
+			std::cout << std::endl;
 		}
 	}
 
 	// Remove user from channel
-	void	Server::removeUserFromChannel(Client& client, Channel& channel)
+	void	Server::_removeUserFromChannel(Client& client, Channel& channel)
 	{
-		if (userOnChannel(client, channel))
+		if (_userOnChannel(client, channel))
 		{
 			std::cout << "Remove " << client.getNick() << " from channel "
 					  << channel.getName() << std::endl;
@@ -487,10 +485,29 @@ namespace ft_irc
 			client.partChannel(channel);
 			channel.displayClients(); // debug
 			client.displayJoinedChannels();
+			std::cout << std::endl;
 		}
 	}
 
 	// Commands
+
+	void	Server::_configResponse(Message& msg, const std::string& cmd)
+	{
+		msg.setResponse(fill_msg_response(msg, cmd));
+
+		std::list<Client>::iterator		dst = getClient(msg.getParams().front());
+
+		if (dst != this->_clients.end())
+		{
+			msg.setRecipient(*dst);
+			return ;
+		}
+
+		std::list<Channel>::iterator	channel = getChannel(msg.getParams().front());
+
+		if (channel != this->_channels.end())
+			channel->broadcastMessage(msg);
+	}
 
 	// PASS <password>
 	// set a connection password
@@ -539,15 +556,7 @@ namespace ft_irc
 	// The server musn't reply to NOTICE message
 	void	Server::exec_notice_cmd(Message& msg)
 	{
-		// sorry for this pseudo code ugliness
-
-		// if (msg.getParams().front() is not a channel)
-		// 	msg.setRecipient(msg.getParams().front() to client);
-		// else
-		// 	add everyone from channel
-		// if (channel doesnt exist)
-		// 	create channel;
-		msg.setResponse(fill_msg_response(msg, "NOTICE"));
+		_configResponse(msg, "NOTICE");
 	}
 
 	// PRIVMSG <msgtarget> :<message>
@@ -558,12 +567,12 @@ namespace ft_irc
 			err_norecipient(msg);
 		else if (msg.getParams().size() < 2)
 			err_notexttosend(msg);
-		else if (channel_is_valid(msg.getParams().front()) && !userOnChannel( msg.getSender(), msg.getParams().front() ))
+		else if (channel_is_valid(msg.getParams().front()) && !_userOnChannel( msg.getSender(), msg.getParams().front() ))
 			err_cannotsendtochan(msg);
 		else if ( getClient( msg.getParams().front() ) == this->_clients.end() )
 			err_nosuchnick(msg, msg.getParams().front());
 		else
-			msg.setResponse(fill_msg_response(msg, "PRIVMSG"));
+			_configResponse(msg, "PRIVMSG");
 	}
 
 	// JOIN <channels>
@@ -588,9 +597,9 @@ namespace ft_irc
 			if (!channel_is_valid(*param))
 				err_nosuchchannel(msg, *param);
 			if (channel == this->_channels.end())
-				addUserToChannel(msg.getSender(), addChannel(*param));
+				_addUserToChannel(msg.getSender(), _addChannel(*param));
 			else
-				addUserToChannel(msg.getSender(), *channel);
+				_addUserToChannel(msg.getSender(), *channel);
 		}
 	}
 
@@ -612,13 +621,13 @@ namespace ft_irc
 
 			if (channel == this->_channels.end())
 				err_nosuchchannel(msg, *param);
-			else if (!userOnChannel(msg.getSender(), *channel))
+			else if (!_userOnChannel(msg.getSender(), *channel))
 				err_notonchannel(msg, *param);
 			else
 			{
-				removeUserFromChannel(msg.getSender(), *channel);
+				_removeUserFromChannel(msg.getSender(), *channel);
 				if (channel->isEmpty())
-					removeChannel(channel);
+					_removeChannel(channel);
 			}
 		}
 	}

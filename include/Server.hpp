@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/08 16:23:18 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 16:58:18 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,9 @@ namespace ft_irc
 		std::string	getPassword() const;
 		cmds_map	getCommands() const;
 
+		std::list<Client>::iterator		getClient(const std::string& nick);
+		std::list<Channel>::iterator	getChannel(const std::string& chan_name);
+
 		// setters
 		void		setBindAddress(const std::string& bind_address);
 		void		setPort(const std::string& port);
@@ -74,18 +77,6 @@ namespace ft_irc
 
 		// main loop
 		int			run();
-
-		// Clients operations
-		std::list<Client>::iterator	getClient(const std::string& nick);
-
-		// Channel operations
-		std::list<Channel>::iterator	getChannel(const std::string& chan_name);
-		Channel&	addChannel(const std::string& name);
-		void		removeChannel(std::list<Channel>::iterator channel);
-		bool		userOnChannel(Client& client, Channel& channel);
-		bool		userOnChannel(Client& client, const std::string& chan_name);
-		void		addUserToChannel(Client& client, Channel& channel);
-		void		removeUserFromChannel(Client& client, Channel& channel);
 
 		// Commands
 		void		exec_pass_cmd(Message& msg);
@@ -112,9 +103,18 @@ namespace ft_irc
 		// parsing
 		Message		_parse(Client& sender, const std::string& cmd);
 
+		// Channel operations
+		Channel&	_addChannel(const std::string& name);
+		void		_removeChannel(std::list<Channel>::iterator channel);
+		bool		_userOnChannel(Client& client, Channel& channel);
+		bool		_userOnChannel(Client& client, const std::string& chan_name);
+		void		_addUserToChannel(Client& client, Channel& channel);
+		void		_removeUserFromChannel(Client& client, Channel& channel);
+
 		// commands execution
 		void		_init_commands_map();
 		int			_executeCommand(Message& msg);
+		void		_configResponse(Message& msg, const std::string& cmd);
 
 		// debug
 		int			_sendList(Client& client);
