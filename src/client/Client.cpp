@@ -6,11 +6,13 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/10/05 14:12:19 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 15:27:31 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <list>
 #include <string>
+#include "Channel.hpp"
 #include "Client.hpp"
 
 int	setNonblocking(int fd);
@@ -25,14 +27,14 @@ namespace ft_irc
 				   std::string password)
 	: _nick(nick), _realname(realname), _username(username),
 	  _mode(),
-	  _joined_channels(),
 	  _password(password),
 	  _address(address),
 	  _address_size(sizeof(address)), _address_str(inet_ntoa(address.sin_addr)),
 	  _timeout(), _socket_fd(-1),
 	  _connected(false),
 	  _in_buffer(), _out_buffer(),
-	  _max_cmd_length(512)
+	  _max_cmd_length(512),
+	  _joined_channels()
 	{
 		this->_timeout = (struct timeval){.tv_sec = 0, .tv_usec = 50};
 	}
@@ -41,13 +43,13 @@ namespace ft_irc
 	Client::Client(const Client& other)
 	: _nick(other._nick), _realname(other._realname), _username(other._username),
 	  _mode(other._mode),
-	  _joined_channels(other._joined_channels),
 	  _password(other._password), _address(other._address),
 	  _address_size(other._address_size), _address_str(other._address_str),
 	  _timeout(other._timeout), _socket_fd(other._socket_fd),
 	  _connected(other._connected),
 	  _in_buffer(other._in_buffer), _out_buffer(other._out_buffer),
-	  _max_cmd_length(other._max_cmd_length)
+	  _max_cmd_length(other._max_cmd_length),
+	  _joined_channels(other._joined_channels)
 	{
 	}
 
@@ -59,7 +61,6 @@ namespace ft_irc
 			this->_nick = other.getNick();
 			this->_realname = other.getRealName();
 			this->_username = other.getUsername();
-			this->_joined_channels = other.getJoinedChannels();
 			this->_password = other.getPassword();
 			this->_address = other._address;
 			this->_address_str = other._address_str;
@@ -67,6 +68,7 @@ namespace ft_irc
 			this->_timeout = other._timeout;
 			this->_socket_fd = other.getSocketFd();
 			this->_connected = other._connected;
+			this->_joined_channels = other.getJoinedChannels();
 		}
 		return (*this);
 	}
@@ -91,11 +93,6 @@ namespace ft_irc
 	std::string	Client::getUsername() const
 	{
 		return (this->_username);
-	}
-
-	std::string	Client::getJoinedChannels() const
-	{
-		return (this->_joined_channels);
 	}
 
 	std::string	Client::getPassword() const
@@ -123,6 +120,11 @@ namespace ft_irc
 		return (this->_socket_fd);
 	}
 
+	const std::list<Channel*>&	Client::getJoinedChannels() const
+	{
+		return (this->_joined_channels);
+	}
+
 	// setters
 
 	void	Client::setNick(const std::string& nick)
@@ -140,11 +142,6 @@ namespace ft_irc
 		this->_username = username;
 	}
 
-	void	Client::setJoinedChannels(const std::string& joined_channels)
-	{
-		this->_joined_channels = joined_channels;
-	}
-
 	void	Client::setPassword(const std::string& password)
 	{
 		this->_password = password;
@@ -153,6 +150,21 @@ namespace ft_irc
 	void	Client::setSocketFd(int socket_fd)
 	{
 		this->_socket_fd = socket_fd;
+	}
+
+	void	Client::setJoinedChannels(const std::list<Channel*>& joined_channels)
+	{
+		this->_joined_channels = joined_channels;
+	}
+
+	void	Client::joinChannel(Channel& channel)
+	{
+		this->_joined_channels.push_back(&channel);
+	}
+
+	void	Client::partChannel(Channel& channel)
+	{
+		this->_joined_channels.remove(&channel);
 	}
 
 	// helpers
@@ -262,5 +274,18 @@ namespace ft_irc
 	bool	operator==(const Client& lhs, const Client& rhs)
 	{
 		return ((lhs._socket_fd == rhs._socket_fd && lhs._nick == rhs._nick));
+	}
+
+	// debug
+	void	Client::displayJoinedChannels()
+	{
+		std::cout << this->getNick() << " joined channels:\n";
+
+		for (std::list<Channel*>::iterator	it = this->_joined_channels.begin();
+			 it != this->_joined_channels.end();
+			 ++it)
+		{
+			std::cout << "- " << (*it)->getName() << '\n';
+		}
 	}
 } // namespace ft_irc

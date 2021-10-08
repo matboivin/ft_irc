@@ -6,13 +6,13 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/05 14:51:27 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 17:02:26 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
+#include <list>
 #include <string>
-#include <vector>
 #include "Client.hpp"
 #include "Message.hpp"
 
@@ -79,26 +79,19 @@ namespace ft_irc
 		return (this->_command);
 	}
 
-	std::string	Message::getParam(int idx) const
-	{
-		if (idx >= 0 && idx < static_cast<int>(this->_params.size()))
-			return (this->_params[idx]);
-		throw std::out_of_range("Message::getParam");
-	}
-
-	std::vector<std::string>	Message::getParams() const
+	const std::list<std::string>&	Message::getParams() const
 	{
 		return (this->_params);
 	}
 
-	std::vector<Client>	Message::getRecipients() const
+	const std::list<Client*>&	Message::getRecipients() const
 	{
 		return (this->_recipients);
 	}
 
 	// setters
 
-	void	Message::setSender(Client& sender)
+	void	Message::setSender(const Client& sender)
 	{
 		this->_sender = sender;
 	}
@@ -124,16 +117,19 @@ namespace ft_irc
 			this->_params.push_back(param);
 	}
 
-	void	Message::setRecipient(const Client& recipient)
+	void	Message::setRecipients(const std::list<Client*>& recipients)
 	{
-		this->_recipients.push_back(recipient);
+		this->_recipients = recipients;
 	}
 
-	void	Message::setRecipients(const std::vector<Client>& recipients)
+	void	Message::setRecipient(Client& recipient)
 	{
-		if (!this->_recipients.empty())
-			this->_recipients.clear();
-		this->_recipients.assign(recipients.begin(), recipients.end());
+		this->_recipients.push_back(&recipient);
+	}
+
+	void	Message::addRecipients(const std::list<Client*>& recipients)
+	{
+		this->_recipients.insert(this->_recipients.end(), recipients.begin(), recipients.end());
 	}
 
 	// end message with CRLF
@@ -147,9 +143,13 @@ namespace ft_irc
 	{
 		std::cout << "command:  " << getCommand() << '\n'
 				  << "params:   ";
-		
-		for (std::size_t i = 0; i < this->_params.size(); i++)
-			std::cout << "'" << this->_params[i] << "' ";
+
+		for (std::list<std::string>::const_iterator it = this->_params.begin();
+			 it != this->_params.end();
+			 ++it)
+		{
+			std::cout << "'" << *it << "' ";
+		}
 		std::cout << "\nresponse: " << this->_response << std::endl;
 	}
 } // !namespace ft_irc

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/05 14:57:11 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 17:15:27 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,35 @@ namespace ft_irc
 	Server::cmds_map	Server::getCommands() const
 	{
 		return (this->_commands);
+	}
+
+	std::list<Client>::iterator	Server::getClient(const std::string& nick)
+	{
+		std::list<Client>::iterator	it = this->_clients.begin();
+
+		while (it != this->_clients.end())
+		{
+			if (it->getNick() == nick)
+				break ;
+			++it;
+		}
+		return (it);
+	}
+
+	std::list<Channel>::iterator	Server::getChannel(const std::string& chan_name)
+	{
+		if (!channel_is_valid(chan_name))
+			return (this->_channels.end());
+
+		std::list<Channel>::iterator	it = this->_channels.begin();
+
+		while (it != this->_channels.end())
+		{
+			if (it->getName() == chan_name)
+				break ;
+			++it;
+		}
+		return (it);
 	}
 
 	// setters
@@ -291,22 +320,7 @@ namespace ft_irc
 				// execute the command
 				_executeCommand(msg);
 				// send response to recipient(s)
-				if (!msg.getRecipients().empty())
-				{
-					// there can be many recipients (ex: broadcast to channel)
-					std::vector<Client>	recipients = msg.getRecipients();
-
-					for (std::vector<Client>::const_iterator	dst = recipients.begin();
-						dst != recipients.end();
-						++dst)
-					{
-						std::cout << "Sending: '" << msg.getResponse() << "' to " << dst->getIpAddressStr() << std::endl;
-						if (send(dst->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
-						{
-							throw std::runtime_error("send() failed");
-						}
-					}
-				}
+				_sendResponse(msg);
 			}
 			if (it->getSocketFd() > 0)
 			{
@@ -336,6 +350,18 @@ namespace ft_irc
 		return (this->_parser.parseMessage(sender, cmd));
 	}
 
+	// Init the map containing the commands
+	void	Server::_init_commands_map()
+	{
+		this->_commands["PASS"]    = &Server::exec_pass_cmd;
+		this->_commands["NICK"]    = &Server::exec_nick_cmd;
+		this->_commands["QUIT"]    = &Server::exec_quit_cmd;
+		this->_commands["PRIVMSG"] = &Server::exec_privmsg_cmd;
+		this->_commands["NOTICE"]  = &Server::exec_notice_cmd;
+		this->_commands["JOIN"]    = &Server::exec_join_cmd;
+		this->_commands["PART"]    = &Server::exec_part_cmd;
+	}
+
 	// Command execution
 	int	Server::_executeCommand(Message& msg)
 	{
@@ -347,14 +373,228 @@ namespace ft_irc
 		return (0);
 	}
 
-	// Init the map containing the commands
-	void	Server::_init_commands_map()
+	// Configure command response
+	void	Server::_configResponse(Message& msg, const std::string& cmd)
 	{
-		this->_commands["PASS"]    = &Server::exec_pass_cmd;
-		this->_commands["NICK"]    = &Server::exec_nick_cmd;
-		this->_commands["QUIT"]    = &Server::exec_quit_cmd;
-		this->_commands["PRIVMSG"] = &Server::exec_privmsg_cmd;
-		this->_commands["NOTICE"]  = &Server::exec_notice_cmd;
+		msg.setResponse(fill_msg_response(msg, cmd));
+
+		std::list<Client>::iterator		dst = getClient(msg.getParams().front());
+
+		if (dst != this->_clients.end())
+		{
+			msg.setRecipient(*dst);
+			return ;
+		}
+
+		std::list<Channel>::iterator	channel = getChannel(msg.getParams().front());
+
+		if (channel != this->_channels.end())
+			msg.setRecipients(channel->getClients());
+	}
+
+	// send response
+	void	Server::_sendResponse(Message& msg)
+	{
+		if (!msg.getRecipients().empty())
+		{
+			std::list<Client*>	recipients = msg.getRecipients();
+
+			for (std::list<Client*>::const_iterator	dst = recipients.begin();
+				dst != recipients.end();
+				++dst)
+			{
+				std::cout << "Sending: '" << msg.getResponse() << "' to " << (*dst)->getIpAddressStr() << std::endl;
+				if (send((*dst)->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
+				{
+					throw std::runtime_error("send() failed");
+				}
+			}
+		}
+	}
+
+	// Channel operations
+
+	// Add a new channel to the server's list
+	Channel&	Server::_addChannel(const std::string& name)
+	{
+		this->_channels.push_back(Channel(name));
+		return (this->_channels.back());
+	}
+
+	// Remove a channel from the server's list
+	void	Server::_removeChannel(std::list<Channel>::iterator channel)
+	{
+		this->_channels.erase(channel);
+	}
+
+	// Check whether a client is in a specific channel
+	bool	Server::_userOnChannel(Client& client, Channel& channel)
+	{
+		return (channel.hasClient(client)); 
+	}
+
+	bool	Server::_userOnChannel(Client& client, const std::string& chan_name)
+	{
+		std::list<Channel>::iterator	channel = getChannel(chan_name);
+
+		if (channel != this->_channels.end())
+			return (channel->hasClient(client));
+		return (false);
+	}
+
+	// Add a user to a channel (ex: JOIN command)
+	void	Server::_addUserToChannel(Client& client, Channel& channel)
+	{
+		if (!_userOnChannel(client, channel))
+		{
+			std::cout << "Add " << client.getNick() << " to channel "
+					  << channel.getName() << std::endl;
+			channel.addClient(client);
+			client.joinChannel(channel);
+			channel.displayClients(); // debug
+			client.displayJoinedChannels();
+			std::cout << std::endl;
+		}
+	}
+
+	// Remove user from channel
+	void	Server::_removeUserFromChannel(Client& client, Channel& channel)
+	{
+		if (_userOnChannel(client, channel))
+		{
+			std::cout << "Remove " << client.getNick() << " from channel "
+					  << channel.getName() << std::endl;
+			channel.removeClient(client);
+			client.partChannel(channel);
+			channel.displayClients(); // debug
+			client.displayJoinedChannels();
+			std::cout << std::endl;
+		}
+	}
+
+	// Commands
+
+	// PASS <password>
+	// set a connection password
+	void	Server::exec_pass_cmd(Message& msg)
+	{
+		if (msg.getParams().empty())
+			err_needmoreparams(msg);
+		else if (msg.getSender().isRegistered())
+			err_alreadyregistered(msg);
+		else
+			msg.getSender().setPassword(msg.getParams().front());
+	}
+
+	// NICK <nickname>
+	// Change a user nickname
+	void	Server::exec_nick_cmd(Message& msg)
+	{
+		if (msg.getParams().empty())
+			err_nonicknamegiven(msg);
+		else
+		{
+			if (!nick_is_valid(msg.getParams().front()))
+				err_erroneusnickname(msg);
+			else if (getClient(msg.getParams().front()) != this->_clients.end())
+				err_nicknameinuse(msg);
+			else
+				msg.getSender().setNick(msg.getParams().front());
+		}
+	}
+
+	// QUIT [<message>]
+	// A client session is terminated with a quit message
+	void	Server::exec_quit_cmd(Message& msg)
+	{
+		if (!msg.getParams().empty())
+		{
+			// TODO
+		}
+
+		_disconnectClient(msg.getSender());
+		// TODO: The server acknowledges this by sending an ERROR message to the client
+	}
+
+	// NOTICE <msgtarget> :<message>
+	// Send messages to a user or a channel
+	// The server musn't reply to NOTICE message
+	void	Server::exec_notice_cmd(Message& msg)
+	{
+		_configResponse(msg, "NOTICE");
+	}
+
+	// PRIVMSG <msgtarget> :<message>
+	// Send messages to a user or a channel
+	void	Server::exec_privmsg_cmd(Message& msg)
+	{
+		if (msg.getParams().empty())
+			err_norecipient(msg);
+		else if (msg.getParams().size() < 2)
+			err_notexttosend(msg);
+		else if (channel_is_valid(msg.getParams().front()) && !_userOnChannel( msg.getSender(), msg.getParams().front() ))
+			err_cannotsendtochan(msg);
+		else if (!channel_is_valid(msg.getParams().front()) && getClient( msg.getParams().front() ) == this->_clients.end() )
+			err_nosuchnick(msg, msg.getParams().front());
+		else
+			_configResponse(msg, "PRIVMSG");
+	}
+
+	// JOIN <channels>
+	void	Server::exec_join_cmd(Message& msg)
+	{
+		if (msg.getParams().empty())
+		{
+			err_needmoreparams(msg);
+			return ;
+		}
+
+		// JOIN 0
+		// if (msg.getParams().front() == "0")
+			// QUIT ALL CHANNELS
+
+		for (std::list<std::string>::const_iterator param = msg.getParams().begin();
+			 param != msg.getParams().end();
+			 ++param)
+		{
+			std::list<Channel>::iterator	channel = getChannel(*param);
+
+			if (!channel_is_valid(*param))
+				err_nosuchchannel(msg, *param);
+			if (channel == this->_channels.end())
+				_addUserToChannel(msg.getSender(), _addChannel(*param));
+			else
+				_addUserToChannel(msg.getSender(), *channel);
+		}
+	}
+
+	// PART <channels> [<message>]
+	// TODO: handle broadcast message then send it
+	void	Server::exec_part_cmd(Message& msg)
+	{
+		if (msg.getParams().empty())
+		{
+			err_needmoreparams(msg);
+			return ;
+		}
+
+		for (std::list<std::string>::const_iterator param = msg.getParams().begin();
+			 param != msg.getParams().end();
+			 ++param)
+		{
+			std::list<Channel>::iterator	channel = getChannel(*param);
+
+			if (channel == this->_channels.end())
+				err_nosuchchannel(msg, *param);
+			else if (!_userOnChannel(msg.getSender(), *channel))
+				err_notonchannel(msg, *param);
+			else
+			{
+				_removeUserFromChannel(msg.getSender(), *channel);
+				if (channel->isEmpty())
+					_removeChannel(channel);
+			}
+		}
 	}
 
 	// debug
@@ -396,171 +636,5 @@ namespace ft_irc
 			throw std::runtime_error("send() failed");
 		}
 		return (0);
-	}
-
-	// Channel operations
-
-	std::list<Channel>::iterator	Server::getChannel(const std::string& chan_name)
-	{
-		std::list<Channel>::iterator	it = this->_channels.begin();
-
-		while (it != this->_channels.end())
-		{
-			if (it->getName() == chan_name)
-				break ;
-			++it;
-		}
-		return (it);
-	}
-
-	void	Server::addChannel(const std::string& name)
-	{
-		this->_channels.push_back(Channel(name));
-	}
-
-	// Check whether a client is in a specific channel
-	bool	Server::userInChannel(Client& client, const std::string& chan_name)
-	{
-		std::list<Channel>::iterator	it = this->getChannel(chan_name);
-
-		if (it != this->_channels.end())
-			return (it->hasClient(client));
-
-		return (false);
-	}
-
-	// Add a user to a channel (ex: JOIN command)
-	void	Server::addUserToChannel(Client& client, const std::string& chan_name)
-	{
-		if (!this->userInChannel(client, chan_name))
-			this->getChannel(chan_name)->addClient(client);
-	}
-
-	// Remove user from channel
-	void	Server::removeUserFromChannel(Client& client, const std::string& chan_name)
-	{
-		if (this->userInChannel(client, chan_name))
-			this->getChannel(chan_name)->removeClient(client);
-	}
-
-	// Commands
-
-	// PASS <password>
-	// set a connection password
-	void	Server::exec_pass_cmd(Message& msg)
-	{
-		if (msg.getParams().empty())
-			err_needmoreparams(msg);
-		else if (msg.getSender().isRegistered())
-			err_alreadyregistered(msg);
-		else
-			msg.getSender().setPassword(msg.getParam(0));
-	}
-
-	// NICK helper: Special characters listed in the RFC grammar
-	static bool	is_special(char c)
-	{
-		return (
-			(c == '[') || (c == ']') || (c == '\\') || (c == '`')
-			|| (c == '_') || (c == '^') || (c == '{') || (c == '}') || (c == '|')
-			);
-	}
-
-	// NICK helper: Check whether a nickname format is valid
-	// A nickname is composed of 1 to 9 characters which can be digits, letters or special characters.
-	// It musn't start by a digit
-	static bool	nick_is_valid(const std::string& newnick)
-	{
-		if (newnick.size() < 10)
-		{
-			std::string::const_iterator	it = newnick.begin();
-
-			if (isalpha(*it) || is_special(*it))
-			{
-				++it;
-				while (it != newnick.end())
-				{
-					if (!isalnum(*it) && !is_special(*it) && (*it != '-'))
-						return (false);
-					++it;
-				}
-				return (true);
-			}
-		}
-		return (false);
-	}
-
-	// NICK <nickname>
-	// Change a user nickname
-	void	Server::exec_nick_cmd(Message& msg)
-	{
-		if (msg.getParams().empty())
-			err_nonicknamegiven(msg);
-		else
-		{
-			if (!nick_is_valid(msg.getParam(0)))
-				err_erroneusnickname(msg);
-			// else if nickname already exists
-			//    err_nicknameinuse(msg);
-			else
-			{
-				msg.getSender().setNick(msg.getParam(0));
-				std::cout << "new nick is: " << msg.getSender().getNick() << '\n'; // debug
-			}
-		}
-	}
-
-	// QUIT [<message>]
-	// A client session is terminated with a quit message
-	void	Server::exec_quit_cmd(Message& msg)
-	{
-		if (!msg.getParams().empty())
-		{
-			// msg.setRecipient(users in channel);
-			msg.setResponse(
-				build_prefix( build_full_client_id( msg.getSender() ) )
-				+ " NOTICE " + "chan tmp" // TODO: not sure about notice and need target
-				+ msg.getSender().getNick() + " has quit IRC (" + msg.getParam(0) + ")"
-				);
-			msg.appendSeparator();
-		}
-
-		_disconnectClient(msg.getSender());
-		// TODO: The server acknowledges this by sending an ERROR message to the client
-	}
-
-	// NOTICE <msgtarget> :<message>
-	// Send messages to a user or a channel
-	// The server musn't reply to NOTICE message
-	void	Server::exec_notice_cmd(Message& msg)
-	{
-		// sorry for this pseudo code ugliness
-
-		// if (msg.getParam(0) is not a channel)
-		// 	msg.setRecipient(msg.getParam(0) to client);
-		// else
-		// 	add everyone from channel
-		// if (channel doesnt exist)
-		// 	create channel;
-		msg.setResponse(build_prefix( build_full_client_id( msg.getSender() ) ) + " PRIVMSG ");
-		for (std::size_t i = 0; i < msg.getParams().size(); ++i)
-			msg.getResponse().append(msg.getParams()[i]);
-		msg.appendSeparator();
-	}
-
-	// PRIVMSG <msgtarget> :<message>
-	// Send messages to a user or a channel
-	void	Server::exec_privmsg_cmd(Message& msg)
-	{
-		if (msg.getParams().empty())
-			err_norecipient(msg);
-		else if (msg.getParams().size() < 2)
-			err_notexttosend(msg);
-		// else if (msg.getParam(0) doesn't exist)
-		//	err_nosuchnick(msg, msg.getParam(0));
-		// else if (!msg.getSender() is not in channel)
-		// 	err_cannotsendtochan(msg);
-		// else
-		// 	exec_notice_cmd(msg);
 	}
 }
