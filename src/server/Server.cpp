@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/08 17:00:28 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 17:07:38 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -320,22 +320,7 @@ namespace ft_irc
 				// execute the command
 				_executeCommand(msg);
 				// send response to recipient(s)
-				if (!msg.getRecipients().empty())
-				{
-					// there can be many recipients (ex: broadcast to channel)
-					std::list<Client*>	recipients = msg.getRecipients();
-
-					for (std::list<Client*>::const_iterator	dst = recipients.begin();
-						dst != recipients.end();
-						++dst)
-					{
-						std::cout << "Sending: '" << msg.getResponse() << "' to " << (*dst)->getIpAddressStr() << std::endl;
-						if (send((*dst)->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
-						{
-							throw std::runtime_error("send() failed");
-						}
-					}
-				}
+				_sendResponse(msg);
 			}
 			if (it->getSocketFd() > 0)
 			{
@@ -365,17 +350,6 @@ namespace ft_irc
 		return (this->_parser.parseMessage(sender, cmd));
 	}
 
-	// Command execution
-	int	Server::_executeCommand(Message& msg)
-	{
-		cmds_map::const_iterator	it = this->_commands.find(msg.getCommand());
-
-		if (it != this->_commands.end())
-			(this->*it->second)(msg);
-
-		return (0);
-	}
-
 	// Init the map containing the commands
 	void	Server::_init_commands_map()
 	{
@@ -388,45 +362,54 @@ namespace ft_irc
 		this->_commands["PART"]    = &Server::exec_part_cmd;
 	}
 
-	// debug
-	int	Server::_sendList(Client& client)
+	// Command execution
+	int	Server::_executeCommand(Message& msg)
 	{
-		for (std::list<Client>::iterator it = this->_clients.begin();
-			 it != this->_clients.end();
-			 ++it)
-		{
-			std::string response = ":";
-			response += it->getNick();
-			response += " 322 ";
-			response += client.getNick();
-			response += " ";
-			response += it->getNick();
-			response += " 0 :";
-			response += it->getNick();
-			response += " :";
-			response += it->getNick();
-			response += " 0\r\n";
-			//log the response
-			std::cout << "Sending: " << response << "to " << it->getIpAddressStr() << std::endl;
-			client.sendCommand(response);
-		}
+		cmds_map::const_iterator	it = this->_commands.find(msg.getCommand());
+
+		if (it != this->_commands.end())
+			(this->*it->second)(msg);
+
 		return (0);
 	}
 
-	int	Server::_sendError(Client& client, const std::string& error)
+	// Configure command response
+	void	Server::_configResponse(Message& msg, const std::string& cmd)
 	{
-		std::string response = ":" + this->_hostname + " 451 ";
-		response += client.getNick();
-		response += " ";
-		response += error;
-		response += "\r\n";
-		//log the response
-		std::cout << "Sending: " << response << "to " << client.getIpAddressStr() << std::endl;
-		if (send(client.getSocketFd(), response.c_str(), response.size(), 0) < 0)
+		msg.setResponse(fill_msg_response(msg, cmd));
+
+		std::list<Client>::iterator		dst = getClient(msg.getParams().front());
+
+		if (dst != this->_clients.end())
 		{
-			throw std::runtime_error("send() failed");
+			msg.setRecipient(*dst);
+			return ;
 		}
-		return (0);
+
+		std::list<Channel>::iterator	channel = getChannel(msg.getParams().front());
+
+		if (channel != this->_channels.end())
+			msg.setRecipients(channel->getClients());
+	}
+
+	// send response
+	void	Server::_sendResponse(Message& msg)
+	{
+		if (!msg.getRecipients().empty())
+		{
+			std::list<Client*>	recipients = msg.getRecipients();
+
+			for (std::list<Client*>::const_iterator	dst = recipients.begin();
+				dst != recipients.end();
+				++dst)
+			{
+				std::cout << "Sending: '" << msg.getResponse() << "' to " << (*dst)->getIpAddressStr() << std::endl;
+				if (send((*dst)->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
+				{
+					throw std::runtime_error("send() failed");
+				}
+			}
+		}
 	}
 
 	// Channel operations
@@ -490,24 +473,6 @@ namespace ft_irc
 	}
 
 	// Commands
-
-	void	Server::_configResponse(Message& msg, const std::string& cmd)
-	{
-		msg.setResponse(fill_msg_response(msg, cmd));
-
-		std::list<Client>::iterator		dst = getClient(msg.getParams().front());
-
-		if (dst != this->_clients.end())
-		{
-			msg.setRecipient(*dst);
-			return ;
-		}
-
-		std::list<Channel>::iterator	channel = getChannel(msg.getParams().front());
-
-		if (channel != this->_channels.end())
-			channel->broadcastMessage(msg);
-	}
 
 	// PASS <password>
 	// set a connection password
@@ -630,5 +595,46 @@ namespace ft_irc
 					_removeChannel(channel);
 			}
 		}
+	}
+
+	// debug
+	int	Server::_sendList(Client& client)
+	{
+		for (std::list<Client>::iterator it = this->_clients.begin();
+			 it != this->_clients.end();
+			 ++it)
+		{
+			std::string response = ":";
+			response += it->getNick();
+			response += " 322 ";
+			response += client.getNick();
+			response += " ";
+			response += it->getNick();
+			response += " 0 :";
+			response += it->getNick();
+			response += " :";
+			response += it->getNick();
+			response += " 0\r\n";
+			//log the response
+			std::cout << "Sending: " << response << "to " << it->getIpAddressStr() << std::endl;
+			client.sendCommand(response);
+		}
+		return (0);
+	}
+
+	int	Server::_sendError(Client& client, const std::string& error)
+	{
+		std::string response = ":" + this->_hostname + " 451 ";
+		response += client.getNick();
+		response += " ";
+		response += error;
+		response += "\r\n";
+		//log the response
+		std::cout << "Sending: " << response << "to " << client.getIpAddressStr() << std::endl;
+		if (send(client.getSocketFd(), response.c_str(), response.size(), 0) < 0)
+		{
+			throw std::runtime_error("send() failed");
+		}
+		return (0);
 	}
 }

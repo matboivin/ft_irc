@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/08 16:58:18 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/08 17:05:38 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,13 @@ namespace ft_irc
 		// parsing
 		Message		_parse(Client& sender, const std::string& cmd);
 
+		// commands execution
+		void		_init_commands_map();
+		int			_executeCommand(Message& msg);
+		// command response
+		void		_configResponse(Message& msg, const std::string& cmd);
+		void		_sendResponse(Message& msg);
+
 		// Channel operations
 		Channel&	_addChannel(const std::string& name);
 		void		_removeChannel(std::list<Channel>::iterator channel);
@@ -110,11 +117,6 @@ namespace ft_irc
 		bool		_userOnChannel(Client& client, const std::string& chan_name);
 		void		_addUserToChannel(Client& client, Channel& channel);
 		void		_removeUserFromChannel(Client& client, Channel& channel);
-
-		// commands execution
-		void		_init_commands_map();
-		int			_executeCommand(Message& msg);
-		void		_configResponse(Message& msg, const std::string& cmd);
 
 		// debug
 		int			_sendList(Client& client);
