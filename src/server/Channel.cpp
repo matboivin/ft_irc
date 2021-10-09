@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:58:53 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/08 15:27:03 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/09 12:16:57 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,21 +129,6 @@ namespace ft_irc
 	void	Channel::removeClient(Client& client)
 	{
 		this->_clients.remove(&client);
-	}
-
-	// send a message to all clients in channel
-	void	Channel::broadcastMessage(const Message& msg)
-	{
-		for (std::list<Client*>::const_iterator	it = this->_clients.begin();
-			it != this->_clients.end();
-			++it)
-		{
-			//std::cout << "Sending: '" << msg.getResponse() << "' to " << it->getIpAddressStr() << std::endl;
-			if (send((*it)->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
-			{
-				throw std::runtime_error("send() failed");
-			}
-		}
 	}
 
 	// debug
