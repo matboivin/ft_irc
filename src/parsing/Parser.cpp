@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/06 12:12:47 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/09 17:57:59 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include "Client.hpp"
 #include "Message.hpp"
 #include "numeric_replies.hpp"
+#include "server_operations.hpp"
 
 namespace ft_irc
 {
@@ -94,22 +95,17 @@ namespace ft_irc
 	// Checks whether command name is valid
 	bool	Parser::_commandIsValid(Message& msg)
 	{
-		const std::string	cmds[] = {
-				"INVITE", "JOIN", "KICK", "KILL", "LIST", "MODE", "NAMES",
-				"NICK", "NOTICE", "OPER", "PASS", "PART", "PING", "PONG",
-				"PRIVMSG", "TOPIC", "QUIT", "USER", "WHOIS", "WHO"
-			};
-		std::string	cmd_name = msg.getCommand();
+		const std::string	cmds = "INVITE JOIN KICK KILL LIST MODE NAMES "
+									"NICK NOTICE OPER PASS PART PING PONG "
+									"PRIVMSG TOPIC QUIT USER WHOIS WHO";
 
+		std::string	cmd_name = msg.getCommand();
 		std::transform(cmd_name.begin(), cmd_name.end(), cmd_name.begin(), ::toupper);
 
-		for (std::size_t i = 0; i < 20; i++)
+		if (cmds.find(cmd_name) != std::string::npos)
 		{
-			if (cmds[i] == cmd_name)
-			{
-				msg.setCommand(cmd_name); // uppercase command name if valid
-				return (true);
-			}
+			msg.setCommand(cmd_name); // uppercase command name if valid
+			return (true);
 		}
 		err_unknowncommand(msg); // else keep original format
 		return (false);
@@ -197,6 +193,36 @@ namespace ft_irc
 		return (true);
 	}
 
+	// Fill response if Message will be forwarded to other clients
+	void	Parser::_fillForwardResponse(Message& msg, std::string cmd)
+	{
+		const std::string	cmds = "INVITE JOIN KICK KILL LIST MODE NOTICE OPER "
+									"PART PING PONG PRIVMSG QUIT";
+
+		if (cmds.find(msg.getCommand()) != std::string::npos)
+		{
+			std::string	response = build_prefix( build_full_client_id( msg.getSender() ) ) + ' ' + msg.getCommand();
+
+			if (cmd.size() > 0) // trim spaces
+			{
+				std::string::iterator	it = cmd.begin();
+				std::string::iterator	ite = cmd.end();
+
+				while (it != cmd.end() && *it == ' ')
+					++it;
+				while (ite != it && *ite == ' ')
+					--ite;
+
+				std::string	params(it, ite);
+
+				if (!params.empty())
+					response.append(' ' + params);
+			}
+			msg.setResponse(response);
+			msg.appendSeparator();
+		}
+	}
+
 	// Main parsing function
 	Message	Parser::parseMessage(Client& sender, const std::string& cmd)
 	{
@@ -207,7 +233,10 @@ namespace ft_irc
 		if (_parseCommand(msg)) // wrong command name format is silently ignored
 		{
 			if (_commandIsValid(msg))
+			{
 				_parseParams(msg);
+				_fillForwardResponse(msg, cmd.substr( msg.getCommand().size() ));
+			}
 		}
 		return (msg);
 	}

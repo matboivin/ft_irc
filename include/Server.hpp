@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/09 12:33:16 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/09 18:21:13 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,6 @@ namespace ft_irc
 		void		exec_join_cmd(Message& msg);
 		void		exec_part_cmd(Message& msg);
 
-
 	private:
 		//Function to create a socket.
 		//create a new listening tcp s	ocket and bind it to the given address and port
@@ -108,7 +107,7 @@ namespace ft_irc
 		void		_init_commands_map();
 		int			_executeCommand(Message& msg);
 		// command response
-		void		_configResponse(Message& msg);
+		void		_setResponseRecipients(Message& msg);
 		void		_sendResponse(Message& msg);
 
 		// Channel operations

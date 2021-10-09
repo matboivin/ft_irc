@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:37:26 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/09 12:09:18 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/09 17:51:30 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,21 +31,6 @@ namespace ft_irc
 			client.getNick() + "!" + client.getUsername()
 			+ "@" + client.getIpAddressStr() // need host (ip only if couldn't resolve)
 			);
-	}
-
-	std::string	fill_forward_response(Message& msg, const std::string& cmd)
-	{
-		std::string	response = build_prefix( build_full_client_id( msg.getSender() ) ) + ' ' + cmd;
-
-		std::list<std::string>	tmp = msg.getParams();
-
-		while (!tmp.empty())
-		{
-			response.append(' ' + tmp.front());
-			tmp.pop_front();
-		}
-		response.append("\r\n");
-		return (response);
 	}
 
 	// Late parsing helpers

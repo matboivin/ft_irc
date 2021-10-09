@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/09 12:49:13 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/09 18:33:13 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -314,13 +314,10 @@ namespace ft_irc
 			}
 			if (it->hasUnprocessedCommands() == true)
 			{
-				// parse the message
-				Message	msg = _parse(*it, it->popUnprocessedCommand());
+				Message	msg = _parse(*it, it->popUnprocessedCommand()); // parse the message
 
-				// execute the command
-				_executeCommand(msg);
-				// send response to recipient(s)
-				_sendResponse(msg);
+				_executeCommand(msg); // execute the command
+				_sendResponse(msg); // send response to recipient(s)
 			}
 			if (it->getSocketFd() > 0)
 			{
@@ -369,16 +366,13 @@ namespace ft_irc
 
 		if (it != this->_commands.end())
 			(this->*it->second)(msg);
-
 		return (0);
 	}
 
-	// Configure command response
-	void	Server::_configResponse(Message& msg)
+	// Set response dst (channels or clients)
+	void	Server::_setResponseRecipients(Message& msg)
 	{
-		msg.setResponse( fill_forward_response( msg, msg.getCommand() ) );
-
-		std::list<Client>::iterator		dst = getClient(msg.getParams().front());
+		std::list<Client>::iterator	dst = getClient(msg.getParams().front());
 
 		if (dst != this->_clients.end())
 		{
@@ -395,19 +389,19 @@ namespace ft_irc
 	// send response
 	void	Server::_sendResponse(Message& msg)
 	{
-		if (!msg.getRecipients().empty())
-		{
-			std::list<Client*>	recipients = msg.getRecipients();
+		if (msg.getRecipients().empty())
+			return ;
 
-			for (std::list<Client*>::const_iterator	dst = recipients.begin();
-				dst != recipients.end();
-				++dst)
+		std::list<Client*>	recipients = msg.getRecipients();
+
+		for (std::list<Client*>::const_iterator	dst = recipients.begin();
+			dst != recipients.end();
+			++dst)
+		{
+			std::cout << "Sending: '" << msg.getResponse() << "' to " << (*dst)->getIpAddressStr() << std::endl;
+			if (send((*dst)->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
 			{
-				std::cout << "Sending: '" << msg.getResponse() << "' to " << (*dst)->getIpAddressStr() << std::endl;
-				if (send((*dst)->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
-				{
-					throw std::runtime_error("send() failed");
-				}
+				throw std::runtime_error("send() failed");
 			}
 		}
 	}
@@ -525,11 +519,7 @@ namespace ft_irc
 	// A client session is terminated with a quit message
 	void	Server::exec_quit_cmd(Message& msg)
 	{
-		if (!msg.getParams().empty())
-		{
-			// TODO
-		}
-
+		// TODO: broadcast message
 		_disconnectClient(msg.getSender());
 		// TODO: The server acknowledges this by sending an ERROR message to the client
 	}
@@ -539,7 +529,7 @@ namespace ft_irc
 	// The server musn't reply to NOTICE message
 	void	Server::exec_notice_cmd(Message& msg)
 	{
-		_configResponse(msg);
+		_setResponseRecipients(msg);
 	}
 
 	// PRIVMSG <msgtarget> :<message>
@@ -555,7 +545,7 @@ namespace ft_irc
 		else if (!channel_is_valid(msg.getParams().front()) && getClient( msg.getParams().front() ) == this->_clients.end() )
 			err_nosuchnick(msg, msg.getParams().front());
 		else
-			_configResponse(msg);
+			_setResponseRecipients(msg);
 	}
 
 	// JOIN <channels>
@@ -574,7 +564,10 @@ namespace ft_irc
 				std::list<Channel>::iterator	channel = getChannel(*param);
 
 				if (!channel_is_valid(*param))
+				{
 					err_nosuchchannel(msg, *param);
+					return ;
+				}
 				if (channel == this->_channels.end())
 					_addUserToChannel(msg.getSender(), _addChannel(*param));
 				else
@@ -595,6 +588,9 @@ namespace ft_irc
 				 param != msg.getParams().end();
 				 ++param)
 			{
+				if ( ((*param)[0] == ':') && (++param == msg.getParams().end()) )
+					break ;
+
 				std::list<Channel>::iterator	channel = getChannel(*param);
 
 				if (channel == this->_channels.end())

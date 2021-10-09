@@ -42,6 +42,7 @@ namespace ft_irc
 		void	_parseMiddle(Message& msg);
 		bool	_parseParams(Message& msg);
 		bool	_parseCommand(Message& msg);
+		void	_fillForwardResponse(Message& msg, std::string cmd);
 
 	public:
 		// default constructor
