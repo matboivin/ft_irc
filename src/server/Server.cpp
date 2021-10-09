@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/08 20:37:37 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/09 12:18:25 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -374,9 +374,9 @@ namespace ft_irc
 	}
 
 	// Configure command response
-	void	Server::_configResponse(Message& msg, const std::string& cmd)
+	void	Server::_configResponse(Message& msg)
 	{
-		msg.setResponse(fill_msg_response(msg, cmd));
+		msg.setResponse( fill_forward_response( msg, msg.getCommand() ) );
 
 		std::list<Client>::iterator		dst = getClient(msg.getParams().front());
 
@@ -521,7 +521,7 @@ namespace ft_irc
 	// The server musn't reply to NOTICE message
 	void	Server::exec_notice_cmd(Message& msg)
 	{
-		_configResponse(msg, "NOTICE");
+		_configResponse(msg);
 	}
 
 	// PRIVMSG <msgtarget> :<message>
@@ -537,7 +537,7 @@ namespace ft_irc
 		else if (!channel_is_valid(msg.getParams().front()) && getClient( msg.getParams().front() ) == this->_clients.end() )
 			err_nosuchnick(msg, msg.getParams().front());
 		else
-			_configResponse(msg, "PRIVMSG");
+			_configResponse(msg);
 	}
 
 	// JOIN <channels>

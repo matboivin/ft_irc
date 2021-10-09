@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:42:14 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/08 20:09:06 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/09 12:17:03 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,9 +63,6 @@ namespace ft_irc
 		bool	hasClient(Client& client);
 		void	addClient(Client& client);
 		void	removeClient(Client& client);
-
-		// send a message to all clients in channel
-		void	broadcastMessage(const Message& msg);
 
 		// debug
 		void	displayClients();

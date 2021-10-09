@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:35:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/08 17:00:00 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/09 12:09:26 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ namespace ft_irc
 	// Response helpers
 	std::string	build_prefix(const std::string& sender);
 	std::string	build_full_client_id(const Client& client);
-	std::string	fill_msg_response(Message& msg, const std::string& cmd);
+	std::string	fill_forward_response(Message& msg, const std::string& cmd);
 
 	// Late parsing helpers
 	bool	is_special(char c);
