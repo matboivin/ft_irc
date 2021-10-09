@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/09 17:55:34 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/09 17:57:06 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -503,11 +503,7 @@ namespace ft_irc
 	// A client session is terminated with a quit message
 	void	Server::exec_quit_cmd(Message& msg)
 	{
-		if (!msg.getParams().empty())
-		{
-			// TODO
-		}
-
+		// TODO: broadcast message
 		_disconnectClient(msg.getSender());
 		// TODO: The server acknowledges this by sending an ERROR message to the client
 	}
