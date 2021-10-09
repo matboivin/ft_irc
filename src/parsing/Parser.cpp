@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/09 17:50:39 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/09 17:57:59 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,7 +203,7 @@ namespace ft_irc
 		{
 			std::string	response = build_prefix( build_full_client_id( msg.getSender() ) ) + ' ' + msg.getCommand();
 
-			if (cmd.size() > 0)
+			if (cmd.size() > 0) // trim spaces
 			{
 				std::string::iterator	it = cmd.begin();
 				std::string::iterator	ite = cmd.end();
