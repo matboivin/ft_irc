@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/10/08 20:09:25 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/09 12:34:33 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,8 +86,11 @@ namespace ft_irc
 		void		setPassword(const std::string& password);
 		void		setSocketFd(int socket_fd);
 		void		setJoinedChannels(const std::list<Channel*>& joined_channels);
+
+		// actions
 		void		joinChannel(Channel& channel);
 		void		partChannel(Channel& channel);
+		void		partAllChannels();
 
 		// helpers
 		bool		isRegistered() const;

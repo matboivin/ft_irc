@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/09 12:18:25 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/09 12:49:13 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -451,6 +451,7 @@ namespace ft_irc
 					  << channel.getName() << std::endl;
 			channel.addClient(client);
 			client.joinChannel(channel);
+
 			channel.displayClients(); // debug
 			client.displayJoinedChannels();
 			std::cout << std::endl;
@@ -466,10 +467,27 @@ namespace ft_irc
 					  << channel.getName() << std::endl;
 			channel.removeClient(client);
 			client.partChannel(channel);
+
 			channel.displayClients(); // debug
 			client.displayJoinedChannels();
 			std::cout << std::endl;
 		}
+	}
+
+	void	Server::_removeUserFromAllChannels(Client& client)
+	{
+		std::list<Channel*>	joined_channels = client.getJoinedChannels();
+
+		for (std::list<Channel*>::iterator it = joined_channels.begin();
+			 it != joined_channels.end();
+			 ++it)
+		{
+			(*it)->removeClient(client);
+		}
+		client.partAllChannels();
+
+		client.displayJoinedChannels(); // debug
+		std::cout << std::endl;
 	}
 
 	// Commands
@@ -544,27 +562,24 @@ namespace ft_irc
 	void	Server::exec_join_cmd(Message& msg)
 	{
 		if (msg.getParams().empty())
-		{
 			err_needmoreparams(msg);
-			return ;
-		}
-
-		// JOIN 0
-		// if (msg.getParams().front() == "0")
-			// QUIT ALL CHANNELS
-
-		for (std::list<std::string>::const_iterator param = msg.getParams().begin();
-			 param != msg.getParams().end();
-			 ++param)
+		else if (msg.getParams().front() == "0") // JOIN 0
+			_removeUserFromAllChannels(msg.getSender());
+		else
 		{
-			std::list<Channel>::iterator	channel = getChannel(*param);
+			for (std::list<std::string>::const_iterator param = msg.getParams().begin();
+				 param != msg.getParams().end();
+				 ++param)
+			{
+				std::list<Channel>::iterator	channel = getChannel(*param);
 
-			if (!channel_is_valid(*param))
-				err_nosuchchannel(msg, *param);
-			if (channel == this->_channels.end())
-				_addUserToChannel(msg.getSender(), _addChannel(*param));
-			else
-				_addUserToChannel(msg.getSender(), *channel);
+				if (!channel_is_valid(*param))
+					err_nosuchchannel(msg, *param);
+				if (channel == this->_channels.end())
+					_addUserToChannel(msg.getSender(), _addChannel(*param));
+				else
+					_addUserToChannel(msg.getSender(), *channel);
+			}
 		}
 	}
 
@@ -573,26 +588,25 @@ namespace ft_irc
 	void	Server::exec_part_cmd(Message& msg)
 	{
 		if (msg.getParams().empty())
-		{
 			err_needmoreparams(msg);
-			return ;
-		}
-
-		for (std::list<std::string>::const_iterator param = msg.getParams().begin();
-			 param != msg.getParams().end();
-			 ++param)
+		else
 		{
-			std::list<Channel>::iterator	channel = getChannel(*param);
-
-			if (channel == this->_channels.end())
-				err_nosuchchannel(msg, *param);
-			else if (!_userOnChannel(msg.getSender(), *channel))
-				err_notonchannel(msg, *param);
-			else
+			for (std::list<std::string>::const_iterator param = msg.getParams().begin();
+				 param != msg.getParams().end();
+				 ++param)
 			{
-				_removeUserFromChannel(msg.getSender(), *channel);
-				if (channel->isEmpty())
-					_removeChannel(channel);
+				std::list<Channel>::iterator	channel = getChannel(*param);
+
+				if (channel == this->_channels.end())
+					err_nosuchchannel(msg, *param);
+				else if (!_userOnChannel(msg.getSender(), *channel))
+					err_notonchannel(msg, *param);
+				else
+				{
+					_removeUserFromChannel(msg.getSender(), *channel);
+					if (channel->isEmpty())
+						_removeChannel(channel);
+				}
 			}
 		}
 	}

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/10/08 15:27:31 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/09 12:49:49 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,6 +157,8 @@ namespace ft_irc
 		this->_joined_channels = joined_channels;
 	}
 
+	// actions
+
 	void	Client::joinChannel(Channel& channel)
 	{
 		this->_joined_channels.push_back(&channel);
@@ -165,6 +167,11 @@ namespace ft_irc
 	void	Client::partChannel(Channel& channel)
 	{
 		this->_joined_channels.remove(&channel);
+	}
+
+	void	Client::partAllChannels()
+	{
+		this->_joined_channels.clear();
 	}
 
 	// helpers
@@ -279,6 +286,12 @@ namespace ft_irc
 	// debug
 	void	Client::displayJoinedChannels()
 	{
+		if (this->_joined_channels.empty())
+		{
+			std::cout << this->getNick() << " parted all channels.\n";
+			return ;
+		}
+
 		std::cout << this->getNick() << " joined channels:\n";
 
 		for (std::list<Channel*>::iterator	it = this->_joined_channels.begin();

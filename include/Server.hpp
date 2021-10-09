@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/09 12:18:11 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/09 12:33:16 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,7 @@ namespace ft_irc
 		bool		_userOnChannel(Client& client, const std::string& chan_name);
 		void		_addUserToChannel(Client& client, Channel& channel);
 		void		_removeUserFromChannel(Client& client, Channel& channel);
+		void		_removeUserFromAllChannels(Client& client);
 
 		// debug
 		int			_sendList(Client& client);
