@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/08 20:07:16 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/09 12:08:09 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ namespace ft_irc
 		void		_init_commands_map();
 		int			_executeCommand(Message& msg);
 		// command response
-		void		_configResponse(Message& msg, const std::string& cmd);
+		void		_configResponse(Message& msg);
 		void		_sendResponse(Message& msg);
 
 		// Channel operations
