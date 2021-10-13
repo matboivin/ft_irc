@@ -224,20 +224,19 @@ namespace ft_irc
 	}
 
 	// Main parsing function
-	Message	Parser::parseMessage(Client& sender, const std::string& cmd)
+	bool	Parser::parseMessage(Message& msg, const std::string& cmd)
 	{
-		Message	msg(sender);
-
 		setIterators(cmd);
 
-		if (_parseCommand(msg)) // wrong command name format is silently ignored
+		if (_parseCommand(msg))
 		{
 			if (_commandIsValid(msg))
 			{
 				_parseParams(msg);
 				_fillForwardResponse(msg, cmd.substr( msg.getCommand().size() ));
 			}
+			return (true);
 		}
-		return (msg);
+		return (false);
 	}
 } // !namespace ft_irc

@@ -314,10 +314,14 @@ namespace ft_irc
 			}
 			if (it->hasUnprocessedCommands() == true)
 			{
-				Message	msg = _parse(*it, it->popUnprocessedCommand()); // parse the message
+				Message	msg(*it);
 
-				_executeCommand(msg); // execute the command
-				_sendResponse(msg); // send response to recipient(s)
+				if (_parse(msg, it->popUnprocessedCommand()) == true) // parse the message
+				{
+					_executeCommand(msg); // execute the command
+					_sendResponse(msg); // send response to recipient(s)
+				}
+				// else wrong command name format is silently ignored
 			}
 			if (it->getSocketFd() > 0)
 			{
@@ -342,9 +346,9 @@ namespace ft_irc
 	}
 
 	// Call Parser method to process a message
-	Message	Server::_parse(Client& sender, const std::string& cmd)
+	bool	Server::_parse(Message& msg, const std::string& cmd)
 	{
-		return (this->_parser.parseMessage(sender, cmd));
+		return (this->_parser.parseMessage(msg, cmd));
 	}
 
 	// Init the map containing the commands

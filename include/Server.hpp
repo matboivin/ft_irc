@@ -101,7 +101,7 @@ namespace ft_irc
 		int			_disconnectClient(Client& client);
 
 		// parsing
-		Message		_parse(Client& sender, const std::string& cmd);
+		bool		_parse(Message& msg, const std::string& cmd);
 
 		// commands execution
 		void		_init_commands_map();
