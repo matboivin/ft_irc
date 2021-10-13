@@ -117,7 +117,7 @@ namespace ft_irc
 		bool		_userOnChannel(Client& client, const std::string& chan_name);
 		void		_addUserToChannel(Client& client, Channel& channel);
 		void		_removeUserFromChannel(Client& client, Channel& channel);
-		void		_removeUserFromAllChannels(Client& client);
+		void		_removeUserFromAllChannels(Client& client, Message& msg);
 
 		// debug
 		int			_sendList(Client& client);

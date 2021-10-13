@@ -468,7 +468,7 @@ namespace ft_irc
 		}
 	}
 
-	void	Server::_removeUserFromAllChannels(Client& client)
+	void	Server::_removeUserFromAllChannels(Client& client, Message& msg)
 	{
 		std::list<Channel*>	joined_channels = client.getJoinedChannels();
 
@@ -477,6 +477,7 @@ namespace ft_irc
 			 ++it)
 		{
 			(*it)->removeClient(client);
+			msg.addRecipients((*it)->getClients());
 		}
 		client.partAllChannels();
 
@@ -554,7 +555,7 @@ namespace ft_irc
 		if (msg.getParams().empty())
 			err_needmoreparams(msg);
 		else if (msg.getParams().front() == "0") // JOIN 0
-			_removeUserFromAllChannels(msg.getSender());
+			_removeUserFromAllChannels(msg.getSender(), msg);
 		else
 		{
 			for (std::list<std::string>::const_iterator param = msg.getParams().begin();
@@ -577,7 +578,6 @@ namespace ft_irc
 	}
 
 	// PART <channels> [<message>]
-	// TODO: handle broadcast message then send it
 	void	Server::exec_part_cmd(Message& msg)
 	{
 		if (msg.getParams().empty())
@@ -588,6 +588,7 @@ namespace ft_irc
 				 param != msg.getParams().end();
 				 ++param)
 			{
+				// TODO: check how to handle broadcast message
 				if ( ((*param)[0] == ':') && (++param == msg.getParams().end()) )
 					break ;
 
