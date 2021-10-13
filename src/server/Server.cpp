@@ -447,11 +447,9 @@ namespace ft_irc
 		{
 			std::cout << "Add " << client.getNick() << " to channel "
 					  << channel.getName() << std::endl;
-			channel.addClient(client);
 			client.joinChannel(channel);
 
 			channel.displayClients(); // debug
-			client.displayJoinedChannels();
 			std::cout << std::endl;
 		}
 	}
@@ -463,11 +461,9 @@ namespace ft_irc
 		{
 			std::cout << "Remove " << client.getNick() << " from channel "
 					  << channel.getName() << std::endl;
-			channel.removeClient(client);
 			client.partChannel(channel);
 
 			channel.displayClients(); // debug
-			client.displayJoinedChannels();
 			std::cout << std::endl;
 		}
 	}

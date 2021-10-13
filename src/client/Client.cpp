@@ -161,11 +161,13 @@ namespace ft_irc
 
 	void	Client::joinChannel(Channel& channel)
 	{
+		channel.addClient(*this);
 		this->_joined_channels.push_back(&channel);
 	}
 
 	void	Client::partChannel(Channel& channel)
 	{
+		channel.removeClient(*this);
 		this->_joined_channels.remove(&channel);
 	}
 
