@@ -14,6 +14,7 @@
 #include <list>
 #include <string>
 #include "Client.hpp"
+#include "Channel.hpp"
 #include "Message.hpp"
 
 namespace ft_irc
@@ -130,6 +131,20 @@ namespace ft_irc
 	void	Message::addRecipients(const std::list<Client*>& recipients)
 	{
 		this->_recipients.insert(this->_recipients.end(), recipients.begin(), recipients.end());
+	}
+
+	// Get clients from all the channels joined by a given client
+	void	Message::setRecipientsFromChannels(const Client& client)
+	{
+		const std::list<Channel*>	channels = client.getJoinedChannels();
+
+		for (std::list<Channel*>::const_iterator channel = channels.begin();
+			 channel != channels.end();
+			 ++channel)
+		{
+			this->addRecipients((*channel)->getClients());
+		}
+		// TODO: remove duplicates
 	}
 
 	// end message with CRLF

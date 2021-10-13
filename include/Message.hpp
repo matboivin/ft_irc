@@ -64,6 +64,7 @@ namespace ft_irc
 		void	setRecipient(Client& recipient);
 
 		void	addRecipients(const std::list<Client*>& recipients);
+		void	setRecipientsFromChannels(const Client& client);
 
 		// end message with CRLF
 		void	appendSeparator();
