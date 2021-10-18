@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/05 14:53:57 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/18 15:50:08 by mbenjell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,15 +26,15 @@
 void	displayUsage(const char* program_name);
 int		test_parsing();
 
-enum Status
+enum	Status
 {
-	e_admin,
-	e_ircop,
-	e_member
+		e_admin,
+		e_ircop,
+		e_member
 };
 
 # ifndef nullptr
 #  define nullptr NULL
-# endif // !nullpt
+# endif
 
 #endif
