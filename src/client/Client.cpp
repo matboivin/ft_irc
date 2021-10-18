@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/10/09 12:49:49 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/18 19:33:05 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <string>
 #include "Channel.hpp"
 #include "Client.hpp"
+#include "server_operations.hpp"
 
 int	setNonblocking(int fd);
 
@@ -125,6 +126,21 @@ namespace ft_irc
 		return (this->_joined_channels);
 	}
 
+	std::list<Client*>	Client::getAllContacts()
+	{
+		std::list<Client*>	contacts;
+
+		for (std::list<Channel*>::iterator it = this->_joined_channels.begin();
+			 it != this->_joined_channels.end();
+			 ++it)
+		{
+			contacts.insert(
+				contacts.end(),
+				(*it)->getClients().begin(), (*it)->getClients().end());
+		}
+		return (removeDuplicates(contacts, this));
+	}
+
 	// setters
 
 	void	Client::setNick(const std::string& nick)
@@ -173,6 +189,12 @@ namespace ft_irc
 
 	void	Client::partAllChannels()
 	{
+		for (std::list<Channel*>::iterator it = this->_joined_channels.begin();
+			 it != this->_joined_channels.end();
+			 ++it)
+		{
+			(*it)->removeClient(*this);
+		}
 		this->_joined_channels.clear();
 	}
 

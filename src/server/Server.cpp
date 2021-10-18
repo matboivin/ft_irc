@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/18 18:51:21 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/18 19:18:42 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -470,16 +470,7 @@ namespace ft_irc
 
 	void	Server::_removeUserFromAllChannels(Client& client, Message& msg)
 	{
-		std::list<Channel*>	joined_channels = client.getJoinedChannels();
-
-		for (std::list<Channel*>::iterator it = joined_channels.begin();
-			 it != joined_channels.end();
-			 ++it)
-		{
-			(*it)->removeClient(client);
-			msg.addRecipients((*it)->getClients());
-		}
-		msg.setRecipients( removeDuplicates(msg.getRecipients()) );
+		msg.setRecipients(client.getAllContacts());
 		client.partAllChannels();
 
 		client.displayJoinedChannels(); // debug

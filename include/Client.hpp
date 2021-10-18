@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/10/09 12:34:33 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/18 19:16:54 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ namespace ft_irc
 		socklen_t&					getAddressSize();
 		int							getSocketFd() const;
 		const std::list<Channel*>&	getJoinedChannels() const;
+		std::list<Client*>			getAllContacts();
 
 		// setters
 		void		setNick(const std::string& nick);
