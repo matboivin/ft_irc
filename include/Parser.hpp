@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Parser.hpp                                      :+:      :+:    :+:   */
+/*   Parser.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:20:57 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/01 17:15:17 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/18 15:46:37 by mbenjell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,54 +20,48 @@ namespace ft_irc
 	class Client;
 	class Message;
 
-	// Parser for IRC protocol messages
+	/* Parser for IRC protocol messages */
 	class Parser
 	{
-	private:
-		// internal alias
 		typedef std::string::const_iterator	str_const_it;
 
-		// attributes
-		str_const_it	_start;
-		str_const_it	_current;
-		str_const_it	_end;
+		public:
+			Parser();
+			Parser(const Parser& other);
+			Parser&	operator=(const Parser& other);
+			~Parser();
 
-		// helpers
-		bool	_commandIsValid(Message& msg);
-		bool	_eat(char expected);
-		bool	_nocrlf(str_const_it it);
-		bool	_nospcrlfcl(str_const_it it);
-		bool	_parseSeparator();
-		void	_parseTrailing(Message& msg);
-		void	_parseMiddle(Message& msg);
-		bool	_parseParams(Message& msg);
-		bool	_parseCommand(Message& msg);
-		void	_fillForwardResponse(Message& msg, std::string cmd);
+			/* getters and setters */
+			str_const_it	getItStart() const;
+			str_const_it	getItCurrent() const;
+			str_const_it	getItEnd() const;
 
-	public:
-		// default constructor
-				Parser();
-		// copy constructor
-				Parser(const Parser& other);
-		// assignment operator
-		Parser&	operator=(const Parser& other);
-		// destructor
-				~Parser();
+			void			setItStart(str_const_it start);
+			void			setItCurrent(str_const_it current);
+			void			setItEnd(str_const_it end);
+			void			setIterators(const std::string& str);
 
-		// getters
-		str_const_it	getItStart() const;
-		str_const_it	getItCurrent() const;
-		str_const_it	getItEnd() const;
+			/* main parsing function */
+			Message			parseMessage(Client& sender, const std::string& cmd);
 
-		// setters
-		void	setItStart(str_const_it start);
-		void	setItCurrent(str_const_it current);
-		void	setItEnd(str_const_it end);
-		void	setIterators(const std::string& str);
+		private:
 
-		// main parsing function
-		Message	parseMessage(Client& sender, const std::string& cmd);
+			str_const_it	_start;
+			str_const_it	_current;
+			str_const_it	_end;
+
+			/* helpers */
+			bool			_commandIsValid(Message& msg);
+			bool			_eat(char expected);
+			bool			_nocrlf(str_const_it it);
+			bool			_nospcrlfcl(str_const_it it);
+			bool			_parseSeparator();
+			void			_parseTrailing(Message& msg);
+			void			_parseMiddle(Message& msg);
+			bool			_parseParams(Message& msg);
+			bool			_parseCommand(Message& msg);
+			void			_fillForwardResponse(Message& msg, std::string cmd);
 	};
-} // !namespace ft_irc
+}
 
-#endif // !Parser
+#endif
