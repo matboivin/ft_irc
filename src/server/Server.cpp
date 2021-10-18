@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/09 18:33:13 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/18 18:41:38 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ namespace ft_irc
 		return (this->_password);
 	}
 
-	Server::cmds_map	Server::getCommands() const
+	Server::t_cmds	Server::getCommands() const
 	{
 		return (this->_commands);
 	}
@@ -366,7 +366,7 @@ namespace ft_irc
 	// Command execution
 	int	Server::_executeCommand(Message& msg)
 	{
-		cmds_map::const_iterator	it = this->_commands.find(msg.getCommand());
+		t_cmds::const_iterator	it = this->_commands.find(msg.getCommand());
 
 		if (it != this->_commands.end())
 			(this->*it->second)(msg);
