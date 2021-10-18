@@ -17,7 +17,8 @@ INC_FILES 			= 	ft_irc.hpp \
 						Message.hpp \
 						numeric_replies.hpp \
 						Server.hpp \
-						server_operations.hpp
+						server_operations.hpp \
+						server_operations.tpp
 
 SRC_FILES 			= 	main.cpp \
 						Channel.cpp \

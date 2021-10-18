@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/18 18:41:38 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/18 18:51:21 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -479,6 +479,7 @@ namespace ft_irc
 			(*it)->removeClient(client);
 			msg.addRecipients((*it)->getClients());
 		}
+		msg.setRecipients( removeDuplicates(msg.getRecipients()) );
 		client.partAllChannels();
 
 		client.displayJoinedChannels(); // debug
