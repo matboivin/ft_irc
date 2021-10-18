@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/18 13:58:56 by mbenjell         ###   ########.fr       */
+/*   Updated: 2021/10/18 13:59:48 by mbenjell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ namespace ft_irc
 			void							exec_quit_cmd(Message& msg);
 			void							exec_notice_cmd(Message& msg);
 			void							exec_privmsg_cmd(Message& msg);
+
 		private:
 			std::string						_hostname;
 			std::string						_bind_address;
