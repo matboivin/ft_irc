@@ -25,18 +25,18 @@ namespace ft_irc
 	{
 	private:
 		// internal alias
-		typedef std::string::const_iterator	str_const_it;
+		typedef std::string::const_iterator	t_str_it;
 
 		// attributes
-		str_const_it	_start;
-		str_const_it	_current;
-		str_const_it	_end;
+		t_str_it	_start;
+		t_str_it	_current;
+		t_str_it	_end;
 
 		// helpers
 		bool	_commandIsValid(Message& msg);
 		bool	_eat(char expected);
-		bool	_nocrlf(str_const_it it);
-		bool	_nospcrlfcl(str_const_it it);
+		bool	_nocrlf(t_str_it it);
+		bool	_nospcrlfcl(t_str_it it);
 		bool	_parseSeparator();
 		void	_parseTrailing(Message& msg);
 		void	_parseMiddle(Message& msg);
@@ -55,14 +55,14 @@ namespace ft_irc
 				~Parser();
 
 		// getters
-		str_const_it	getItStart() const;
-		str_const_it	getItCurrent() const;
-		str_const_it	getItEnd() const;
+		t_str_it	getItStart() const;
+		t_str_it	getItCurrent() const;
+		t_str_it	getItEnd() const;
 
 		// setters
-		void	setItStart(str_const_it start);
-		void	setItCurrent(str_const_it current);
-		void	setItEnd(str_const_it end);
+		void	setItStart(t_str_it start);
+		void	setItCurrent(t_str_it current);
+		void	setItEnd(t_str_it end);
 		void	setIterators(const std::string& str);
 
 		// main parsing function

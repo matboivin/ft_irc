@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/09 18:21:13 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/18 18:40:50 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ namespace ft_irc
 	public:
 		// aliases
 		typedef void (Server::*cmd_fun)(Message& msg); // pointer to command function
-		typedef std::map<std::string, cmd_fun>	cmds_map; // commands functions
+		typedef std::map<std::string, cmd_fun>	t_cmds; // commands functions
 
 	private:
 		// attributes
@@ -43,7 +43,7 @@ namespace ft_irc
 		int					_sockfd;
 		int					_backlog_max;
 		Parser				_parser;
-		cmds_map			_commands;
+		t_cmds				_commands;
 		std::list<Client>	_clients;
 		std::list<Channel>	_channels;
 
@@ -65,7 +65,7 @@ namespace ft_irc
 		std::string	getBindAddress() const;
 		std::string	getPort() const;
 		std::string	getPassword() const;
-		cmds_map	getCommands() const;
+		t_cmds		getCommands() const;
 
 		std::list<Client>::iterator		getClient(const std::string& nick);
 		std::list<Channel>::iterator	getChannel(const std::string& chan_name);

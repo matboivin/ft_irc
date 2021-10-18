@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/09 17:57:59 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/18 18:40:27 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,33 +54,33 @@ namespace ft_irc
 	}
 
 	// getters
-	Parser::str_const_it	Parser::getItStart() const
+	Parser::t_str_it	Parser::getItStart() const
 	{
 		return (this->_start);
 	}
 
-	Parser::str_const_it	Parser::getItCurrent() const
+	Parser::t_str_it	Parser::getItCurrent() const
 	{
 		return (this->_current);
 	}
 
-	Parser::str_const_it	Parser::getItEnd() const
+	Parser::t_str_it	Parser::getItEnd() const
 	{
 		return (this->_end);
 	}
 
 	// setters
-	void	Parser::setItStart(Parser::str_const_it start)
+	void	Parser::setItStart(Parser::t_str_it start)
 	{
 		this->_start = start;
 	}
 
-	void	Parser::setItCurrent(str_const_it current)
+	void	Parser::setItCurrent(t_str_it current)
 	{
 		this->_current = current;
 	}
 
-	void	Parser::setItEnd(Parser::str_const_it end)
+	void	Parser::setItEnd(Parser::t_str_it end)
 	{
 		this->_end = end;
 	}
@@ -125,13 +125,13 @@ namespace ft_irc
 	}
 
 	// Checks whether the character pointed by it is not a NUL, CR, LF
-	bool	Parser::_nocrlf(Parser::str_const_it it)
+	bool	Parser::_nocrlf(Parser::t_str_it it)
 	{
 		return (it != this->_end && *it != '\r' && *it != '\n');
 	}
 
 	// Checks whether the character pointed by it is not a NUL, CR, LF, space or a colon
-	bool	Parser::_nospcrlfcl(Parser::str_const_it it)
+	bool	Parser::_nospcrlfcl(Parser::t_str_it it)
 	{
 		return (_nocrlf(it) && *it != ' ' && *it != ':');
 	}
