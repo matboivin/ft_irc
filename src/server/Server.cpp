@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/18 19:36:26 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/18 19:57:00 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -361,6 +361,7 @@ namespace ft_irc
 		this->_commands["PRIVMSG"] = &Server::exec_privmsg_cmd;
 		this->_commands["JOIN"]    = &Server::exec_join_cmd;
 		this->_commands["PART"]    = &Server::exec_part_cmd;
+		this->_commands["TOPIC"]   = &Server::exec_topic_cmd;
 	}
 
 	// Command execution
@@ -596,6 +597,31 @@ namespace ft_irc
 					if (channel->isEmpty())
 						_removeChannel(channel);
 				}
+			}
+		}
+	}
+
+	// TOPIC <channel> [ <topic> ]
+	void	Server::exec_topic_cmd(Message& msg)
+	{
+		if (msg.getParams().empty())
+			err_needmoreparams(msg);
+		else if (msg.getParams().size() == 2 && msg.getParams().back()[0] == ':')
+			getChannel(msg.getParams().front())->setTopic(msg.getParams().back());
+		else
+		{
+			for (std::list<std::string>::const_iterator param = msg.getParams().begin();
+				 param != msg.getParams().end();
+				 ++param)
+			{
+				std::list<Channel>::iterator	channel = getChannel(*param);
+
+				if (channel == this->_channels.end() || !_userOnChannel(msg.getSender(), *channel))
+					err_notonchannel(msg, *param);
+				else if (channel->getTopic().empty())
+					rpl_notopic(msg, channel->getName());
+				else
+					rpl_topic(msg, *channel);
 			}
 		}
 	}

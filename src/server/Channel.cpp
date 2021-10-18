@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:58:53 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/09 12:16:57 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/18 19:51:04 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,8 @@ namespace ft_irc
 	void	Channel::setTopic(const std::string& topic)
 	{
 		this->_topic = topic;
+		if (this->_topic[0] == ':')
+			this->_topic.erase(this->_topic.begin());
 	}
 
 	void	Channel::setMode(const std::string& mode)

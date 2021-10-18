@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/18 18:40:50 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/18 19:38:10 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ namespace ft_irc
 		void		exec_privmsg_cmd(Message& msg);
 		void		exec_join_cmd(Message& msg);
 		void		exec_part_cmd(Message& msg);
+		void		exec_topic_cmd(Message& msg);
 
 	private:
 		//Function to create a socket.
