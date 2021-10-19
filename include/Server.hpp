@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/19 16:28:49 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/19 17:08:28 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 
 namespace ft_irc
 {
+	class Config;
 	class Message;
 	class Channel;
 	class Client;
@@ -33,15 +34,16 @@ namespace ft_irc
 
 	private:
 		// attributes
-		std::string			_hostname;
-		std::string			_bind_address;
-		std::string			_port;
-		std::string			_password;
+		std::string			_hostname;     // duplicated in Config
+		std::string			_bind_address; // duplicated in Config
+		std::string			_port;         // duplicated in Config
+		std::string			_password;     // duplicated in Config
 		//Structure describing an Internet socket address.
 		struct sockaddr_in	_address;
 		//Socket descriptor.
 		int					_sockfd;
 		int					_backlog_max;
+		Config				_config; // holds all config
 		Parser				_parser;
 		t_cmds				_commands;
 		std::list<Client>	_clients;
@@ -119,6 +121,9 @@ namespace ft_irc
 		void		_addUserToChannel(Client& client, Channel& channel);
 		void		_removeUserFromChannel(Client& client, Channel& channel);
 		void		_removeUserFromAllChannels(Client& client, Message& msg);
+
+		// oper operations
+		bool		_giveOperPriv(const std::string& name, const std::string& password);
 
 		// debug
 		int			_sendList(Client& client);

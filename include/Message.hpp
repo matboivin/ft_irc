@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:47:11 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/08 17:01:14 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/19 17:12:41 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ namespace ft_irc
 		std::string						getServHostname() const;
 		std::string						getResponse() const;
 		std::string						getCommand() const;
+		std::string						getParam(int idx) const;
 		const std::list<std::string>&	getParams() const;
 		const std::list<Client*>&		getRecipients() const;
 

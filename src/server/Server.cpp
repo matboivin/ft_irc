@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/19 16:39:41 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/19 17:19:48 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <unistd.h>
+#include "Config.hpp"
 #include "Client.hpp"
 #include "Channel.hpp"
 #include "Message.hpp"
@@ -46,6 +47,7 @@ namespace ft_irc
 	  _bind_address(bind_address), _port(port),
 	  _password(password), _address(),
 	  _sockfd(-1), _backlog_max(backlog_max),
+	  _config(hostname, bind_address, port, password),
 	  _parser(), _commands(),
 	  _clients(), _channels()
 	{
@@ -64,6 +66,7 @@ namespace ft_irc
 	  _bind_address(other._bind_address), _port(other._port),
 	  _password(other._password), _address(other._address),
 	  _sockfd(other._sockfd), _backlog_max(other._backlog_max),
+	  _config(other._config),
 	  _parser(other._parser), _commands(other._commands),
 	  _clients(other._clients), _channels(other._channels)
 	{
@@ -80,6 +83,7 @@ namespace ft_irc
 			this->_password = other.getPassword();
 			this->_sockfd = other._sockfd;
 			this->_backlog_max = other._backlog_max;
+			this->_config = other._config;
 			this->_parser = other._parser;
 			this->_commands = other.getCommands();
 			this->_clients = other._clients;
@@ -478,6 +482,12 @@ namespace ft_irc
 		std::cout << std::endl;
 	}
 
+	// oper operations
+	bool	Server::_giveOperPriv(const std::string& name, const std::string& password)
+	{
+		return (this->_config.operBlockIsValid(name, password));
+	}
+
 	// Commands
 
 	// PASS <password>
@@ -530,6 +540,7 @@ namespace ft_irc
 		}
 		if (!msg.getSender().isOper())
 		{
+			if (_giveOperPriv(msg.getParams().front(), msg.getParams().))
 			err_passwdmismatch(msg); // tmp
 
 			// msg.getSender().addMode("o");
