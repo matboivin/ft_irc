@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/19 15:50:31 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/19 16:39:41 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -357,6 +357,7 @@ namespace ft_irc
 		this->_commands["PASS"]    = &Server::exec_pass_cmd;
 		this->_commands["NICK"]    = &Server::exec_nick_cmd;
 		this->_commands["QUIT"]    = &Server::exec_quit_cmd;
+		this->_commands["OPER"]    = &Server::exec_oper_cmd;
 		this->_commands["NOTICE"]  = &Server::exec_notice_cmd;
 		this->_commands["PRIVMSG"] = &Server::exec_privmsg_cmd;
 		this->_commands["JOIN"]    = &Server::exec_join_cmd;
@@ -515,6 +516,28 @@ namespace ft_irc
 		msg.setRecipients(msg.getSender().getAllContacts());
 		_disconnectClient(msg.getSender());
 		// TODO: The server acknowledges this by sending an ERROR message to the client
+	}
+
+	// OPER <username> <password>
+	// Authenticates a user as an IRC operator if the username/password combination exists
+	// for that server
+	void	Server::exec_oper_cmd(Message& msg)
+	{
+		if (msg.getParams().size() < 2)
+		{
+			err_needmoreparams(msg);
+			return ;
+		}
+		if (!msg.getSender().isOper())
+		{
+			err_passwdmismatch(msg); // tmp
+
+			// msg.getSender().addMode("o");
+
+			// Message	rpl_msg;
+			// _sendResponse(rpl_youreoper(rpl_msg));
+			// exec_mode_cmd(msg);
+		}
 	}
 
 	// NOTICE <msgtarget> :<message>
