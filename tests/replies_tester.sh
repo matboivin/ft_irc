@@ -30,6 +30,10 @@ assert_exec "echo NICK [me0w] | nc -q 1 $BIND_ADDR $PORT" "" "" 0
 assert_exec "echo NICK meow-ow | nc -q 1 $BIND_ADDR $PORT" "" "" 0
 # wrong password
 assert_exec "echo PASS | nc -q 1 $BIND_ADDR $PORT" ":irc.42.fr 461 PASS :Not enough parameters" "" 0
+# topic
+assert_exec "echo TOPIC | nc -q 1 $BIND_ADDR $PORT" ":irc.42.fr 461 TOPIC :Not enough parameters" "" 0
+assert_exec "echo TOPIC foo | nc -q 1 $BIND_ADDR $PORT" ":irc.42.fr 403 foo :No such channel" "" 0
+assert_exec "echo TOPIC foo | nc -q 1 $BIND_ADDR $PORT" ":irc.42.fr 403 foo :No such channel" "" 0
 
 # assert_exec "echo QUIT | nc -q 1 $BIND_ADDR $PORT" "" "" 0
 
