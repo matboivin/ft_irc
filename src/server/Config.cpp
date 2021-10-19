@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/19 16:47:35 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/19 16:51:04 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/19 16:54:53 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ namespace ft_irc
 	: _hostname("irc.42.fr"),
 	  _bind_address("0.0.0.0"),
 	  _port("6667"),
-	  _password("")
+	  _connection_password("")
 	{
 	}
 
@@ -29,7 +29,7 @@ namespace ft_irc
 	: _hostname(other._hostname),
 	  _bind_address(other._bind_address),
 	  _port(other._port),
-	  _password(other._password)
+	  _connection_password(other._connection_password)
 	{
 	}
 
@@ -41,7 +41,7 @@ namespace ft_irc
 	: _hostname(hostname),
 	  _bind_address(bind_address),
 	  _port(port),
-	  _password(password)
+	  _connection_password(password)
 	{
 	}
 
@@ -53,7 +53,7 @@ namespace ft_irc
 			this->_hostname = other.getHostname();
 			this->_bind_address = other.getBindAddress();
 			this->_port = other.getPort();
-			this->_password = other.getPassword();
+			this->_connection_password = other.getPassword();
 		}
 		return (*this);
 	}
@@ -82,7 +82,7 @@ namespace ft_irc
 
 	std::string	Config::getPassword() const
 	{
-		return (this->_password);
+		return (this->_connection_password);
 	}
 
 	// setters
@@ -104,6 +104,6 @@ namespace ft_irc
 
 	void	Config::setPassword(const std::string& password)
 	{
-		this->_password = password;
+		this->_connection_password = password;
 	}
 }

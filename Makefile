@@ -13,7 +13,7 @@ INC_FILES 			= 	ft_irc.hpp \
 						Channel.hpp \
 						Client.hpp \
 						CLIParser.hpp \
-						COnfig.hpp \
+						Config.hpp \
 						Parser.hpp \
 						Message.hpp \
 						numeric_replies.hpp \
