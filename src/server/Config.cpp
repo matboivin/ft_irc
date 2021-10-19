@@ -6,10 +6,11 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/19 16:47:35 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/19 16:54:53 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/19 17:04:16 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <map>
 #include <string>
 #include "Config.hpp"
 
@@ -20,7 +21,8 @@ namespace ft_irc
 	: _hostname("irc.42.fr"),
 	  _bind_address("0.0.0.0"),
 	  _port("6667"),
-	  _connection_password("")
+	  _connection_password(""),
+	  _oper_blocks()
 	{
 	}
 
@@ -29,7 +31,8 @@ namespace ft_irc
 	: _hostname(other._hostname),
 	  _bind_address(other._bind_address),
 	  _port(other._port),
-	  _connection_password(other._connection_password)
+	  _connection_password(other._connection_password),
+	  _oper_blocks(other._oper_blocks)
 	{
 	}
 
@@ -54,6 +57,7 @@ namespace ft_irc
 			this->_bind_address = other.getBindAddress();
 			this->_port = other.getPort();
 			this->_connection_password = other.getPassword();
+			this->_oper_blocks = other._oper_blocks;
 		}
 		return (*this);
 	}
@@ -105,5 +109,20 @@ namespace ft_irc
 	void	Config::setPassword(const std::string& password)
 	{
 		this->_connection_password = password;
+	}
+
+	void	Config::addOperBlock(const std::string& name, const std::string& password)
+	{
+		this->_oper_blocks[name] = password;
+	}
+
+	// Checks whether the combination passed as parameter is valid
+	bool	Config::operBlockIsValid(const std::string& name, const std::string& password)
+	{
+		t_oper_block::iterator	it = this->_oper_blocks.find(name);
+
+		if (it != this->_oper_blocks.end())
+			return (it->second == password);
+		return (false);
 	}
 }

@@ -6,13 +6,14 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/19 16:41:45 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/19 16:54:43 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/19 17:04:26 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CONFIG_HPP
 # define CONFIG_HPP
 
+# include <map>
 # include <string>
 
 namespace ft_irc
@@ -23,11 +24,17 @@ namespace ft_irc
 	// Config for IRC server
 	class Config
 	{
+	public:
+		// aliases
+		typedef std::map<std::string, std::string>	t_oper_block; // <name,password>
+
 	private:
-		std::string	_hostname;
-		std::string	_bind_address;
-		std::string	_port;
-		std::string	_connection_password;
+		// attributes
+		std::string		_hostname;
+		std::string		_bind_address;
+		std::string		_port;
+		std::string		_connection_password;
+		t_oper_block	_oper_blocks;
 
 	public:
 		// default constructor
@@ -55,6 +62,10 @@ namespace ft_irc
 		void		setBindAddress(const std::string& bind_address);
 		void		setPort(const std::string& port);
 		void		setPassword(const std::string& password);
+
+		// oper manipulation
+		void		addOperBlock(const std::string& name, const std::string& password);
+		bool		operBlockIsValid(const std::string& name, const std::string& password);
 	};
 } // !namespace ft_irc
 
