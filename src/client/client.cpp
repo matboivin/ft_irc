@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/09/30 18:40:14 by root             ###   ########.fr       */
+/*   Updated: 2021/10/19 14:34:30 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ namespace ft_irc
 		this->connected = false;
 		this->timeout = (struct timeval){.tv_sec = 0, .tv_usec = 50};
 		this->max_cmd_length = 512;
+		this->alive = true;
 	}
 		//copy constructor
 	IRCClient::IRCClient(const IRCClient &other)
@@ -45,6 +46,7 @@ namespace ft_irc
 		this->connected = other.connected;
 		this->timeout = other.timeout;
 		this->max_cmd_length = other.max_cmd_length;
+		this->alive = other.alive;
 	}
 	//assignment operator
 	IRCClient &IRCClient::operator=(const IRCClient &other)
@@ -60,6 +62,7 @@ namespace ft_irc
 		this->connected = other.connected;
 		this->timeout = other.timeout;
 		this->max_cmd_length = other.max_cmd_length;
+		this->alive = other.alive;
 		return *this;
 	}
 	//destructor
@@ -193,7 +196,10 @@ namespace ft_irc
 		//read
 		ret = recv(this->socket_fd, bytes_buffer, MAX_COMMAND_SIZE, 0);
 		if (ret == -1)
-			throw std::runtime_error("recv() failed");
+		{
+			return (-1);
+			//throw std::runtime_error("recv() failed");
+		}
 		if (ret == 0)
 			return 0;
 		//std::cerr.write(bytes_buffer, ret);
@@ -235,5 +241,24 @@ namespace ft_irc
 	bool				operator==(const IRCClient &lhs, const IRCClient &rhs)
 	{
 		return ((lhs.socket_fd == rhs.socket_fd && lhs.nick == rhs.nick));
+	}
+	
+	/*
+		bool				isAlive() const;
+		void				setAlive(bool alive);
+	*/
+	bool IRCClient::isAlive() const
+	{
+		return (this->alive);
+	}
+	
+	void IRCClient::setAlive(bool alive)
+	{
+		this->alive = alive;
+	}
+
+	void IRCClient::setConnected(bool connected)
+	{
+		this->connected = connected;
 	}
 }

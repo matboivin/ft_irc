@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/09/30 18:39:06 by root             ###   ########.fr       */
+/*   Updated: 2021/10/19 14:30:54 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ namespace ft_irc
 		std::string			in_buffer;			//buffer for incoming data
 		std::string			out_buffer;		//buffer for outgoing data
 		size_t				max_cmd_length;	//max length of a command
+		bool				alive;
 	public:
 							IRCClient(struct sockaddr_in address=(struct sockaddr_in){0,0,{0},{0}},
 		std::string nick="", std::string realname="", std::string username="", std::string password="");
@@ -74,6 +75,7 @@ namespace ft_irc
 		void				setSocketFd(int socket_fd);
 		bool				isRegistered() const;
 		bool				isConnected() const;
+		void				setConnected(bool connected);
 		int					awaitConnection(int socket_fd);
 		bool				hasNewEvents();
 		bool				hasUnprocessedCommands();
@@ -82,7 +84,8 @@ namespace ft_irc
 		int					updateOutBuffer();
 		//add response to the output buffer
 		void				sendCommand(std::string response);
-
+		bool				isAlive() const;
+		void				setAlive(bool alive);
 		//operator==
 		friend bool			operator==(const IRCClient &lhs, const IRCClient &rhs);
 	};

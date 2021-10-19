@@ -44,7 +44,7 @@ VPATH = $(SRC_DIR) $(SRC_SUBDIRS)
 
 CPPFLAGS = -I$(INC_DIR)
 CXX = clang++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -g -fsanitize=address
 
 # COLORS
 
@@ -71,7 +71,7 @@ $(OBJ_DIR)/%.o : %.cpp
 # LINKING
 
 $(NAME): $(OBJ_DIR) $(OBJ) $(INC)
-	$(CXX) $(OBJ) -o $@
+	$(CXX) $(CXXFLAGS) $(OBJ) -o $@
 	@echo "$(COL_GREEN_B)[OK]$(COL_WHITE_B) $@$(COL_RESET) created in working directory"
 
 # DEBUG

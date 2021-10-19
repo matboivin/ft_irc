@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/09/30 17:22:32 by root             ###   ########.fr       */
+/*   Updated: 2021/10/19 14:37:37 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,6 +226,15 @@ namespace ft_irc
 		for (std::list<IRCClient>::iterator it = this->clients.begin();
 		 it != this->clients.end(); ++it)
 		{
+			if (it->isAlive() == false)
+			{
+				std::cout << "Deleting client " << it->getNick()  << "@"
+				<< it->getIpAddressStr()  << std::endl; 
+				this->disconnectClient(*it);
+				it = this->clients.erase(it);
+				if (it == this->clients.end())
+					break;
+			}
 			if (it->updateOutBuffer())
 			{
 				continue;
@@ -268,7 +277,7 @@ namespace ft_irc
 		}
 		else if (cmd == "EXIT")
 		{
-			this->disconnectClient(client);
+			client.setAlive(false);
 		}
 		else
 		{
@@ -284,7 +293,9 @@ namespace ft_irc
 		std::cout << "Closing connection to " << it->getIpAddressStr() << std::endl
 		<< "---------------------------------------------------------" << std::endl;
 		close(it->getSocketFd());
-		it = this->clients.erase(it);
+		it->setSocketFd(-1);
+		it->setAlive(false);
+		it->setConnected(false);
 		return (0);
 	}
 
