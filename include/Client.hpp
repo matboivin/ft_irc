@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/10/18 19:16:54 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/19 16:13:13 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,7 @@ namespace ft_irc
 		// helpers
 		bool		isRegistered() const;
 		bool		isConnected() const;
+		bool		isOper() const;
 		int			awaitConnection(int socket_fd);
 		bool		hasNewEvents();
 		bool		hasUnprocessedCommands();

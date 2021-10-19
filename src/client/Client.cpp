@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/10/18 19:33:05 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/19 16:21:47 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,6 +208,11 @@ namespace ft_irc
 	bool	Client::isConnected() const
 	{
 		return (this->_socket_fd != -1);
+	}
+
+	bool	Client::isOper() const
+	{
+		return (this->_mode.find("o") != std::string::npos);
 	}
 
 	int	Client::awaitConnection(int socket_fd)
