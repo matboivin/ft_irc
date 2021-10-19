@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/18 19:36:26 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/19 15:50:31 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -542,6 +542,7 @@ namespace ft_irc
 	}
 
 	// JOIN <channels>
+	// JOIN 0 -> leave all channels
 	void	Server::exec_join_cmd(Message& msg)
 	{
 		if (msg.getParams().empty())
@@ -573,29 +574,29 @@ namespace ft_irc
 	void	Server::exec_part_cmd(Message& msg)
 	{
 		if (msg.getParams().empty())
-			err_needmoreparams(msg);
-		else
 		{
-			for (std::list<std::string>::const_iterator param = msg.getParams().begin();
-				 param != msg.getParams().end();
-				 ++param)
+			err_needmoreparams(msg);
+			return ;
+		}
+
+		for (std::list<std::string>::const_iterator param = msg.getParams().begin();
+			 param != msg.getParams().end();
+			 ++param)
+		{
+			if ( ((*param)[0] == ':') && (++param == msg.getParams().end()) )
+				break ;
+
+			std::list<Channel>::iterator	channel = getChannel(*param);
+
+			if (channel == this->_channels.end())
+				err_nosuchchannel(msg, *param);
+			else if (!_userOnChannel(msg.getSender(), *channel))
+				err_notonchannel(msg, *param);
+			else
 			{
-				// TODO: check how to handle broadcast message
-				if ( ((*param)[0] == ':') && (++param == msg.getParams().end()) )
-					break ;
-
-				std::list<Channel>::iterator	channel = getChannel(*param);
-
-				if (channel == this->_channels.end())
-					err_nosuchchannel(msg, *param);
-				else if (!_userOnChannel(msg.getSender(), *channel))
-					err_notonchannel(msg, *param);
-				else
-				{
-					_removeUserFromChannel(msg.getSender(), *channel);
-					if (channel->isEmpty())
-						_removeChannel(channel);
-				}
+				_removeUserFromChannel(msg.getSender(), *channel);
+				if (channel->isEmpty())
+					_removeChannel(channel);
 			}
 		}
 	}
