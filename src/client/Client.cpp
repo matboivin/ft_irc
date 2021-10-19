@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/10/19 16:21:47 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/19 16:27:31 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,6 +196,22 @@ namespace ft_irc
 			(*it)->removeClient(*this);
 		}
 		this->_joined_channels.clear();
+	}
+
+	// Add the mode passed as parameter to the client mode string
+	void	Client::addMode(const std::string& mode)
+	{
+		if (this->_mode.find(mode) == std::string::npos)
+			this->_mode.append(mode);
+	}
+
+	// Remove the mode passed as parameter from the client mode string
+	void	Client::removeMode(const std::string& mode)
+	{
+		size_t	pos = this->_mode.find(mode);
+
+		if (pos != std::string::npos)
+			this->_mode.erase(pos, 1);
 	}
 
 	// helpers

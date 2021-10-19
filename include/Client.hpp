@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/10/19 16:13:13 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/19 16:23:04 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,8 @@ namespace ft_irc
 		void		joinChannel(Channel& channel);
 		void		partChannel(Channel& channel);
 		void		partAllChannels();
+		void		addMode(const std::string& mode);
+		void		removeMode(const std::string& mode);
 
 		// helpers
 		bool		isRegistered() const;
