@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 12:25:08 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/09 17:33:45 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/19 17:25:39 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ static int	cmp_msg(const ft_irc::Message& msg, const ft_irc::Message& expected)
 	if (msg.getParams() != expected.getParams())
 	{
 		std::cout << "   Message params:  ";
-		for (std::list<std::string>::const_iterator it = msg.getParams().begin();
+		for (std::vector<std::string>::const_iterator it = msg.getParams().begin();
 			 it != msg.getParams().end();
 			 ++it)
 		{
@@ -40,7 +40,7 @@ static int	cmp_msg(const ft_irc::Message& msg, const ft_irc::Message& expected)
 		}
 
 		std::cout << "\n-> Expected params: ";
-		for (std::list<std::string>::const_iterator it = expected.getParams().begin();
+		for (std::vector<std::string>::const_iterator it = expected.getParams().begin();
 			 it != expected.getParams().end();
 			 ++it)
 		{

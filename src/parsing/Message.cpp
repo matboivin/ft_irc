@@ -6,13 +6,14 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/19 17:18:58 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/19 17:27:19 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
 #include <list>
 #include <string>
+#include <vector>
 #include "Client.hpp"
 #include "Channel.hpp"
 #include "Message.hpp"
@@ -80,18 +81,7 @@ namespace ft_irc
 		return (this->_command);
 	}
 
-	std::string	Message::getParam(int idx) const
-	{
-		if (idx < 0 || idx > static_cast<int>(this->_params.size()))
-			throw std::out_of_range("Message::getParam: invalid index");
-
-		std::list<std::string>::iterator	it = this->_params.begin();
-		for (int i = 0; i < idx; ++i)
-			it++;
-		return (*it);
-	}
-
-	const std::list<std::string>&	Message::getParams() const
+	const std::vector<std::string>&	Message::getParams() const
 	{
 		return (this->_params);
 	}
@@ -170,7 +160,7 @@ namespace ft_irc
 		std::cout << "command:  " << getCommand() << '\n'
 				  << "params:   ";
 
-		for (std::list<std::string>::const_iterator it = this->_params.begin();
+		for (std::vector<std::string>::const_iterator it = this->_params.begin();
 			 it != this->_params.end();
 			 ++it)
 		{

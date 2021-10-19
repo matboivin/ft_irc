@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/19 17:19:48 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/19 17:33:33 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -381,7 +381,7 @@ namespace ft_irc
 	// Set response dst (channels or clients)
 	void	Server::_setResponseRecipients(Message& msg)
 	{
-		std::list<Client>::iterator	dst = getClient(msg.getParams().front());
+		std::list<Client>::iterator	dst = getClient(msg.getParams().at(0));
 
 		if (dst != this->_clients.end())
 		{
@@ -389,7 +389,7 @@ namespace ft_irc
 			return ;
 		}
 
-		std::list<Channel>::iterator	channel = getChannel(msg.getParams().front());
+		std::list<Channel>::iterator	channel = getChannel(msg.getParams().at(0));
 
 		if (channel != this->_channels.end())
 			msg.setRecipients(channel->getClients());
@@ -499,7 +499,7 @@ namespace ft_irc
 		else if (msg.getSender().isRegistered())
 			err_alreadyregistered(msg);
 		else
-			msg.getSender().setPassword(msg.getParams().front());
+			msg.getSender().setPassword(msg.getParams().at(0));
 	}
 
 	// NICK <nickname>
@@ -510,12 +510,12 @@ namespace ft_irc
 			err_nonicknamegiven(msg);
 		else
 		{
-			if (!nick_is_valid(msg.getParams().front()))
+			if (!nick_is_valid(msg.getParams().at(0)))
 				err_erroneusnickname(msg);
-			else if (getClient(msg.getParams().front()) != this->_clients.end())
+			else if (getClient(msg.getParams().at(0)) != this->_clients.end())
 				err_nicknameinuse(msg);
 			else
-				msg.getSender().setNick(msg.getParams().front());
+				msg.getSender().setNick(msg.getParams().at(0));
 		}
 	}
 
@@ -540,14 +540,17 @@ namespace ft_irc
 		}
 		if (!msg.getSender().isOper())
 		{
-			if (_giveOperPriv(msg.getParams().front(), msg.getParams().))
-			err_passwdmismatch(msg); // tmp
+			if (_giveOperPriv(msg.getParams().at(0), msg.getParams().at(1)))
+			{
+				msg.getSender().addMode("o");
 
-			// msg.getSender().addMode("o");
-
-			// Message	rpl_msg;
-			// _sendResponse(rpl_youreoper(rpl_msg));
-			// exec_mode_cmd(msg);
+				Message	rpl_msg(msg.getSender()); // tmp
+				rpl_youreoper(rpl_msg);
+				_sendResponse(rpl_msg);
+				//exec_mode_cmd(msg);
+			}
+			else
+				err_passwdmismatch(msg);
 		}
 	}
 
@@ -567,10 +570,10 @@ namespace ft_irc
 			err_norecipient(msg);
 		else if (msg.getParams().size() < 2)
 			err_notexttosend(msg);
-		else if (channel_is_valid(msg.getParams().front()) && !_userOnChannel( msg.getSender(), msg.getParams().front() ))
+		else if (channel_is_valid(msg.getParams().at(0)) && !_userOnChannel( msg.getSender(), msg.getParams().at(0) ))
 			err_cannotsendtochan(msg);
-		else if (!channel_is_valid(msg.getParams().front()) && getClient( msg.getParams().front() ) == this->_clients.end() )
-			err_nosuchnick(msg, msg.getParams().front());
+		else if (!channel_is_valid(msg.getParams().at(0)) && getClient( msg.getParams().at(0) ) == this->_clients.end() )
+			err_nosuchnick(msg, msg.getParams().at(0));
 		else
 			_setResponseRecipients(msg);
 	}
@@ -581,11 +584,11 @@ namespace ft_irc
 	{
 		if (msg.getParams().empty())
 			err_needmoreparams(msg);
-		else if (msg.getParams().front() == "0") // JOIN 0
+		else if (msg.getParams().at(0) == "0") // JOIN 0
 			_removeUserFromAllChannels(msg.getSender(), msg);
 		else
 		{
-			for (std::list<std::string>::const_iterator param = msg.getParams().begin();
+			for (std::vector<std::string>::const_iterator param = msg.getParams().begin();
 				 param != msg.getParams().end();
 				 ++param)
 			{
@@ -613,7 +616,7 @@ namespace ft_irc
 			return ;
 		}
 
-		for (std::list<std::string>::const_iterator param = msg.getParams().begin();
+		for (std::vector<std::string>::const_iterator param = msg.getParams().begin();
 			 param != msg.getParams().end();
 			 ++param)
 		{

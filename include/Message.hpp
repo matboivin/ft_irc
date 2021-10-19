@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:47:11 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/19 17:12:41 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/19 17:27:12 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <list>
 # include <string>
+# include <vector>
 
 # define MSG_MAX_PARAMS 15
 
@@ -27,12 +28,12 @@ namespace ft_irc
 	{
 	private:
 		// attributes
-		Client&					_sender;
-		std::string				_serv_hostname;
-		std::string				_response;
-		std::string				_command;
-		std::list<std::string>	_params;
-		std::list<Client*>		_recipients;
+		Client&						_sender;
+		std::string					_serv_hostname;
+		std::string					_response;
+		std::string					_command;
+		std::vector<std::string>	_params;
+		std::list<Client*>			_recipients;
 
 	public:
 		// default constructor
@@ -51,8 +52,7 @@ namespace ft_irc
 		std::string						getServHostname() const;
 		std::string						getResponse() const;
 		std::string						getCommand() const;
-		std::string						getParam(int idx) const;
-		const std::list<std::string>&	getParams() const;
+		const std::vector<std::string>&	getParams() const;
 		const std::list<Client*>&		getRecipients() const;
 
 		// setters
