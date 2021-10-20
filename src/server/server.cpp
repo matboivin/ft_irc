@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/19 14:37:37 by root             ###   ########.fr       */
+/*   Updated: 2021/10/19 16:13:03 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ namespace ft_irc
 		address.sin_port = htons(atoi(this->port.c_str()));
 		address.sin_addr.s_addr = inet_addr(this->bind_address.c_str());
 	}
-	
+
 	//IRCServer getters
 	std::string IRCServer::getBindAddress() const
 	{
@@ -155,6 +155,7 @@ namespace ft_irc
 			processClients();
 		}
 	}
+
 	int IRCServer::sockGetLine(int sockfd, std::string &line)
 	{
 		//read char by char

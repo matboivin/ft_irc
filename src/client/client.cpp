@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/10/19 14:34:30 by root             ###   ########.fr       */
+/*   Updated: 2021/10/19 16:49:46 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ namespace ft_irc
 		this->timeout = (struct timeval){.tv_sec = 0, .tv_usec = 50};
 		this->max_cmd_length = 512;
 		this->alive = true;
+		this->keep_alive = (struct timeval){.tv_sec = 3, .tv_usec = 0};
 	}
 		//copy constructor
 	IRCClient::IRCClient(const IRCClient &other)
@@ -47,6 +48,7 @@ namespace ft_irc
 		this->timeout = other.timeout;
 		this->max_cmd_length = other.max_cmd_length;
 		this->alive = other.alive;
+		this->keep_alive = other.keep_alive;
 	}
 	//assignment operator
 	IRCClient &IRCClient::operator=(const IRCClient &other)
@@ -63,6 +65,7 @@ namespace ft_irc
 		this->timeout = other.timeout;
 		this->max_cmd_length = other.max_cmd_length;
 		this->alive = other.alive;
+		this->keep_alive = other.keep_alive;
 		return *this;
 	}
 	//destructor
@@ -185,7 +188,7 @@ namespace ft_irc
 	{
 		char					bytes_buffer[MAX_COMMAND_SIZE];
 		int						ret;
-		struct pollfd			poll_fd = {.fd = this->socket_fd, .events = POLLIN};
+		struct pollfd			poll_fd = {.fd = this->socket_fd, .events = POLLIN | POLLHUP};
 		int						poll_ret = poll(&poll_fd, 1, this->timeout.tv_usec);
 		std::string::size_type	found;
 
