@@ -34,3 +34,8 @@
 *.out
 *.app
 ircserv
+
+# Vim
+.session
+
+.vscode

@@ -3,33 +3,38 @@
 /*                                                        :::      ::::::::   */
 /*   ft_irc.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/20 17:37:05 by root             ###   ########.fr       */
+/*   Updated: 2021/10/18 15:50:08 by mbenjell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_IRC_HPP
 # define FT_IRC_HPP
-# include <cstring>
-# include <cstdlib>
-# include <iostream>
-# include <string>
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <arpa/inet.h>
-# include <netdb.h>
-# include <fcntl.h>
-# include <unistd.h>
-# include "client.hpp"
-# include "server.hpp"
-void	displayUsage( const char* program_name );
 
-#ifndef nullptr
-# define nullptr NULL
-#endif // !nullpt
+# include "Channel.hpp"
+# include "Client.hpp"
+# include "CLIParser.hpp"
+# include "Message.hpp"
+# include "numeric_replies.hpp"
+# include "Parser.hpp"
+# include "Server.hpp"
+# include "server_operations.hpp"
+# include "UserInterface.hpp"
 
+void	displayUsage(const char* program_name);
+int		test_parsing();
 
+enum	Status
+{
+		e_admin,
+		e_ircop,
+		e_member
+};
+
+# ifndef nullptr
+#  define nullptr NULL
+# endif
 
 #endif

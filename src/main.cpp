@@ -3,24 +3,25 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:21 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/30 13:33:05 by root             ###   ########.fr       */
+/*   Updated: 2021/10/09 17:53:35 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <iostream>
+#include <unistd.h>
 #include "ft_irc.hpp"
-#include "cli_parser.hpp"
 
-int	main( int argc, char** argv )
+int	main(int argc, char** argv)
 {
 	try
 	{
 		ft_irc::CLIParser CLI_parser(argc, argv);
 		try
 		{
-			ft_irc::IRCServer server(CLI_parser.getBindAddress(),
+			ft_irc::Server server(CLI_parser.getBindAddress(),
 			CLI_parser.getPort(), CLI_parser.getPassword());
 			server.run();
 		}

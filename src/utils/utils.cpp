@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 16:03:21 by mboivin           #+#    #+#             */
-/*   Updated: 2021/09/30 17:20:40 by root             ###   ########.fr       */
+/*   Updated: 2021/10/05 14:52:37 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
 #include "ft_irc.hpp"
 
-void	displayUsage( const char* program_name )
+void	displayUsage(const char* program_name)
 {
 	std::cout << "usage: " << program_name
 			  << " [host:port_network:password_network] <port> <password>"
@@ -23,7 +23,7 @@ void	displayUsage( const char* program_name )
 //taken from http://www.kegel.com/dkftpbench/nonblocking.html
 int setNonblocking(int fd)
 {
-	int flags;
+	int	flags;
 
 	/* If they have O_NONBLOCK, use the Posix way to do it */
 #if defined(O_NONBLOCK)
