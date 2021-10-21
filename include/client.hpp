@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/10/19 16:44:47 by root             ###   ########.fr       */
+/*   Updated: 2021/10/21 16:05:46 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,7 @@ namespace ft_irc
 		std::string			in_buffer;			//buffer for incoming data
 		std::string			out_buffer;		//buffer for outgoing data
 		size_t				max_cmd_length;	//max length of a command
-		bool				alive;
-		struct timeval		keep_alive;			//keep_alive lenght
+
 
 	public:
 							IRCClient(struct sockaddr_in address=(struct sockaddr_in){0,0,{0},{0}},

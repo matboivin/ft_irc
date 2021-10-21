@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/10/18 12:43:08 by mbenjell         ###   ########.fr       */
+/*   Updated: 2021/10/21 16:19:20 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,8 @@ namespace ft_irc
 			void						setJoinedChannels(const std::list<Channel*>& joined_channels);
 			void						joinChannel(Channel& channel);
 			void						partChannel(Channel& channel);
+			void						setAlive(bool alive);
+			void				setConnected(bool connected);
 
 			/* helpers */
 			bool						isRegistered() const;
@@ -75,10 +77,11 @@ namespace ft_irc
 			std::string					popUnprocessedCommand();
 			int							updateInBuffer();
 			int							updateOutBuffer();
+			bool						isAlive() const;
 
 			/* add response to the output buffer */
 			void						sendCommand(std::string cmd);
-
+			
 			/* debug */
 			void						displayJoinedChannels();
 
@@ -100,6 +103,8 @@ namespace ft_irc
 			std::string					_out_buffer;		/* buffer for outgoing data */
 			const size_t				_max_cmd_length;	/* max length of a command */
 			std::list<Channel*>			_joined_channels;
+			bool						_alive;
+			struct timeval				_keep_alive;		/* keep_alive lenght */
 	};
 }
 

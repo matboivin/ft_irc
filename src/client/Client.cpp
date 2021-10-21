@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/10/08 15:27:31 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/21 16:19:28 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,11 @@ namespace ft_irc
 	  _connected(false),
 	  _in_buffer(), _out_buffer(),
 	  _max_cmd_length(512),
-	  _joined_channels()
+	  _joined_channels(),
+	  _alive(true)
 	{
 		this->_timeout = (struct timeval){.tv_sec = 0, .tv_usec = 50};
+		this->_keep_alive = (struct timeval){.tv_sec = 3, .tv_usec = 0};
 	}
 
 	// copy constructor
@@ -49,7 +51,9 @@ namespace ft_irc
 	  _connected(other._connected),
 	  _in_buffer(other._in_buffer), _out_buffer(other._out_buffer),
 	  _max_cmd_length(other._max_cmd_length),
-	  _joined_channels(other._joined_channels)
+	  _joined_channels(other._joined_channels),
+	  _alive(other._alive),
+	  _keep_alive(other._keep_alive)
 	{
 	}
 
@@ -69,6 +73,8 @@ namespace ft_irc
 			this->_socket_fd = other.getSocketFd();
 			this->_connected = other._connected;
 			this->_joined_channels = other.getJoinedChannels();
+			this->_alive = other._alive;
+			this->_keep_alive = other._keep_alive;
 		}
 		return (*this);
 	}
@@ -167,7 +173,23 @@ namespace ft_irc
 		this->_joined_channels.remove(&channel);
 	}
 
+	void Client::setAlive(bool alive)
+	{
+		this->_alive = alive;
+	}
+
+	void Client::setConnected(bool connected)
+	{
+		this->_connected = connected;
+	}
+
 	// helpers
+
+
+	bool Client::isAlive() const
+	{
+		return (this->_alive);
+	}
 
 	bool	Client::isRegistered() const
 	{
