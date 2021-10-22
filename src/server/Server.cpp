@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/19 17:33:33 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/22 15:38:03 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <unistd.h>
+#include "CLIParser.hpp"
 #include "Config.hpp"
 #include "Client.hpp"
 #include "Channel.hpp"
@@ -38,23 +39,16 @@ int	setNonblocking(int fd);
 namespace ft_irc
 {
 	// constructor
-	Server::Server(std::string bind_address,
-				   std::string port,
-				   std::string password,
-				   std::string hostname,
-				   int backlog_max)
-	: _hostname(hostname),
-	  _bind_address(bind_address), _port(port),
-	  _password(password), _address(),
-	  _sockfd(-1), _backlog_max(backlog_max),
-	  _config(hostname, bind_address, port, password),
+	Server::Server(CLIParser& CLI_parser, int backlog_max)
+	: _sockfd(-1), _backlog_max(backlog_max),
+	  _config(CLI_parser.getBindAddress(), CLI_parser.getPort(), CLI_parser.getPassword()),
 	  _parser(), _commands(),
 	  _clients(), _channels()
 	{
 		// create a new address struct
 		this->_address.sin_family = AF_INET;
-		this->_address.sin_port = htons(atoi(this->_port.c_str()));
-		this->_address.sin_addr.s_addr = inet_addr(this->_bind_address.c_str());
+		this->_address.sin_port = htons(atoi(getPort().c_str()));
+		this->_address.sin_addr.s_addr = inet_addr(getBindAddress().c_str());
 
 		// init map of commands
 		_init_commands_map();
@@ -62,10 +56,7 @@ namespace ft_irc
 
 	// copy constructor
 	Server::Server(const Server& other)
-	: _hostname(other._hostname),
-	  _bind_address(other._bind_address), _port(other._port),
-	  _password(other._password), _address(other._address),
-	  _sockfd(other._sockfd), _backlog_max(other._backlog_max),
+	: _sockfd(other._sockfd), _backlog_max(other._backlog_max),
 	  _config(other._config),
 	  _parser(other._parser), _commands(other._commands),
 	  _clients(other._clients), _channels(other._channels)
@@ -77,10 +68,6 @@ namespace ft_irc
 	{
 		if (this != &other)
 		{
-			this->_hostname = other._hostname;
-			this->_bind_address = other.getBindAddress();
-			this->_port = other.getPort();
-			this->_password = other.getPassword();
 			this->_sockfd = other._sockfd;
 			this->_backlog_max = other._backlog_max;
 			this->_config = other._config;
@@ -99,19 +86,24 @@ namespace ft_irc
 
 	// getters
 
+	std::string	Server::getHostname() const
+	{
+		return (this->_config.getHostname());
+	}
+
 	std::string	Server::getBindAddress() const
 	{
-		return (this->_bind_address);
+		return (this->_config.getBindAddress());
 	}
 
 	std::string	Server::getPort() const
 	{
-		return (this->_port);
+		return (this->_config.getPort());
 	}
 
 	std::string	Server::getPassword() const
 	{
-		return (this->_password);
+		return (this->_config.getPassword());
 	}
 
 	Server::t_cmds	Server::getCommands() const
@@ -146,23 +138,6 @@ namespace ft_irc
 			++it;
 		}
 		return (it);
-	}
-
-	// setters
-
-	void	Server::setBindAddress(const std::string& bind_address)
-	{
-		this->_bind_address = bind_address;
-	}
-
-	void	Server::setPort(const std::string& port)
-	{
-		this->_port = port;
-	}
-
-	void	Server::setPassword(const std::string& password)
-	{
-		this->_password = password;
 	}
 
 	// main loop
@@ -665,7 +640,7 @@ namespace ft_irc
 
 	int	Server::_sendError(Client& client, const std::string& error)
 	{
-		std::string response = ":" + this->_hostname + " 451 ";
+		std::string response = ":" + getHostname() + " 451 ";
 		response += client.getNick();
 		response += " ";
 		response += error;

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/19 17:08:28 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/22 12:17:51 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 
 namespace ft_irc
 {
+	class CLIParser;
 	class Config;
 	class Message;
 	class Channel;
@@ -34,10 +35,6 @@ namespace ft_irc
 
 	private:
 		// attributes
-		std::string			_hostname;     // duplicated in Config
-		std::string			_bind_address; // duplicated in Config
-		std::string			_port;         // duplicated in Config
-		std::string			_password;     // duplicated in Config
 		//Structure describing an Internet socket address.
 		struct sockaddr_in	_address;
 		//Socket descriptor.
@@ -51,11 +48,7 @@ namespace ft_irc
 
 	public:
 		// constructor
-					Server(std::string bind_address="0.0.0.0",
-						   std::string port="6697",
-						   std::string password="",
-						   std::string hostname="irc.42.fr",
-						   int backlog_max=5);
+					Server(CLIParser& CLI_parser, int backlog_max=5);
 		// copy constructor
 					Server(const Server& other);
 		// assignment operator
@@ -64,6 +57,7 @@ namespace ft_irc
 					~Server();
 
 		// getters
+		std::string	getHostname() const;
 		std::string	getBindAddress() const;
 		std::string	getPort() const;
 		std::string	getPassword() const;
@@ -71,11 +65,6 @@ namespace ft_irc
 
 		std::list<Client>::iterator		getClient(const std::string& nick);
 		std::list<Channel>::iterator	getChannel(const std::string& chan_name);
-
-		// setters
-		void		setBindAddress(const std::string& bind_address);
-		void		setPort(const std::string& port);
-		void		setPassword(const std::string& password);
 
 		// main loop
 		int			run();

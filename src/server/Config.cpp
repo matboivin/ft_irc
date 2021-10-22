@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/19 16:47:35 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/19 17:38:10 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/22 15:36:11 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ namespace ft_irc
 	  _connection_password(""),
 	  _oper_blocks()
 	{
+		addOperBlock("Pusheen", "SUPERPASS");
 	}
 
 	// copy constructor
@@ -46,7 +47,7 @@ namespace ft_irc
 	  _port(port),
 	  _connection_password(password)
 	{
-		addOperBlock("Pusheen", "SUPERPASS"); // test
+		addOperBlock("Pusheen", "SUPERPASS");
 	}
 
 	// assignment operator
@@ -126,4 +127,4 @@ namespace ft_irc
 			return (it->second == password);
 		return (false);
 	}
-}
+} // !namespace ft_irc
