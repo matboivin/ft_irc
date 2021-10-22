@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/22 12:17:51 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/22 15:46:49 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,20 +33,6 @@ namespace ft_irc
 		typedef void (Server::*cmd_fun)(Message& msg); // pointer to command function
 		typedef std::map<std::string, cmd_fun>	t_cmds; // commands functions
 
-	private:
-		// attributes
-		//Structure describing an Internet socket address.
-		struct sockaddr_in	_address;
-		//Socket descriptor.
-		int					_sockfd;
-		int					_backlog_max;
-		Config				_config; // holds all config
-		Parser				_parser;
-		t_cmds				_commands;
-		std::list<Client>	_clients;
-		std::list<Channel>	_channels;
-
-	public:
 		// constructor
 					Server(CLIParser& CLI_parser, int backlog_max=5);
 		// copy constructor
@@ -80,6 +66,18 @@ namespace ft_irc
 		void		exec_part_cmd(Message& msg);
 
 	private:
+		// attributes
+		//Structure describing an Internet socket address.
+		struct sockaddr_in	_address;
+		//Socket descriptor.
+		int					_sockfd;
+		int					_backlog_max;
+		Config				_config; // holds all config
+		Parser				_parser;
+		t_cmds				_commands;
+		std::list<Client>	_clients;
+		std::list<Channel>	_channels;
+
 		//Function to create a socket.
 		//create a new listening tcp s	ocket and bind it to the given address and port
 		//https://www.geeksforgeeks.org/socket-programming-cc/
