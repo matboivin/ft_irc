@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/23 17:11:16 by root             ###   ########.fr       */
+/*   Updated: 2021/10/23 17:33:39 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,52 +220,6 @@ namespace ft_irc
 		return (true);
 	}
 
-	// read char by char
-	int	Server::_sockGetLine(int sockfd, std::string& line)
-	{
-		char	c;
-
-		line = "";
-		while (true)
-		{
-			if (recv(sockfd, &c, 1, 0) < 0)
-			{
-				return (false);
-			}
-			if (c == '\n')
-			{
-				break;
-			}
-			line += c;
-		}
-		return (true);
-	}
-
-	// read char by char
-	int	Server::_sockGetLine(int sockfd, std::string& line, std::size_t max_bytes)
-	{
-		char	c;
-
-		line = "";
-		while (true)
-		{
-			if (recv(sockfd, &c, 1, 0) < 0)
-			{
-				return (false);
-			}
-			if (c == '\n')
-			{
-				break;
-			}
-			line += c;
-			if (line.size() > max_bytes)
-			{
-				throw std::runtime_error("line too long");
-			}
-		}
-		return (true);
-	}
-
 	// accepts a new connection
 	bool	Server::_awaitNewConnection()
 	{
@@ -274,10 +228,7 @@ namespace ft_irc
 		//accept a new connection
 		new_client.awaitConnection(this->_sockfd);
 		if (new_client.getSocketFd() < 0)
-		{
-			throw std::runtime_error("accept() failed");
-		}
-
+			return (false);
 		//log the clients IP address
 		std::cout << "Client " << new_client.getIpAddressStr()
 				  << " connected" << std::endl;
