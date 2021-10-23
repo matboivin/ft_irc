@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/23 16:56:49 by root             ###   ########.fr       */
+/*   Updated: 2021/10/23 17:11:16 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -338,8 +338,6 @@ namespace ft_irc
 				std::cout << "Client " << it->getIpAddressStr()
 						  << " timed out" << std::endl;
 				this->_disconnectClient(*it);
-				it = this->_clients.erase(it);
-				continue;
 			}
 			it++;
 		}
@@ -354,8 +352,11 @@ namespace ft_irc
 		std::cout << "Closing connection to " << it->getIpAddressStr() << std::endl
 				  << std::endl;
 
-		close(it->getSocketFd());
-		it->setSocketFd(-1);
+		if (it->getSocketFd() > 0)
+		{
+			close(it->getSocketFd());
+			it->setSocketFd(-1);
+		}
 		it->setAlive(false);
 		it->setConnected(false);
 		return (0);
