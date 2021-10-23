@@ -59,7 +59,7 @@ if (s.fileno() == -1):
 	print("[KO] s is not alive")
 	exit(1)
 
-s.send(b"EXIT\n")
+s.send(b"QUIT\n")
 sleep(1)
 #check proc is still alive
 if proc.poll() is not None:
