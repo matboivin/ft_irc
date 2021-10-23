@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/23 17:33:39 by root             ###   ########.fr       */
+/*   Updated: 2021/10/23 17:56:30 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -252,6 +252,20 @@ namespace ft_irc
 			return (false);
 		return (true);
 	}
+	
+	bool	Server::_processClientCommand(Client& client)
+	{
+		if (client.hasUnprocessedCommands() == true)
+		{
+			Message	msg = _parse(client, client.popUnprocessedCommand()); // parse the message
+
+			_executeCommand(msg); // execute the command
+			_sendResponse(msg); // send response to recipient(s)
+			client.updateLastEventTime();
+			return (true);
+		}
+		return (false);
+	}
 
 	// process all clients
 	bool	Server::_processClients()
@@ -261,8 +275,6 @@ namespace ft_irc
 		{
 			if (it->isAlive() == false)
 			{
-				std::cout << "Client " << it->getIpAddressStr()
-						  << " disconnected" << std::endl;
 				this->_disconnectClient(*it);
 				it = this->_clients.erase(it);
 				continue;
@@ -271,19 +283,8 @@ namespace ft_irc
 			{
 				continue;
 			}
-			if (it->hasUnprocessedCommands() == true)
-			{
-				Message	msg = _parse(*it, it->popUnprocessedCommand()); // parse the message
-
-				_executeCommand(msg); // execute the command
-				_sendResponse(msg); // send response to recipient(s)
-				it->updateLastEventTime();
-			}
-			if (it->getSocketFd() > 0)
-			{
-				if (it->updateInBuffer())
-					it->updateLastEventTime();
-			}
+			_processClientCommand(*it);
+			it->updateInBuffer();
 			if (it->isTimeouted() == true)
 			{
 				std::cout << "Client " << it->getIpAddressStr()
@@ -299,10 +300,6 @@ namespace ft_irc
 	{
 		std::list<Client>::iterator	it = std::find(this->_clients.begin(), this->_clients.end(), client);
 
-		//log the closing of the connection
-		std::cout << "Closing connection to " << it->getIpAddressStr() << std::endl
-				  << std::endl;
-
 		if (it->getSocketFd() > 0)
 		{
 			close(it->getSocketFd());
@@ -310,6 +307,8 @@ namespace ft_irc
 		}
 		it->setAlive(false);
 		it->setConnected(false);
+		std::cout << "Client " << it->getIpAddressStr()
+			<< " disconnected" << std::endl;
 		return (0);
 	}
 

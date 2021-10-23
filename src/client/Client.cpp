@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/10/23 16:57:17 by root             ###   ########.fr       */
+/*   Updated: 2021/10/23 17:52:43 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -266,9 +266,12 @@ namespace ft_irc
 		char					bytes_buffer[MAX_COMMAND_SIZE];
 		int						ret;
 		struct pollfd			poll_fd = {.fd = this->_socket_fd, .events = POLLIN};
-		int						poll_ret = poll(&poll_fd, 1, this->_timeout.tv_usec);
+		int						poll_ret;
 		std::string::size_type	found;
 
+		if (this->getSocketFd() < 0)
+			return (-1);
+		poll_ret = poll(&poll_fd, 1, this->_timeout.tv_usec);
 		if (poll_ret == -1)
 			throw std::runtime_error("poll() failed");
 		if (poll_ret == 0)
@@ -289,6 +292,7 @@ namespace ft_irc
 			if (found == std::string::npos || found > this->_max_cmd_length)
 				this->_in_buffer.insert(this->_max_cmd_length, CRLF);
 		}
+		this->updateLastEventTime();
 		return (ret);
 	}
 
