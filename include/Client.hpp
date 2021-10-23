@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/10/21 16:19:20 by smaccary         ###   ########.fr       */
+/*   Updated: 2021/10/23 16:52:20 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ namespace ft_irc
 			socklen_t&					getAddressSize();
 			int							getSocketFd() const;
 			const std::list<Channel*>&	getJoinedChannels() const;
+			struct timeval&				getLastEventTime();
 
 			void						setNick(const std::string& nick);
 			void						setRealName(const std::string& realname);
@@ -66,7 +67,7 @@ namespace ft_irc
 			void						joinChannel(Channel& channel);
 			void						partChannel(Channel& channel);
 			void						setAlive(bool alive);
-			void				setConnected(bool connected);
+			void						setConnected(bool connected);
 
 			/* helpers */
 			bool						isRegistered() const;
@@ -78,6 +79,8 @@ namespace ft_irc
 			int							updateInBuffer();
 			int							updateOutBuffer();
 			bool						isAlive() const;
+			bool						isTimeouted() const;
+			void						updateLastEventTime();
 
 			/* add response to the output buffer */
 			void						sendCommand(std::string cmd);
@@ -105,6 +108,7 @@ namespace ft_irc
 			std::list<Channel*>			_joined_channels;
 			bool						_alive;
 			struct timeval				_keep_alive;		/* keep_alive lenght */
+			struct timeval				_last_event_time;	/* time since last network event */						
 	};
 }
 

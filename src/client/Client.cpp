@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/10/21 16:19:28 by smaccary         ###   ########.fr       */
+/*   Updated: 2021/10/23 16:57:17 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,9 @@ namespace ft_irc
 	  _alive(true)
 	{
 		this->_timeout = (struct timeval){.tv_sec = 0, .tv_usec = 50};
-		this->_keep_alive = (struct timeval){.tv_sec = 3, .tv_usec = 0};
+		this->_keep_alive = (struct timeval){.tv_sec = 30, .tv_usec = 0};
+		if (gettimeofday(&this->_last_event_time, NULL))
+			throw std::runtime_error("gettimeofday() failed");
 	}
 
 	// copy constructor
@@ -53,7 +55,7 @@ namespace ft_irc
 	  _max_cmd_length(other._max_cmd_length),
 	  _joined_channels(other._joined_channels),
 	  _alive(other._alive),
-	  _keep_alive(other._keep_alive)
+	  _keep_alive(other._keep_alive), _last_event_time(other._last_event_time)
 	{
 	}
 
@@ -75,6 +77,7 @@ namespace ft_irc
 			this->_joined_channels = other.getJoinedChannels();
 			this->_alive = other._alive;
 			this->_keep_alive = other._keep_alive;
+			this->_last_event_time = other._last_event_time;
 		}
 		return (*this);
 	}
@@ -129,6 +132,11 @@ namespace ft_irc
 	const std::list<Channel*>&	Client::getJoinedChannels() const
 	{
 		return (this->_joined_channels);
+	}
+
+	struct timeval&	Client::getLastEventTime()
+	{
+		return (this->_last_event_time);
 	}
 
 	// setters
@@ -199,6 +207,19 @@ namespace ft_irc
 	bool	Client::isConnected() const
 	{
 		return (this->_socket_fd != -1);
+	}
+
+	bool	Client::isTimeouted() const
+	{
+		struct timeval	now;
+		gettimeofday(&now, NULL);
+		return ((now.tv_sec - this->_last_event_time.tv_sec) > this->_keep_alive.tv_sec);
+	}
+
+	void Client::updateLastEventTime()
+	{
+		if (gettimeofday(&this->_last_event_time, NULL))
+			throw std::runtime_error("gettimeofday() failed");
 	}
 
 	int	Client::awaitConnection(int socket_fd)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/18 13:59:48 by mbenjell         ###   ########.fr       */
+/*   Updated: 2021/10/23 16:04:26 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,9 @@ namespace ft_irc
 			/* debug */
 			int								_sendList(Client& client);
 			int								_sendError(Client& client, const std::string& error);
+			
+			/* cleaning */
+			void							_shutdown();
 		};
 }
 
