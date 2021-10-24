@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/19 16:47:35 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/22 15:36:11 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/24 11:57:39 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,10 @@ namespace ft_irc
 {
 	// default constructor
 	Config::Config()
-	: _hostname("irc.42.fr"),
-	  _bind_address("0.0.0.0"),
+	: _bind_address("0.0.0.0"),
 	  _port("6667"),
 	  _connection_password(""),
+	  _hostname("irc.42.fr"),
 	  _oper_blocks()
 	{
 		addOperBlock("Pusheen", "SUPERPASS");
@@ -29,23 +29,24 @@ namespace ft_irc
 
 	// copy constructor
 	Config::Config(const Config& other)
-	: _hostname(other._hostname),
-	  _bind_address(other._bind_address),
+	: _bind_address(other._bind_address),
 	  _port(other._port),
 	  _connection_password(other._connection_password),
+	  _hostname(other._hostname),
 	  _oper_blocks(other._oper_blocks)
 	{
 	}
 
 	// constructor
-	Config::Config(std::string hostname,
-				   std::string bind_address,
+	Config::Config(std::string bind_address,
 				   std::string port,
-				   std::string password)
-	: _hostname(hostname),
-	  _bind_address(bind_address),
+				   std::string password,
+				   std::string hostname)
+	: _bind_address(bind_address),
 	  _port(port),
-	  _connection_password(password)
+	  _connection_password(password),
+	  _hostname(hostname),
+	  _oper_blocks()
 	{
 		addOperBlock("Pusheen", "SUPERPASS");
 	}
@@ -55,10 +56,10 @@ namespace ft_irc
 	{
 		if (this != &other)
 		{
-			this->_hostname = other.getHostname();
 			this->_bind_address = other.getBindAddress();
 			this->_port = other.getPort();
 			this->_connection_password = other.getPassword();
+			this->_hostname = other.getHostname();
 			this->_oper_blocks = other._oper_blocks;
 		}
 		return (*this);
@@ -70,11 +71,6 @@ namespace ft_irc
 	}
 
 	// getters
-
-	std::string	Config::getHostname() const
-	{
-		return (this->_hostname);
-	}
 
 	std::string	Config::getBindAddress() const
 	{
@@ -91,12 +87,12 @@ namespace ft_irc
 		return (this->_connection_password);
 	}
 
-	// setters
-
-	void	Config::setHostname(const std::string& hostname)
+	std::string	Config::getHostname() const
 	{
-		this->_hostname = hostname;
+		return (this->_hostname);
 	}
+
+	// setters
 
 	void	Config::setBindAddress(const std::string& bind_address)
 	{
@@ -111,6 +107,11 @@ namespace ft_irc
 	void	Config::setPassword(const std::string& password)
 	{
 		this->_connection_password = password;
+	}
+
+	void	Config::setHostname(const std::string& hostname)
+	{
+		this->_hostname = hostname;
 	}
 
 	void	Config::addOperBlock(const std::string& name, const std::string& password)

@@ -68,7 +68,14 @@ COL_GREEN 			:= \033[0;32m
 COL_GREEN_B 		:= \033[1;32m
 COL_BLUE_B 			:= \033[1;34m
 COL_WHITE_B 		:= \033[1;37m
+COL_YELLOW			:= \033[1;33m
 COL_RESET 			:= \033[0m
+
+# STYLES
+
+STYLE_BOLD			:= \e[1m
+STYLE_ITALIC		:= \e[3m
+STYLE_RESET			:= \e[0m
 
 # RULES
 
@@ -82,13 +89,15 @@ $(OBJ_DIR):
 # COMPILING
 
 $(OBJ_DIR)/%.o : 	%.cpp
-					$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ -c $<
+					@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ -c $<
+					@echo -e "$(COL_YELLOW)[compilation]$(COL_RESET)$(COL_WHITE_B) objects $(COL_RESET)$(STYLE_ITALIC)$@$(STYLE_RESET) created"
 
 # LINKING
 
 $(NAME):			$(OBJ_DIR) $(OBJ) $(INC)
-					$(CXX) $(OBJ) -o $@
-					@echo -e "$(COL_GREEN_B)[OK]$(COL_WHITE_B) $@$(COL_RESET) created in working directory"
+					@$(CXX) $(OBJ) -o $@
+					@echo -e "$(STYLE_BOLD)[link]$(STYLE_RESET) ...linking objects..."
+					@echo -e "$(COL_GREEN_B)[success]$(COL_WHITE_B) $@$(COL_RESET) created in working directory"
 
 # DEBUG
 
@@ -105,11 +114,11 @@ show:
 
 clean:
 					@$(RM) -rf $(OBJ_DIR)
-					@echo -e "$(COL_BLUE_B)[clean] $(COL_WHITE_B) objects $(COL_RESET)removed"
+					@echo -e "$(COL_BLUE_B)[clean]$(COL_WHITE_B) objects $(COL_RESET)removed"
 
 fclean:				clean
 					@$(RM) -f $(NAME)
-					@echo -e "$(COL_BLUE_B)[fclean] $(COL_WHITE_B)$(NAME) $(COL_RESET)removed"
+					@echo -e "$(COL_BLUE_B)[fclean]$(COL_WHITE_B) $(NAME) $(COL_RESET)removed"
 
 re: 				fclean all
 

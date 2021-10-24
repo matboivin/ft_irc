@@ -22,12 +22,12 @@ build:
     paths:
     - "$EXE"
 
-code_quality:
-  stage: test
-  before_script:
-    - echo
-  artifacts:
-    paths: [gl-code-quality-report.json]
+#code_quality:
+#  stage: test
+#  before_script:
+#    - echo
+#  artifacts:
+#    paths: [gl-code-quality-report.json]
 
 
 test:
@@ -38,6 +38,7 @@ test:
   - ls ; pwd
   - ./tests/usage.sh
   - python3 ./tests/connect_tester.py 0.0.0.0 127.0.0.1 2727 ""
+  - python3 ./tests/resiliency_test.py  0.0.0.0 127.0.0.1 2727 ""
 
 replies:
   stage: test

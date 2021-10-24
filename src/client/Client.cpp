@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/10/19 16:27:31 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/24 11:50:57 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,13 @@ namespace ft_irc
 	  _connected(false),
 	  _in_buffer(), _out_buffer(),
 	  _max_cmd_length(512),
-	  _joined_channels()
+	  _joined_channels(),
+	  _alive(true)
 	{
 		this->_timeout = (struct timeval){.tv_sec = 0, .tv_usec = 50};
+		this->_keep_alive = (struct timeval){.tv_sec = 30, .tv_usec = 0};
+		if (gettimeofday(&this->_last_event_time, NULL))
+			throw std::runtime_error("gettimeofday() failed");
 	}
 
 	// copy constructor
@@ -50,7 +54,9 @@ namespace ft_irc
 	  _connected(other._connected),
 	  _in_buffer(other._in_buffer), _out_buffer(other._out_buffer),
 	  _max_cmd_length(other._max_cmd_length),
-	  _joined_channels(other._joined_channels)
+	  _joined_channels(other._joined_channels),
+	  _alive(other._alive),
+	  _keep_alive(other._keep_alive), _last_event_time(other._last_event_time)
 	{
 	}
 
@@ -70,6 +76,9 @@ namespace ft_irc
 			this->_socket_fd = other.getSocketFd();
 			this->_connected = other._connected;
 			this->_joined_channels = other.getJoinedChannels();
+			this->_alive = other._alive;
+			this->_keep_alive = other._keep_alive;
+			this->_last_event_time = other._last_event_time;
 		}
 		return (*this);
 	}
@@ -126,6 +135,11 @@ namespace ft_irc
 		return (this->_joined_channels);
 	}
 
+	struct timeval&	Client::getLastEventTime()
+	{
+		return (this->_last_event_time);
+	}
+
 	std::list<Client*>	Client::getAllContacts()
 	{
 		std::list<Client*>	contacts;
@@ -173,7 +187,17 @@ namespace ft_irc
 		this->_joined_channels = joined_channels;
 	}
 
-	// actions
+	void Client::setAlive(bool alive)
+	{
+		this->_alive = alive;
+	}
+
+	void Client::setConnected(bool connected)
+	{
+		this->_connected = connected;
+	}
+
+	// Channel operations
 
 	void	Client::joinChannel(Channel& channel)
 	{
@@ -226,9 +250,27 @@ namespace ft_irc
 		return (this->_socket_fd != -1);
 	}
 
+	bool Client::isAlive() const
+	{
+		return (this->_alive);
+	}
+
+	bool	Client::isTimeouted() const
+	{
+		struct timeval	now;
+		gettimeofday(&now, NULL);
+		return ((now.tv_sec - this->_last_event_time.tv_sec) > this->_keep_alive.tv_sec);
+	}
+
 	bool	Client::isOper() const
 	{
 		return (this->_mode.find("o") != std::string::npos);
+	}
+
+	void Client::updateLastEventTime()
+	{
+		if (gettimeofday(&this->_last_event_time, NULL))
+			throw std::runtime_error("gettimeofday() failed");
 	}
 
 	int	Client::awaitConnection(int socket_fd)
@@ -275,9 +317,12 @@ namespace ft_irc
 		char					bytes_buffer[MAX_COMMAND_SIZE];
 		int						ret;
 		struct pollfd			poll_fd = {.fd = this->_socket_fd, .events = POLLIN};
-		int						poll_ret = poll(&poll_fd, 1, this->_timeout.tv_usec);
+		int						poll_ret;
 		std::string::size_type	found;
 
+		if (this->getSocketFd() < 0)
+			return (-1);
+		poll_ret = poll(&poll_fd, 1, this->_timeout.tv_usec);
 		if (poll_ret == -1)
 			throw std::runtime_error("poll() failed");
 		if (poll_ret == 0)
@@ -298,6 +343,7 @@ namespace ft_irc
 			if (found == std::string::npos || found > this->_max_cmd_length)
 				this->_in_buffer.insert(this->_max_cmd_length, CRLF);
 		}
+		this->updateLastEventTime();
 		return (ret);
 	}
 
