@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/10/23 17:46:19 by root             ###   ########.fr       */
+/*   Updated: 2021/10/24 11:32:37 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,22 +64,25 @@ namespace ft_irc
 			void						setPassword(const std::string& password);
 			void						setSocketFd(int socket_fd);
 			void						setJoinedChannels(const std::list<Channel*>& joined_channels);
-			void						joinChannel(Channel& channel);
-			void						partChannel(Channel& channel);
 			void						setAlive(bool alive);
 			void						setConnected(bool connected);
+
+			/* Channel operations */
+			void						joinChannel(Channel& channel);
+			void						partChannel(Channel& channel);
+			void						partAllChannels();
 
 			/* helpers */
 			bool						isRegistered() const;
 			bool						isConnected() const;
+			bool						isAlive() const;
+			bool						isTimeouted() const;
 			int							awaitConnection(int socket_fd);
 			bool						hasNewEvents();
 			bool						hasUnprocessedCommands();
 			std::string					popUnprocessedCommand();
 			int							updateInBuffer();
 			int							updateOutBuffer();
-			bool						isAlive() const;
-			bool						isTimeouted() const;
 			void						updateLastEventTime();
 
 			/* add response to the output buffer */

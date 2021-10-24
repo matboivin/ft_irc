@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 12:25:08 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/09 17:33:45 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/19 17:25:39 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ static int	cmp_msg(const ft_irc::Message& msg, const ft_irc::Message& expected)
 	if (msg.getParams() != expected.getParams())
 	{
 		std::cout << "   Message params:  ";
-		for (std::list<std::string>::const_iterator it = msg.getParams().begin();
+		for (std::vector<std::string>::const_iterator it = msg.getParams().begin();
 			 it != msg.getParams().end();
 			 ++it)
 		{
@@ -40,7 +40,7 @@ static int	cmp_msg(const ft_irc::Message& msg, const ft_irc::Message& expected)
 		}
 
 		std::cout << "\n-> Expected params: ";
-		for (std::list<std::string>::const_iterator it = expected.getParams().begin();
+		for (std::vector<std::string>::const_iterator it = expected.getParams().begin();
 			 it != expected.getParams().end();
 			 ++it)
 		{
@@ -74,7 +74,7 @@ int	test_parsing()
 	{
 		ft_irc::Message	expected(dummy_client);
 
-		msg = parser.parseMessage(dummy_client, "123");
+		parser.parseMessage(msg, "123");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -82,7 +82,7 @@ int	test_parsing()
 	{
 		ft_irc::Message	expected(dummy_client);
 
-		msg = parser.parseMessage(dummy_client, "foo");
+		parser.parseMessage(msg, "foo");
 		expected.setCommand("foo");
 		expected.setResponse(":irc.42.fr 421 foo :Unknown command\r\n");
 		assert(cmp_msg(msg, expected));
@@ -92,7 +92,7 @@ int	test_parsing()
 	{
 		ft_irc::Message	expected(dummy_client);
 
-		msg = parser.parseMessage(dummy_client, "PArt");
+		parser.parseMessage(msg, "PArt");
 		expected.setCommand("PART");
 		expected.setResponse(":nick!username@0.0.0.0 PART\r\n");
 		assert(cmp_msg(msg, expected));
@@ -102,7 +102,7 @@ int	test_parsing()
 	{
 		ft_irc::Message	expected(dummy_client);
 
-		msg = parser.parseMessage(dummy_client, "QUIT");
+		parser.parseMessage(msg, "QUIT");
 		expected.setCommand("QUIT");
 		expected.setResponse(":nick!username@0.0.0.0 QUIT\r\n");
 		assert(cmp_msg(msg, expected));
@@ -112,12 +112,12 @@ int	test_parsing()
 	{
 		ft_irc::Message	expected(dummy_client);
 
-		msg = parser.parseMessage(dummy_client, "JOIN  ");
+		parser.parseMessage(msg, "JOIN  ");
 		expected.setCommand("JOIN");
 		expected.setResponse(":nick!username@0.0.0.0 JOIN\r\n");
 		assert(cmp_msg(msg, expected));
 
-		msg = parser.parseMessage(dummy_client, "JOIN #general");
+		parser.parseMessage(msg, "JOIN #general");
 		expected.setParam("#general");
 		expected.setResponse(":nick!username@0.0.0.0 JOIN #general\r\n");
 		assert(cmp_msg(msg, expected));
@@ -127,7 +127,7 @@ int	test_parsing()
 	{
 		ft_irc::Message	expected(dummy_client);
 
-		msg = parser.parseMessage(dummy_client, "QUIT :Gone to have lunch at: MyFavPlace");
+		parser.parseMessage(msg, "QUIT :Gone to have lunch at: MyFavPlace");
 		expected.setCommand("QUIT");
 		expected.setParam(":Gone to have lunch at: MyFavPlace");
 		expected.setResponse(":nick!username@0.0.0.0 QUIT :Gone to have lunch at: MyFavPlace\r\n");
@@ -138,7 +138,7 @@ int	test_parsing()
 	{
 		ft_irc::Message	expected(dummy_client);
 
-		msg = parser.parseMessage(dummy_client, "QUIT :Gone to have lunch");
+		parser.parseMessage(msg, "QUIT :Gone to have lunch");
 		expected.setCommand("QUIT");
 		expected.setParam(":Gone to have lunch");
 		expected.setResponse(":nick!username@0.0.0.0 QUIT :Gone to have lunch\r\n");
@@ -148,7 +148,7 @@ int	test_parsing()
 	{
 		ft_irc::Message	expected(dummy_client);
 
-		msg = parser.parseMessage(dummy_client, "TOPIC #test :another topic");
+		parser.parseMessage(msg, "TOPIC #test :another topic");
 		expected.setCommand("TOPIC");
 		expected.setParam("#test");
 		expected.setParam(":another topic");
@@ -159,7 +159,7 @@ int	test_parsing()
 	{
 		ft_irc::Message	expected(dummy_client);
 
-		msg = parser.parseMessage(dummy_client, "KICK #Finnish John :Speaking English");
+		parser.parseMessage(msg, "KICK #Finnish John :Speaking English");
 		expected.setCommand("KICK");
 		expected.setParam("#Finnish");
 		expected.setParam("John");
@@ -172,7 +172,7 @@ int	test_parsing()
 	{
 		ft_irc::Message	expected(dummy_client);
 
-		msg = parser.parseMessage(dummy_client, "JOIN #foo,#bar");
+		parser.parseMessage(msg, "JOIN #foo,#bar");
 		expected.setCommand("JOIN");
 		expected.setParam("#foo");
 		expected.setParam("#bar");
@@ -183,7 +183,7 @@ int	test_parsing()
 	{
 		ft_irc::Message	expected(dummy_client);
 
-		msg = parser.parseMessage(dummy_client, "JOIN #foo, #bar"); // need checking with irrsi
+		parser.parseMessage(msg, "JOIN #foo, #bar"); // need checking with irrsi
 		expected.setCommand("JOIN");
 		expected.setParam("#foo");
 		expected.setParam("#bar");
@@ -194,7 +194,7 @@ int	test_parsing()
 	{
 		ft_irc::Message	expected(dummy_client);
 
-		msg = parser.parseMessage(dummy_client, "QUIT :#foo,#bar");
+		parser.parseMessage(msg, "QUIT :#foo,#bar");
 		expected.setCommand("QUIT");
 		expected.setParam(":#foo,#bar");
 		expected.setResponse(":nick!username@0.0.0.0 QUIT :#foo,#bar\r\n");

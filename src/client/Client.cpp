@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/10/23 17:52:43 by root             ###   ########.fr       */
+/*   Updated: 2021/10/24 11:32:22 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,16 +171,6 @@ namespace ft_irc
 		this->_joined_channels = joined_channels;
 	}
 
-	void	Client::joinChannel(Channel& channel)
-	{
-		this->_joined_channels.push_back(&channel);
-	}
-
-	void	Client::partChannel(Channel& channel)
-	{
-		this->_joined_channels.remove(&channel);
-	}
-
 	void Client::setAlive(bool alive)
 	{
 		this->_alive = alive;
@@ -191,13 +181,24 @@ namespace ft_irc
 		this->_connected = connected;
 	}
 
-	// helpers
+	// Channel operations
 
-
-	bool Client::isAlive() const
+	void	Client::joinChannel(Channel& channel)
 	{
-		return (this->_alive);
+		this->_joined_channels.push_back(&channel);
 	}
+
+	void	Client::partChannel(Channel& channel)
+	{
+		this->_joined_channels.remove(&channel);
+	}
+
+	void	Client::partAllChannels()
+	{
+		this->_joined_channels.clear();
+	}
+
+	// helpers
 
 	bool	Client::isRegistered() const
 	{
@@ -207,6 +208,11 @@ namespace ft_irc
 	bool	Client::isConnected() const
 	{
 		return (this->_socket_fd != -1);
+	}
+
+	bool Client::isAlive() const
+	{
+		return (this->_alive);
 	}
 
 	bool	Client::isTimeouted() const
@@ -326,6 +332,12 @@ namespace ft_irc
 	// debug
 	void	Client::displayJoinedChannels()
 	{
+		if (this->_joined_channels.empty())
+		{
+			std::cout << this->getNick() << " parted all channels.\n";
+			return ;
+		}
+
 		std::cout << this->getNick() << " joined channels:\n";
 
 		for (std::list<Channel*>::iterator	it = this->_joined_channels.begin();
