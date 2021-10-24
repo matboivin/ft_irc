@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/19 17:24:58 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/24 11:36:35 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ namespace ft_irc
 	// destructor
 	Server::~Server()
 	{
+		this->_shutdown();
 	}
 
 	// getters
@@ -219,52 +220,6 @@ namespace ft_irc
 		return (true);
 	}
 
-	// read char by char
-	int	Server::_sockGetLine(int sockfd, std::string& line)
-	{
-		char	c;
-
-		line = "";
-		while (true)
-		{
-			if (recv(sockfd, &c, 1, 0) < 0)
-			{
-				return (false);
-			}
-			if (c == '\n')
-			{
-				break;
-			}
-			line += c;
-		}
-		return (true);
-	}
-
-	// read char by char
-	int	Server::_sockGetLine(int sockfd, std::string& line, std::size_t max_bytes)
-	{
-		char	c;
-
-		line = "";
-		while (true)
-		{
-			if (recv(sockfd, &c, 1, 0) < 0)
-			{
-				return (false);
-			}
-			if (c == '\n')
-			{
-				break;
-			}
-			line += c;
-			if (line.size() > max_bytes)
-			{
-				throw std::runtime_error("line too long");
-			}
-		}
-		return (true);
-	}
-
 	// accepts a new connection
 	bool	Server::_awaitNewConnection()
 	{
@@ -273,10 +228,7 @@ namespace ft_irc
 		//accept a new connection
 		new_client.awaitConnection(this->_sockfd);
 		if (new_client.getSocketFd() < 0)
-		{
-			throw std::runtime_error("accept() failed");
-		}
-
+			return (false);
 		//log the clients IP address
 		std::cout << "Client " << new_client.getIpAddressStr()
 				  << " connected" << std::endl;
@@ -300,33 +252,49 @@ namespace ft_irc
 			return (false);
 		return (true);
 	}
+	
+	bool	Server::_processClientCommand(Client& client)
+	{
+		if (client.hasUnprocessedCommands() == true)
+		{
+			Message	msg(client);
+
+			if (_parse(msg, client.popUnprocessedCommand()) == true)
+			{
+				_executeCommand(msg); // execute the command
+				_sendResponse(msg); // send response to recipient(s)
+			}
+			client.updateLastEventTime();
+			return (true);
+		}
+		return (false);
+	}
 
 	// process all clients
 	bool	Server::_processClients()
 	{
 		for (std::list<Client>::iterator it = this->_clients.begin();
-			 it != this->_clients.end();
-			 ++it)
+			 it != this->_clients.end();)
 		{
+			if (it->isAlive() == false)
+			{
+				this->_disconnectClient(*it);
+				it = this->_clients.erase(it);
+				continue;
+			}
 			if (it->updateOutBuffer())
 			{
 				continue;
 			}
-			if (it->hasUnprocessedCommands() == true)
+			_processClientCommand(*it);
+			it->updateInBuffer();
+			if (it->isTimeouted() == true)
 			{
-				Message	msg(*it);
-
-				if (_parse(msg, it->popUnprocessedCommand()) == true) // parse the message
-				{
-					_executeCommand(msg); // execute the command
-					_sendResponse(msg); // send response to recipient(s)
-				}
-				// else wrong command name format is silently ignored
+				std::cout << "Client " << it->getIpAddressStr()
+						  << " timed out" << std::endl;
+				this->_disconnectClient(*it);
 			}
-			if (it->getSocketFd() > 0)
-			{
-				it->updateInBuffer();
-			}
+			it++;
 		}
 		return (true);
 	}
@@ -335,13 +303,15 @@ namespace ft_irc
 	{
 		std::list<Client>::iterator	it = std::find(this->_clients.begin(), this->_clients.end(), client);
 
-		//log the closing of the connection
-		std::cout << "Closing connection to " << it->getIpAddressStr() << std::endl
-				  << "---------------------------------------------------------"
-				  << std::endl;
-
-		close(it->getSocketFd());
-		it = this->_clients.erase(it);
+		if (it->getSocketFd() > 0)
+		{
+			close(it->getSocketFd());
+			it->setSocketFd(-1);
+		}
+		it->setAlive(false);
+		it->setConnected(false);
+		std::cout << "Client " << it->getIpAddressStr()
+			<< " disconnected" << std::endl;
 		return (0);
 	}
 
@@ -524,7 +494,7 @@ namespace ft_irc
 	void	Server::exec_quit_cmd(Message& msg)
 	{
 		// TODO: broadcast message
-		_disconnectClient(msg.getSender());
+		msg.getSender().setAlive(false);
 		// TODO: The server acknowledges this by sending an ERROR message to the client
 	}
 
@@ -650,5 +620,17 @@ namespace ft_irc
 			throw std::runtime_error("send() failed");
 		}
 		return (0);
+	}
+
+	void	Server::_shutdown()
+	{
+		std::list<Client>::iterator it = this->_clients.begin();
+
+		std::cout << "Shutting down server" << std::endl;
+		while (it != this->_clients.end())
+		{
+			this->_disconnectClient(*it);
+			it = this->_clients.erase(it);
+		}
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/10/24 11:11:16 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/24 11:32:37 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ namespace ft_irc
 			socklen_t&					getAddressSize();
 			int							getSocketFd() const;
 			const std::list<Channel*>&	getJoinedChannels() const;
+			struct timeval&				getLastEventTime();
 
 			void						setNick(const std::string& nick);
 			void						setRealName(const std::string& realname);
@@ -63,6 +64,10 @@ namespace ft_irc
 			void						setPassword(const std::string& password);
 			void						setSocketFd(int socket_fd);
 			void						setJoinedChannels(const std::list<Channel*>& joined_channels);
+			void						setAlive(bool alive);
+			void						setConnected(bool connected);
+
+			/* Channel operations */
 			void						joinChannel(Channel& channel);
 			void						partChannel(Channel& channel);
 			void						partAllChannels();
@@ -70,16 +75,19 @@ namespace ft_irc
 			/* helpers */
 			bool						isRegistered() const;
 			bool						isConnected() const;
+			bool						isAlive() const;
+			bool						isTimeouted() const;
 			int							awaitConnection(int socket_fd);
 			bool						hasNewEvents();
 			bool						hasUnprocessedCommands();
 			std::string					popUnprocessedCommand();
 			int							updateInBuffer();
 			int							updateOutBuffer();
+			void						updateLastEventTime();
 
 			/* add response to the output buffer */
 			void						sendCommand(std::string cmd);
-
+			
 			/* debug */
 			void						displayJoinedChannels();
 
@@ -101,6 +109,9 @@ namespace ft_irc
 			std::string					_out_buffer;		/* buffer for outgoing data */
 			const size_t				_max_cmd_length;	/* max length of a command */
 			std::list<Channel*>			_joined_channels;
+			bool						_alive;
+			struct timeval				_keep_alive;		/* keep_alive lenght */
+			struct timeval				_last_event_time;	/* time since last network event */						
 	};
 }
 

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/24 11:21:54 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/24 11:30:34 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,7 @@ namespace ft_irc
 			/* commands execution */
 			void							_init_commands_map();
 			int								_executeCommand(Message& msg);
+			bool							_processClientCommand(Client& client);
 
 			/* command response */
 			void							_setResponseRecipients(Message& msg);
@@ -111,7 +112,10 @@ namespace ft_irc
 			/* debug */
 			int								_sendList(Client& client);
 			int								_sendError(Client& client, const std::string& error);
-	};
+
+			/* cleaning */
+			void							_shutdown();
+		};
 }
 
 #endif
