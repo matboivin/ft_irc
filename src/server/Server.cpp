@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/19 17:42:17 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/24 12:02:14 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <unistd.h>
+#include "CLIParser.hpp"
+#include "Config.hpp"
 #include "Client.hpp"
 #include "Channel.hpp"
 #include "Message.hpp"
@@ -37,22 +39,16 @@ int	setNonblocking(int fd);
 namespace ft_irc
 {
 	// constructor
-	Server::Server(std::string bind_address,
-				   std::string port,
-				   std::string password,
-				   std::string hostname,
-				   int backlog_max)
-	: _hostname(hostname),
-	  _bind_address(bind_address), _port(port),
-	  _password(password), _address(),
-	  _sockfd(-1), _backlog_max(backlog_max),
+	Server::Server(CLIParser& CLI_parser, int backlog_max)
+	: _sockfd(-1), _backlog_max(backlog_max),
+	  _config(CLI_parser.getBindAddress(), CLI_parser.getPort(), CLI_parser.getPassword()),
 	  _parser(), _commands(),
 	  _clients(), _channels()
 	{
 		// create a new address struct
 		this->_address.sin_family = AF_INET;
-		this->_address.sin_port = htons(atoi(this->_port.c_str()));
-		this->_address.sin_addr.s_addr = inet_addr(this->_bind_address.c_str());
+		this->_address.sin_port = htons(atoi(getPort().c_str()));
+		this->_address.sin_addr.s_addr = inet_addr(getBindAddress().c_str());
 
 		// init map of commands
 		_init_commands_map();
@@ -60,10 +56,8 @@ namespace ft_irc
 
 	// copy constructor
 	Server::Server(const Server& other)
-	: _hostname(other._hostname),
-	  _bind_address(other._bind_address), _port(other._port),
-	  _password(other._password), _address(other._address),
-	  _sockfd(other._sockfd), _backlog_max(other._backlog_max),
+	: _sockfd(other._sockfd), _backlog_max(other._backlog_max),
+	  _config(other._config),
 	  _parser(other._parser), _commands(other._commands),
 	  _clients(other._clients), _channels(other._channels)
 	{
@@ -74,12 +68,9 @@ namespace ft_irc
 	{
 		if (this != &other)
 		{
-			this->_hostname = other._hostname;
-			this->_bind_address = other.getBindAddress();
-			this->_port = other.getPort();
-			this->_password = other.getPassword();
 			this->_sockfd = other._sockfd;
 			this->_backlog_max = other._backlog_max;
+			this->_config = other._config;
 			this->_parser = other._parser;
 			this->_commands = other.getCommands();
 			this->_clients = other._clients;
@@ -91,23 +82,29 @@ namespace ft_irc
 	// destructor
 	Server::~Server()
 	{
+		this->_shutdown();
 	}
 
 	// getters
 
+	std::string	Server::getHostname() const
+	{
+		return (this->_config.getHostname());
+	}
+
 	std::string	Server::getBindAddress() const
 	{
-		return (this->_bind_address);
+		return (this->_config.getBindAddress());
 	}
 
 	std::string	Server::getPort() const
 	{
-		return (this->_port);
+		return (this->_config.getPort());
 	}
 
 	std::string	Server::getPassword() const
 	{
-		return (this->_password);
+		return (this->_config.getPassword());
 	}
 
 	Server::t_cmds	Server::getCommands() const
@@ -142,23 +139,6 @@ namespace ft_irc
 			++it;
 		}
 		return (it);
-	}
-
-	// setters
-
-	void	Server::setBindAddress(const std::string& bind_address)
-	{
-		this->_bind_address = bind_address;
-	}
-
-	void	Server::setPort(const std::string& port)
-	{
-		this->_port = port;
-	}
-
-	void	Server::setPassword(const std::string& password)
-	{
-		this->_password = password;
 	}
 
 	// main loop
@@ -219,52 +199,6 @@ namespace ft_irc
 		return (true);
 	}
 
-	// read char by char
-	int	Server::_sockGetLine(int sockfd, std::string& line)
-	{
-		char	c;
-
-		line = "";
-		while (true)
-		{
-			if (recv(sockfd, &c, 1, 0) < 0)
-			{
-				return (false);
-			}
-			if (c == '\n')
-			{
-				break;
-			}
-			line += c;
-		}
-		return (true);
-	}
-
-	// read char by char
-	int	Server::_sockGetLine(int sockfd, std::string& line, std::size_t max_bytes)
-	{
-		char	c;
-
-		line = "";
-		while (true)
-		{
-			if (recv(sockfd, &c, 1, 0) < 0)
-			{
-				return (false);
-			}
-			if (c == '\n')
-			{
-				break;
-			}
-			line += c;
-			if (line.size() > max_bytes)
-			{
-				throw std::runtime_error("line too long");
-			}
-		}
-		return (true);
-	}
-
 	// accepts a new connection
 	bool	Server::_awaitNewConnection()
 	{
@@ -273,10 +207,7 @@ namespace ft_irc
 		//accept a new connection
 		new_client.awaitConnection(this->_sockfd);
 		if (new_client.getSocketFd() < 0)
-		{
-			throw std::runtime_error("accept() failed");
-		}
-
+			return (false);
 		//log the clients IP address
 		std::cout << "Client " << new_client.getIpAddressStr()
 				  << " connected" << std::endl;
@@ -300,33 +231,49 @@ namespace ft_irc
 			return (false);
 		return (true);
 	}
+	
+	bool	Server::_processClientCommand(Client& client)
+	{
+		if (client.hasUnprocessedCommands() == true)
+		{
+			Message	msg(client);
+
+			if (_parse(msg, client.popUnprocessedCommand()) == true)
+			{
+				_executeCommand(msg); // execute the command
+				_sendResponse(msg); // send response to recipient(s)
+			}
+			client.updateLastEventTime();
+			return (true);
+		}
+		return (false);
+	}
 
 	// process all clients
 	bool	Server::_processClients()
 	{
 		for (std::list<Client>::iterator it = this->_clients.begin();
-			 it != this->_clients.end();
-			 ++it)
+			 it != this->_clients.end();)
 		{
+			if (it->isAlive() == false)
+			{
+				this->_disconnectClient(*it);
+				it = this->_clients.erase(it);
+				continue;
+			}
 			if (it->updateOutBuffer())
 			{
 				continue;
 			}
-			if (it->hasUnprocessedCommands() == true)
+			_processClientCommand(*it);
+			it->updateInBuffer();
+			if (it->isTimeouted() == true)
 			{
-				Message	msg(*it);
-
-				if (_parse(msg, it->popUnprocessedCommand()) == true) // parse the message
-				{
-					_executeCommand(msg); // execute the command
-					_sendResponse(msg); // send response to recipient(s)
-				}
-				// else wrong command name format is silently ignored
+				std::cout << "Client " << it->getIpAddressStr()
+						  << " timed out" << std::endl;
+				this->_disconnectClient(*it);
 			}
-			if (it->getSocketFd() > 0)
-			{
-				it->updateInBuffer();
-			}
+			it++;
 		}
 		return (true);
 	}
@@ -335,13 +282,15 @@ namespace ft_irc
 	{
 		std::list<Client>::iterator	it = std::find(this->_clients.begin(), this->_clients.end(), client);
 
-		//log the closing of the connection
-		std::cout << "Closing connection to " << it->getIpAddressStr() << std::endl
-				  << "---------------------------------------------------------"
-				  << std::endl;
-
-		close(it->getSocketFd());
-		it = this->_clients.erase(it);
+		if (it->getSocketFd() > 0)
+		{
+			close(it->getSocketFd());
+			it->setSocketFd(-1);
+		}
+		it->setAlive(false);
+		it->setConnected(false);
+		std::cout << "Client " << it->getIpAddressStr()
+			<< " disconnected" << std::endl;
 		return (0);
 	}
 
@@ -357,6 +306,7 @@ namespace ft_irc
 		this->_commands["PASS"]    = &Server::exec_pass_cmd;
 		this->_commands["NICK"]    = &Server::exec_nick_cmd;
 		this->_commands["QUIT"]    = &Server::exec_quit_cmd;
+		this->_commands["OPER"]    = &Server::exec_oper_cmd;
 		this->_commands["NOTICE"]  = &Server::exec_notice_cmd;
 		this->_commands["PRIVMSG"] = &Server::exec_privmsg_cmd;
 		this->_commands["JOIN"]    = &Server::exec_join_cmd;
@@ -477,6 +427,12 @@ namespace ft_irc
 		std::cout << std::endl;
 	}
 
+	// oper operations
+	bool	Server::_giveOperPriv(const std::string& name, const std::string& password)
+	{
+		return (this->_config.operBlockIsValid(name, password));
+	}
+
 	// Commands
 
 	// PASS <password>
@@ -513,8 +469,34 @@ namespace ft_irc
 	void	Server::exec_quit_cmd(Message& msg)
 	{
 		msg.setRecipients(msg.getSender().getAllContacts());
-		_disconnectClient(msg.getSender());
+		msg.getSender().setAlive(false);
 		// TODO: The server acknowledges this by sending an ERROR message to the client
+	}
+
+	// OPER <username> <password>
+	// Authenticates a user as an IRC operator if the username/password combination exists
+	// for that server
+	void	Server::exec_oper_cmd(Message& msg)
+	{
+		if (msg.getParams().size() < 2)
+		{
+			err_needmoreparams(msg);
+			return ;
+		}
+		if (!msg.getSender().isOper())
+		{
+			if (_giveOperPriv(msg.getParams().at(0), msg.getParams().at(1)))
+			{
+				msg.getSender().addMode("o");
+
+				Message	rpl_msg(msg.getSender()); // tmp
+				rpl_youreoper(rpl_msg);
+				_sendResponse(rpl_msg);
+				//exec_mode_cmd(msg);
+			}
+			else
+				err_passwdmismatch(msg);
+		}
 	}
 
 	// NOTICE <msgtarget> :<message>
@@ -547,7 +529,7 @@ namespace ft_irc
 	{
 		if (msg.getParams().empty())
 			err_needmoreparams(msg);
-		else if (msg.getParams().front() == "0") // JOIN 0
+		else if (msg.getParams().at(0) == "0") // JOIN 0
 			_removeUserFromAllChannels(msg.getSender(), msg);
 		else
 		{
@@ -580,8 +562,8 @@ namespace ft_irc
 		}
 
 		for (std::vector<std::string>::const_iterator param = msg.getParams().begin();
-				param != msg.getParams().end();
-				++param)
+			 param != msg.getParams().end();
+			 ++param)
 		{
 			if ( ((*param)[0] == ':') && (++param == msg.getParams().end()) )
 				break ;
@@ -628,7 +610,7 @@ namespace ft_irc
 
 	int	Server::_sendError(Client& client, const std::string& error)
 	{
-		std::string response = ":" + this->_hostname + " 451 ";
+		std::string response = ":" + getHostname() + " 451 ";
 		response += client.getNick();
 		response += " ";
 		response += error;
@@ -640,5 +622,17 @@ namespace ft_irc
 			throw std::runtime_error("send() failed");
 		}
 		return (0);
+	}
+
+	void	Server::_shutdown()
+	{
+		std::list<Client>::iterator it = this->_clients.begin();
+
+		std::cout << "Shutting down server" << std::endl;
+		while (it != this->_clients.end())
+		{
+			this->_disconnectClient(*it);
+			it = this->_clients.erase(it);
+		}
 	}
 }

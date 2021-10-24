@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/05 14:53:57 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/24 11:47:14 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include "Channel.hpp"
 # include "Client.hpp"
 # include "CLIParser.hpp"
+# include "Config.hpp"
 # include "Message.hpp"
 # include "numeric_replies.hpp"
 # include "Parser.hpp"
@@ -26,15 +27,15 @@
 void	displayUsage(const char* program_name);
 int		test_parsing();
 
-enum Status
+enum	Status
 {
-	e_admin,
-	e_ircop,
-	e_member
+		e_admin,
+		e_ircop,
+		e_member
 };
 
 # ifndef nullptr
 #  define nullptr NULL
-# endif // !nullpt
+# endif
 
 #endif
