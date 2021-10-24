@@ -6,13 +6,14 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/08 17:02:26 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/19 17:22:22 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
 #include <list>
 #include <string>
+#include <vector>
 #include "Client.hpp"
 #include "Message.hpp"
 
@@ -79,7 +80,7 @@ namespace ft_irc
 		return (this->_command);
 	}
 
-	const std::list<std::string>&	Message::getParams() const
+	const std::vector<std::string>&	Message::getParams() const
 	{
 		return (this->_params);
 	}
@@ -144,7 +145,7 @@ namespace ft_irc
 		std::cout << "command:  " << getCommand() << '\n'
 				  << "params:   ";
 
-		for (std::list<std::string>::const_iterator it = this->_params.begin();
+		for (std::vector<std::string>::const_iterator it = this->_params.begin();
 			 it != this->_params.end();
 			 ++it)
 		{
