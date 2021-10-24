@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/24 11:30:34 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/24 12:07:25 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,10 @@ namespace ft_irc
 			typedef std::map<std::string, cmd_fun>	t_cmds;
 
 			Server(std::string bind_address="0.0.0.0",
-				std::string port="6697",
-				std::string password="",
-				std::string hostname="irc.42.fr",
-				int backlog_max=5);
+				   std::string port="6697",
+				   std::string password="",
+				   std::string hostname="irc.42.fr",
+				   int backlog_max=5);
 			Server(const Server& other);
 			Server&		operator=(const Server& other);
 			~Server();
