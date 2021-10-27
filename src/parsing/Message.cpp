@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/08 17:02:26 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/27 21:39:57 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <string>
 #include "Client.hpp"
 #include "Message.hpp"
+#include <algorithm>
 
 namespace ft_irc
 {
@@ -124,7 +125,9 @@ namespace ft_irc
 
 	void	Message::setRecipient(Client& recipient)
 	{
-		this->_recipients.push_back(&recipient);
+		// check if the recipient is already in the list
+		if (std::find(this->_recipients.begin(), this->_recipients.end(), &recipient) == this->_recipients.end())
+			this->_recipients.push_back(&recipient);
 	}
 
 	void	Message::addRecipients(const std::list<Client*>& recipients)

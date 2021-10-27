@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/23 17:56:30 by root             ###   ########.fr       */
+/*   Updated: 2021/10/27 21:36:23 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -258,7 +258,6 @@ namespace ft_irc
 		if (client.hasUnprocessedCommands() == true)
 		{
 			Message	msg = _parse(client, client.popUnprocessedCommand()); // parse the message
-
 			_executeCommand(msg); // execute the command
 			_sendResponse(msg); // send response to recipient(s)
 			client.updateLastEventTime();
@@ -326,8 +325,10 @@ namespace ft_irc
 		this->_commands["QUIT"]    = &Server::exec_quit_cmd;
 		this->_commands["NOTICE"]  = &Server::exec_notice_cmd;
 		this->_commands["PRIVMSG"] = &Server::exec_privmsg_cmd;
+		this->_commands["TEST"]    = &Server::exec_test_cmd;
 	}
 
+	
 	// Command execution
 	int	Server::_executeCommand(Message& msg)
 	{
@@ -341,10 +342,12 @@ namespace ft_irc
 	// Set response dst (channels or clients)
 	void	Server::_setResponseRecipients(Message& msg)
 	{
+		std::cout << __LINE__ << std::endl;
 		std::list<Client>::iterator	dst = getClient(msg.getParams().front());
 
 		if (dst != this->_clients.end())
 		{
+			std::cout << __LINE__ << ": " << __FUNCTION__ << std::endl;
 			msg.setRecipient(*dst);
 			return ;
 		}
@@ -499,6 +502,12 @@ namespace ft_irc
 			err_nosuchnick(msg, msg.getParams().front());
 		else
 			_setResponseRecipients(msg);
+	}
+
+	void	Server::exec_test_cmd(Message& msg)
+	{
+		if (msg.getParams().empty())
+			err_needmoreparams(msg);	
 	}
 
 	// debug
