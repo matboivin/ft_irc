@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:42:14 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/19 15:32:26 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/29 18:50:32 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,55 +21,47 @@ namespace ft_irc
 {
 	class Message;
 
-	// IRC channel
 	class Channel
 	{
-	private:
-		// attributes
-		std::string			_name;
-		std::string			_topic;
-		std::string			_mode;
-		std::list<Client*>	_clients;
+		public:
+			Channel();
+			Channel(const std::string& name);
+			Channel(const Channel& other);
+			Channel&	operator=(const Channel& other);
+			~Channel();
 
-	public:
-		// default constructor
-					Channel();
-		// name constructor
-					Channel(const std::string& name);
-		// copy constructor
-					Channel(const Channel& other);
-		// assignment operator
-		Channel&	operator=(const Channel& other);
-		// destructor
-					~Channel();
+			/* getters and setters */
+			std::string						getName() const;
+			std::string						getTopic() const;
+			std::string						getMode() const;
+			const std::list<Client*>&		getClients() const;
 
-		// getters
-		std::string					getName() const;
-		std::string					getTopic() const;
-		std::string					getMode() const;
-		const std::list<Client*>&	getClients() const;
+			void							setName(const std::string& name);
+			void							setTopic(const std::string& topic);
+			void							setMode(const std::string& mode);
+			void							setClients(const std::list<Client*>& clients);
 
-		// setters
-		void	setName(const std::string& name);
-		void	setTopic(const std::string& topic);
-		void	setMode(const std::string& mode);
-		void	setClients(const std::list<Client*>& clients);
+			/* helpers */
+			bool							isEmpty() const;
 
-		// helpers
-		bool	isEmpty() const;
+			/* manage clients in channel */
+			std::list<Client*>::iterator	findClient(Client& client);
+			bool							hasClient(Client& client);
+			void							addClient(Client& client);
+			void							removeClient(Client& client);
 
-		// manage clients in channel
-		std::list<Client*>::iterator	findClient(Client& client);
-		bool	hasClient(Client& client);
-		void	addClient(Client& client);
-		void	removeClient(Client& client);
+			// manage topic
+			void	changeTopic(const std::string& topic, Message& msg);
 
-		// manage topic
-		void	changeTopic(const std::string& topic, Message& msg);
+			// debug
+			void	displayClients();
 
-		// debug
-		void	displayClients();
+		private:
+			std::string						_name;
+			std::string						_topic;
+			std::string						_mode;
+			std::list<Client*>				_clients;
 	};
-} // namespace ft_irc
+}
 
-#endif // !CHANNEL_HPP
+#endif
