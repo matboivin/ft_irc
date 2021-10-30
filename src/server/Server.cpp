@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/27 21:36:23 by root             ###   ########.fr       */
+/*   Updated: 2021/10/30 19:23:57 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -325,6 +325,8 @@ namespace ft_irc
 		this->_commands["QUIT"]    = &Server::exec_quit_cmd;
 		this->_commands["NOTICE"]  = &Server::exec_notice_cmd;
 		this->_commands["PRIVMSG"] = &Server::exec_privmsg_cmd;
+		this->_commands["PING"]    = &Server::exec_ping_cmd;
+		this->_commands["PONG"]    = &Server::exec_pong_cmd;
 		this->_commands["TEST"]    = &Server::exec_test_cmd;
 	}
 
@@ -346,7 +348,6 @@ namespace ft_irc
 
 		if (dst != this->_clients.end())
 		{
-			std::cout << __LINE__ << ": " << __FUNCTION__ << std::endl;
 			msg.setRecipient(*dst);
 			return ;
 		}
@@ -364,12 +365,16 @@ namespace ft_irc
 			return ;
 
 		std::list<Client*>	recipients = msg.getRecipients();
-
+		std::string logOutput;
 		for (std::list<Client*>::const_iterator	dst = recipients.begin();
 			dst != recipients.end();
 			++dst)
 		{
-			std::cout << "Sending: '" << msg.getResponse() << "' to " << (*dst)->getIpAddressStr() << std::endl;
+			logOutput = msg.getResponse();
+			size_t pos = logOutput.find(CRLF_PRINTABLE);
+			if (pos != std::string::npos)
+				logOutput.replace(pos, 2, "\\r\\n"); 
+			std::cout << "Sending: '" << logOutput << "' to " << (*dst)->getIpAddressStr() << std::endl;
 			if (send((*dst)->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
 			{
 				throw std::runtime_error("send() failed");
@@ -563,6 +568,39 @@ namespace ft_irc
 		{
 			this->_disconnectClient(*it);
 			it = this->_clients.erase(it);
+		}
+	}
+
+	void	Server::exec_ping_cmd(Message& msg)
+	{
+		std::string origin;
+		if (msg.getParams().empty())
+			err_needmoreparams(msg, "No origin specified");
+		else
+		{
+			origin = msg.getParams().front();
+			
+			msg.setRecipient(msg.getSender());
+			msg.setResponse(
+				build_prefix(msg.getServHostname())
+			+ " PONG " + msg.getSender().getNick() + msg.getServHostname()
+			+ " :" + origin + CRLF
+			);
+			
+		}
+	}
+
+	void	Server::exec_pong_cmd(Message& msg)
+	{
+		std::string origin;
+		if (msg.getParams().empty())
+			err_needmoreparams(msg, "No origin specified");
+		else
+		{
+			origin = msg.getParams().front();
+			
+			msg.setRecipient(msg.getSender());
+			msg.setResponse("");
 		}
 	}
 }

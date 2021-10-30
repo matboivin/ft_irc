@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/10/23 17:46:19 by root             ###   ########.fr       */
+/*   Updated: 2021/10/30 19:16:41 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 
 # define MAX_COMMAND_SIZE 512
 # define CRLF "\n"
+# define CRLF_PRINTABLE "\n"
 
 namespace ft_irc
 {

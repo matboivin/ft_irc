@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   numeric_replies.hpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/05 12:13:49 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/30 18:54:27 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ namespace ft_irc
 	void	err_useronchannel(Message& msg, const std::string& nick, const std::string& chan_name); // 443
 	void	err_notregistered(Message& msg); // 451
 	void	err_needmoreparams(Message& msg); // 461
+	void	err_needmoreparams(Message& msg, std::string error_string); // 461
 	void	err_alreadyregistered(Message& msg); // 462
 	void	err_passwdmismatch(Message& msg); // 464
 	void	err_channelisfull(Message& msg, const std::string& chan_name); // 471

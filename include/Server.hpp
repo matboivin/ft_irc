@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/27 21:12:05 by root             ###   ########.fr       */
+/*   Updated: 2021/10/30 19:21:20 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,8 @@ namespace ft_irc
 			void							exec_notice_cmd(Message& msg);
 			void							exec_privmsg_cmd(Message& msg);
 			void							exec_test_cmd(Message& msg);
+			void							exec_ping_cmd(Message& msg);
+			void							exec_pong_cmd(Message& msg);
 
 		private:
 			std::string						_hostname;

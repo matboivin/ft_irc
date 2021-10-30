@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   numeric_replies.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/08 15:35:43 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/10/30 18:52:53 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -347,6 +347,16 @@ namespace ft_irc
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
 			+ " 461 " + msg.getCommand() + " :Not enough parameters"
+			);
+		msg.appendSeparator();
+	}
+	
+	void	err_needmoreparams(Message& msg, std::string error_string)
+	{
+		msg.setRecipient(msg.getSender());
+		msg.setResponse(
+			build_prefix(msg.getServHostname())
+			+ " 461 " + msg.getCommand() + " :" + error_string
 			);
 		msg.appendSeparator();
 	}
