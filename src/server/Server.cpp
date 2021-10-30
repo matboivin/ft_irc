@@ -328,7 +328,6 @@ namespace ft_irc
 		this->_commands["TEST"]    = &Server::exec_test_cmd;
 	}
 
-	
 	// Command execution
 	int	Server::_executeCommand(Message& msg)
 	{
@@ -507,7 +506,11 @@ namespace ft_irc
 	void	Server::exec_test_cmd(Message& msg)
 	{
 		if (msg.getParams().empty())
-			err_needmoreparams(msg);	
+			err_needmoreparams(msg);
+		for (std::list<std::string>::const_iterator it = msg.getParams().begin(); it != msg.getParams().end(); it++)
+		{
+			std::cout << *it << std::endl;
+		}
 	}
 
 	// debug

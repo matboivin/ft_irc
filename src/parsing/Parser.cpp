@@ -97,7 +97,7 @@ namespace ft_irc
 	{
 		const std::string	cmds = "INVITE JOIN KICK KILL LIST MODE NAMES "
 									"NICK NOTICE OPER PASS PART PING PONG "
-									"PRIVMSG TOPIC QUIT USER WHOIS WHO";
+									"PRIVMSG TOPIC QUIT USER WHOIS WHO TEST";
 
 		std::string	cmd_name = msg.getCommand();
 		std::transform(cmd_name.begin(), cmd_name.end(), cmd_name.begin(), ::toupper);
@@ -197,7 +197,7 @@ namespace ft_irc
 	void	Parser::_fillForwardResponse(Message& msg, std::string cmd)
 	{
 		const std::string	cmds = "INVITE JOIN KICK KILL LIST MODE NOTICE OPER "
-									"PART PING PONG PRIVMSG QUIT";
+									"PART PING PONG PRIVMSG QUIT TEST";
 
 		if (cmds.find(msg.getCommand()) != std::string::npos)
 		{
