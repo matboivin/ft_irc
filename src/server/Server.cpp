@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 15:34:56 by root             ###   ########.fr       */
+/*   Updated: 2021/11/01 16:12:14 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -287,6 +287,7 @@ namespace ft_irc
 				std::cout << "Client " << client.getNick() << "@" << client.getIpAddressStr()
 						  << " has just registered" << std::endl;
 				Message welcome_msg(msg);
+				welcome_msg.setRecipient(client);
 				_make_welcome_msg(welcome_msg);
 				_sendResponse(welcome_msg);
 				client.setRegistered(true);
@@ -393,7 +394,7 @@ namespace ft_irc
 		}
 		else
 		{
-			std::cout << "Unknown command \"" << msg.getCommand() << "\"" << std::endl;
+			msg.setResponse(":" + this->_hostname + " 421 " + msg.getSender().getNick() + " " + msg.getCommand() + " :Unknown command" CRLF);
 			_sendResponse(msg);
 		}
 		return (0);

@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/01 14:15:51 by root             ###   ########.fr       */
+/*   Updated: 2021/11/01 15:53:09 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -292,7 +292,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
-			+ " 433 " + msg.getSender().getNick() + " :Nickname is already in use"
+			+ " 433 * " + msg.getParams().front() + " :Nickname already in use"
 			);
 		msg.appendSeparator();
 	}
