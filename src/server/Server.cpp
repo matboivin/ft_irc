@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/10/29 18:51:36 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 15:44:00 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,10 @@ namespace ft_irc
 
 		// init map of commands
 		_init_commands_map();
+		//init creation date string
+		time_t now = time(0);
+		_creation_date = ctime(&now);
+		_version = "42.42";
 	}
 
 	// copy constructor
@@ -59,7 +63,8 @@ namespace ft_irc
 	: _sockfd(other._sockfd), _backlog_max(other._backlog_max),
 	  _config(other._config),
 	  _parser(other._parser), _commands(other._commands),
-	  _clients(other._clients), _channels(other._channels)
+	  _clients(other._clients), _channels(other._channels),
+	  _creation_date(other._creation_date), _version(other._version)
 	{
 	}
 
@@ -75,6 +80,8 @@ namespace ft_irc
 			this->_commands = other.getCommands();
 			this->_clients = other._clients;
 			this->_channels = other._channels;
+			this->_creation_date = other._creation_date;
+			this->_version = other._version;
 		}
 		return (*this);
 	}
@@ -158,6 +165,17 @@ namespace ft_irc
 		}
 	}
 
+	void	Server::_make_welcome_msg(Message& msg)
+	{
+		msg.setResponse(
+			build_prefix(msg.getServHostname())
+		+ " 001 " + msg.getSender().getNick() + " :Welcome to the Internet Relay Network "
+		+ msg.getSender().getNick() + CRLF
+		+ build_prefix(msg.getServHostname())
+		+ " 002 " + msg.getSender().getNick() + " :Your host is " + msg.getServHostname() +
+		", running version " + this->_version + CRLF);
+	}
+
 	//Function to create a socket.
 	//create a new listening tcp s	ocket and bind it to the given address and port
 	//https://www.geeksforgeeks.org/socket-programming-cc/
@@ -238,9 +256,27 @@ namespace ft_irc
 		{
 			Message	msg(client);
 
-			if (_parse(msg, client.popUnprocessedCommand()) == true)
+			if (_parse(msg, client.popUnprocessedCommand()) == true) // parse the message
 			{
 				_executeCommand(msg); // execute the command
+				//if the client has just registered, send him a nice welcome message :D
+				if (client.isRegistered() == false && !client.getNick().empty() &&
+					!client.getUsername().empty() && !client.getHostname().empty())
+				{
+					std::cout << "Client " << client.getNick() << "@" << client.getIpAddressStr()
+							  << " has just registered" << std::endl;
+					Message	welcome_msg(msg);
+					_make_welcome_msg(welcome_msg);
+					_sendResponse(welcome_msg);
+					client.setRegistered(true);
+				}
+				else
+				{
+					std::cout << "Is registered: " << client.isRegistered() << std::endl
+							  << "Nick: " << client.getNick() << std::endl
+							  << "Username: " << client.getUsername() << std::endl
+							  << "Hostname: " << client.getHostname() << std::endl;
+				}
 				_sendResponse(msg); // send response to recipient(s)
 			}
 			client.updateLastEventTime();
@@ -320,7 +356,17 @@ namespace ft_irc
 		t_cmds::const_iterator	it = this->_commands.find(msg.getCommand());
 
 		if (it != this->_commands.end())
+		{
+			std::cout << "Executing command \"" << msg.getCommand() << "\"" << std::endl;
 			(this->*it->second)(msg);
+		}
+		// else
+		// {
+		// 	std::cout << "Unknown command \"" << msg.getCommand() << "\"" << std::endl;
+		// 	_sendResponse(msg);
+		// }
+
+		// unknown command would be sent twice
 		return (0);
 	}
 
@@ -332,6 +378,11 @@ namespace ft_irc
 		if (dst != this->_clients.end())
 		{
 			msg.setRecipient(*dst);
+			return ;
+		}
+
+		if (msg.getParams().empty())
+		{
 			return ;
 		}
 
@@ -348,12 +399,18 @@ namespace ft_irc
 			return ;
 
 		std::list<Client*>	recipients = msg.getRecipients();
+		std::string			logOutput;
 
 		for (std::list<Client*>::const_iterator	dst = recipients.begin();
-			dst != recipients.end();
-			++dst)
+			 dst != recipients.end();
+			 ++dst)
 		{
-			std::cout << "Sending: '" << msg.getResponse() << "' to " << (*dst)->getIpAddressStr() << std::endl;
+			logOutput = msg.getResponse();
+			size_t	pos = logOutput.find(CRLF);
+
+			if (pos != std::string::npos)
+				logOutput.replace(pos, 2, CRLF_PRINTABLE); 
+			std::cout << "Sending: '" << logOutput << "' to " << (*dst)->getIpAddressStr() << std::endl;
 			if (send((*dst)->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
 			{
 				throw std::runtime_error("send() failed");
@@ -505,7 +562,10 @@ namespace ft_irc
 	// The server musn't reply to NOTICE message
 	void	Server::exec_notice_cmd(Message& msg)
 	{
-		_setResponseRecipients(msg);
+		if (msg.getParams().size() < 2) // params are mandatory
+			msg.clearRecipients();
+		else
+			_setResponseRecipients(msg);
 	}
 
 	// PRIVMSG <msgtarget> :<message>
