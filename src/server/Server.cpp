@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 19:09:14 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 19:26:14 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -393,7 +393,13 @@ namespace ft_irc
 	/* Inits the map containing the commands */
 	void	Server::_init_commands_map()
 	{
+		//this->_commands["INVITE"]	= &Server::exec_invite_cmd;
 		this->_commands["JOIN"]		= &Server::exec_join_cmd;
+		// this->_commands["KILL"]	= &Server::exec_kill_cmd;
+		// this->_commands["KICK"]	= &Server::exec_kick_cmd;
+		// this->_commands["LIST"]	= &Server::exec_list_cmd;
+		// this->_commands["MODE"]	= &Server::exec_mode_cmd;
+		// this->_commands["NAMES"]	= &Server::exec_names_cmd;
 		this->_commands["NICK"]		= &Server::exec_nick_cmd;
 		this->_commands["NOTICE"]	= &Server::exec_notice_cmd;
 		this->_commands["OPER"]		= &Server::exec_oper_cmd;
@@ -558,6 +564,8 @@ namespace ft_irc
 
 	/* Commands ***************************************************************** */
 
+	//void	Server::exec_invite_cmd(Message& msg);
+
 	/*
 	 * JOIN <channels>
 	 * JOIN 0: leave all channels
@@ -588,6 +596,16 @@ namespace ft_irc
 			}
 		}
 	}
+
+	//void	Server::exec_kick_cmd(Message& msg);
+
+	//void	Server::exec_kill_cmd(Message& msg);
+
+	//void	Server::exec_list_cmd(Message& msg);
+
+	//void	Server::exec_mode_cmd(Message& msg);
+
+	//void	Server::exec_names_cmd(Message& msg);
 
 	/*
 	 * NICK <nickname>
