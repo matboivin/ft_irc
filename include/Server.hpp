@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 15:49:40 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 17:25:50 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,22 +48,24 @@ namespace ft_irc
 			std::list<Client>::iterator		getClient(const std::string& nick);
 			std::list<Channel>::iterator	getChannel(const std::string& chan_name);
 
-			// void							setBindAddress(const std::string& bind_address);
-			// void							setPort(const std::string& port);
-			// void							setPassword(const std::string& password);
-
 			/* main loop */
 			int								run();
 
 			/* Commands */
-			void							exec_pass_cmd(Message& msg);
-			void							exec_nick_cmd(Message& msg);
-			void							exec_quit_cmd(Message& msg);
-			void							exec_oper_cmd(Message& msg);
-			void							exec_notice_cmd(Message& msg);
-			void							exec_privmsg_cmd(Message& msg);
 			void							exec_join_cmd(Message& msg);
+			void							exec_nick_cmd(Message& msg);
+			void							exec_notice_cmd(Message& msg);
+			void							exec_oper_cmd(Message& msg);
 			void							exec_part_cmd(Message& msg);
+			void							exec_pass_cmd(Message& msg);
+			void							exec_ping_cmd(Message& msg);
+			void							exec_pong_cmd(Message& msg);
+			void							exec_privmsg_cmd(Message& msg);
+			void							exec_quit_cmd(Message& msg);
+			void							exec_user_cmd(Message& msg);
+			void							exec_who_cmd(Message& msg);
+			void							exec_whois_cmd(Message& msg);
+			void							exec_test_cmd(Message& msg); // debug
 
 		private:
 			/* Structure describing an Internet socket address. */
@@ -79,7 +81,7 @@ namespace ft_irc
 			std::list<Channel>				_channels;
 			std::string						_creation_date;
 			std::string						_version;
-			
+			std::string						_description;
 
 			bool							_createSocket();
 			int								_sockGetLine(int sockfd, std::string& line);
@@ -88,6 +90,7 @@ namespace ft_irc
 			bool							_hasPendingConnections();
 			bool							_processClients();
 			int								_disconnectClient(Client& client);
+			int								_ping_client(Client& client);
 
 			bool							_parse(Message& msg, const std::string& cmd);
 

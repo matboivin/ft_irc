@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/08 15:35:43 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 17:30:31 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -292,7 +292,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
-			+ " 433 " + msg.getSender().getNick() + " :Nickname is already in use"
+			+ " 433 * " + msg.getParams().front() + " :Nickname already in use"
 			);
 		msg.appendSeparator();
 	}
@@ -350,6 +350,16 @@ namespace ft_irc
 			);
 		msg.appendSeparator();
 	}
+	
+	void	err_needmoreparams(Message& msg, std::string error_string)
+	{
+		msg.setRecipient(msg.getSender());
+		msg.setResponse(
+			build_prefix(msg.getServHostname())
+			+ " 461 " + msg.getCommand() + " :" + error_string
+			);
+		msg.appendSeparator();
+	}
 
 	void	err_alreadyregistered(Message& msg)
 	{
@@ -373,7 +383,8 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
-			+ " 471 " + chan_name + " :Cannot join channel (+l)");
+			+ " 471 " + chan_name + " :Cannot join channel (+l)"
+			);
 		msg.appendSeparator();
 	}
 
@@ -382,7 +393,8 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
-			+ " 474 " + chan_name + " :Cannot join channel (+b)");
+			+ " 474 " + chan_name + " :Cannot join channel (+b)"
+			);
 		msg.appendSeparator();
 	}
 
@@ -400,7 +412,8 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		msg.setResponse(
 			build_prefix(msg.getServHostname())
-			+ " 482 " + chan_name + " :You're not channel operator");
+			+ " 482 " + chan_name + " :You're not channel operator"
+			);
 		msg.appendSeparator();
 	}
 
@@ -431,4 +444,17 @@ namespace ft_irc
 		msg.setResponse(build_prefix(msg.getServHostname()) + " 502 :Cannot change mode for other users");
 		msg.appendSeparator();
 	}
+
+	void	err_syntaxerror(Message& msg, std::string cmd)
+	{
+		Client& sender = msg.getSender();
+		msg.setRecipient(sender);
+		//:public-irc.w3.org 461 ezakjhzkjehkjzehdk WHO :Syntax error
+		msg.setResponse(
+			build_prefix(msg.getServHostname()) 
+			+ " 461 " + sender.getNick() + " " + cmd + " :Syntax error"
+			);
+		msg.appendSeparator();
+	}
+	
 } // !namespace ft_irc

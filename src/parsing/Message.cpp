@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/01 15:54:29 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 17:06:10 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include "Client.hpp"
 #include "Channel.hpp"
 #include "Message.hpp"
+#include <algorithm>
 
 namespace ft_irc
 {
@@ -126,7 +127,9 @@ namespace ft_irc
 
 	void	Message::setRecipient(Client& recipient)
 	{
-		this->_recipients.push_back(&recipient);
+		// check if the recipient is already in the list
+		if (std::find(this->_recipients.begin(), this->_recipients.end(), &recipient) == this->_recipients.end())
+			this->_recipients.push_back(&recipient);
 	}
 
 	void	Message::clearRecipients()
