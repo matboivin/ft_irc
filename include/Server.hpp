@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 17:37:00 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 17:39:33 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ namespace ft_irc
 			void							exec_pong_cmd(Message& msg);
 			void							exec_privmsg_cmd(Message& msg);
 			void							exec_quit_cmd(Message& msg);
+			void							exec_topic_cmd(Message& msg);
 			void							exec_user_cmd(Message& msg);
 			void							exec_who_cmd(Message& msg);
 			void							exec_whois_cmd(Message& msg);

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:42:14 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/17 11:32:40 by mbenjell         ###   ########.fr       */
+/*   Updated: 2021/10/29 18:50:32 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,12 @@ namespace ft_irc
 			void							addClient(Client& client);
 			void							removeClient(Client& client);
 
-			/* debug */
-			void							displayClients();
-		
+			// manage topic
+			void	changeTopic(const std::string& topic, Message& msg);
+
+			// debug
+			void	displayClients();
+
 		private:
 			std::string						_name;
 			std::string						_topic;

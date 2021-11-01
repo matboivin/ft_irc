@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 17:37:28 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 17:40:28 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -373,6 +373,7 @@ namespace ft_irc
 		this->_commands["PONG"]		= &Server::exec_pong_cmd;
 		this->_commands["PRIVMSG"]	= &Server::exec_privmsg_cmd;
 		this->_commands["QUIT"]		= &Server::exec_quit_cmd;
+		this->_commands["TOPIC"]	= &Server::exec_topic_cmd;
 		this->_commands["USER"]		= &Server::exec_user_cmd;
 		this->_commands["WHO"]		= &Server::exec_who_cmd;
 		this->_commands["WHOIS"]	= &Server::exec_whois_cmd;
@@ -711,6 +712,28 @@ namespace ft_irc
 		// TODO: The server acknowledges this by sending an ERROR message to the client
 	}
 
+	// TOPIC <channel> [ <topic> ]
+	void	Server::exec_topic_cmd(Message& msg)
+	{
+		if (msg.getParams().empty())
+		{
+			err_needmoreparams(msg);
+			return ;
+		}
+
+		std::list<Channel>::iterator	channel = getChannel(msg.getParams().front());
+
+		if (channel == this->_channels.end())
+			err_nosuchchannel(msg, msg.getParams().front());
+		else if (!_userOnChannel(msg.getSender(), *channel))
+			err_notonchannel(msg, msg.getParams().front());
+		else if (msg.getParams().size() > 1 && !channel_is_valid(msg.getParams().back()))
+			channel->changeTopic(msg.getParams().back(), msg);
+		else if (channel->getTopic().empty())
+			rpl_notopic(msg, channel->getName());
+		else
+			rpl_topic(msg, *channel);
+	}
 
 	void	Server::exec_user_cmd(Message& msg)
 	{
