@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/01 17:59:33 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 18:05:27 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -373,6 +373,18 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
+	void	err_syntaxerror(Message& msg, std::string cmd)
+	{
+		Client& sender = msg.getSender();
+		msg.setRecipient(sender);
+		//:public-irc.w3.org 461 ezakjhzkjehkjzehdk WHO :Syntax error
+		msg.setResponse(
+			build_prefix(msg.getServHostname()) 
+			+ " 461 " + sender.getNick() + " " + cmd + " :Syntax error"
+			);
+		msg.appendSeparator();
+	}
+
 	void	err_alreadyregistered(Message& msg)
 	{
 		msg.setRecipient(msg.getSender());
@@ -456,17 +468,4 @@ namespace ft_irc
 		msg.setResponse(build_prefix(msg.getServHostname()) + " 502 :Cannot change mode for other users");
 		msg.appendSeparator();
 	}
-
-	void	err_syntaxerror(Message& msg, std::string cmd)
-	{
-		Client& sender = msg.getSender();
-		msg.setRecipient(sender);
-		//:public-irc.w3.org 461 ezakjhzkjehkjzehdk WHO :Syntax error
-		msg.setResponse(
-			build_prefix(msg.getServHostname()) 
-			+ " 461 " + sender.getNick() + " " + cmd + " :Syntax error"
-			);
-		msg.appendSeparator();
-	}
-	
 } // !namespace ft_irc

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/01 17:57:14 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 18:05:38 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ namespace ft_irc
 	void	err_notregistered(Message& msg); // 451
 	void	err_needmoreparams(Message& msg); // 461
 	void	err_needmoreparams(Message& msg, std::string error_string); // 461
+	void	err_syntaxerror(Message& msg, std::string cmd = ""); // 461
 	void	err_alreadyregistered(Message& msg); // 462
 	void	err_passwdmismatch(Message& msg); // 464
 	void	err_channelisfull(Message& msg, const std::string& chan_name); // 471
@@ -72,7 +73,6 @@ namespace ft_irc
 	void	err_nooperhost(Message& msg); // 491
 	void	err_unknownmodeflag(Message& msg); // 501
 	void	err_usersdontmatch(Message& msg); // 502
-	void	err_syntaxerror(Message& msg, std::string cmd = ""); // 461
 } // !namespace ft_irc
 
 #endif
