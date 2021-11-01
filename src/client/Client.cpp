@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 16:02:09 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 17:39:47 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -223,6 +223,11 @@ namespace ft_irc
 		this->_registered = registered;
 	}
 
+	void	Client::setPinged(bool pinged)
+	{
+		this->_pinged = pinged;
+	}
+
 	// Channel operations
 
 	void	Client::joinChannel(Channel& channel)
@@ -247,6 +252,8 @@ namespace ft_irc
 		}
 		this->_joined_channels.clear();
 	}
+
+	// Mode operations
 
 	// Add the mode passed as parameter to the client mode string
 	void	Client::addMode(const std::string& mode)
@@ -288,15 +295,23 @@ namespace ft_irc
 		return ((now.tv_sec - this->_last_event_time.tv_sec) > this->_keep_alive.tv_sec);
 	}
 
+	//placeholder
 	bool	Client::isOper() const
 	{
 		return (this->_mode.find("o") != std::string::npos);
+	}
+
+	//isPinged()
+	bool	Client::isPinged() const
+	{
+		return (this->_pinged);
 	}
 
 	void Client::updateLastEventTime()
 	{
 		if (gettimeofday(&this->_last_event_time, NULL))
 			throw std::runtime_error("gettimeofday() failed");
+		this->_pinged = false;
 	}
 
 	int	Client::awaitConnection(int socket_fd)
