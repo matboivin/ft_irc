@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/10/24 11:50:57 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 15:09:27 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,9 @@ namespace ft_irc
 				   std::string nick,
 				   std::string realname,
 				   std::string username,
-				   std::string password)
-	: _nick(nick), _realname(realname), _username(username),
+				   std::string password,
+				   std::string hostname)
+	: _nick(nick), _realname(realname), _hostname(hostname), _username(username),
 	  _mode(),
 	  _password(password),
 	  _address(address),
@@ -36,7 +37,8 @@ namespace ft_irc
 	  _in_buffer(), _out_buffer(),
 	  _max_cmd_length(512),
 	  _joined_channels(),
-	  _alive(true)
+	  _alive(true),
+	  _registered(false)
 	{
 		this->_timeout = (struct timeval){.tv_sec = 0, .tv_usec = 50};
 		this->_keep_alive = (struct timeval){.tv_sec = 30, .tv_usec = 0};
@@ -46,9 +48,11 @@ namespace ft_irc
 
 	// copy constructor
 	Client::Client(const Client& other)
-	: _nick(other._nick), _realname(other._realname), _username(other._username),
+	: _nick(other._nick), _realname(other._realname), _hostname(other._hostname),
+	  _username(other._username),
 	  _mode(other._mode),
-	  _password(other._password), _address(other._address),
+	  _password(other._password),
+	  _address(other._address),
 	  _address_size(other._address_size), _address_str(other._address_str),
 	  _timeout(other._timeout), _socket_fd(other._socket_fd),
 	  _connected(other._connected),
@@ -56,7 +60,8 @@ namespace ft_irc
 	  _max_cmd_length(other._max_cmd_length),
 	  _joined_channels(other._joined_channels),
 	  _alive(other._alive),
-	  _keep_alive(other._keep_alive), _last_event_time(other._last_event_time)
+	  _keep_alive(other._keep_alive), _last_event_time(other._last_event_time),
+	  _registered(other._registered)
 	{
 	}
 
@@ -69,6 +74,7 @@ namespace ft_irc
 			this->_realname = other.getRealName();
 			this->_username = other.getUsername();
 			this->_password = other.getPassword();
+			this->_hostname = other.getHostname();
 			this->_address = other._address;
 			this->_address_str = other._address_str;
 			this->_address_size = other._address_size;
@@ -79,6 +85,7 @@ namespace ft_irc
 			this->_alive = other._alive;
 			this->_keep_alive = other._keep_alive;
 			this->_last_event_time = other._last_event_time;
+			this->_registered = other._registered;
 		}
 		return (*this);
 	}
@@ -108,6 +115,11 @@ namespace ft_irc
 	std::string	Client::getPassword() const
 	{
 		return (this->_password);
+	}
+
+	std::string	Client::getHostname() const
+	{
+		return (this->_hostname);
 	}
 
 	struct sockaddr_in&	Client::getAddress()
@@ -159,16 +171,19 @@ namespace ft_irc
 
 	void	Client::setNick(const std::string& nick)
 	{
+		std::cout << "Nick: " << nick << std::endl;
 		this->_nick = nick;
 	}
 
 	void	Client::setRealName(const std::string& realname)
 	{
+		std::cout << "Real Name: " << realname << std::endl;
 		this->_realname = realname;
 	}
 
 	void	Client::setUsername(const std::string& username)
 	{
+		std::cout << "Username: " << username << std::endl;
 		this->_username = username;
 	}
 
@@ -187,14 +202,25 @@ namespace ft_irc
 		this->_joined_channels = joined_channels;
 	}
 
+	void Client::setConnected(bool connected)
+	{
+		this->_connected = connected;
+	}
+
 	void Client::setAlive(bool alive)
 	{
 		this->_alive = alive;
 	}
 
-	void Client::setConnected(bool connected)
+	void Client::setRegistered(bool registered)
 	{
-		this->_connected = connected;
+		this->_registered = registered;
+	}
+
+	void Client::setHostname(const std::string& hostname)
+	{
+		std::cout << "Hostname: " << hostname << std::endl;
+		this->_hostname = hostname;
 	}
 
 	// Channel operations
@@ -242,17 +268,17 @@ namespace ft_irc
 
 	bool	Client::isRegistered() const
 	{
-		return (!(this->_nick.empty() || this->_realname.empty()));
-	}
-
-	bool	Client::isConnected() const
-	{
-		return (this->_socket_fd != -1);
+		return (this->_registered);
 	}
 
 	bool Client::isAlive() const
 	{
 		return (this->_alive);
+	}
+
+	bool	Client::isConnected() const
+	{
+		return (this->_socket_fd != -1);
 	}
 
 	bool	Client::isTimeouted() const

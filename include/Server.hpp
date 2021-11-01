@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/24 11:52:54 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 15:06:23 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <list>
 # include <map>
 # include <string>
+# include <ctime>
 
 namespace ft_irc
 {
@@ -76,6 +77,9 @@ namespace ft_irc
 			t_cmds							_commands;
 			std::list<Client>				_clients;
 			std::list<Channel>				_channels;
+			std::string						_creation_date;
+			std::string						_version;
+			
 
 			bool							_createSocket();
 			int								_sockGetLine(int sockfd, std::string& line);
@@ -95,6 +99,7 @@ namespace ft_irc
 			/* command response */
 			void							_setResponseRecipients(Message& msg);
 			void							_sendResponse(Message& msg);
+			void							_make_welcome_msg(Message& msg);
 
 			/* Channel operations */
 			Channel&						_addChannel(const std::string& name);
