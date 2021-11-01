@@ -1,3 +1,0 @@
-Handle CRLF
-Fix server death on EXIT / CTRL-C of client
-Add more tests
