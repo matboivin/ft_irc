@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/01 17:30:31 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 17:59:33 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,18 @@ namespace ft_irc
 			build_prefix(msg.getServHostname())
 			+ " 001 Welcome to the Internet Relay Network "
 			+ build_full_client_id(msg.getSender())
+			);
+		msg.appendSeparator();
+	}
+
+	void	rpl_yourhost(Message& msg, const std::string& version)
+	{
+		msg.setRecipient(msg.getSender());
+		// beware it is append and not set
+		msg.appendResponse(
+			build_prefix(msg.getServHostname())
+			+ " 002 " + msg.getSender().getNick() + " :Your host is "
+			+ msg.getServHostname() + ", running version " + version
 			);
 		msg.appendSeparator();
 	}

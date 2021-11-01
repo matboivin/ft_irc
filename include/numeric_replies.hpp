@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   numeric_replies.hpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/01 13:50:08 by root             ###   ########.fr       */
+/*   Updated: 2021/11/01 17:57:14 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ namespace ft_irc
 
 	// command responses
 	void	rpl_welcome(Message& msg); // 001
+	void	rpl_yourhost(Message& msg, const std::string& version); // 002
 	void	rpl_umodeis(Message& msg, const std::string& user_mode); // 221
 	void	rpl_whoisuser(Message& msg); // 311
 	void	rpl_whoisoperator(Message& msg); // 313

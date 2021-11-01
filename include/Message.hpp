@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:47:11 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/01 17:39:13 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 17:58:17 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,12 +59,14 @@ namespace ft_irc
 		void	setSender(const Client& sender);
 		void	setServHostname(const std::string& serv_hostname);
 		void	setResponse(const std::string& response);
+		void	appendResponse(const std::string& response);
 		void	setCommand(const std::string& command);
 		void	setParam(const std::string& param);
 		void	setRecipients(const std::list<Client*>& recipients);
 		void	setRecipient(Client& recipient);
-		void	clearRecipients();
 
+		// clients operations
+		void	clearRecipients();
 		void	addRecipients(const std::list<Client*>& recipients);
 		void	setRecipientsFromChannels(const Client& client);
 

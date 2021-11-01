@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/01 17:39:39 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 17:58:35 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,11 @@ namespace ft_irc
 		this->_response = response;
 	}
 
+	void	Message::appendResponse(const std::string& response)
+	{
+		this->_response += response;
+	}
+
 	void	Message::setCommand(const std::string& command)
 	{
 		this->_command = command;
@@ -132,6 +137,7 @@ namespace ft_irc
 			this->_recipients.push_back(&recipient);
 	}
 
+	// clients operations
 	void	Message::clearRecipients()
 	{
 		this->_recipients.clear();

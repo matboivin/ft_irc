@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:37:26 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/01 17:19:15 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 18:04:08 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,11 @@ namespace ft_irc
 
 	std::string	build_full_client_id(const Client& client)
 	{
-		return (
-			client.getNick() + "!" + client.getUsername()
-			+ "@" + client.getIpAddressStr() // need host (ip only if couldn't resolve)
-			);
+		if (!client.getHostname().empty())
+			return (client.getNick() + "!" + client.getUsername() + "@" + client.getHostname());
+
+		// return IP address if host couldn't resolve
+		return (client.getNick() + "!" + client.getUsername() + "@" + client.getIpAddressStr());
 	}
 
 	// Late parsing helpers

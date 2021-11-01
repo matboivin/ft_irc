@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 17:40:28 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 17:59:50 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -258,6 +258,7 @@ namespace ft_irc
 			if (_parse(msg, client.popUnprocessedCommand()) == true) // parse the message
 			{
 				_executeCommand(msg); // execute the command
+
 				//if the client has just registered, send him a nice welcome message :D
 				if (client.isRegistered() == false && !client.getNick().empty() &&
 					!client.getUsername().empty() && !client.getHostname().empty())
@@ -270,13 +271,6 @@ namespace ft_irc
 					_make_welcome_msg(welcome_msg);
 					_sendResponse(welcome_msg);
 					client.setRegistered(true);
-				}
-				else
-				{
-					/*std::cout << "Is registered: " << client.isRegistered() << std::endl
-					<< "Nick: " << client.getNick() << std::endl
-					<< "Username: " << client.getUsername() << std::endl
-					<< "Hostname: " << client.getHostname() << std::endl;*/
 				}
 			}
 			_sendResponse(msg); // send response to recipient(s)
@@ -444,13 +438,8 @@ namespace ft_irc
 
 	void	Server::_make_welcome_msg(Message& msg)
 	{
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-		+ " 001 " + msg.getSender().getNick() + " :Welcome to the Internet Relay Network "
-		+ msg.getSender().getNick() + CRLF
-		+ build_prefix(msg.getServHostname())
-		+ " 002 " + msg.getSender().getNick() + " :Your host is " + msg.getServHostname() +
-		", running version " + this->_version + CRLF);
+		rpl_welcome(msg);
+		rpl_yourhost(msg, this->_version);
 	}
 
 	// Channel operations
