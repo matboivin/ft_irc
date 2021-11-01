@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 17:31:34 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 17:34:52 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -255,7 +255,7 @@ namespace ft_irc
 		{
 			Message	msg(client);
 
-			if (_parse(msg, client.popUnprocessedCommand()) == true)
+			if (_parse(msg, client.popUnprocessedCommand()) == true) // parse the message
 			{
 				_executeCommand(msg); // execute the command
 				//if the client has just registered, send him a nice welcome message :D
@@ -390,13 +390,6 @@ namespace ft_irc
 			std::cout << "Executing command \"" << msg.getCommand() << "\"" << std::endl;
 			(this->*it->second)(msg);
 		}
-		// else
-		// {
-		// 	std::cout << "Unknown command \"" << msg.getCommand() << "\"" << std::endl;
-		// 	_sendResponse(msg);
-		// }
-
-		// unknown command would be sent twice
 		return (0);
 	}
 
