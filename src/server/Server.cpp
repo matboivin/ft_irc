@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 15:40:44 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 15:59:31 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -277,8 +277,8 @@ namespace ft_irc
 							  << "Username: " << client.getUsername() << std::endl
 							  << "Hostname: " << client.getHostname() << std::endl;
 				}
-				_sendResponse(msg); // send response to recipient(s)
 			}
+			_sendResponse(msg); // send response to recipient(s)
 			client.updateLastEventTime();
 			return (true);
 		}
@@ -359,13 +359,6 @@ namespace ft_irc
 			std::cout << "Executing command \"" << msg.getCommand() << "\"" << std::endl;
 			(this->*it->second)(msg);
 		}
-		// else
-		// {
-		// 	std::cout << "Unknown command \"" << msg.getCommand() << "\"" << std::endl;
-		// 	_sendResponse(msg);
-		// }
-
-		// unknown command would be sent twice
 		return (0);
 	}
 
