@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/30 19:46:27 by root             ###   ########.fr       */
+/*   Updated: 2021/11/01 15:13:52 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,8 @@ namespace ft_irc
 			void							exec_ping_cmd(Message& msg);
 			void							exec_pong_cmd(Message& msg);
 			void							exec_user_cmd(Message& msg);
+			void							exec_who_cmd(Message& msg);
+			void							exec_whois_cmd(Message& msg);
 
 		private:
 			std::string						_hostname;
@@ -85,6 +87,7 @@ namespace ft_irc
 			std::list<Channel>				_channels;
 			std::string						_creation_date;
 			std::string						_version;
+			std::string						_description;
 			
 
 			bool							_createSocket();
@@ -94,6 +97,7 @@ namespace ft_irc
 			bool							_hasPendingConnections();
 			bool							_processClients();
 			int								_disconnectClient(Client& client);
+			int								_ping_client(Client& client);
 
 			Message							_parse(Client& sender, const std::string& cmd);
 

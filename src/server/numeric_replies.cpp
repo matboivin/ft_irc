@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/30 18:52:53 by root             ###   ########.fr       */
+/*   Updated: 2021/11/01 14:15:51 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -441,4 +441,15 @@ namespace ft_irc
 		msg.setResponse(build_prefix(msg.getServHostname()) + " 502 :Cannot change mode for other users");
 		msg.appendSeparator();
 	}
+
+	void	err_syntaxerror(Message& msg, std::string cmd)
+	{
+		Client& sender = msg.getSender();
+		msg.setRecipient(sender);
+		//:public-irc.w3.org 461 ezakjhzkjehkjzehdk WHO :Syntax error
+		msg.setResponse(build_prefix(msg.getServHostname()) + " 461 "
+		+ sender.getNick() + " " + cmd + " :Syntax error");
+		msg.appendSeparator();
+	}
+	
 } // !namespace ft_irc

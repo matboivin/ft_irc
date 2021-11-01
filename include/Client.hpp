@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/10/30 19:59:14 by root             ###   ########.fr       */
+/*   Updated: 2021/11/01 14:38:11 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,10 +73,12 @@ namespace ft_irc
 			void						setAlive(bool alive);
 			void						setConnected(bool connected);
 			void						setRegistered(bool registered);
+			void						setPinged(bool pinged);
 
 			/* helpers */
 			bool						isRegistered() const;
 			bool						isConnected() const;
+			bool						isPinged() const;
 			int							awaitConnection(int socket_fd);
 			bool						hasNewEvents();
 			bool						hasUnprocessedCommands();
@@ -85,7 +87,8 @@ namespace ft_irc
 			int							updateOutBuffer();
 			bool						isAlive() const;
 			bool						isTimeouted() const;
-			void						updateLastEventTime();
+			void						updateLastEventTime();	/* resets timeout and pinged */
+			bool						isOper() const;
 
 			/* add response to the output buffer */
 			void						sendCommand(std::string cmd);
@@ -116,6 +119,7 @@ namespace ft_irc
 			struct timeval				_keep_alive;		/* keep_alive lenght */
 			struct timeval				_last_event_time;	/* time since last network event */
 			bool						_registered;		/* is the client registered? */	
+			bool						_pinged;			/* has the client been pinged? */
 	};
 }
 

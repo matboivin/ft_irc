@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 13:21:29 by root             ###   ########.fr       */
+/*   Updated: 2021/11/01 15:34:56 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ namespace ft_irc
 		time_t now = time(0);
 		_creation_date = ctime(&now);
 		_version = "42.42";
+		_description = "The answer to life the universe and everything";
 	}
 
 	// copy constructor
@@ -70,7 +71,8 @@ namespace ft_irc
 	  _sockfd(other._sockfd), _backlog_max(other._backlog_max),
 	  _parser(other._parser), _commands(other._commands),
 	  _clients(other._clients), _channels(other._channels),
-	  _creation_date(other._creation_date), _version(other._version)
+	  _creation_date(other._creation_date), _version(other._version),
+	  _description(other._description)
 	{
 	}
 
@@ -91,6 +93,7 @@ namespace ft_irc
 			this->_channels = other._channels;
 			this->_creation_date = other._creation_date;
 			this->_version = other._version;
+			this->_description = other._description;
 		}
 		return (*this);
 	}
@@ -277,7 +280,7 @@ namespace ft_irc
 		{
 			Message	msg = _parse(client, client.popUnprocessedCommand()); // parse the message
 			_executeCommand(msg); // execute the command
-			//if the client has just registered, send him a nice welcome message :D
+			//if the client has just registered, send them a nice welcome message :D
 			if (client.isRegistered() == false && !client.getNick().empty() &&
 				!client.getUsername().empty() && !client.getHostname().empty())
 			{
@@ -290,10 +293,10 @@ namespace ft_irc
 			}
 			else
 			{
-				std::cout << "Is registered: " << client.isRegistered() << std::endl
+				/*std::cout << "Is registered: " << client.isRegistered() << std::endl
 				<< "Nick: " << client.getNick() << std::endl
 				<< "Username: " << client.getUsername() << std::endl
-				<< "Hostname: " << client.getHostname() << std::endl;
+				<< "Hostname: " << client.getHostname() << std::endl;*/
 			}
 			_sendResponse(msg); // send response to recipient(s)
 			client.updateLastEventTime();
@@ -322,9 +325,19 @@ namespace ft_irc
 			it->updateInBuffer();
 			if (it->isTimeouted() == true)
 			{
-				std::cout << "Client " << it->getIpAddressStr()
-						  << " timed out" << std::endl;
-				this->_disconnectClient(*it);
+				if (it->isPinged() == false)
+				{
+					this->_ping_client(*it);
+				}
+				else
+				{
+					//send them a timeout message
+					Message timeout_msg(*it);
+					timeout_msg.setRecipient(*it);
+					timeout_msg.setResponse("ERROR :Ping timeout: 30 seconds" CRLF);
+					_sendResponse(timeout_msg);
+					this->_disconnectClient(*it);
+				}
 			}
 			it++;
 		}
@@ -365,6 +378,8 @@ namespace ft_irc
 		this->_commands["PONG"]		= &Server::exec_pong_cmd;
 		this->_commands["USER"]		= &Server::exec_user_cmd;
 		this->_commands["TEST"]		= &Server::exec_test_cmd;
+		this->_commands["WHO"]		= &Server::exec_who_cmd;
+		this->_commands["WHOIS"]	= &Server::exec_whois_cmd;
 	}
 
 	// Command execution
@@ -675,5 +690,135 @@ namespace ft_irc
 			msg.setRecipient(client);		
 		}
 	}
+
+	bool	match_nick(const std::string& to_match, const std::string& nick)
+	{
+		//wildcard matching
+		if (to_match.find('*') != std::string::npos)
+		{
+			std::string::size_type pos = 0;
+			std::string::size_type last_pos = 0;
+			while ((pos = to_match.find('*', last_pos)) != std::string::npos)
+			{
+				if (pos == 0)
+					return (true);
+				if (pos == to_match.size() - 1)
+					return (true);
+				if (nick.find(to_match.substr(0, pos)) != std::string::npos)
+					return (true);
+				last_pos = pos + 1;
+			}
+			return (false);
+		}
+		return (to_match == "0" || to_match == nick);
+	}
+
+	//WHO
+	void	Server::exec_who_cmd(Message& msg)
+	{
+		bool			oper_only = false;
+		std::string		to_match = "0"; //match all by default
+		size_t			count = 0; // limit of 25
+
+		if (msg.getParams().empty() == false)
+			to_match = msg.getParams().front();
+		else if (msg.getParams().size() == 2 && msg.getParams().back() == "o")
+			oper_only = true;
+		else if (msg.getParams().size() > 2)
+		{
+			err_syntaxerror(msg, msg.getCommand());
+			return ;
+		}
+		std::string response = "";
+		for (std::list<Client>::iterator it = this->_clients.begin();
+			 it != this->_clients.end();
+			 ++it)
+		{
+			if (oper_only && !it->isOper())
+				continue;
+			if (match_nick(to_match, it->getNick()))
+			{
+				std::cout << "WHO matched " << it->getNick() << std::endl;
+				response += ":" + this->_hostname + " 352 " + msg.getSender().getNick() + " * ";
+				response += it->getNick();
+				response += " " + it->getIpAddressStr();
+				response += " " + this->_hostname;
+				response += " " + it->getNick();
+				response += " H :0 " + it->getNick() + CRLF;
+			}
+			count++;
+			if (count == 25)
+			{
+				//:public-irc.w3.org NOTICE mynick :WHO list limit (25) reached!
+				response += ":" + this->_hostname + " NOTICE "
+				+ msg.getSender().getNick() + " :WHO list limit (25) reached!"
+				+ CRLF;
+			}
+		}
+		//END OF WHO COMMAND
+		response += ":" + this->_hostname + " 315 " +
+		msg.getSender().getNick() + " " + to_match + " :End of /WHO list."
+		+ CRLF;
+		msg.setResponse(response);
+		msg.setRecipient(msg.getSender());
+	}
+
+	//WHOIS command implementation
+	//https://datatracker.ietf.org/doc/html/rfc1459#section-4.5.2
+	void	Server::exec_whois_cmd(Message& msg)
+	{
+		std::string to_match = "0";
+		if (msg.getParams().empty() == false)
+			to_match = msg.getParams().front();
+		else if (msg.getParams().size() > 1)
+		{
+			err_syntaxerror(msg, msg.getCommand());
+			return ;
+		}
+		std::string response = "";
+		for (std::list<Client>::iterator it = this->_clients.begin();
+			 it != this->_clients.end();
+			 ++it)
+		{
+			if (match_nick(to_match, it->getNick()))
+			{
+				response += ":" + this->_hostname + " 311 " + msg.getSender().getNick() + " ";
+				response += it->getNick();
+				response += " " + it->getUsername();
+				response += " " + it->getHostname();
+				response += " * :";
+				response += it->getRealName();
+				response += CRLF;
+				response += ":" + this->_hostname + " 312 " + msg.getSender().getNick() + " ";
+				response += this->_hostname;
+				response += " :";
+				response += this->_description;
+				response += CRLF;
+				if (it->isOper())
+				{
+					response += ":" + this->_hostname + " 313 " + msg.getSender().getNick() + " ";
+					response += it->getNick();
+					response += " :is an IRC operator" CRLF;
+				}
+			}
+		}
+		response += ":" + this->_hostname + " 318 " + msg.getSender().getNick() +
+		" " + to_match + " :End of /WHOIS list." + CRLF;
+		msg.setResponse(response);
+		msg.setRecipient(msg.getSender());
+	}
 	
+
+	int	Server::_ping_client(Client& client)
+	{
+		Message	msg(client);
+		msg.setRecipient(client);
+		msg.setCommand("PING");
+		msg.setResponse("PING " + this->_hostname + " :" + this->_hostname + CRLF);
+		this->_sendResponse(msg);
+		/* reset timeout and mark the client as pinged */
+		client.updateLastEventTime();
+		client.setPinged(true);
+		return (0);
+	}
 }

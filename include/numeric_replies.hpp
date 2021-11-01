@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/30 18:54:27 by root             ###   ########.fr       */
+/*   Updated: 2021/11/01 13:50:08 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ namespace ft_irc
 	void	err_nooperhost(Message& msg); // 491
 	void	err_unknownmodeflag(Message& msg); // 501
 	void	err_usersdontmatch(Message& msg); // 502
+	void	err_syntaxerror(Message& msg, std::string cmd = ""); // 461
 } // !namespace ft_irc
 
 #endif

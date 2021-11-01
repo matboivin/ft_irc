@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/10/30 20:23:23 by root             ###   ########.fr       */
+/*   Updated: 2021/11/01 15:03:16 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -242,10 +242,28 @@ namespace ft_irc
 		return ((now.tv_sec - this->_last_event_time.tv_sec) > this->_keep_alive.tv_sec);
 	}
 
+	//placeholder
+	bool	Client::isOper() const
+	{
+		return (this->_nick.find("@") != std::string::npos);
+	}
+
+	//isPinged()
+	bool	Client::isPinged() const
+	{
+		return (this->_pinged);
+	}
+
+	void	Client::setPinged(bool pinged)
+	{
+		this->_pinged = pinged;
+	}
+
 	void Client::updateLastEventTime()
 	{
 		if (gettimeofday(&this->_last_event_time, NULL))
 			throw std::runtime_error("gettimeofday() failed");
+		this->_pinged = false;
 	}
 
 	int	Client::awaitConnection(int socket_fd)
