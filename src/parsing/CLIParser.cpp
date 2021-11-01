@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:34:20 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 18:45:53 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 19:35:17 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ namespace ft_irc
 	{
 		this->_argv = nullptr;
 	}
+
 	/* Copy constructor */
 	CLIParser::CLIParser(const CLIParser& other)
 	: _argv(), _argc(other._argc),
