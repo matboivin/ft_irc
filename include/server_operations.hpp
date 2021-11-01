@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:35:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/18 19:33:44 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 17:19:26 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@ namespace ft_irc
 	// Remove duplicates from lists
 	template<typename T>
 	std::list<T*>	removeDuplicates(const std::list<T*>& src, T* elem=0);
+
+	bool	match_nick(const std::string& to_match, const std::string& nick);
 
 } // !namespace ft_irc
 
