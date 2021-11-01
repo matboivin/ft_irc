@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/10/30 19:21:20 by root             ###   ########.fr       */
+/*   Updated: 2021/10/30 19:46:27 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <list>
 # include <map>
 # include <string>
+# include <ctime>
 
 namespace ft_irc
 {
@@ -64,6 +65,7 @@ namespace ft_irc
 			void							exec_test_cmd(Message& msg);
 			void							exec_ping_cmd(Message& msg);
 			void							exec_pong_cmd(Message& msg);
+			void							exec_user_cmd(Message& msg);
 
 		private:
 			std::string						_hostname;
@@ -81,6 +83,9 @@ namespace ft_irc
 			cmds_map						_commands;
 			std::list<Client>				_clients;
 			std::list<Channel>				_channels;
+			std::string						_creation_date;
+			std::string						_version;
+			
 
 			bool							_createSocket();
 			int								_sockGetLine(int sockfd, std::string& line);
@@ -100,6 +105,7 @@ namespace ft_irc
 			/* command response */
 			void							_setResponseRecipients(Message& msg);
 			void							_sendResponse(Message& msg);
+			void							_make_welcome_msg(Message& msg);
 
 			/* Channel operations */
 			Channel&						_addChannel(const std::string& name);

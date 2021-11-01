@@ -57,7 +57,7 @@ VPATH = 			$(SRC_DIR) $(SRC_SUBDIRS)
 
 CPPFLAGS			:= 	-I$(INC_DIR)
 CXX					:= 	clang++
-CXXFLAGS 			:=	-Wall -Wextra -Werror #-std=c++98 -pedantic A REMETTRE PLUS TARD APRES LE MERGE
+CXXFLAGS 			:=	-Wall -Wextra -Werror -g -fsanitize=address #-std=c++98 -pedantic A REMETTRE PLUS TARD APRES LE MERGE
 
 # COLORS
 
@@ -92,7 +92,7 @@ $(OBJ_DIR)/%.o : 	%.cpp
 # LINKING
 
 $(NAME):			$(OBJ_DIR) $(OBJ) $(INC)
-					@$(CXX) $(OBJ) -o $@
+					@$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OBJ) -o $@
 					@echo -e "$(STYLE_BOLD)[link]$(STYLE_RESET) ...linking objects..."
 					@echo -e "$(COL_GREEN_B)[success]$(COL_WHITE_B) $@$(COL_RESET) created in working directory"
 

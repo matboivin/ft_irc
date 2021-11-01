@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/10/30 19:16:41 by root             ###   ########.fr       */
+/*   Updated: 2021/10/30 19:59:14 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 
 # define MAX_COMMAND_SIZE 512
 # define CRLF "\n"
-# define CRLF_PRINTABLE "\n"
+# define CRLF_PRINTABLE "\\n"
 
 namespace ft_irc
 {
@@ -41,7 +41,8 @@ namespace ft_irc
 				   std::string nick="",
 				   std::string realname="",
 				   std::string username="",
-				   std::string password="");
+				   std::string password="",
+				   std::string hostname="");
 
 			Client(const Client& other);
 			Client&	operator=(const Client& other);
@@ -52,6 +53,7 @@ namespace ft_irc
 			std::string					getRealName() const;
 			std::string					getUsername() const;
 			std::string					getPassword() const;
+			std::string					getHostname() const;
 			std::string					getIpAddressStr() const;
 			struct sockaddr_in&			getAddress();
 			socklen_t&					getAddressSize();
@@ -63,12 +65,14 @@ namespace ft_irc
 			void						setRealName(const std::string& realname);
 			void						setUsername(const std::string& username);
 			void						setPassword(const std::string& password);
+			void						setHostname(const std::string& hostname);
 			void						setSocketFd(int socket_fd);
 			void						setJoinedChannels(const std::list<Channel*>& joined_channels);
 			void						joinChannel(Channel& channel);
 			void						partChannel(Channel& channel);
 			void						setAlive(bool alive);
 			void						setConnected(bool connected);
+			void						setRegistered(bool registered);
 
 			/* helpers */
 			bool						isRegistered() const;
@@ -94,6 +98,7 @@ namespace ft_irc
 		private:
 			std::string					_nick;
 			std::string					_realname;
+			std::string					_hostname;
 			std::string					_username;
 			std::string					_mode;
 			std::string					_password;
@@ -109,7 +114,8 @@ namespace ft_irc
 			std::list<Channel*>			_joined_channels;
 			bool						_alive;
 			struct timeval				_keep_alive;		/* keep_alive lenght */
-			struct timeval				_last_event_time;	/* time since last network event */						
+			struct timeval				_last_event_time;	/* time since last network event */
+			bool						_registered;		/* is the client registered? */	
 	};
 }
 
