@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 17:39:47 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 19:05:30 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	setNonblocking(int fd);
 
 namespace ft_irc
 {
-	// constructor
+	/* Constructor */
 	Client::Client(struct sockaddr_in address,
 				   std::string nick,
 				   std::string realname,
@@ -46,7 +46,7 @@ namespace ft_irc
 			throw std::runtime_error("gettimeofday() failed");
 	}
 
-	// copy constructor
+	/* Copy constructor */
 	Client::Client(const Client& other)
 	: _nick(other._nick), _realname(other._realname), _hostname(other._hostname),
 	  _username(other._username),
@@ -65,8 +65,8 @@ namespace ft_irc
 	{
 	}
 
-	// assignment operator
-	Client &Client::operator=(const Client& other)
+	/* Copy assignment operator */
+	Client&	Client::operator=(const Client& other)
 	{
 		if (this != &other)
 		{
@@ -90,12 +90,12 @@ namespace ft_irc
 		return (*this);
 	}
 
-	//destructor
+	/* Destructor */
 	Client::~Client()
 	{
 	}
 
-	// getters
+	/* Getters ****************************************************************** */
 
 	std::string	Client::getNick() const
 	{
@@ -162,12 +162,13 @@ namespace ft_irc
 		{
 			contacts.insert(
 				contacts.end(),
-				(*it)->getClients().begin(), (*it)->getClients().end());
+				(*it)->getClients().begin(), (*it)->getClients().end()
+				);
 		}
 		return (removeDuplicates(contacts, this));
 	}
 
-	// setters
+	/* Setters ****************************************************************** */
 
 	void	Client::setNick(const std::string& nick)
 	{
@@ -228,50 +229,7 @@ namespace ft_irc
 		this->_pinged = pinged;
 	}
 
-	// Channel operations
-
-	void	Client::joinChannel(Channel& channel)
-	{
-		channel.addClient(*this);
-		this->_joined_channels.push_back(&channel);
-	}
-
-	void	Client::partChannel(Channel& channel)
-	{
-		channel.removeClient(*this);
-		this->_joined_channels.remove(&channel);
-	}
-
-	void	Client::partAllChannels()
-	{
-		for (std::list<Channel*>::iterator it = this->_joined_channels.begin();
-			 it != this->_joined_channels.end();
-			 ++it)
-		{
-			(*it)->removeClient(*this);
-		}
-		this->_joined_channels.clear();
-	}
-
-	// Mode operations
-
-	// Add the mode passed as parameter to the client mode string
-	void	Client::addMode(const std::string& mode)
-	{
-		if (this->_mode.find(mode) == std::string::npos)
-			this->_mode.append(mode);
-	}
-
-	// Remove the mode passed as parameter from the client mode string
-	void	Client::removeMode(const std::string& mode)
-	{
-		size_t	pos = this->_mode.find(mode);
-
-		if (pos != std::string::npos)
-			this->_mode.erase(pos, 1);
-	}
-
-	// helpers
+	/* Helpers ****************************************************************** */
 
 	bool	Client::isConnected() const
 	{
@@ -307,17 +265,14 @@ namespace ft_irc
 		return (this->_pinged);
 	}
 
-	void Client::updateLastEventTime()
-	{
-		if (gettimeofday(&this->_last_event_time, NULL))
-			throw std::runtime_error("gettimeofday() failed");
-		this->_pinged = false;
-	}
+	/* Connection handling ****************************************************** */
 
 	int	Client::awaitConnection(int socket_fd)
 	{
-		this->_socket_fd = accept(socket_fd, (struct sockaddr *)&this->_address,
-								 &this->_address_size);
+		this->_socket_fd = accept(socket_fd,
+								  (struct sockaddr *)&this->_address,
+								  &this->_address_size
+								  );
 
 		if (this->_socket_fd == -1)
 			throw std::runtime_error("accept() failed");
@@ -337,6 +292,16 @@ namespace ft_irc
 			throw std::runtime_error("poll() failed");
 		return (ret > 0);
 	}
+
+	/* Resets timeout and pinged */
+	void Client::updateLastEventTime()
+	{
+		if (gettimeofday(&this->_last_event_time, NULL))
+			throw std::runtime_error("gettimeofday() failed");
+		this->_pinged = false;
+	}
+
+	/* Buffer operations ******************************************************** */
 
 	bool	Client::hasUnprocessedCommands()
 	{
@@ -391,8 +356,8 @@ namespace ft_irc
 	int	Client::updateOutBuffer()
 	{
 		int		ret;
-		size_t	size;		
-		
+		size_t	size;
+
 		//write 512 bytes at most and removes them from the out_buffer
 		size = std::min(this->_out_buffer.size(), this->_max_cmd_length);
 		if (!size)
@@ -409,7 +374,53 @@ namespace ft_irc
 		this->_out_buffer += cmd;
 	}
 
-	//friend operator ==
+	/* Channel operations ******************************************************* */
+
+	void	Client::joinChannel(Channel& channel)
+	{
+		channel.addClient(*this);
+		this->_joined_channels.push_back(&channel);
+	}
+
+	void	Client::partChannel(Channel& channel)
+	{
+		channel.removeClient(*this);
+		this->_joined_channels.remove(&channel);
+	}
+
+	/* The client quits all joined channels */
+	void	Client::partAllChannels()
+	{
+		for (std::list<Channel*>::iterator it = this->_joined_channels.begin();
+			 it != this->_joined_channels.end();
+			 ++it)
+		{
+			(*it)->removeClient(*this);
+		}
+		this->_joined_channels.clear();
+	}
+
+	/* Mode operations ********************************************************** */
+
+	/* Adds the mode passed as parameter to the client mode string */
+	void	Client::addMode(const std::string& mode)
+	{
+		if (this->_mode.find(mode) == std::string::npos)
+			this->_mode.append(mode);
+	}
+
+	/* Removes the mode passed as parameter from the client mode string */
+	void	Client::removeMode(const std::string& mode)
+	{
+		size_t	pos = this->_mode.find(mode);
+
+		if (pos != std::string::npos)
+			this->_mode.erase(pos, 1);
+	}
+
+	/* ************************************************************************** */
+
+	/* friend operator == */
 	bool	operator==(const Client& lhs, const Client& rhs)
 	{
 		return ((lhs._socket_fd == rhs._socket_fd && lhs._nick == rhs._nick));

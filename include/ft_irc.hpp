@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/24 11:47:14 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 18:50:01 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,17 +22,17 @@
 # include "Parser.hpp"
 # include "Server.hpp"
 # include "server_operations.hpp"
-# include "UserInterface.hpp"
+//# include "UserInterface.hpp"
 
 void	displayUsage(const char* program_name);
 int		test_parsing();
 
-enum	Status
-{
-		e_admin,
-		e_ircop,
-		e_member
-};
+// enum	Status
+// {
+// 		e_admin,
+// 		e_ircop,
+// 		e_member
+// };
 
 # ifndef nullptr
 #  define nullptr NULL

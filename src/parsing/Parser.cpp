@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/18 18:40:27 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 18:57:37 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,21 +22,19 @@
 
 namespace ft_irc
 {
-	// Parser for IRC protocol messages
-
-	// default constructor
+	/* Default constructor */
 	Parser::Parser()
 	: _start(), _current(), _end()
 	{
 	}
 
-	// copy constructor
+	/* Copy constructor */
 	Parser::Parser(const Parser& other)
 	: _start(other._start), _current(other._current), _end(other._end)
 	{
 	}
 
-	// assignment operator
+	/* Copy assignment operator */
 	Parser&	Parser::operator=(const Parser& other)
 	{
 		if (this != &other)
@@ -48,12 +46,13 @@ namespace ft_irc
 		return (*this);
 	}
 
-	// destructor
+	/* Destructor */
 	Parser::~Parser()
 	{
 	}
 
-	// getters
+	/* Getters ****************************************************************** */
+
 	Parser::t_str_it	Parser::getItStart() const
 	{
 		return (this->_start);
@@ -69,7 +68,8 @@ namespace ft_irc
 		return (this->_end);
 	}
 
-	// setters
+	/* Setters ****************************************************************** */
+
 	void	Parser::setItStart(Parser::t_str_it start)
 	{
 		this->_start = start;
@@ -92,7 +92,9 @@ namespace ft_irc
 		this->setItEnd(str.end());
 	}
 
-	// Checks whether command name is valid
+	/* Helpers ****************************************************************** */
+
+	/* Checks whether command name is valid */
 	bool	Parser::_commandIsValid(Message& msg)
 	{
 		const std::string	cmds = "INVITE JOIN KICK KILL LIST MODE NAMES "
@@ -111,9 +113,7 @@ namespace ft_irc
 		return (false);
 	}
 
-	// parsing helpers
-
-	// If the character is the one expected, advance in the string and returns true
+	/* If the character is the one expected, advance in the string and returns true */
 	bool	Parser::_eat(char expected)
 	{
 		if ((this->_current != this->_end) && (*this->_current == expected))
@@ -124,19 +124,19 @@ namespace ft_irc
 		return (false);
 	}
 
-	// Checks whether the character pointed by it is not a NUL, CR, LF
+	/* Checks whether the character pointed by it is not a NUL, CR, LF */
 	bool	Parser::_nocrlf(Parser::t_str_it it)
 	{
 		return (it != this->_end && *it != '\r' && *it != '\n');
 	}
 
-	// Checks whether the character pointed by it is not a NUL, CR, LF, space or a colon
+	/* Checks whether the character pointed by it is not a NUL, CR, LF, space or a colon */
 	bool	Parser::_nospcrlfcl(Parser::t_str_it it)
 	{
 		return (_nocrlf(it) && *it != ' ' && *it != ':');
 	}
 
-	// Checks whether the string contains the CRLF (carriage return + line feed) separator
+	/* Checks whether the string contains the CRLF (carriage return + line feed) separator */
 	bool	Parser::_parseSeparator()
 	{
 		if (_eat('\r'))
@@ -144,9 +144,11 @@ namespace ft_irc
 		return (false);
 	}
 
-	// Parses the trailing part of a message
-	// It starts by a ':' followed by a possibly empty sequence of octets not including
-	// NUL or CR or LF
+	/*
+	 * Parses the trailing part of a message
+	 * It starts by a ':' followed by a possibly empty sequence of octets not including
+	 * NUL or CR or LF
+	 */
 	void	Parser::_parseTrailing(Message& msg)
 	{
 		while (_nocrlf(this->_current))
@@ -155,9 +157,11 @@ namespace ft_irc
 		msg.setParam(std::string(this->_start, this->_current));;
 	}
 
-	// Parses the middle part of a message
-	// It musn't start by a ':'.
-	// It is a non-empty sequence of octets not including SPACE or NUL or CR or LF.
+	/*
+	 * Parses the middle part of a message
+	 * It musn't start by a ':'.
+	 * It is a non-empty sequence of octets not including SPACE or NUL or CR or LF.
+	 */
 	void	Parser::_parseMiddle(Message& msg)
 	{
 		while ((_nospcrlfcl(this->_current) || (*this->_current == ':')) && (*this->_current != ','))
@@ -165,7 +169,7 @@ namespace ft_irc
 		msg.setParam(std::string(this->_start, this->_current));
 	}
 
-	// Parses the command parameters
+	/* Parses the command parameters */
 	bool	Parser::_parseParams(Message& msg)
 	{
 		// the comma means it's a list of parameters (e.g., <channel>,<channel>)
@@ -180,7 +184,7 @@ namespace ft_irc
 		return (_parseSeparator());
 	}
 
-	// Parses the command name
+	/* Parses the command name */
 	bool	Parser::_parseCommand(Message& msg)
 	{
 		if ((this->_current == this->_end) || !isalpha(*this->_current))
@@ -193,7 +197,7 @@ namespace ft_irc
 		return (true);
 	}
 
-	// Fill response if Message will be forwarded to other clients
+	/* Fill response if Message will be forwarded to other clients */
 	void	Parser::_fillForwardResponse(Message& msg, std::string cmd)
 	{
 		const std::string	cmds = "INVITE JOIN KICK KILL LIST MODE NOTICE OPER "
@@ -223,7 +227,7 @@ namespace ft_irc
 		}
 	}
 
-	// Main parsing function
+	/* Main parsing function */
 	bool	Parser::parseMessage(Message& msg, const std::string& cmd)
 	{
 		setIterators(cmd);

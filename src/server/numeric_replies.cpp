@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/01 18:05:27 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 19:02:29 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -363,7 +363,7 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 	
-	void	err_needmoreparams(Message& msg, std::string error_string)
+	void	err_needmoreparams(Message& msg, const std::string& error_string)
 	{
 		msg.setRecipient(msg.getSender());
 		msg.setResponse(

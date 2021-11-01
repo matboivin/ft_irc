@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:58:53 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/19 15:44:08 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 18:35:47 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,25 +21,25 @@
 
 namespace ft_irc
 {
-	// default constructor
+	/* Default constructor */
 	Channel::Channel()
 	: _name(), _topic(), _mode(), _clients()
 	{
 	}
 
-	// name constructor
+	/* Name constructor */
 	Channel::Channel(const std::string& name)
 	: _name(name), _topic(), _mode(), _clients()
 	{
 	}
 
-	// copy constructor
+	/* Copy constructor */
 	Channel::Channel(const Channel& other)
 	: _name(other._name), _topic(other._topic), _mode(other._mode), _clients(other._clients)
 	{
 	}
 
-	// assignment operator
+	/* Copy assignment operator */
 	Channel&	Channel::operator=(const Channel& other)
 	{
 		if (this != &other)
@@ -52,10 +52,11 @@ namespace ft_irc
 		return (*this);
 	}
 
-	// destructor
+	/* Destructor */
 	Channel::~Channel() {}
 
-	// getters
+	/* Getters ****************************************************************** */
+
 	std::string	Channel::getName() const
 	{
 		return (this->_name);
@@ -76,7 +77,7 @@ namespace ft_irc
 		return (this->_clients);
 	}
 
-	// setters
+	/* Setters ****************************************************************** */
 
 	void	Channel::setName(const std::string& name)
 	{
@@ -100,15 +101,16 @@ namespace ft_irc
 		this->_clients = clients;
 	}
 
-	// helpers
+	/* Helpers ****************************************************************** */
+
 	bool	Channel::isEmpty() const
 	{
 		return (this->_clients.empty());
 	}
 
-	// manage clients in channel
+	/* Manage clients in channel ************************************************ */
 
-	// Find a client using a nickname
+	/* Finds a client using a nickname */
 	std::list<Client*>::iterator	Channel::findClient(Client& client)
 	{
 		std::list<Client*>::iterator	it;
@@ -117,24 +119,26 @@ namespace ft_irc
 		return (it);
 	}
 
-	// Check whether the given client is in the channel
+	/* Checks whether the given client is in the channel */
 	bool	Channel::hasClient(Client& client)
 	{
 		return (this->findClient(client) != this->_clients.end());
 	}
 
-	// Add a client to the channel
+	/* Adds a client to the channel */
 	void	Channel::addClient(Client& client)
 	{
 		this->_clients.push_back(&client);
 	}
 
+	/* Removes a client from the channel */
 	void	Channel::removeClient(Client& client)
 	{
 		this->_clients.remove(&client);
 	}
 
-	// manage topic
+	/* Manage topic ************************************************************* */
+
 	void	Channel::changeTopic(const std::string& topic, Message& msg)
 	{
 		this->setTopic(topic);

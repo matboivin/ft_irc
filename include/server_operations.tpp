@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:35:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/18 19:33:37 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 18:33:08 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,15 +23,15 @@ namespace ft_irc
 	template<typename T>
 	std::list<T*>	removeDuplicates(const std::list<T*>& src, T* elem)
 	{
-		std::list<T*>	lst(src);
+		std::list<T*>	tmp(src);
 
-		lst.sort();
-		lst.unique();
+		tmp.sort();
+		tmp.unique();
 
 		if (elem)
-			lst.remove(elem);
+			tmp.remove(elem);
 
-		return (lst);
+		return (tmp);
 	}
 
 } // !namespace ft_irc

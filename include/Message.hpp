@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:47:11 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/01 17:58:17 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 18:50:54 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,12 @@ namespace ft_irc
 {
 	class Client;
 
-	// Parser for IRC protocol messages
+	/*
+	 * Parser for IRC protocol messages
+	 */
 	class Message
 	{
 	private:
-		// attributes
 		Client&						_sender;
 		std::string					_serv_hostname;
 		std::string					_response;
@@ -36,18 +37,13 @@ namespace ft_irc
 		std::list<Client*>			_recipients;
 
 	public:
-		// default constructor
-					Message(Client& sender);
-		// server hostname constructor
-					Message(Client& sender, const std::string& serv_hostname);
-		// copy constructor
-					Message(const Message& other);
-		// assignment operator
+		Message(Client& sender);
+		Message(Client& sender, const std::string& serv_hostname);
+		Message(const Message& other);
 		Message&	operator=(const Message& other);
-		// destructor
-					~Message();
+		~Message();
 
-		// getters
+		/* Getters and setters */
 		Client&							getSender() const;
 		std::string						getServHostname() const;
 		std::string						getResponse() const;
@@ -55,7 +51,6 @@ namespace ft_irc
 		const std::vector<std::string>&	getParams() const;
 		const std::list<Client*>&		getRecipients() const;
 
-		// setters
 		void	setSender(const Client& sender);
 		void	setServHostname(const std::string& serv_hostname);
 		void	setResponse(const std::string& response);
@@ -65,13 +60,13 @@ namespace ft_irc
 		void	setRecipients(const std::list<Client*>& recipients);
 		void	setRecipient(Client& recipient);
 
-		// clients operations
+		/* Helpers */
+		void	appendSeparator();
+
+		/* Clients operations */
 		void	clearRecipients();
 		void	addRecipients(const std::list<Client*>& recipients);
 		void	setRecipientsFromChannels(const Client& client);
-
-		// end message with CRLF
-		void	appendSeparator();
 
 		// debug
 		void	displayMessage() const;

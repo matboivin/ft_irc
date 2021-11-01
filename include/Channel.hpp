@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:42:14 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/29 18:50:32 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 18:33:35 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ namespace ft_irc
 			Channel&	operator=(const Channel& other);
 			~Channel();
 
-			/* getters and setters */
+			/* Getters and setters */
 			std::string						getName() const;
 			std::string						getTopic() const;
 			std::string						getMode() const;
@@ -41,16 +41,16 @@ namespace ft_irc
 			void							setMode(const std::string& mode);
 			void							setClients(const std::list<Client*>& clients);
 
-			/* helpers */
+			/* Helpers */
 			bool							isEmpty() const;
 
-			/* manage clients in channel */
+			/* Manage clients in channel */
 			std::list<Client*>::iterator	findClient(Client& client);
 			bool							hasClient(Client& client);
 			void							addClient(Client& client);
 			void							removeClient(Client& client);
 
-			// manage topic
+			/* Manage topic */
 			void	changeTopic(const std::string& topic, Message& msg);
 
 			// debug

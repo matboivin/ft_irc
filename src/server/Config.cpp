@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/19 16:47:35 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/24 11:57:39 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 18:49:04 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 namespace ft_irc
 {
-	// default constructor
+	/* Default constructor */
 	Config::Config()
 	: _bind_address("0.0.0.0"),
 	  _port("6667"),
@@ -27,7 +27,7 @@ namespace ft_irc
 		addOperBlock("Pusheen", "SUPERPASS");
 	}
 
-	// copy constructor
+	/* Copy constructor */
 	Config::Config(const Config& other)
 	: _bind_address(other._bind_address),
 	  _port(other._port),
@@ -37,7 +37,7 @@ namespace ft_irc
 	{
 	}
 
-	// constructor
+	/* Constructor */
 	Config::Config(std::string bind_address,
 				   std::string port,
 				   std::string password,
@@ -51,7 +51,7 @@ namespace ft_irc
 		addOperBlock("Pusheen", "SUPERPASS");
 	}
 
-	// assignment operator
+	/* Copy assignment operator */
 	Config&	Config::operator=(const Config& other)
 	{
 		if (this != &other)
@@ -65,12 +65,12 @@ namespace ft_irc
 		return (*this);
 	}
 
-	// destructor
+	/* Destructor */
 	Config::~Config()
 	{
 	}
 
-	// getters
+	/* Getters ****************************************************************** */
 
 	std::string	Config::getBindAddress() const
 	{
@@ -92,7 +92,7 @@ namespace ft_irc
 		return (this->_hostname);
 	}
 
-	// setters
+	/* Setters ****************************************************************** */
 
 	void	Config::setBindAddress(const std::string& bind_address)
 	{
@@ -114,12 +114,15 @@ namespace ft_irc
 		this->_hostname = hostname;
 	}
 
+	/* Oper operations ********************************************************** */
+
+	/* Add an oper block (name,password) */
 	void	Config::addOperBlock(const std::string& name, const std::string& password)
 	{
 		this->_oper_blocks[name] = password;
 	}
 
-	// Checks whether the combination passed as parameter is valid
+	/* Checks whether the combination passed as parameter is valid */
 	bool	Config::operBlockIsValid(const std::string& name, const std::string& password)
 	{
 		t_oper_block::iterator	it = this->_oper_blocks.find(name);

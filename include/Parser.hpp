@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:20:57 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/24 11:22:37 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 18:54:59 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ namespace ft_irc
 	class Parser
 	{
 		private:
+			/* Aliases */
 			typedef std::string::const_iterator	t_str_it;
 
 		public:
@@ -32,7 +33,7 @@ namespace ft_irc
 			Parser&	operator=(const Parser& other);
 			~Parser();
 
-			/* getters and setters */
+			/* Getters and setters */
 			t_str_it	getItStart() const;
 			t_str_it	getItCurrent() const;
 			t_str_it	getItEnd() const;
@@ -42,7 +43,7 @@ namespace ft_irc
 			void		setItEnd(t_str_it end);
 			void		setIterators(const std::string& str);
 
-			/* main parsing function */
+			/* Main parsing function */
 			bool		parseMessage(Message& msg, const std::string& cmd);
 
 		private:
@@ -50,7 +51,7 @@ namespace ft_irc
 			t_str_it	_current;
 			t_str_it	_end;
 
-			/* helpers */
+			/* Helpers */
 			bool		_commandIsValid(Message& msg);
 			bool		_eat(char expected);
 			bool		_nocrlf(t_str_it it);

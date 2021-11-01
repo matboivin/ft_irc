@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:34:20 by root              #+#    #+#             */
-/*   Updated: 2021/10/05 14:54:34 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 18:45:53 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,13 @@
 
 namespace ft_irc
 {
-	// default constructor
+	/* Default constructor */
 	CLIParser::CLIParser()
 	: _argv(), _argc(0), _bind_address(""), _port(""), _password("")
 	{
 		this->_argv = nullptr;
 	}
-	// copy constructor
+	/* Copy constructor */
 	CLIParser::CLIParser(const CLIParser& other)
 	: _argv(), _argc(other._argc),
 	  _bind_address(other._bind_address), _port(other._port),
@@ -32,7 +32,7 @@ namespace ft_irc
 		this->_argv = nullptr;
 	}
 
-	// arg constructor
+	/* Arguments constructor */
 	CLIParser::CLIParser(int argc, char** argv)
 	{
 		if (argc == 2 && std::strcmp(argv[1], "--help") == 0)
@@ -47,7 +47,7 @@ namespace ft_irc
 		parse(argv[1], argv[2], argv[3]);
 	}
 
-	// assignment operator
+	/* Copy assignment operator */
 	CLIParser&	CLIParser::operator=(const CLIParser& other)
 	{
 		if (this != &other)
@@ -60,12 +60,12 @@ namespace ft_irc
 		return (*this);
 	}
 
-	// destructor
+	/* Destructor */
 	CLIParser::~CLIParser()
 	{
 	}
 
-	// getters
+	/* Getters ****************************************************************** */
 
 	std::string	CLIParser::getBindAddress() const
 	{
@@ -82,7 +82,9 @@ namespace ft_irc
 		return (this->_password);
 	}
 
-	// parse the command line arguments
+	/* Parsing ************************************************************** */
+
+	/* Parses the command line arguments */
 	void	CLIParser::parse(const char* bind_address, const char* port,
 							 const char* password)
 	{

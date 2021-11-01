@@ -5,13 +5,14 @@
 
 namespace ft_irc
 {
-	//Parser for command line arguments
-	// • Your executable will be used as follows:
-	// ./ircserv bind_address <port> <password>
+	/*
+	 * Parser for command line arguments
+	 * • Your executable will be used as follows:
+	 * ./ircserv bind_address <port> <password>
+	 */
 	class CLIParser
 	{
 	private:
-		// attributes
 		char**		_argv;
 		int			_argc;
 		std::string	_bind_address;
@@ -19,25 +20,19 @@ namespace ft_irc
 		std::string	_password;
 
 	public:
-		// default constructor
-					CLIParser();
-		// copy constructor
-					CLIParser(const CLIParser& other);
-		// arg constructor
-					CLIParser(int argc, char** argv);
-		// assignment operator
+		CLIParser();
+		CLIParser(const CLIParser& other);
+		CLIParser(int argc, char** argv);
 		CLIParser&	operator=(const CLIParser& other);
-		// destructor
-					~CLIParser();
+		~CLIParser();
 
-		// getters
+		/* Getters */
 		std::string	getBindAddress() const;
 		std::string	getPort() const;
 		std::string	getPassword() const;
 
-		//parse the command line arguments
-		void		parse(const char* bind_address, const char* port,
-						  const char* password);
+		/* Parses the command line arguments */
+		void	parse(const char* bind_address, const char* port, const char* password);
 	};
 } // namespace ft_irc
 

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 16:03:21 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/05 14:52:37 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 19:07:48 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	displayUsage(const char* program_name)
 }
 
 //taken from http://www.kegel.com/dkftpbench/nonblocking.html
-int setNonblocking(int fd)
+int	setNonblocking(int fd)
 {
 	int	flags;
 

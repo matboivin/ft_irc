@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 18:17:33 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 19:03:42 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ namespace ft_irc
 	class Server
 	{
 		public:
+			/* Aliases */
 			typedef void (Server::*cmd_fun)(Message& msg);
 			typedef std::map<std::string, cmd_fun>	t_cmds;
 
