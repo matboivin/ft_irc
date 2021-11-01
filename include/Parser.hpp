@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:20:57 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/01 18:54:59 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 19:11:36 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,10 @@ namespace ft_irc
 	class Client;
 	class Message;
 
-	/* Parser for IRC protocol messages */
+	/*
+	 * Parser for IRC protocol messages
+	 * Attribute of the Server
+	 */
 	class Parser
 	{
 		private:

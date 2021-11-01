@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/01 19:01:11 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 19:20:49 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ namespace ft_irc
 	{
 	}
 
-	/* Name constructor */
+	/* Server hostname constructor */
 	Message::Message(Client& sender, const std::string& serv_hostname)
 	: _sender(sender),
 	  _serv_hostname(serv_hostname),
@@ -144,8 +144,12 @@ namespace ft_irc
 
 	void	Message::setRecipient(Client& recipient)
 	{
+		std::list<Client*>::const_iterator	found;
+
 		/* Checks if the recipient is already in the list */
-		if (std::find(this->_recipients.begin(), this->_recipients.end(), &recipient) == this->_recipients.end())
+		found = std::find(this->_recipients.begin(), this->_recipients.end(), &recipient);
+
+		if (found == this->_recipients.end())
 			this->_recipients.push_back(&recipient);
 	}
 
@@ -172,20 +176,6 @@ namespace ft_irc
 	void	Message::addRecipients(const std::list<Client*>& recipients)
 	{
 		this->_recipients.insert(this->_recipients.end(), recipients.begin(), recipients.end());
-	}
-
-	/* Gets clients from all the channels joined by a given client */
-	void	Message::setRecipientsFromChannels(const Client& client)
-	{
-		const std::list<Channel*>	channels = client.getJoinedChannels();
-
-		for (std::list<Channel*>::const_iterator channel = channels.begin();
-			 channel != channels.end();
-			 ++channel)
-		{
-			this->addRecipients((*channel)->getClients());
-		}
-		// TODO: remove duplicates
 	}
 
 	/* ************************************************************************** */

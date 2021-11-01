@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 19:03:42 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 19:12:53 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ namespace ft_irc
 
 			Server(CLIParser& CLI_parser, int backlog_max=5);
 			Server(const Server& other);
-			Server&		operator=(const Server& other);
+			Server&	operator=(const Server& other);
 			~Server();
 
 			/* Getters and setters */
@@ -121,7 +121,8 @@ namespace ft_irc
 			void							_removeUserFromAllChannels(Client& client, Message& msg);
 
 			/* Oper operations */
-			bool							_giveOperPriv(const std::string& name, const std::string& password);
+			bool							_giveOperPriv(const std::string& name,
+														  const std::string& password);
 
 			/* debug */
 			int								_sendList(Client& client);

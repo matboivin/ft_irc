@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:47:11 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/01 18:50:54 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 19:20:43 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,6 @@ namespace ft_irc
 		/* Clients operations */
 		void	clearRecipients();
 		void	addRecipients(const std::list<Client*>& recipients);
-		void	setRecipientsFromChannels(const Client& client);
 
 		// debug
 		void	displayMessage() const;

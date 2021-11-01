@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/19 16:41:45 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/01 18:47:09 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 19:11:01 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,14 @@ namespace ft_irc
 	class Message;
 
 	/*
-	 * Config for IRC server
+	 * Configuration for IRC server
+	 * Attribute of the Server
 	 */
 	class Config
 	{
 	public:
 		/* Aliases */
-		typedef std::map<std::string, std::string>	t_oper_block; // <name,password>
+		typedef std::map<std::string, std::string>	t_oper_block;
 
 	private:
 		std::string		_bind_address;

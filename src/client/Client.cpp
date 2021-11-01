@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 19:05:30 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 19:14:36 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,13 @@ namespace ft_irc
 	  _mode(),
 	  _password(password),
 	  _address(address),
-	  _address_size(sizeof(address)), _address_str(inet_ntoa(address.sin_addr)),
-	  _timeout(), _socket_fd(-1),
+	  _address_size(sizeof(address)),
+	  _address_str(inet_ntoa(address.sin_addr)),
+	  _timeout(),
+	  _socket_fd(-1),
 	  _connected(false),
-	  _in_buffer(), _out_buffer(),
+	  _in_buffer(),
+	  _out_buffer(),
 	  _max_cmd_length(512),
 	  _joined_channels(),
 	  _alive(true),
@@ -42,6 +45,7 @@ namespace ft_irc
 	{
 		this->_timeout = (struct timeval){.tv_sec = 0, .tv_usec = 50};
 		this->_keep_alive = (struct timeval){.tv_sec = 30, .tv_usec = 0};
+
 		if (gettimeofday(&this->_last_event_time, NULL))
 			throw std::runtime_error("gettimeofday() failed");
 	}
@@ -53,14 +57,18 @@ namespace ft_irc
 	  _mode(other._mode),
 	  _password(other._password),
 	  _address(other._address),
-	  _address_size(other._address_size), _address_str(other._address_str),
-	  _timeout(other._timeout), _socket_fd(other._socket_fd),
+	  _address_size(other._address_size),
+	  _address_str(other._address_str),
+	  _timeout(other._timeout),
+	  _socket_fd(other._socket_fd),
 	  _connected(other._connected),
-	  _in_buffer(other._in_buffer), _out_buffer(other._out_buffer),
+	  _in_buffer(other._in_buffer),
+	  _out_buffer(other._out_buffer),
 	  _max_cmd_length(other._max_cmd_length),
 	  _joined_channels(other._joined_channels),
 	  _alive(other._alive),
-	  _keep_alive(other._keep_alive), _last_event_time(other._last_event_time),
+	  _keep_alive(other._keep_alive),
+	  _last_event_time(other._last_event_time),
 	  _registered(other._registered)
 	{
 	}
@@ -282,7 +290,7 @@ namespace ft_irc
 		return (this->_socket_fd);
 	}
 
-	//poll
+	/* poll */
 	bool	Client::hasNewEvents()
 	{
 		struct pollfd	poll_fd = {.fd = this->_socket_fd, .events = POLLIN};
@@ -317,7 +325,7 @@ namespace ft_irc
 		return (cmd);
 	}
 
-	//reads 512 bytes from the socket if there is data to read
+	/* Reads 512 bytes from the socket if there is data to read */
 	int	Client::updateInBuffer()
 	{
 		char					bytes_buffer[MAX_COMMAND_SIZE];
@@ -388,7 +396,7 @@ namespace ft_irc
 		this->_joined_channels.remove(&channel);
 	}
 
-	/* The client quits all joined channels */
+	/* The client quits all channels they joined */
 	void	Client::partAllChannels()
 	{
 		for (std::list<Channel*>::iterator it = this->_joined_channels.begin();
