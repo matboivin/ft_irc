@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 18:11:48 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 18:32:25 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int	setNonblocking(int fd);
 
 namespace ft_irc
 {
-	// constructor
+	/* Constructor */
 	Server::Server(CLIParser& CLI_parser, int backlog_max)
 	: _sockfd(-1),
 	  _backlog_max(backlog_max),
@@ -63,7 +63,7 @@ namespace ft_irc
 		_init_commands_map();
 	}
 
-	// copy constructor
+	/* Copy constructor */
 	Server::Server(const Server& other)
 	: _sockfd(other._sockfd),
 	  _backlog_max(other._backlog_max),
@@ -78,7 +78,7 @@ namespace ft_irc
 	{
 	}
 
-	// assignment operator
+	/* Copy assignment operator */
 	Server&	Server::operator=(const Server& other)
 	{
 		if (this != &other)
@@ -97,13 +97,13 @@ namespace ft_irc
 		return (*this);
 	}
 
-	// destructor
+	/* Destructor */
 	Server::~Server()
 	{
 		this->_shutdown();
 	}
 
-	// getters
+	/* Getters ****************************************************************** */
 
 	std::string	Server::getHostname() const
 	{
@@ -174,7 +174,8 @@ namespace ft_irc
 		return (it);
 	}
 
-	// main loop
+	/* Main loop **************************************************************** */
+
 	int	Server::run()
 	{
 		if (_createSocket() == false)
@@ -190,6 +191,22 @@ namespace ft_irc
 			_processClients();
 		}
 	}
+
+	/* Shutting down server ***************************************************** */
+
+	void	Server::_shutdown()
+	{
+		std::list<Client>::iterator	it = this->_clients.begin();
+
+		std::cout << "Shutting down server" << std::endl;
+		while (it != this->_clients.end())
+		{
+			this->_disconnectClient(*it);
+			it = this->_clients.erase(it);
+		}
+	}
+
+	/* Connections handling ***************************************************** */
 
 	//Function to create a socket.
 	//create a new listening tcp s	ocket and bind it to the given address and port
@@ -232,7 +249,7 @@ namespace ft_irc
 		return (true);
 	}
 
-	// accepts a new connection
+	/* Accepts a new connection */
 	bool	Server::_awaitNewConnection()
 	{
 		Client	new_client;
@@ -249,7 +266,7 @@ namespace ft_irc
 		return (true);
 	}
 
-	// Check if there are pending connections. (poll)
+	/* Checks if there are pending connections. (poll) */
 	bool	Server::_hasPendingConnections()
 	{
 		struct pollfd	poll_fd = {this->_sockfd, POLLIN, 0};
@@ -264,7 +281,7 @@ namespace ft_irc
 			return (false);
 		return (true);
 	}
-	
+
 	bool	Server::_processClientCommand(Client& client)
 	{
 		if (client.hasUnprocessedCommands() == true)
@@ -296,7 +313,7 @@ namespace ft_irc
 		return (false);
 	}
 
-	// process all clients
+	/* Process all clients */
 	bool	Server::_processClients()
 	{
 		for (std::list<Client>::iterator it = this->_clients.begin();
@@ -364,13 +381,16 @@ namespace ft_irc
 		return (0);
 	}
 
-	// Call Parser method to process a message
+	/* Parsing ************************************************************** */
+
 	bool	Server::_parse(Message& msg, const std::string& cmd)
 	{
 		return (this->_parser.parseMessage(msg, cmd));
 	}
 
-	// Init the map containing the commands
+	/* Commands execution *************************************************** */
+
+	/* Inits the map containing the commands */
 	void	Server::_init_commands_map()
 	{
 		this->_commands["JOIN"]		= &Server::exec_join_cmd;
@@ -391,7 +411,7 @@ namespace ft_irc
 		this->_commands["TEST"]		= &Server::exec_test_cmd;
 	}
 
-	// Command execution
+	/* Execute a command */
 	int	Server::_executeCommand(Message& msg)
 	{
 		t_cmds::const_iterator	it = this->_commands.find(msg.getCommand());
@@ -404,7 +424,9 @@ namespace ft_irc
 		return (0);
 	}
 
-	// Set response dst (channels or clients)
+	/* Command response ********************************************************* */
+
+	/* Sets response recipient(s) (channels or clients) */
 	void	Server::_setResponseRecipients(Message& msg)
 	{
 		std::cout << __LINE__ << std::endl;
@@ -426,7 +448,7 @@ namespace ft_irc
 			msg.setRecipients(channel->getClients());
 	}
 
-	// send response
+	/* Sends response */
 	void	Server::_sendResponse(Message& msg)
 	{
 		if (msg.getRecipients().empty())
@@ -452,28 +474,29 @@ namespace ft_irc
 		}
 	}
 
+	/* Sends a nice welcome message */
 	void	Server::_make_welcome_msg(Message& msg)
 	{
 		rpl_welcome(msg);
 		rpl_yourhost(msg, this->_version);
 	}
 
-	// Channel operations
+	/* Channel operations ******************************************************* */
 
-	// Add a new channel to the server's list
+	/* Adds a new channel to the server's list */
 	Channel&	Server::_addChannel(const std::string& name)
 	{
 		this->_channels.push_back(Channel(name));
 		return (this->_channels.back());
 	}
 
-	// Remove a channel from the server's list
+	/* Removes a channel from the server's list */
 	void	Server::_removeChannel(std::list<Channel>::iterator channel)
 	{
 		this->_channels.erase(channel);
 	}
 
-	// Check whether a client is in a specific channel
+	/* Checks whether a client is in a specific channel */
 	bool	Server::_userOnChannel(Client& client, Channel& channel)
 	{
 		return (channel.hasClient(client)); 
@@ -488,7 +511,7 @@ namespace ft_irc
 		return (false);
 	}
 
-	// Add a user to a channel (ex: JOIN command)
+	/* Adds a user to a channel */
 	void	Server::_addUserToChannel(Client& client, Channel& channel)
 	{
 		if (!_userOnChannel(client, channel))
@@ -502,7 +525,7 @@ namespace ft_irc
 		}
 	}
 
-	// Remove user from channel
+	/* Removes user from channel */
 	void	Server::_removeUserFromChannel(Client& client, Channel& channel)
 	{
 		if (_userOnChannel(client, channel))
@@ -516,6 +539,7 @@ namespace ft_irc
 		}
 	}
 
+	/* Removes a user from all joined channels */
 	void	Server::_removeUserFromAllChannels(Client& client, Message& msg)
 	{
 		msg.setRecipients(client.getAllContacts());
@@ -525,16 +549,19 @@ namespace ft_irc
 		std::cout << std::endl;
 	}
 
-	// oper operations
+	/* Oper operations ********************************************************** */
+
 	bool	Server::_giveOperPriv(const std::string& name, const std::string& password)
 	{
 		return (this->_config.operBlockIsValid(name, password));
 	}
 
-	// Commands
+	/* Commands ***************************************************************** */
 
-	// JOIN <channels>
-	// JOIN 0 -> leave all channels
+	/*
+	 * JOIN <channels>
+	 * JOIN 0: leave all channels
+	 */
 	void	Server::exec_join_cmd(Message& msg)
 	{
 		if (msg.getParams().empty())
@@ -562,8 +589,10 @@ namespace ft_irc
 		}
 	}
 
-	// NICK <nickname>
-	// Change a user nickname
+	/*
+	 * NICK <nickname>
+	 * Change a user nickname
+	 */
 	void	Server::exec_nick_cmd(Message& msg)
 	{
 		if (msg.getParams().empty())
@@ -579,9 +608,11 @@ namespace ft_irc
 		}
 	}
 
-	// NOTICE <msgtarget> :<message>
-	// Send messages to a user or a channel
-	// The server musn't reply to NOTICE message
+	/*
+	 * NOTICE <msgtarget> :<message>
+	 * Send messages to a user or a channel
+	 * The server musn't reply to NOTICE message
+	 */
 	void	Server::exec_notice_cmd(Message& msg)
 	{
 		if (msg.getParams().size() < 2) // params are mandatory
@@ -590,9 +621,11 @@ namespace ft_irc
 			_setResponseRecipients(msg);
 	}
 
-	// OPER <username> <password>
-	// Authenticates a user as an IRC operator if the username/password combination exists
-	// for that server
+	/*
+	 * OPER <username> <password>
+	 * Authenticates a user as an IRC operator if the username/password combination exists
+	 * for that server
+	 */
 	void	Server::exec_oper_cmd(Message& msg)
 	{
 		if (msg.getParams().size() < 2)
@@ -616,7 +649,10 @@ namespace ft_irc
 		}
 	}
 
-	// PART <channels> [<message>]
+	/*
+	 * PART <channels> [<message>]
+	 * The client quits the channel(s)
+	 */
 	void	Server::exec_part_cmd(Message& msg)
 	{
 		if (msg.getParams().empty())
@@ -647,8 +683,10 @@ namespace ft_irc
 		}
 	}
 
-	// PASS <password>
-	// set a connection password
+	/*
+	 * PASS <password>
+	 * set a connection password
+	 */
 	void	Server::exec_pass_cmd(Message& msg)
 	{
 		if (msg.getParams().empty())
@@ -659,6 +697,9 @@ namespace ft_irc
 			msg.getSender().setPassword(msg.getParams().at(0));
 	}
 
+	/*
+	 * PING <server1>
+	 */
 	void	Server::exec_ping_cmd(Message& msg)
 	{
 		std::string	origin;
@@ -678,6 +719,9 @@ namespace ft_irc
 		}
 	}
 
+	/*
+	 * PONG <server1>
+	 */
 	void	Server::exec_pong_cmd(Message& msg)
 	{
 		std::string origin;
@@ -692,8 +736,10 @@ namespace ft_irc
 		}
 	}
 
-	// PRIVMSG <msgtarget> :<message>
-	// Send messages to a user or a channel
+	/*
+	 * PRIVMSG <msgtarget> :<message>
+	 * Send messages to a user or a channel
+	 */
 	void	Server::exec_privmsg_cmd(Message& msg)
 	{
 		if (msg.getParams().empty())
@@ -708,16 +754,22 @@ namespace ft_irc
 			_setResponseRecipients(msg);
 	}
 
-	// QUIT [<message>]
-	// A client session is terminated with a quit message
+	/*
+	 * QUIT [<message>]
+	 * A client session is terminated with a quit message
+	 */
 	void	Server::exec_quit_cmd(Message& msg)
 	{
+		// TODO: default message
 		msg.setRecipients(msg.getSender().getAllContacts());
 		msg.getSender().setAlive(false);
 		// TODO: The server acknowledges this by sending an ERROR message to the client
 	}
 
-	// TOPIC <channel> [ <topic> ]
+	/*
+	 * TOPIC <channel> [ <topic> ]
+	 * Changes or displays the topic of a channel
+	 */
 	void	Server::exec_topic_cmd(Message& msg)
 	{
 		if (msg.getParams().empty())
@@ -740,6 +792,9 @@ namespace ft_irc
 			rpl_topic(msg, *channel);
 	}
 
+	/*
+	 * USER <user> <mode> <unused> <realname>
+	 */
 	void	Server::exec_user_cmd(Message& msg)
 	{
 		std::string	username;
@@ -761,7 +816,9 @@ namespace ft_irc
 		}
 	}
 
-	//WHO
+	/*
+	 * WHO [ "o" ]
+	 */
 	void	Server::exec_who_cmd(Message& msg)
 	{
 		bool			oper_only = false;
@@ -811,8 +868,10 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 	}
 
-	//WHOIS command implementation
-	//https://datatracker.ietf.org/doc/html/rfc1459#section-4.5.2
+	/*
+	 * WHOIS [target]
+	 * https://datatracker.ietf.org/doc/html/rfc1459#section-4.5.2
+	*/
 	void	Server::exec_whois_cmd(Message& msg)
 	{
 		std::string	to_match = "0";
@@ -856,6 +915,8 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 	}
 
+	/* ************************************************************************** */
+
 	// debug
 	void	Server::exec_test_cmd(Message& msg)
 	{
@@ -869,7 +930,6 @@ namespace ft_irc
 		}
 	}
 
-	// debug
 	int	Server::_sendList(Client& client)
 	{
 		for (std::list<Client>::iterator it = this->_clients.begin();
@@ -908,17 +968,5 @@ namespace ft_irc
 			throw std::runtime_error("send() failed");
 		}
 		return (0);
-	}
-
-	void	Server::_shutdown()
-	{
-		std::list<Client>::iterator it = this->_clients.begin();
-
-		std::cout << "Shutting down server" << std::endl;
-		while (it != this->_clients.end())
-		{
-			this->_disconnectClient(*it);
-			it = this->_clients.erase(it);
-		}
 	}
 }

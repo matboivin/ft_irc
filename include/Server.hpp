@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 18:10:42 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 18:17:33 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ namespace ft_irc
 			Server&		operator=(const Server& other);
 			~Server();
 
-			/* getters and setters */
+			/* Getters and setters */
 			std::string						getHostname() const;
 			std::string						getBindAddress() const;
 			std::string						getPort() const;
@@ -50,7 +50,7 @@ namespace ft_irc
 			std::list<Client>::iterator		getClient(const std::string& nick);
 			std::list<Channel>::iterator	getChannel(const std::string& chan_name);
 
-			/* main loop */
+			/* Main loop */
 			int								run();
 
 			/* Commands */
@@ -71,21 +71,22 @@ namespace ft_irc
 			void							exec_test_cmd(Message& msg); // debug
 
 		private:
-			/* Structure describing an Internet socket address. */
-			struct sockaddr_in				_address;
-
-			/* Socket descriptor. */
-			int								_sockfd;
+			struct sockaddr_in				_address; /* Structure describing an Internet socket address. */
+			int								_sockfd; /* Socket descriptor. */
 			int								_backlog_max;
 			std::string						_creation_date;
 			std::string						_version;
 			std::string						_description;
-			Config							_config; // holds all config
+			Config							_config; /* Holds all config */
 			Parser							_parser;
 			t_cmds							_commands;
 			std::list<Client>				_clients;
 			std::list<Channel>				_channels;
 
+			/* Cleaning */
+			void							_shutdown();
+
+			/* Connections handling */
 			bool							_createSocket();
 			int								_sockGetLine(int sockfd, std::string& line);
 			int								_sockGetLine(int sockfd, std::string& line, std::size_t max_bytes);
@@ -95,14 +96,15 @@ namespace ft_irc
 			int								_disconnectClient(Client& client);
 			int								_ping_client(Client& client);
 
+			/* Parsing */
 			bool							_parse(Message& msg, const std::string& cmd);
 
-			/* commands execution */
+			/* Commands execution */
 			void							_init_commands_map();
 			int								_executeCommand(Message& msg);
 			bool							_processClientCommand(Client& client);
 
-			/* command response */
+			/* Command response */
 			void							_setResponseRecipients(Message& msg);
 			void							_sendResponse(Message& msg);
 			void							_make_welcome_msg(Message& msg);
@@ -123,9 +125,6 @@ namespace ft_irc
 			/* debug */
 			int								_sendList(Client& client);
 			int								_sendError(Client& client, const std::string& error);
-
-			/* cleaning */
-			void							_shutdown();
 		};
 }
 
