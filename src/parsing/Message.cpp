@@ -3,17 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   Message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/27 21:39:57 by root             ###   ########.fr       */
+/*   Updated: 2021/11/01 17:06:10 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
 #include <list>
 #include <string>
+#include <vector>
 #include "Client.hpp"
+#include "Channel.hpp"
 #include "Message.hpp"
 #include <algorithm>
 
@@ -80,7 +82,7 @@ namespace ft_irc
 		return (this->_command);
 	}
 
-	const std::list<std::string>&	Message::getParams() const
+	const std::vector<std::string>&	Message::getParams() const
 	{
 		return (this->_params);
 	}
@@ -130,9 +132,28 @@ namespace ft_irc
 			this->_recipients.push_back(&recipient);
 	}
 
+	void	Message::clearRecipients()
+	{
+		this->_recipients.clear();
+	}
+
 	void	Message::addRecipients(const std::list<Client*>& recipients)
 	{
 		this->_recipients.insert(this->_recipients.end(), recipients.begin(), recipients.end());
+	}
+
+	// Get clients from all the channels joined by a given client
+	void	Message::setRecipientsFromChannels(const Client& client)
+	{
+		const std::list<Channel*>	channels = client.getJoinedChannels();
+
+		for (std::list<Channel*>::const_iterator channel = channels.begin();
+			 channel != channels.end();
+			 ++channel)
+		{
+			this->addRecipients((*channel)->getClients());
+		}
+		// TODO: remove duplicates
 	}
 
 	// end message with CRLF
@@ -147,7 +168,7 @@ namespace ft_irc
 		std::cout << "command:  " << getCommand() << '\n'
 				  << "params:   ";
 
-		for (std::list<std::string>::const_iterator it = this->_params.begin();
+		for (std::vector<std::string>::const_iterator it = this->_params.begin();
 			 it != this->_params.end();
 			 ++it)
 		{

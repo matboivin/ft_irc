@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 15:03:16 by root             ###   ########.fr       */
+/*   Updated: 2021/11/01 17:11:11 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <string>
 #include "Channel.hpp"
 #include "Client.hpp"
+#include "server_operations.hpp"
 
 int	setNonblocking(int fd);
 
@@ -151,6 +152,21 @@ namespace ft_irc
 		return (this->_last_event_time);
 	}
 
+	std::list<Client*>	Client::getAllContacts()
+	{
+		std::list<Client*>	contacts;
+
+		for (std::list<Channel*>::iterator it = this->_joined_channels.begin();
+			 it != this->_joined_channels.end();
+			 ++it)
+		{
+			contacts.insert(
+				contacts.end(),
+				(*it)->getClients().begin(), (*it)->getClients().end());
+		}
+		return (removeDuplicates(contacts, this));
+	}
+
 	// setters
 
 	void	Client::setNick(const std::string& nick)
@@ -163,6 +179,12 @@ namespace ft_irc
 	{
 		std::cout << "Real Name: " << realname << std::endl;
 		this->_realname = realname;
+	}
+
+	void	Client::setHostname(const std::string& hostname)
+	{
+		std::cout << "Hostname: " << hostname << std::endl;
+		this->_hostname = hostname;
 	}
 
 	void	Client::setUsername(const std::string& username)
@@ -186,41 +208,77 @@ namespace ft_irc
 		this->_joined_channels = joined_channels;
 	}
 
+	void	Client::setConnected(bool connected)
+	{
+		this->_connected = connected;
+	}
+
+	void	Client::setAlive(bool alive)
+	{
+		this->_alive = alive;
+	}
+
+	void	Client::setRegistered(bool registered)
+	{
+		this->_registered = registered;
+	}
+
+	void	Client::setPinged(bool pinged)
+	{
+		this->_pinged = pinged;
+	}
+
+	// Channel operations
+
 	void	Client::joinChannel(Channel& channel)
 	{
+		channel.addClient(*this);
 		this->_joined_channels.push_back(&channel);
 	}
 
 	void	Client::partChannel(Channel& channel)
 	{
+		channel.removeClient(*this);
 		this->_joined_channels.remove(&channel);
 	}
 
-	void Client::setAlive(bool alive)
+	void	Client::partAllChannels()
 	{
-		this->_alive = alive;
+		for (std::list<Channel*>::iterator it = this->_joined_channels.begin();
+			 it != this->_joined_channels.end();
+			 ++it)
+		{
+			(*it)->removeClient(*this);
+		}
+		this->_joined_channels.clear();
 	}
 
-	void Client::setConnected(bool connected)
+	// Mode operations
+
+	// Add the mode passed as parameter to the client mode string
+	void	Client::addMode(const std::string& mode)
 	{
-		this->_connected = connected;
+		if (this->_mode.find(mode) == std::string::npos)
+			this->_mode.append(mode);
 	}
 
-	void Client::setRegistered(bool registered)
+	// Remove the mode passed as parameter from the client mode string
+	void	Client::removeMode(const std::string& mode)
 	{
-		this->_registered = registered;
-	}
+		size_t	pos = this->_mode.find(mode);
 
-	void Client::setHostname(const std::string& hostname)
-	{
-		std::cout << "Hostname: " << hostname << std::endl;
-		this->_hostname = hostname;
+		if (pos != std::string::npos)
+			this->_mode.erase(pos, 1);
 	}
 
 	// helpers
 
+	bool	Client::isConnected() const
+	{
+		return (this->_socket_fd != -1);
+	}
 
-	bool Client::isAlive() const
+	bool	Client::isAlive() const
 	{
 		return (this->_alive);
 	}
@@ -228,11 +286,6 @@ namespace ft_irc
 	bool	Client::isRegistered() const
 	{
 		return (this->_registered);
-	}
-
-	bool	Client::isConnected() const
-	{
-		return (this->_socket_fd != -1);
 	}
 
 	bool	Client::isTimeouted() const
@@ -245,18 +298,13 @@ namespace ft_irc
 	//placeholder
 	bool	Client::isOper() const
 	{
-		return (this->_nick.find("@") != std::string::npos);
+		return (this->_mode.find("o") != std::string::npos);
 	}
 
 	//isPinged()
 	bool	Client::isPinged() const
 	{
 		return (this->_pinged);
-	}
-
-	void	Client::setPinged(bool pinged)
-	{
-		this->_pinged = pinged;
 	}
 
 	void Client::updateLastEventTime()
@@ -370,6 +418,12 @@ namespace ft_irc
 	// debug
 	void	Client::displayJoinedChannels()
 	{
+		if (this->_joined_channels.empty())
+		{
+			std::cout << this->getNick() << " parted all channels.\n";
+			return ;
+		}
+
 		std::cout << this->getNick() << " joined channels:\n";
 
 		for (std::list<Channel*>::iterator	it = this->_joined_channels.begin();

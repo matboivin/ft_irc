@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 14:38:11 by root             ###   ########.fr       */
+/*   Updated: 2021/11/01 17:05:39 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ namespace ft_irc
 			int							getSocketFd() const;
 			const std::list<Channel*>&	getJoinedChannels() const;
 			struct timeval&				getLastEventTime();
+			std::list<Client*>			getAllContacts();
 
 			void						setNick(const std::string& nick);
 			void						setRealName(const std::string& realname);
@@ -68,27 +69,35 @@ namespace ft_irc
 			void						setHostname(const std::string& hostname);
 			void						setSocketFd(int socket_fd);
 			void						setJoinedChannels(const std::list<Channel*>& joined_channels);
-			void						joinChannel(Channel& channel);
-			void						partChannel(Channel& channel);
-			void						setAlive(bool alive);
 			void						setConnected(bool connected);
+			void						setAlive(bool alive);
 			void						setRegistered(bool registered);
 			void						setPinged(bool pinged);
 
+			/* Channel operations */
+			void						joinChannel(Channel& channel);
+			void						partChannel(Channel& channel);
+			void						partAllChannels();
+
+			/* Mode operations */
+			void						addMode(const std::string& mode);
+			void						removeMode(const std::string& mode);
+
 			/* helpers */
-			bool						isRegistered() const;
 			bool						isConnected() const;
+			bool						isAlive() const;
+			bool						isRegistered() const;
+			bool						isTimeouted() const;
+			bool						isOper() const;
 			bool						isPinged() const;
+
 			int							awaitConnection(int socket_fd);
 			bool						hasNewEvents();
 			bool						hasUnprocessedCommands();
 			std::string					popUnprocessedCommand();
 			int							updateInBuffer();
 			int							updateOutBuffer();
-			bool						isAlive() const;
-			bool						isTimeouted() const;
 			void						updateLastEventTime();	/* resets timeout and pinged */
-			bool						isOper() const;
 
 			/* add response to the output buffer */
 			void						sendCommand(std::string cmd);

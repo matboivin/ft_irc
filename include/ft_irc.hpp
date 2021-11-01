@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/18 15:50:08 by mbenjell         ###   ########.fr       */
+/*   Updated: 2021/10/24 11:47:14 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include "Channel.hpp"
 # include "Client.hpp"
 # include "CLIParser.hpp"
+# include "Config.hpp"
 # include "Message.hpp"
 # include "numeric_replies.hpp"
 # include "Parser.hpp"

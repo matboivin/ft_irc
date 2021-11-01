@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:21 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/23 16:17:26 by root             ###   ########.fr       */
+/*   Updated: 2021/10/24 11:47:01 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,7 @@ int	main(int argc, char** argv)
 		ft_irc::CLIParser CLI_parser(argc, argv);
 		try
 		{
-			ft_irc::Server server(CLI_parser.getBindAddress(),
-			CLI_parser.getPort(), CLI_parser.getPassword());
+			ft_irc::Server server(CLI_parser);
 			server.run();
 		}
 		catch (std::runtime_error &e)

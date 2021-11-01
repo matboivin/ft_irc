@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:47:11 by mboivin           #+#    #+#             */
-/*   Updated: 2021/10/08 17:01:14 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 15:54:05 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <list>
 # include <string>
+# include <vector>
 
 # define MSG_MAX_PARAMS 15
 
@@ -27,12 +28,12 @@ namespace ft_irc
 	{
 	private:
 		// attributes
-		Client&					_sender;
-		std::string				_serv_hostname;
-		std::string				_response;
-		std::string				_command;
-		std::list<std::string>	_params;
-		std::list<Client*>		_recipients;
+		Client&						_sender;
+		std::string					_serv_hostname;
+		std::string					_response;
+		std::string					_command;
+		std::vector<std::string>	_params;
+		std::list<Client*>			_recipients;
 
 	public:
 		// default constructor
@@ -51,7 +52,7 @@ namespace ft_irc
 		std::string						getServHostname() const;
 		std::string						getResponse() const;
 		std::string						getCommand() const;
-		const std::list<std::string>&	getParams() const;
+		const std::vector<std::string>&	getParams() const;
 		const std::list<Client*>&		getRecipients() const;
 
 		// setters
@@ -62,8 +63,10 @@ namespace ft_irc
 		void	setParam(const std::string& param);
 		void	setRecipients(const std::list<Client*>& recipients);
 		void	setRecipient(Client& recipient);
+		void	clearRecipients();
 
 		void	addRecipients(const std::list<Client*>& recipients);
+		void	setRecipientsFromChannels(const Client& client);
 
 		// end message with CRLF
 		void	appendSeparator();
