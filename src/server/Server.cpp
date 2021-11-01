@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 17:59:50 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 18:09:37 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,27 +53,28 @@ namespace ft_irc
 		this->_address.sin_port = htons(atoi(getPort().c_str()));
 		this->_address.sin_addr.s_addr = inet_addr(getBindAddress().c_str());
 
-		// init map of commands
-		_init_commands_map();
 		//init creation date string
 		time_t now = time(0);
 		_creation_date = ctime(&now);
 		_version = "42.42";
 		_description = "The answer to life the universe and everything";
+
+		// init map of commands
+		_init_commands_map();
 	}
 
 	// copy constructor
 	Server::Server(const Server& other)
 	: _sockfd(other._sockfd),
 	  _backlog_max(other._backlog_max),
+	  _creation_date(other._creation_date),
+	  _version(other._version),
+	  _description(other._description),
 	  _config(other._config),
 	  _parser(other._parser),
 	  _commands(other._commands),
 	  _clients(other._clients),
-	  _channels(other._channels),
-	  _creation_date(other._creation_date),
-	  _version(other._version),
-	  _description(other._description)
+	  _channels(other._channels)
 	{
 	}
 
@@ -84,14 +85,14 @@ namespace ft_irc
 		{
 			this->_sockfd = other._sockfd;
 			this->_backlog_max = other._backlog_max;
-			this->_config = other._config;
-			this->_parser = other._parser;
-			this->_commands = other.getCommands();
-			this->_clients = other._clients;
-			this->_channels = other._channels;
 			this->_creation_date = other._creation_date;
 			this->_version = other._version;
 			this->_description = other._description;
+			this->_config = other._config;
+			this->_parser = other._parser;
+			this->_commands = other._commands;
+			this->_clients = other._clients;
+			this->_channels = other._channels;
 		}
 		return (*this);
 	}

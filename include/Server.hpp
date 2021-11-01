@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 17:39:33 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 18:08:30 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,14 +75,14 @@ namespace ft_irc
 			/* Socket descriptor. */
 			int								_sockfd;
 			int								_backlog_max;
+			std::string						_creation_date;
+			std::string						_version;
+			std::string						_description;
 			Config							_config; // holds all config
 			Parser							_parser;
 			t_cmds							_commands;
 			std::list<Client>				_clients;
 			std::list<Channel>				_channels;
-			std::string						_creation_date;
-			std::string						_version;
-			std::string						_description;
 
 			bool							_createSocket();
 			int								_sockGetLine(int sockfd, std::string& line);
