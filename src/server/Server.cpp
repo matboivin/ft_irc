@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 18:09:37 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 18:11:48 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,21 @@ namespace ft_irc
 	std::string	Server::getPassword() const
 	{
 		return (this->_config.getPassword());
+	}
+
+	std::string	Server::getCreationDate() const
+	{
+		return (this->_creation_date);
+	}
+
+	std::string	Server::getVersion() const
+	{
+		return (this->_version);
+	}
+
+	std::string	Server::getDescription() const
+	{
+		return (this->_description);
 	}
 
 	Server::t_cmds	Server::getCommands() const

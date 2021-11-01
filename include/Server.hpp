@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 18:08:30 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 18:10:42 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,10 @@ namespace ft_irc
 			std::string						getBindAddress() const;
 			std::string						getPort() const;
 			std::string						getPassword() const;
+			std::string						getCreationDate() const;
+			std::string						getVersion() const;
+			std::string						getDescription() const;
 			t_cmds							getCommands() const;
-
 			std::list<Client>::iterator		getClient(const std::string& nick);
 			std::list<Channel>::iterator	getChannel(const std::string& chan_name);
 
