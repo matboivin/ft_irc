@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 15:44:00 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 16:02:24 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -277,8 +277,8 @@ namespace ft_irc
 							  << "Username: " << client.getUsername() << std::endl
 							  << "Hostname: " << client.getHostname() << std::endl;
 				}
-				_sendResponse(msg); // send response to recipient(s)
 			}
+			_sendResponse(msg); // send response to recipient(s)
 			client.updateLastEventTime();
 			return (true);
 		}

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 15:09:27 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/01 16:02:09 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,6 +181,12 @@ namespace ft_irc
 		this->_realname = realname;
 	}
 
+	void	Client::setHostname(const std::string& hostname)
+	{
+		std::cout << "Hostname: " << hostname << std::endl;
+		this->_hostname = hostname;
+	}
+
 	void	Client::setUsername(const std::string& username)
 	{
 		std::cout << "Username: " << username << std::endl;
@@ -202,25 +208,19 @@ namespace ft_irc
 		this->_joined_channels = joined_channels;
 	}
 
-	void Client::setConnected(bool connected)
+	void	Client::setConnected(bool connected)
 	{
 		this->_connected = connected;
 	}
 
-	void Client::setAlive(bool alive)
+	void	Client::setAlive(bool alive)
 	{
 		this->_alive = alive;
 	}
 
-	void Client::setRegistered(bool registered)
+	void	Client::setRegistered(bool registered)
 	{
 		this->_registered = registered;
-	}
-
-	void Client::setHostname(const std::string& hostname)
-	{
-		std::cout << "Hostname: " << hostname << std::endl;
-		this->_hostname = hostname;
 	}
 
 	// Channel operations
@@ -266,19 +266,19 @@ namespace ft_irc
 
 	// helpers
 
-	bool	Client::isRegistered() const
-	{
-		return (this->_registered);
-	}
-
-	bool Client::isAlive() const
+	bool	Client::isConnected() const
 	{
 		return (this->_alive);
 	}
 
-	bool	Client::isConnected() const
+	bool	Client::isAlive() const
 	{
 		return (this->_socket_fd != -1);
+	}
+
+	bool	Client::isRegistered() const
+	{
+		return (this->_registered);
 	}
 
 	bool	Client::isTimeouted() const
