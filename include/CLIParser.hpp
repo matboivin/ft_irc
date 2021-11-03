@@ -12,19 +12,21 @@ namespace ft_irc
 	 */
 	class CLIParser
 	{
-	private:
-		char**		_argv;
-		int			_argc;
-		std::string	_bind_address;
-		std::string	_port;
-		std::string	_password;
-
 	public:
-		CLIParser();
-		CLIParser(const CLIParser& other);
-		CLIParser(int argc, char** argv);
+		/* Default constructor */
+					CLIParser();
+
+		/* Arguments constructor */
+					CLIParser(int argc, char** argv);
+
+		/* Copy constructor */
+					CLIParser(const CLIParser& other);
+
+		/* Copy assignment operator */
 		CLIParser&	operator=(const CLIParser& other);
-		~CLIParser();
+
+		/* Destructor */
+					~CLIParser();
 
 		/* Getters */
 		std::string	getBindAddress() const;
@@ -32,7 +34,14 @@ namespace ft_irc
 		std::string	getPassword() const;
 
 		/* Parses the command line arguments */
-		void	parse(const char* bind_address, const char* port, const char* password);
+		void		parse(const char* bind_address, const char* port, const char* password);
+	
+	private:
+		char**		_argv;
+		int			_argc;
+		std::string	_bind_address;
+		std::string	_port;
+		std::string	_password;
 	};
 } // namespace ft_irc
 

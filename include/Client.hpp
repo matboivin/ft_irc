@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 18:42:02 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/03 15:43:09 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,101 +36,112 @@ namespace ft_irc
 
 	class Client
 	{
-		public:
-			Client(struct sockaddr_in address=(struct sockaddr_in){0,0,{0},{0}},
-				   std::string nick="",
-				   std::string realname="",
-				   std::string username="",
-				   std::string password="",
-				   std::string hostname="");
+	public:
+		/* Aliases */
+		typedef std::list<Channel*>	t_channels;
+		typedef std::list<Client*>	t_clients;
 
-			Client(const Client& other);
-			Client&	operator=(const Client& other);
-			~Client();
+		/* Default constructor */
+							Client(struct sockaddr_in address=(struct sockaddr_in){0,0,{0},{0}},
+								   std::string nick="",
+								   std::string realname="",
+								   std::string username="",
+								   std::string password="",
+								   std::string hostname=""
+								   );
 
-			/* Getters and setters */
-			std::string					getNick() const;
-			std::string					getRealName() const;
-			std::string					getUsername() const;
-			std::string					getPassword() const;
-			std::string					getHostname() const;
-			std::string					getIpAddressStr() const;
-			struct sockaddr_in&			getAddress();
-			socklen_t&					getAddressSize();
-			int							getSocketFd() const;
-			const std::list<Channel*>&	getJoinedChannels() const;
-			struct timeval&				getLastEventTime();
-			std::list<Client*>			getAllContacts();
+		/* Copy constructor */
+							Client(const Client& other);
 
-			void						setNick(const std::string& nick);
-			void						setRealName(const std::string& realname);
-			void						setUsername(const std::string& username);
-			void						setPassword(const std::string& password);
-			void						setHostname(const std::string& hostname);
-			void						setSocketFd(int socket_fd);
-			void						setJoinedChannels(const std::list<Channel*>& joined_channels);
-			void						setConnected(bool connected);
-			void						setAlive(bool alive);
-			void						setRegistered(bool registered);
-			void						setPinged(bool pinged);
+		/* Copy assignment operator */
+		Client&				operator=(const Client& other);
 
-			/* Helpers */
-			bool						isConnected() const;
-			bool						isAlive() const;
-			bool						isRegistered() const;
-			bool						isTimeouted() const;
-			bool						isOper() const;
-			bool						isPinged() const;
+		/* Destructor */
+							~Client();
 
-			/* Connection handling */
-			int							awaitConnection(int socket_fd);
-			bool						hasNewEvents();
-			void						updateLastEventTime();	/* resets timeout and pinged */
+		/* Getters */
+		std::string			getNick() const;
+		std::string			getRealName() const;
+		std::string			getUsername() const;
+		std::string			getPassword() const;
+		std::string			getHostname() const;
+		std::string			getIpAddressStr() const;
+		struct sockaddr_in&	getAddress();
+		socklen_t&			getAddressSize();
+		int					getSocketFd() const;
+		const t_channels&	getJoinedChannels() const;
+		struct timeval&		getLastEventTime();
+		t_clients			getAllContacts();
+		/* Setters */
+		void				setNick(const std::string& nick);
+		void				setRealName(const std::string& realname);
+		void				setUsername(const std::string& username);
+		void				setPassword(const std::string& password);
+		void				setHostname(const std::string& hostname);
+		void				setSocketFd(int socket_fd);
+		void				setJoinedChannels(const t_channels& joined_channels);
+		void				setConnected(bool connected);
+		void				setAlive(bool alive);
+		void				setRegistered(bool registered);
+		void				setPinged(bool pinged);
 
-			/* Buffer operations */
-			bool						hasUnprocessedCommands();
-			std::string					popUnprocessedCommand();
-			int							updateInBuffer();
-			int							updateOutBuffer();
-			/* Adds response to the output buffer */
-			void						sendCommand(std::string cmd);
+		/* Helpers */
+		bool				isConnected() const;
+		bool				isAlive() const;
+		bool				isRegistered() const;
+		bool				isTimeouted() const;
+		bool				isOper() const;
+		bool				isPinged() const;
 
-			/* Channel operations */
-			void						joinChannel(Channel& channel);
-			void						partChannel(Channel& channel);
-			void						partAllChannels();
+		/* Connection handling */
+		int					awaitConnection(int socket_fd);
+		bool				hasNewEvents();
+		void				updateLastEventTime();	/* resets timeout and pinged */
 
-			/* Mode operations */
-			void						addMode(const std::string& mode);
-			void						removeMode(const std::string& mode);
+		/* Buffer operations */
+		bool				hasUnprocessedCommands();
+		std::string			popUnprocessedCommand();
+		int					updateInBuffer();
+		int					updateOutBuffer();
+		/* Adds response to the output buffer */
+		void				sendCommand(std::string cmd);
 
-			friend bool					operator==(const Client& lhs, const Client& rhs);
+		/* Channel operations */
+		void				joinChannel(Channel& channel);
+		void				partChannel(Channel& channel);
+		void				partAllChannels();
 
-			/* debug */
-			void						displayJoinedChannels();
+		/* Mode operations */
+		void				addMode(const std::string& mode);
+		void				removeMode(const std::string& mode);
 
-		private:
-			std::string					_nick;
-			std::string					_realname;
-			std::string					_hostname;
-			std::string					_username;
-			std::string					_mode;
-			std::string					_password;
-			struct sockaddr_in			_address;			/* IPv4 address	*/	
-			socklen_t					_address_size;		/* IPv4 address size */
-			std::string					_address_str;		/* IPv4 address as string */
-			struct timeval				_timeout;			/* timeout for select() */
-			int							_socket_fd;			/* socket file descriptor */
-			bool						_connected;			/* is the client connected to the server? */
-			std::string					_in_buffer;			/* buffer for incoming data */
-			std::string					_out_buffer;		/* buffer for outgoing data */
-			const size_t				_max_cmd_length;	/* max length of a command */
-			std::list<Channel*>			_joined_channels;
-			bool						_alive;
-			struct timeval				_keep_alive;		/* keep_alive lenght */
-			struct timeval				_last_event_time;	/* time since last network event */
-			bool						_registered;		/* is the client registered? */	
-			bool						_pinged;			/* has the client been pinged? */
+		friend bool			operator==(const Client& lhs, const Client& rhs);
+
+		/* debug */
+		void				displayJoinedChannels();
+
+	private:
+		std::string			_nick;
+		std::string			_realname;
+		std::string			_hostname;
+		std::string			_username;
+		std::string			_mode;
+		std::string			_password;
+		struct sockaddr_in	_address;			/* IPv4 address	*/	
+		socklen_t			_address_size;		/* IPv4 address size */
+		std::string			_address_str;		/* IPv4 address as string */
+		struct timeval		_timeout;			/* timeout for select() */
+		int					_socket_fd;			/* socket file descriptor */
+		bool				_connected;			/* is the client connected to the server? */
+		std::string			_in_buffer;			/* buffer for incoming data */
+		std::string			_out_buffer;		/* buffer for outgoing data */
+		const size_t		_max_cmd_length;	/* max length of a command */
+		t_channels			_joined_channels;
+		bool				_alive;
+		struct timeval		_keep_alive;		/* keep_alive lenght */
+		struct timeval		_last_event_time;	/* time since last network event */
+		bool				_registered;		/* is the client registered? */	
+		bool				_pinged;			/* has the client been pinged? */
 	};
 }
 

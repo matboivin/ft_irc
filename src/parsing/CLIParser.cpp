@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:34:20 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 19:35:17 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/03 15:27:18 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,15 +24,6 @@ namespace ft_irc
 		this->_argv = nullptr;
 	}
 
-	/* Copy constructor */
-	CLIParser::CLIParser(const CLIParser& other)
-	: _argv(), _argc(other._argc),
-	  _bind_address(other._bind_address), _port(other._port),
-	  _password(other._password)
-	{
-		this->_argv = nullptr;
-	}
-
 	/* Arguments constructor */
 	CLIParser::CLIParser(int argc, char** argv)
 	{
@@ -46,6 +37,15 @@ namespace ft_irc
 		if (argc > 4)
 			throw std::runtime_error("Too many arguments");
 		parse(argv[1], argv[2], argv[3]);
+	}
+
+	/* Copy constructor */
+	CLIParser::CLIParser(const CLIParser& other)
+	: _argv(), _argc(other._argc),
+	  _bind_address(other._bind_address), _port(other._port),
+	  _password(other._password)
+	{
+		this->_argv = nullptr;
 	}
 
 	/* Copy assignment operator */

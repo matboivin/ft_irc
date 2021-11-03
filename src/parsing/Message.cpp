@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/01 19:20:49 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/03 15:11:12 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,12 +94,12 @@ namespace ft_irc
 		return (this->_command);
 	}
 
-	const std::vector<std::string>&	Message::getParams() const
+	const Message::t_params&	Message::getParams() const
 	{
 		return (this->_params);
 	}
 
-	const std::list<Client*>&	Message::getRecipients() const
+	const Message::t_clients&	Message::getRecipients() const
 	{
 		return (this->_recipients);
 	}
@@ -137,14 +137,14 @@ namespace ft_irc
 			this->_params.push_back(param);
 	}
 
-	void	Message::setRecipients(const std::list<Client*>& recipients)
+	void	Message::setRecipients(const t_clients& recipients)
 	{
 		this->_recipients = recipients;
 	}
 
 	void	Message::setRecipient(Client& recipient)
 	{
-		std::list<Client*>::const_iterator	found;
+		t_clients::const_iterator	found;
 
 		/* Checks if the recipient is already in the list */
 		found = std::find(this->_recipients.begin(), this->_recipients.end(), &recipient);
@@ -173,7 +173,7 @@ namespace ft_irc
 	}
 
 	/* Append a range of recipients */
-	void	Message::addRecipients(const std::list<Client*>& recipients)
+	void	Message::addRecipients(const t_clients& recipients)
 	{
 		this->_recipients.insert(this->_recipients.end(), recipients.begin(), recipients.end());
 	}
@@ -186,7 +186,7 @@ namespace ft_irc
 		std::cout << "command:  " << getCommand() << '\n'
 				  << "params:   ";
 
-		for (std::vector<std::string>::const_iterator it = this->_params.begin();
+		for (t_params::const_iterator it = this->_params.begin();
 			 it != this->_params.end();
 			 ++it)
 		{

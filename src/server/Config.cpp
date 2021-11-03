@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/19 16:47:35 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/01 18:49:04 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/03 15:28:59 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ namespace ft_irc
 	{
 	}
 
-	/* Constructor */
+	/* Settings constructor */
 	Config::Config(std::string bind_address,
 				   std::string port,
 				   std::string password,
