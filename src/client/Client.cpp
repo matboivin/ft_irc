@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/11/03 15:24:16 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/03 16:40:30 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -265,6 +265,11 @@ namespace ft_irc
 	bool	Client::isOper() const
 	{
 		return (this->_mode.find("o") != std::string::npos);
+	}
+
+	bool	Client::isChanOp(Channel& channel)
+	{
+		return (channel.hasChanOp(*this));
 	}
 
 	//isPinged()
