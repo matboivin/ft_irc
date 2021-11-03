@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 19:26:14 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/03 11:43:09 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -291,7 +291,6 @@ namespace ft_irc
 			if (_parse(msg, client.popUnprocessedCommand()) == true) // parse the message
 			{
 				_executeCommand(msg); // execute the command
-
 				//if the client has just registered, send him a nice welcome message :D
 				if (client.isRegistered() == false && !client.getNick().empty() &&
 					!client.getUsername().empty() && !client.getHostname().empty())
@@ -306,7 +305,8 @@ namespace ft_irc
 					client.setRegistered(true);
 				}
 			}
-			_sendResponse(msg); // send response to recipient(s)
+			if (!msg.getRecipients().empty())
+				_sendResponse(msg); // send response to recipient(s)
 			client.updateLastEventTime();
 			return (true);
 		}
