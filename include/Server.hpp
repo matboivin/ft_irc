@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 19:22:51 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/03 15:46:41 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,111 +29,119 @@ namespace ft_irc
 
 	class Server
 	{
-		public:
-			/* Aliases */
-			typedef void (Server::*cmd_fun)(Message& msg);
-			typedef std::map<std::string, cmd_fun>	t_cmds;
+	public:
+		/* Aliases */
+		typedef void (Server::*cmd_fun)(Message& msg);
+		typedef std::map<std::string, cmd_fun>	t_cmds;
+		typedef std::list<Client>				t_clients;
+		typedef std::list<Channel>				t_channels;
 
-			Server(CLIParser& CLI_parser, int backlog_max=5);
-			Server(const Server& other);
-			Server&	operator=(const Server& other);
-			~Server();
+		/* Constructor */
+								Server(CLIParser& CLI_parser, int backlog_max=5);
 
-			/* Getters and setters */
-			std::string						getHostname() const;
-			std::string						getBindAddress() const;
-			std::string						getPort() const;
-			std::string						getPassword() const;
-			std::string						getCreationDate() const;
-			std::string						getVersion() const;
-			std::string						getDescription() const;
-			t_cmds							getCommands() const;
-			std::list<Client>::iterator		getClient(const std::string& nick);
-			std::list<Channel>::iterator	getChannel(const std::string& chan_name);
+		/* Copy constructor */
+								Server(const Server& other);
 
-			/* Main loop */
-			int								run();
+		/* Copy assignment operator */
+		Server&					operator=(const Server& other);
 
-			/* Commands */
-			//void							exec_invite_cmd(Message& msg);
-			void							exec_join_cmd(Message& msg);
-			//void							exec_kick_cmd(Message& msg);
-			//void							exec_kill_cmd(Message& msg);
-			//void							exec_list_cmd(Message& msg);
-			//void							exec_mode_cmd(Message& msg);
-			//void							exec_names_cmd(Message& msg);
-			void							exec_nick_cmd(Message& msg);
-			void							exec_notice_cmd(Message& msg);
-			void							exec_oper_cmd(Message& msg);
-			void							exec_part_cmd(Message& msg);
-			void							exec_pass_cmd(Message& msg);
-			void							exec_ping_cmd(Message& msg);
-			void							exec_pong_cmd(Message& msg);
-			void							exec_privmsg_cmd(Message& msg);
-			void							exec_quit_cmd(Message& msg);
-			void							exec_topic_cmd(Message& msg);
-			void							exec_user_cmd(Message& msg);
-			void							exec_who_cmd(Message& msg);
-			void							exec_whois_cmd(Message& msg);
-			void							exec_test_cmd(Message& msg); // debug
+		/* Destructor */
+								~Server();
 
-		private:
-			struct sockaddr_in				_address; /* Structure describing an Internet socket address. */
-			int								_sockfd; /* Socket descriptor. */
-			int								_backlog_max;
-			std::string						_creation_date;
-			std::string						_version;
-			std::string						_description;
-			Config							_config; /* Holds all config */
-			Parser							_parser;
-			t_cmds							_commands;
-			std::list<Client>				_clients;
-			std::list<Channel>				_channels;
+		/* Getters */
+		std::string				getHostname() const;
+		std::string				getBindAddress() const;
+		std::string				getPort() const;
+		std::string				getPassword() const;
+		std::string				getCreationDate() const;
+		std::string				getVersion() const;
+		std::string				getDescription() const;
+		t_cmds					getCommands() const;
+		t_clients::iterator		getClient(const std::string& nick);
+		t_channels::iterator	getChannel(const std::string& chan_name);
 
-			/* Cleaning */
-			void							_shutdown();
+		/* Main loop */
+		int						run();
 
-			/* Connections handling */
-			bool							_createSocket();
-			int								_sockGetLine(int sockfd, std::string& line);
-			int								_sockGetLine(int sockfd, std::string& line, std::size_t max_bytes);
-			bool							_awaitNewConnection();
-			bool							_hasPendingConnections();
-			bool							_processClients();
-			int								_disconnectClient(Client& client);
-			int								_ping_client(Client& client);
+		/* Commands */
+		//void					exec_invite_cmd(Message& msg);
+		void					exec_join_cmd(Message& msg);
+		//void					exec_kick_cmd(Message& msg);
+		//void					exec_kill_cmd(Message& msg);
+		//void					exec_list_cmd(Message& msg);
+		//void					exec_mode_cmd(Message& msg);
+		//void					exec_names_cmd(Message& msg);
+		void					exec_nick_cmd(Message& msg);
+		void					exec_notice_cmd(Message& msg);
+		void					exec_oper_cmd(Message& msg);
+		void					exec_part_cmd(Message& msg);
+		void					exec_pass_cmd(Message& msg);
+		void					exec_ping_cmd(Message& msg);
+		void					exec_pong_cmd(Message& msg);
+		void					exec_privmsg_cmd(Message& msg);
+		void					exec_quit_cmd(Message& msg);
+		void					exec_topic_cmd(Message& msg);
+		void					exec_user_cmd(Message& msg);
+		void					exec_who_cmd(Message& msg);
+		void					exec_whois_cmd(Message& msg);
+		void					exec_test_cmd(Message& msg); // debug
 
-			/* Parsing */
-			bool							_parse(Message& msg, const std::string& cmd);
+	private:
+		struct sockaddr_in		_address; /* Structure describing an Internet socket address. */
+		int						_sockfd; /* Socket descriptor. */
+		int						_backlog_max;
+		std::string				_creation_date;
+		std::string				_version;
+		std::string				_description;
+		Config					_config; /* Holds all config */
+		Parser					_parser;
+		t_cmds					_commands;
+		t_clients				_clients;
+		t_channels				_channels;
 
-			/* Commands execution */
-			void							_init_commands_map();
-			int								_executeCommand(Message& msg);
-			bool							_processClientCommand(Client& client);
+		/* Cleaning */
+		void					_shutdown();
 
-			/* Command response */
-			void							_setResponseRecipients(Message& msg);
-			void							_sendResponse(Message& msg);
-			void							_make_welcome_msg(Message& msg);
+		/* Connections handling */
+		bool					_createSocket();
+		int						_sockGetLine(int sockfd, std::string& line);
+		int						_sockGetLine(int sockfd, std::string& line, std::size_t max_bytes);
+		bool					_awaitNewConnection();
+		bool					_hasPendingConnections();
+		bool					_processClients();
+		int						_disconnectClient(Client& client);
+		int						_ping_client(Client& client);
 
-			/* Channel operations */
-			Channel&						_addChannel(const std::string& name);
-			void							_removeChannel(std::list<Channel>::iterator channel);
-			bool							_userOnChannel(Client& client, Channel& channel);
-			bool							_userOnChannel(Client& client, const std::string& chan_name);
-			void							_addUserToChannel(Client& client, Channel& channel);
-			void							_removeUserFromChannel(Client& client, Channel& channel);
-			void							_removeUserFromAllChannels(Client& client);
-			void							_removeUserFromAllChannels(Client& client, Message& msg);
+		/* Parsing */
+		bool					_parse(Message& msg, const std::string& cmd);
 
-			/* Oper operations */
-			bool							_giveOperPriv(const std::string& name,
-														  const std::string& password);
+		/* Commands execution */
+		void					_init_commands_map();
+		int						_executeCommand(Message& msg);
+		bool					_processClientCommand(Client& client);
 
-			/* debug */
-			int								_sendList(Client& client);
-			int								_sendError(Client& client, const std::string& error);
-		};
+		/* Command response */
+		void					_setResponseRecipients(Message& msg);
+		void					_sendResponse(Message& msg);
+		void					_make_welcome_msg(Message& msg);
+
+		/* Channel operations */
+		Channel&				_addChannel(const std::string& name);
+		void					_removeChannel(t_channels::iterator channel);
+		bool					_userOnChannel(Client& client, Channel& channel);
+		bool					_userOnChannel(Client& client, const std::string& chan_name);
+		void					_addUserToChannel(Client& client, Channel& channel);
+		void					_removeUserFromChannel(Client& client, Channel& channel);
+		void					_removeUserFromAllChannels(Client& client);
+		void					_removeUserFromAllChannels(Client& client, Message& msg);
+
+		/* Oper operations */
+		bool					_giveOperPriv(const std::string& name, const std::string& password);
+
+		/* debug */
+		int						_sendList(Client& client);
+		int						_sendError(Client& client, const std::string& error);
+	};
 }
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:58:53 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/01 18:35:47 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/03 15:20:41 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ namespace ft_irc
 		return (this->_mode);
 	}
 
-	const std::list<Client*>&	Channel::getClients() const
+	const Channel::t_clients&	Channel::getClients() const
 	{
 		return (this->_clients);
 	}
@@ -96,7 +96,7 @@ namespace ft_irc
 		this->_mode = mode;
 	}
 
-	void	Channel::setClients(const std::list<Client*>& clients)
+	void	Channel::setClients(const t_clients& clients)
 	{
 		this->_clients = clients;
 	}
@@ -111,9 +111,9 @@ namespace ft_irc
 	/* Manage clients in channel ************************************************ */
 
 	/* Finds a client using a nickname */
-	std::list<Client*>::iterator	Channel::findClient(Client& client)
+	Channel::t_clients::iterator	Channel::findClient(Client& client)
 	{
-		std::list<Client*>::iterator	it;
+		t_clients::iterator	it;
 
 		it = std::find(this->_clients.begin(), this->_clients.end(), &client);
 		return (it);
@@ -151,12 +151,14 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
+	/* ************************************************************************** */
+
 	// debug
 	void	Channel::displayClients()
 	{
 		std::cout << "Users in channel " << this->getName() << ":\n";
 
-		for (std::list<Client*>::iterator	it = this->_clients.begin();
+		for (t_clients::iterator	it = this->_clients.begin();
 			 it != this->_clients.end();
 			 ++it)
 		{

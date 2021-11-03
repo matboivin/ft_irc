@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/03 15:02:58 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/03 15:32:11 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,9 +145,9 @@ namespace ft_irc
 		return (this->_commands);
 	}
 
-	std::list<Client>::iterator	Server::getClient(const std::string& nick)
+	Server::t_clients::iterator	Server::getClient(const std::string& nick)
 	{
-		std::list<Client>::iterator	it = this->_clients.begin();
+		t_clients::iterator	it = this->_clients.begin();
 
 		while (it != this->_clients.end())
 		{
@@ -158,12 +158,12 @@ namespace ft_irc
 		return (it);
 	}
 
-	std::list<Channel>::iterator	Server::getChannel(const std::string& chan_name)
+	Server::t_channels::iterator	Server::getChannel(const std::string& chan_name)
 	{
 		if (!channel_is_valid(chan_name))
 			return (this->_channels.end());
 
-		std::list<Channel>::iterator	it = this->_channels.begin();
+		t_channels::iterator	it = this->_channels.begin();
 
 		while (it != this->_channels.end())
 		{
@@ -196,7 +196,7 @@ namespace ft_irc
 
 	void	Server::_shutdown()
 	{
-		std::list<Client>::iterator	it = this->_clients.begin();
+		t_clients::iterator	it = this->_clients.begin();
 
 		std::cout << "Shutting down server" << std::endl;
 		while (it != this->_clients.end())
@@ -316,7 +316,7 @@ namespace ft_irc
 	/* Process all clients */
 	bool	Server::_processClients()
 	{
-		for (std::list<Client>::iterator it = this->_clients.begin();
+		for (t_clients::iterator it = this->_clients.begin();
 			 it != this->_clients.end();)
 		{
 			if (it->isAlive() == false)
@@ -355,7 +355,7 @@ namespace ft_irc
 
 	int	Server::_disconnectClient(Client& client)
 	{
-		std::list<Client>::iterator	it = std::find(this->_clients.begin(), this->_clients.end(), client);
+		t_clients::iterator	it = std::find(this->_clients.begin(), this->_clients.end(), client);
 
 		if (it->getSocketFd() > 0)
 		{
@@ -437,7 +437,7 @@ namespace ft_irc
 	void	Server::_setResponseRecipients(Message& msg)
 	{
 		std::cout << __LINE__ << std::endl;
-		std::list<Client>::iterator	dst = getClient(msg.getParams().at(0));
+		t_clients::iterator	dst = getClient(msg.getParams().at(0));
 
 		if (dst != this->_clients.end())
 		{
@@ -449,7 +449,7 @@ namespace ft_irc
 		{
 			return ;
 		}
-		std::list<Channel>::iterator	channel = getChannel(msg.getParams().at(0));
+		t_channels::iterator	channel = getChannel(msg.getParams().at(0));
 
 		if (channel != this->_channels.end())
 			msg.setRecipients(channel->getClients());
@@ -498,7 +498,7 @@ namespace ft_irc
 	}
 
 	/* Removes a channel from the server's list */
-	void	Server::_removeChannel(std::list<Channel>::iterator channel)
+	void	Server::_removeChannel(t_channels::iterator channel)
 	{
 		this->_channels.erase(channel);
 	}
@@ -511,7 +511,7 @@ namespace ft_irc
 
 	bool	Server::_userOnChannel(Client& client, const std::string& chan_name)
 	{
-		std::list<Channel>::iterator	channel = getChannel(chan_name);
+		t_channels::iterator	channel = getChannel(chan_name);
 
 		if (channel != this->_channels.end())
 			return (channel->hasClient(client));
@@ -583,7 +583,7 @@ namespace ft_irc
 				 chan_name != msg.getParams().end();
 				 ++chan_name)
 			{
-				std::list<Channel>::iterator	channel = getChannel(*chan_name);
+				t_channels::iterator	channel = getChannel(*chan_name);
 
 				if (!channel_is_valid(*chan_name))
 				{
@@ -686,7 +686,7 @@ namespace ft_irc
 			if ( ((*chan_name)[0] == ':') && (++chan_name == msg.getParams().end()) )
 				break ;
 
-			std::list<Channel>::iterator	channel = getChannel(*chan_name);
+			t_channels::iterator	channel = getChannel(*chan_name);
 
 			if (channel == this->_channels.end())
 				err_nosuchchannel(msg, *chan_name);
@@ -801,7 +801,7 @@ namespace ft_irc
 		else
 		{
 			std::string						chan_name = msg.getParams().at(0);
-			std::list<Channel>::iterator	channel = getChannel(chan_name);
+			t_channels::iterator	channel = getChannel(chan_name);
 
 			if (channel == this->_channels.end())
 				err_nosuchchannel(msg, chan_name);
@@ -859,7 +859,7 @@ namespace ft_irc
 			return ;
 		}
 		std::string response = "";
-		for (std::list<Client>::iterator it = this->_clients.begin();
+		for (t_clients::iterator it = this->_clients.begin();
 			 it != this->_clients.end();
 			 ++it)
 		{
@@ -907,7 +907,7 @@ namespace ft_irc
 			return ;
 		}
 		std::string	response = "";
-		for (std::list<Client>::iterator it = this->_clients.begin();
+		for (t_clients::iterator it = this->_clients.begin();
 			 it != this->_clients.end();
 			 ++it)
 		{
@@ -956,7 +956,7 @@ namespace ft_irc
 
 	int	Server::_sendList(Client& client)
 	{
-		for (std::list<Client>::iterator it = this->_clients.begin();
+		for (t_clients::iterator it = this->_clients.begin();
 			 it != this->_clients.end();
 			 ++it)
 		{

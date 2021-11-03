@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/11/01 19:14:36 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/03 15:24:16 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,7 +150,7 @@ namespace ft_irc
 		return (this->_socket_fd);
 	}
 
-	const std::list<Channel*>&	Client::getJoinedChannels() const
+	const Client::t_channels&	Client::getJoinedChannels() const
 	{
 		return (this->_joined_channels);
 	}
@@ -160,11 +160,11 @@ namespace ft_irc
 		return (this->_last_event_time);
 	}
 
-	std::list<Client*>	Client::getAllContacts()
+	Client::t_clients	Client::getAllContacts()
 	{
-		std::list<Client*>	contacts;
+		t_clients	contacts;
 
-		for (std::list<Channel*>::iterator it = this->_joined_channels.begin();
+		for (t_channels::iterator it = this->_joined_channels.begin();
 			 it != this->_joined_channels.end();
 			 ++it)
 		{
@@ -212,7 +212,7 @@ namespace ft_irc
 		this->_socket_fd = socket_fd;
 	}
 
-	void	Client::setJoinedChannels(const std::list<Channel*>& joined_channels)
+	void	Client::setJoinedChannels(const t_channels& joined_channels)
 	{
 		this->_joined_channels = joined_channels;
 	}
@@ -399,7 +399,7 @@ namespace ft_irc
 	/* The client quits all channels they joined */
 	void	Client::partAllChannels()
 	{
-		for (std::list<Channel*>::iterator it = this->_joined_channels.begin();
+		for (t_channels::iterator it = this->_joined_channels.begin();
 			 it != this->_joined_channels.end();
 			 ++it)
 		{
@@ -445,7 +445,7 @@ namespace ft_irc
 
 		std::cout << this->getNick() << " joined channels:\n";
 
-		for (std::list<Channel*>::iterator	it = this->_joined_channels.begin();
+		for (t_channels::iterator	it = this->_joined_channels.begin();
 			 it != this->_joined_channels.end();
 			 ++it)
 		{

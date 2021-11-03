@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:20:57 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/01 19:11:36 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/03 15:45:28 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,45 +26,52 @@ namespace ft_irc
 	 */
 	class Parser
 	{
-		private:
-			/* Aliases */
-			typedef std::string::const_iterator	t_str_it;
+	private:
+		/* Internal alias */
+		typedef std::string::const_iterator	t_str_it;
 
-		public:
-			Parser();
-			Parser(const Parser& other);
-			Parser&	operator=(const Parser& other);
-			~Parser();
+	public:
+		/* Default constructor */
+					Parser();
 
-			/* Getters and setters */
-			t_str_it	getItStart() const;
-			t_str_it	getItCurrent() const;
-			t_str_it	getItEnd() const;
+		/* Copy constructor */
+					Parser(const Parser& other);
 
-			void		setItStart(t_str_it start);
-			void		setItCurrent(t_str_it current);
-			void		setItEnd(t_str_it end);
-			void		setIterators(const std::string& str);
+		/* Copy assignment operator */
+		Parser&		operator=(const Parser& other);
 
-			/* Main parsing function */
-			bool		parseMessage(Message& msg, const std::string& cmd);
+		/* Destructor */
+					~Parser();
 
-		private:
-			t_str_it	_start;
-			t_str_it	_current;
-			t_str_it	_end;
+		/* Getters */
+		t_str_it	getItStart() const;
+		t_str_it	getItCurrent() const;
+		t_str_it	getItEnd() const;
+		/* Setters */
+		void		setItStart(t_str_it start);
+		void		setItCurrent(t_str_it current);
+		void		setItEnd(t_str_it end);
+		void		setIterators(const std::string& str);
 
-			/* Helpers */
-			bool		_commandIsValid(Message& msg);
-			bool		_eat(char expected);
-			bool		_nocrlf(t_str_it it);
-			bool		_nospcrlfcl(t_str_it it);
-			bool		_parseSeparator();
-			void		_parseTrailing(Message& msg);
-			void		_parseMiddle(Message& msg);
-			bool		_parseParams(Message& msg);
-			bool		_parseCommand(Message& msg);
-			void		_fillForwardResponse(Message& msg, std::string cmd);
+		/* Main parsing function */
+		bool		parseMessage(Message& msg, const std::string& cmd);
+
+	private:
+		t_str_it	_start;
+		t_str_it	_current;
+		t_str_it	_end;
+
+		/* Helpers */
+		bool		_commandIsValid(Message& msg);
+		bool		_eat(char expected);
+		bool		_nocrlf(t_str_it it);
+		bool		_nospcrlfcl(t_str_it it);
+		bool		_parseSeparator();
+		void		_parseTrailing(Message& msg);
+		void		_parseMiddle(Message& msg);
+		bool		_parseParams(Message& msg);
+		bool		_parseCommand(Message& msg);
+		void		_fillForwardResponse(Message& msg, std::string cmd);
 	};
 }
 
