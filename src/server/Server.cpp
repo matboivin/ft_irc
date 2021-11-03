@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/03 14:56:40 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/03 15:02:58 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -394,10 +394,10 @@ namespace ft_irc
 	/* Inits the map containing the commands */
 	void	Server::_init_commands_map()
 	{
-		//this->_commands["INVITE"]	= &Server::exec_invite_cmd;
+		// this->_commands["INVITE"]	= &Server::exec_invite_cmd;
 		this->_commands["JOIN"]		= &Server::exec_join_cmd;
-		// this->_commands["KILL"]	= &Server::exec_kill_cmd;
 		// this->_commands["KICK"]	= &Server::exec_kick_cmd;
+		// this->_commands["KILL"]	= &Server::exec_kill_cmd;
 		// this->_commands["LIST"]	= &Server::exec_list_cmd;
 		// this->_commands["MODE"]	= &Server::exec_mode_cmd;
 		// this->_commands["NAMES"]	= &Server::exec_names_cmd;
