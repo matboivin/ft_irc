@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/03 16:17:29 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/03 16:54:57 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -573,41 +573,32 @@ namespace ft_irc
 	{
 		if (msg.getParams().size() != 2)
 			err_needmoreparams(msg);
-		else if (!msg.getSender().isOper()) // tmp
-			err_chanoprivsneeded(msg, msg.getParams().at(0));
-		else if (!channel_is_valid(msg.getParams().at(1)))
-			return ;
-		else
+		else if (getClient(msg.getParams().at(0)) == this->_clients.end())
+			err_nosuchnick(msg, msg.getParams().at(0));
+		else if (channel_is_valid(msg.getParams().at(1)))
 		{
-			std::string					guest = msg.getParams().at(0);
-			std::list<Client>::iterator	guest_cli = getClient(guest);
+			std::string				guest = msg.getParams().at(0);
+			t_clients::iterator		guest_user = getClient(guest);
+			std::string				chan_name = msg.getParams().at(1);
+			t_channels::iterator	channel = getChannel(chan_name);
+			bool					chan_exists = (channel != this->_channels.end());
 
-			if (guest_cli == this->_clients.end())
-			{
-				err_nosuchnick(msg, guest);
-				return ;
-			}
-
-			std::string						chan_name = msg.getParams().at(1);
-			std::list<Channel>::iterator	channel = getChannel(chan_name);
-
-			if (channel == this->_channels.end())
-				_addChannel(chan_name);
-			else if (!_userOnChannel(msg.getSender(), *channel))
-			{
+			if (chan_exists && !msg.getSender().isChanOp(*channel))
+				err_chanoprivsneeded(msg, chan_name);
+			else if (chan_exists && !_userOnChannel(msg.getSender(), *channel))
 				err_notonchannel(msg, chan_name);
-				return ;
-			}
-			else if (_userOnChannel(*guest_cli, *channel))
-			{
+			else if (chan_exists && _userOnChannel(*guest_user, *channel))
 				err_useronchannel(msg, guest, chan_name);
-				return ;
+			else
+			{
+				if (!chan_exists )
+					_addChannel(chan_name);
+
+				Message	confirm_invite_msg(msg.getSender());
+
+				rpl_inviting(confirm_invite_msg, chan_name, guest);
+				_sendResponse(confirm_invite_msg);
 			}
-
-			Message	confirm_invite_msg(msg.getSender());
-
-			rpl_inviting(confirm_invite_msg, chan_name, guest);
-			_sendResponse(confirm_invite_msg);
 		}
 	}
 
@@ -657,8 +648,6 @@ namespace ft_irc
 		// TODO: multiple kicks
 		if (msg.getParams().size() < 2)
 			err_needmoreparams(msg);
-		else if (!msg.getSender().isOper()) // tmp
-			err_chanoprivsneeded(msg, msg.getParams().at(0));
 		else
 		{
 			std::string				chan_name = msg.getParams().at(0);
@@ -668,6 +657,8 @@ namespace ft_irc
 
 			if (channel == this->_channels.end())
 				err_nosuchchannel(msg, chan_name);
+			else if (!msg.getSender().isChanOp(*channel))
+				err_chanoprivsneeded(msg, chan_name);
 			else if (!_userOnChannel(msg.getSender(), *channel))
 				err_notonchannel(msg, chan_name);
 			// TODO: if the client don't exist, what is the reply?
@@ -691,7 +682,7 @@ namespace ft_irc
 			err_noprivileges(msg);
 		else
 		{
-			std::string			nick = msg.getParams().at(0);
+			std::string	nick = msg.getParams().at(0);
 
 			if (nick == this->getHostname())
 				err_cantkillserver(msg);
