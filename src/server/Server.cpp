@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/03 16:12:07 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/03 16:17:29 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -572,43 +572,43 @@ namespace ft_irc
 	void	Server::exec_invite_cmd(Message& msg)
 	{
 		if (msg.getParams().size() != 2)
-		{
 			err_needmoreparams(msg);
+		else if (!msg.getSender().isOper()) // tmp
+			err_chanoprivsneeded(msg, msg.getParams().at(0));
+		else if (!channel_is_valid(msg.getParams().at(1)))
 			return ;
-		}
-		std::string	chan_name = msg.getParams().at(1);
-
-		if (!channel_is_valid(chan_name))
-			return ;
-
-		std::string					guest = msg.getParams().at(0);
-		std::list<Client>::iterator	guest_cli = getClient(guest);
-
-		if (guest_cli == this->_clients.end())
+		else
 		{
-			err_nosuchnick(msg, guest);
-			return ;
+			std::string					guest = msg.getParams().at(0);
+			std::list<Client>::iterator	guest_cli = getClient(guest);
+
+			if (guest_cli == this->_clients.end())
+			{
+				err_nosuchnick(msg, guest);
+				return ;
+			}
+
+			std::string						chan_name = msg.getParams().at(1);
+			std::list<Channel>::iterator	channel = getChannel(chan_name);
+
+			if (channel == this->_channels.end())
+				_addChannel(chan_name);
+			else if (!_userOnChannel(msg.getSender(), *channel))
+			{
+				err_notonchannel(msg, chan_name);
+				return ;
+			}
+			else if (_userOnChannel(*guest_cli, *channel))
+			{
+				err_useronchannel(msg, guest, chan_name);
+				return ;
+			}
+
+			Message	confirm_invite_msg(msg.getSender());
+
+			rpl_inviting(confirm_invite_msg, chan_name, guest);
+			_sendResponse(confirm_invite_msg);
 		}
-
-		std::list<Channel>::iterator	channel = getChannel(chan_name);
-
-		if (channel == this->_channels.end())
-			_addChannel(chan_name);
-		else if (!_userOnChannel(msg.getSender(), *channel))
-		{
-			err_notonchannel(msg, chan_name);
-			return ;
-		}
-		else if (_userOnChannel(*guest_cli, *channel))
-		{
-			err_useronchannel(msg, guest, chan_name);
-			return ;
-		}
-
-		Message	confirm_invite_msg(msg.getSender());
-
-		rpl_inviting(confirm_invite_msg, chan_name, guest);
-		_sendResponse(confirm_invite_msg);
 	}
 
 	/*
