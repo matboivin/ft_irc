@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:37:26 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/01 18:04:08 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/03 12:16:04 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 
 namespace ft_irc
 {
-	// Response helpers
+	/* Response helpers */
 	std::string	build_prefix(const std::string& sender)
 	{
 		return (":" + sender);
@@ -34,9 +34,9 @@ namespace ft_irc
 		return (client.getNick() + "!" + client.getUsername() + "@" + client.getIpAddressStr());
 	}
 
-	// Late parsing helpers
+	/* Late parsing helpers */
 
-	// Special characters listed in the RFC grammar
+	/* Special characters listed in the RFC grammar */
 	bool	is_special(char c)
 	{
 		return (
@@ -45,9 +45,11 @@ namespace ft_irc
 			);
 	}
 
-	// Check whether a nickname format is valid
-	// A nickname is composed of 1 to 9 characters which can be digits, letters
-	// or special characters. It musn't start with a digit.
+	/*
+	 * Check whether a nickname format is valid
+	 * A nickname is composed of 1 to 9 characters which can be digits, letters
+	 * or special characters. It musn't start with a digit.
+	 */
 	bool	nick_is_valid(const std::string& newnick)
 	{
 		if (newnick.size() < 10)
@@ -69,22 +71,64 @@ namespace ft_irc
 		return (false);
 	}
 
-	// Check channel name
-	// ( "#" / "+" / ( "!" channelid ) / "&" ) chanstring [ ":" chanstring ]
+	/*
+	 * Check channel name
+	 * ( "#" / "+" / ( "!" channelid ) / "&" ) chanstring [ ":" chanstring ]
+	 */
 	bool	channel_is_valid(const std::string& chan_name)
 	{
 		return ((chan_name[0] == '#') || (chan_name[0] == '+')
 				|| (chan_name[0] == '!') || (chan_name[0] == '&'));
 	}
 
-	// Match nicknames
+	/*
+	 * Check user mode
+	 * In ft_irc, we only use the 'o'/'O' flag
+	 * *( ( "+" / "-" ) *( "i" / "w" / "o" / "O" / "r" ) )
+	 */
+	bool	user_mode_is_valid(const std::string& mode)
+	{
+		if (mode.size() == 2)
+		{
+			if ((mode[0] == '+') || (mode[0] == '-'))
+			{
+				std::string	user_modes = "iwoOr";
+
+				return (user_modes.find(mode[1]) != std::string::npos);
+			}
+		}
+		return (false);
+	}
+
+	/*
+	 * Check channel mode
+	 * In ft_irc, we only use the 'o'/'O' flag
+	 * *( ( "+" / "-" ) *( "o" / "O" / "v" / "a" / "i" / "m" / "n" / "q" / "p" /
+	 *                     "s" / "r" / "t" / "k" / "l" / "b" / "e" / "I" ) )
+	 */
+	bool	channel_mode_is_valid(const std::string& mode)
+	{
+		if (mode.size() == 2)
+		{
+			if ((mode[0] == '+') || (mode[0] == '-'))
+			{
+				std::string	chan_modes = "oOvaimnqpsrtklbeI";
+
+				return (chan_modes.find(mode[1]) != std::string::npos);
+			}
+		}
+		return (false);
+	}
+
+	/* Match nicknames */
 	bool	match_nick(const std::string& to_match, const std::string& nick)
 	{
 		//wildcard matching
 		if (to_match.find('*') != std::string::npos)
 		{
-			std::string::size_type pos = 0;
-			std::string::size_type last_pos = 0;
+			std::string::size_type	pos = 0;
+			std::string::size_type	last_pos = 0;
+
 			while ((pos = to_match.find('*', last_pos)) != std::string::npos)
 			{
 				if (pos == 0)
