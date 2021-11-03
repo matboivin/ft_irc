@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/01 19:02:29 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/03 12:44:34 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -337,7 +337,7 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	err_userinchannel(Message& msg, const std::string& nick, const std::string& chan_name)
+	void	err_useronchannel(Message& msg, const std::string& nick, const std::string& chan_name)
 	{
 		msg.setRecipient(msg.getSender());
 		msg.setResponse(

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/03 11:43:09 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/03 12:44:54 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -393,7 +393,7 @@ namespace ft_irc
 	/* Inits the map containing the commands */
 	void	Server::_init_commands_map()
 	{
-		//this->_commands["INVITE"]	= &Server::exec_invite_cmd;
+		this->_commands["INVITE"]	= &Server::exec_invite_cmd;
 		this->_commands["JOIN"]		= &Server::exec_join_cmd;
 		// this->_commands["KILL"]	= &Server::exec_kill_cmd;
 		// this->_commands["KICK"]	= &Server::exec_kick_cmd;
@@ -564,7 +564,51 @@ namespace ft_irc
 
 	/* Commands ***************************************************************** */
 
-	//void	Server::exec_invite_cmd(Message& msg);
+	/*
+	 * INVITE <nickname> <channel>
+	 * Invite a user to a channel
+	 */
+	void	Server::exec_invite_cmd(Message& msg)
+	{
+		if (msg.getParams().size() != 2)
+		{
+			err_needmoreparams(msg);
+			return ;
+		}
+		std::string	chan_name = msg.getParams().at(1);
+
+		if (!channel_is_valid(chan_name))
+			return ;
+
+		std::string					guest = msg.getParams().at(0);
+		std::list<Client>::iterator	guest_cli = getClient(guest);
+
+		if (guest_cli == this->_clients.end())
+		{
+			err_nosuchnick(msg, guest);
+			return ;
+		}
+
+		std::list<Channel>::iterator	channel = getChannel(chan_name);
+
+		if (channel == this->_channels.end())
+			_addChannel(chan_name);
+		else if (!_userOnChannel(msg.getSender(), *channel))
+		{
+			err_notonchannel(msg, chan_name);
+			return ;
+		}
+		else if (_userOnChannel(*guest_cli, *channel))
+		{
+			err_useronchannel(msg, guest, chan_name);
+			return ;
+		}
+
+		Message	confirm_invite_msg(msg.getSender());
+
+		rpl_inviting(confirm_invite_msg, chan_name, guest);
+		_sendResponse(confirm_invite_msg);
+	}
 
 	/*
 	 * JOIN <channels>
