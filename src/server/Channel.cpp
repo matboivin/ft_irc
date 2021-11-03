@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:58:53 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/03 15:20:41 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/03 16:40:00 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,19 +23,23 @@ namespace ft_irc
 {
 	/* Default constructor */
 	Channel::Channel()
-	: _name(), _topic(), _mode(), _clients()
+	: _name(), _topic(), _mode(), _clients(), _chan_ops()
 	{
 	}
 
 	/* Name constructor */
 	Channel::Channel(const std::string& name)
-	: _name(name), _topic(), _mode(), _clients()
+	: _name(name), _topic(), _mode(), _clients(), _chan_ops()
 	{
 	}
 
 	/* Copy constructor */
 	Channel::Channel(const Channel& other)
-	: _name(other._name), _topic(other._topic), _mode(other._mode), _clients(other._clients)
+	: _name(other._name),
+	  _topic(other._topic),
+	  _mode(other._mode),
+	  _clients(other._clients),
+	  _chan_ops(other._chan_ops)
 	{
 	}
 
@@ -48,6 +52,7 @@ namespace ft_irc
 			_topic = other.getTopic();
 			_mode = other.getMode();
 			_clients = other.getClients();
+			_chan_ops = other.getChanOps();
 		}
 		return (*this);
 	}
@@ -77,6 +82,11 @@ namespace ft_irc
 		return (this->_clients);
 	}
 
+	const Channel::t_clients&	Channel::getChanOps() const
+	{
+		return (this->_chan_ops);
+	}
+
 	/* Setters ****************************************************************** */
 
 	void	Channel::setName(const std::string& name)
@@ -99,6 +109,11 @@ namespace ft_irc
 	void	Channel::setClients(const t_clients& clients)
 	{
 		this->_clients = clients;
+	}
+
+	void	Channel::setChanOps(const t_clients& chan_ops)
+	{
+		this->_chan_ops= chan_ops;
 	}
 
 	/* Helpers ****************************************************************** */
@@ -135,6 +150,35 @@ namespace ft_irc
 	void	Channel::removeClient(Client& client)
 	{
 		this->_clients.remove(&client);
+	}
+
+	/* Manage clients in channel ************************************************ */
+
+	/* Finds a channel operator using a nickname */
+	Channel::t_clients::iterator	Channel::findChanOp(Client& chan_op)
+	{
+		t_clients::iterator	it;
+
+		it = std::find(this->_chan_ops.begin(), this->_chan_ops.end(), &chan_op);
+		return (it);
+	}
+
+	/* Checks whether the given client is channel operator */
+	bool	Channel::hasChanOp(Client& chan_op)
+	{
+		return (this->findChanOp(chan_op) != this->_chan_ops.end());
+	}
+
+	/* Makes a client operator of the channel */
+	void	Channel::addChanOp(Client& chan_op)
+	{
+		this->_chan_ops.push_back(&chan_op);
+	}
+
+	/* Removes the operator privileges to a client */
+	void	Channel::removeChanOp(Client& chan_op)
+	{
+		this->_chan_ops.remove(&chan_op);
 	}
 
 	/* Manage topic ************************************************************* */

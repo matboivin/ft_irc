@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:42:14 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/03 15:42:45 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/03 16:39:37 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,11 +50,13 @@ namespace ft_irc
 		std::string			getTopic() const;
 		std::string			getMode() const;
 		const t_clients&	getClients() const;
+		const t_clients&	getChanOps() const;
 		/* Setters */
 		void				setName(const std::string& name);
 		void				setTopic(const std::string& topic);
 		void				setMode(const std::string& mode);
 		void				setClients(const t_clients& clients);
+		void				setChanOps(const t_clients& chan_ops);
 
 		/* Helpers */
 		bool				isEmpty() const;
@@ -64,6 +66,12 @@ namespace ft_irc
 		bool				hasClient(Client& client);
 		void				addClient(Client& client);
 		void				removeClient(Client& client);
+
+		/* Manage chan ops */
+		t_clients::iterator	findChanOp(Client& chan_op);
+		bool				hasChanOp(Client& chan_op);
+		void				addChanOp(Client& chan_op);
+		void				removeChanOp(Client& chan_op);
 
 		/* Manage topic */
 		void				changeTopic(const std::string& topic, Message& msg);
@@ -76,6 +84,7 @@ namespace ft_irc
 		std::string			_topic;
 		std::string			_mode;
 		t_clients			_clients;
+		t_clients			_chan_ops;
 	};
 }
 
