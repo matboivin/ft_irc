@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/03 16:03:17 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/03 16:12:07 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -396,8 +396,8 @@ namespace ft_irc
 	{
 		this->_commands["INVITE"]	= &Server::exec_invite_cmd;
 		this->_commands["JOIN"]		= &Server::exec_join_cmd;
-		this->_commands["KICK"]	= &Server::exec_kick_cmd;
-		// this->_commands["KILL"]	= &Server::exec_kill_cmd;
+		this->_commands["KICK"]		= &Server::exec_kick_cmd;
+		this->_commands["KILL"]		= &Server::exec_kill_cmd;
 		// this->_commands["LIST"]	= &Server::exec_list_cmd;
 		// this->_commands["MODE"]	= &Server::exec_mode_cmd;
 		// this->_commands["NAMES"]	= &Server::exec_names_cmd;
@@ -649,6 +649,8 @@ namespace ft_irc
 	 * The server MUST NOT send KICK messages with multiple channels or
 	 * users to clients.  This is necessarily to maintain backward
 	 * compatibility with old client software.
+	 *
+	 * The user must be a channel operator.
 	 */
 	void	Server::exec_kick_cmd(Message& msg)
 	{
@@ -674,7 +676,29 @@ namespace ft_irc
 		}
 	}
 
-	//void	Server::exec_kill_cmd(Message& msg);
+	/*
+	 * KILL <client> <comment>
+	 * Cause a client-server connection to be closed by the server.
+	 *
+	 * The user must be an IRC operator.
+	 * The comment given is the actual reason for the KILL.
+	 */
+	void	Server::exec_kill_cmd(Message& msg)
+	{
+		if (msg.getParams().size() < 2)
+			err_needmoreparams(msg);
+		else if (!msg.getSender().isOper())
+			err_noprivileges(msg);
+		else
+		{
+			std::string			nick = msg.getParams().at(0);
+
+			if (nick == this->getHostname())
+				err_cantkillserver(msg);
+			if (getClient(nick) == this->_clients.end())
+				err_nosuchnick(msg, nick);
+		}
+	}
 
 	//void	Server::exec_list_cmd(Message& msg);
 
