@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/03 12:47:20 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/03 14:47:28 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -353,16 +353,6 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	err_needmoreparams(Message& msg)
-	{
-		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 461 " + msg.getCommand() + " :Not enough parameters"
-			);
-		msg.appendSeparator();
-	}
-	
 	void	err_needmoreparams(Message& msg, const std::string& error_string)
 	{
 		msg.setRecipient(msg.getSender());

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/03 11:43:09 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/03 14:56:40 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -297,9 +297,9 @@ namespace ft_irc
 				{
 					std::cout << "Client " << client.getNick() << "@" << client.getIpAddressStr()
 							  << " has just registered" << std::endl;
-					Message	welcome_msg(msg);
 
-					welcome_msg.setRecipient(client);
+					Message	welcome_msg(client);
+
 					_make_welcome_msg(welcome_msg);
 					_sendResponse(welcome_msg);
 					client.setRegistered(true);
@@ -323,11 +323,11 @@ namespace ft_irc
 			{
 				this->_disconnectClient(*it);
 				it = this->_clients.erase(it);
-				continue;
+				continue ;
 			}
 			if (it->updateOutBuffer())
 			{
-				continue;
+				continue ;
 			}
 			_processClientCommand(*it);
 			it->updateInBuffer();
@@ -340,7 +340,8 @@ namespace ft_irc
 				else
 				{
 					//send them a timeout message
-					Message timeout_msg(*it);
+					Message	timeout_msg(*it);
+
 					timeout_msg.setRecipient(*it);
 					timeout_msg.setResponse("ERROR :Ping timeout: 30 seconds" CRLF);
 					_sendResponse(timeout_msg);
@@ -578,19 +579,19 @@ namespace ft_irc
 			_removeUserFromAllChannels(msg.getSender(), msg);
 		else
 		{
-			for (std::vector<std::string>::const_iterator param = msg.getParams().begin();
-				 param != msg.getParams().end();
-				 ++param)
+			for (std::vector<std::string>::const_iterator chan_name = msg.getParams().begin();
+				 chan_name != msg.getParams().end();
+				 ++chan_name)
 			{
-				std::list<Channel>::iterator	channel = getChannel(*param);
+				std::list<Channel>::iterator	channel = getChannel(*chan_name);
 
-				if (!channel_is_valid(*param))
+				if (!channel_is_valid(*chan_name))
 				{
-					err_nosuchchannel(msg, *param);
+					err_nosuchchannel(msg, *chan_name);
 					return ;
 				}
 				if (channel == this->_channels.end())
-					_addUserToChannel(msg.getSender(), _addChannel(*param));
+					_addUserToChannel(msg.getSender(), _addChannel(*chan_name));
 				else
 					_addUserToChannel(msg.getSender(), *channel);
 			}
@@ -617,12 +618,14 @@ namespace ft_irc
 			err_nonicknamegiven(msg);
 		else
 		{
-			if (!nick_is_valid(msg.getParams().at(0)))
+			std::string	new_nick = msg.getParams().at(0);
+
+			if (!nick_is_valid(new_nick))
 				err_erroneusnickname(msg);
-			else if (getClient(msg.getParams().at(0)) != this->_clients.end())
+			else if (getClient(new_nick) != this->_clients.end())
 				err_nicknameinuse(msg);
 			else
-				msg.getSender().setNick(msg.getParams().at(0));
+				msg.getSender().setNick(new_nick);
 		}
 	}
 
@@ -647,11 +650,8 @@ namespace ft_irc
 	void	Server::exec_oper_cmd(Message& msg)
 	{
 		if (msg.getParams().size() < 2)
-		{
 			err_needmoreparams(msg);
-			return ;
-		}
-		if (!msg.getSender().isOper())
+		else if (!msg.getSender().isOper())
 		{
 			if (_giveOperPriv(msg.getParams().at(0), msg.getParams().at(1)))
 			{
@@ -679,19 +679,19 @@ namespace ft_irc
 			return ;
 		}
 
-		for (std::vector<std::string>::const_iterator param = msg.getParams().begin();
-			 param != msg.getParams().end();
-			 ++param)
+		for (std::vector<std::string>::const_iterator chan_name = msg.getParams().begin();
+			 chan_name != msg.getParams().end();
+			 ++chan_name)
 		{
-			if ( ((*param)[0] == ':') && (++param == msg.getParams().end()) )
+			if ( ((*chan_name)[0] == ':') && (++chan_name == msg.getParams().end()) )
 				break ;
 
-			std::list<Channel>::iterator	channel = getChannel(*param);
+			std::list<Channel>::iterator	channel = getChannel(*chan_name);
 
 			if (channel == this->_channels.end())
-				err_nosuchchannel(msg, *param);
+				err_nosuchchannel(msg, *chan_name);
 			else if (!_userOnChannel(msg.getSender(), *channel))
-				err_notonchannel(msg, *param);
+				err_notonchannel(msg, *chan_name);
 			else
 			{
 				_removeUserFromChannel(msg.getSender(), *channel);
@@ -742,7 +742,8 @@ namespace ft_irc
 	 */
 	void	Server::exec_pong_cmd(Message& msg)
 	{
-		std::string origin;
+		std::string	origin;
+
 		if (msg.getParams().empty())
 			err_needmoreparams(msg, "No origin specified");
 		else
@@ -764,12 +765,17 @@ namespace ft_irc
 			err_norecipient(msg);
 		else if (msg.getParams().size() < 2)
 			err_notexttosend(msg);
-		else if (channel_is_valid(msg.getParams().at(0)) && !_userOnChannel( msg.getSender(), msg.getParams().at(0) ))
-			err_cannotsendtochan(msg);
-		else if (!channel_is_valid(msg.getParams().at(0)) && getClient( msg.getParams().at(0) ) == this->_clients.end() )
-			err_nosuchnick(msg, msg.getParams().at(0));
 		else
-			_setResponseRecipients(msg);
+		{
+			std::string	msgtarget = msg.getParams().at(0);
+
+			if (channel_is_valid(msgtarget) && !_userOnChannel(msg.getSender(), msgtarget))
+				err_cannotsendtochan(msg);
+			else if (!channel_is_valid(msgtarget) && getClient(msgtarget) == this->_clients.end() )
+				err_nosuchnick(msg, msgtarget);
+			else
+				_setResponseRecipients(msg);
+		}
 	}
 
 	/*
@@ -778,8 +784,8 @@ namespace ft_irc
 	 */
 	void	Server::exec_quit_cmd(Message& msg)
 	{
-		// TODO: default message
 		msg.setRecipients(msg.getSender().getAllContacts());
+		// TODO: if no message, set default message?
 		msg.getSender().setAlive(false);
 		// TODO: The server acknowledges this by sending an ERROR message to the client
 	}
@@ -791,23 +797,23 @@ namespace ft_irc
 	void	Server::exec_topic_cmd(Message& msg)
 	{
 		if (msg.getParams().empty())
-		{
 			err_needmoreparams(msg);
-			return ;
-		}
-
-		std::list<Channel>::iterator	channel = getChannel(msg.getParams().front());
-
-		if (channel == this->_channels.end())
-			err_nosuchchannel(msg, msg.getParams().front());
-		else if (!_userOnChannel(msg.getSender(), *channel))
-			err_notonchannel(msg, msg.getParams().front());
-		else if (msg.getParams().size() > 1 && !channel_is_valid(msg.getParams().back()))
-			channel->changeTopic(msg.getParams().back(), msg);
-		else if (channel->getTopic().empty())
-			rpl_notopic(msg, channel->getName());
 		else
-			rpl_topic(msg, *channel);
+		{
+			std::string						chan_name = msg.getParams().at(0);
+			std::list<Channel>::iterator	channel = getChannel(chan_name);
+
+			if (channel == this->_channels.end())
+				err_nosuchchannel(msg, chan_name);
+			else if (!_userOnChannel(msg.getSender(), *channel))
+				err_notonchannel(msg, chan_name);
+			else if (msg.getParams().size() > 1 && !channel_is_valid(msg.getParams().at(1)))
+				channel->changeTopic(msg.getParams().at(1), msg);
+			else if (channel->getTopic().empty())
+				rpl_notopic(msg, channel->getName());
+			else
+				rpl_topic(msg, *channel);
+		}
 	}
 
 	/*
