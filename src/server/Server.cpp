@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/06 15:43:37 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/06 15:49:13 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -290,8 +290,6 @@ namespace ft_irc
 
 			if (_parse(msg, client.popUnprocessedCommand()) == true) // parse the message
 			{
-				msg.displayMessage();
-
 				_executeCommand(msg); // execute the command
 				//if the client has just registered, send him a nice welcome message :D
 				if (client.isRegistered() == false && !client.getNick().empty() &&
