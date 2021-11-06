@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 12:25:08 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/03 12:16:29 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/06 16:19:47 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,6 @@ int	test_parsing()
 {
 	ft_irc::Parser	parser;
 	ft_irc::Client	dummy_client;
-	ft_irc::Message	msg(dummy_client);
 
 	// Set dummy values to client
 	dummy_client.setNick("nick");
@@ -73,6 +72,7 @@ int	test_parsing()
 
 	// Wrong command format is silently ignored
 	{
+		ft_irc::Message	msg(dummy_client);
 		ft_irc::Message	expected(dummy_client);
 
 		parser.parseMessage(msg, "123");
@@ -81,6 +81,7 @@ int	test_parsing()
 
 	// Unknown command
 	{
+		ft_irc::Message	msg(dummy_client);
 		ft_irc::Message	expected(dummy_client);
 
 		parser.parseMessage(msg, "foo");
@@ -91,6 +92,7 @@ int	test_parsing()
 
 	// Uppercase command if valid
 	{
+		ft_irc::Message	msg(dummy_client);
 		ft_irc::Message	expected(dummy_client);
 
 		parser.parseMessage(msg, "PArt");
@@ -101,6 +103,7 @@ int	test_parsing()
 
 	// Valid command
 	{
+		ft_irc::Message	msg(dummy_client);
 		ft_irc::Message	expected(dummy_client);
 
 		parser.parseMessage(msg, "QUIT");
@@ -111,6 +114,7 @@ int	test_parsing()
 
 	// Simple parameter checking
 	{
+		ft_irc::Message	msg(dummy_client);
 		ft_irc::Message	expected(dummy_client);
 
 		parser.parseMessage(msg, "JOIN  ");
@@ -126,6 +130,7 @@ int	test_parsing()
 
 	// Trailing parameter can contain spaces and colons
 	{
+		ft_irc::Message	msg(dummy_client);
 		ft_irc::Message	expected(dummy_client);
 
 		parser.parseMessage(msg, "QUIT :Gone to have lunch at: MyFavPlace");
@@ -137,6 +142,7 @@ int	test_parsing()
 
 	// Trailing parameter must start with a colon
 	{
+		ft_irc::Message	msg(dummy_client);
 		ft_irc::Message	expected(dummy_client);
 
 		parser.parseMessage(msg, "QUIT :Gone to have lunch");
@@ -147,6 +153,7 @@ int	test_parsing()
 	}
 
 	{
+		ft_irc::Message	msg(dummy_client);
 		ft_irc::Message	expected(dummy_client);
 
 		parser.parseMessage(msg, "TOPIC #test :another topic");
@@ -158,6 +165,7 @@ int	test_parsing()
 
 	// Many middle parameters
 	{
+		ft_irc::Message	msg(dummy_client);
 		ft_irc::Message	expected(dummy_client);
 
 		parser.parseMessage(msg, "KICK #Finnish John :Speaking English");
@@ -171,6 +179,7 @@ int	test_parsing()
 
 	// List of middle parameters
 	{
+		ft_irc::Message	msg(dummy_client);
 		ft_irc::Message	expected(dummy_client);
 
 		parser.parseMessage(msg, "JOIN #foo,#bar");
@@ -182,17 +191,21 @@ int	test_parsing()
 	}
 
 	{
+		ft_irc::Message	msg(dummy_client);
 		ft_irc::Message	expected(dummy_client);
 
-		parser.parseMessage(msg, "JOIN #foo, #bar"); // need checking with irrsi
+		parser.parseMessage(msg, "JOIN #abc,# #bcd,x");
 		expected.setCommand("JOIN");
-		expected.setParam("#foo");
-		expected.setParam("#bar");
-		expected.setResponse(":nick!username@0.0.0.0 JOIN #foo, #bar\r\n");
+		expected.setParam("#abc");
+		expected.setParam("#");
+		expected.setParam("#bcd");
+		expected.setParam("x");
+		expected.setResponse(":nick!username@0.0.0.0 JOIN #abc,# #bcd,x\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
 	{
+		ft_irc::Message	msg(dummy_client);
 		ft_irc::Message	expected(dummy_client);
 
 		parser.parseMessage(msg, "QUIT :#foo,#bar");
