@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/06 15:40:47 by root             ###   ########.fr       */
+/*   Updated: 2021/11/06 17:36:35 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -583,7 +583,7 @@ namespace ft_irc
 	void	Server::exec_join_cmd(Message& msg)
 	{
 		if (msg.getParams().empty())
-			err_needmoreparams(msg);
+			err_needmoreparams(msg, true);
 		else if (msg.getParams().at(0) == "0") // JOIN 0
 			_removeUserFromAllChannels(msg.getSender(), msg);
 		else
@@ -622,15 +622,15 @@ namespace ft_irc
 	void	Server::exec_nick_cmd(Message& msg)
 	{
 		if (msg.getParams().empty())
-			err_nonicknamegiven(msg);
+			err_nonicknamegiven(msg, true);
 		else
 		{
 			std::string	new_nick = msg.getParams().at(0);
 
 			if (!nick_is_valid(new_nick))
-				err_erroneusnickname(msg);
+				err_erroneusnickname(msg, true);
 			else if (getClient(new_nick) != this->_clients.end())
-				err_nicknameinuse(msg);
+				err_nicknameinuse(msg, true);
 			else
 				msg.getSender().setNick(new_nick);
 		}
@@ -657,7 +657,7 @@ namespace ft_irc
 	void	Server::exec_oper_cmd(Message& msg)
 	{
 		if (msg.getParams().size() < 2)
-			err_needmoreparams(msg);
+			err_needmoreparams(msg, true);
 		else if (!msg.getSender().isOper())
 		{
 			if (_giveOperPriv(msg.getParams().at(0), msg.getParams().at(1)))
@@ -665,12 +665,13 @@ namespace ft_irc
 				msg.getSender().addMode("o");
 
 				Message	rpl_msg(msg.getSender()); // tmp
+
 				rpl_youreoper(rpl_msg);
 				_sendResponse(rpl_msg);
 				exec_mode_cmd(msg);
 			}
 			else
-				err_passwdmismatch(msg);
+				err_passwdmismatch(msg, true);
 		}
 	}
 
@@ -770,7 +771,7 @@ namespace ft_irc
 	{
 		if (msg.getParams().empty())
 		{
-			err_needmoreparams(msg);
+			err_needmoreparams(msg, true);
 			return ;
 		}
 
@@ -784,9 +785,9 @@ namespace ft_irc
 			t_channels::iterator	channel = getChannel(*chan_name);
 
 			if (channel == this->_channels.end())
-				err_nosuchchannel(msg, *chan_name);
+				err_nosuchchannel(msg, *chan_name, true);
 			else if (!_userOnChannel(msg.getSender(), *channel))
-				err_notonchannel(msg, *chan_name);
+				err_notonchannel(msg, *chan_name, true);
 			else
 			{
 				_removeUserFromChannel(msg.getSender(), *channel);
@@ -803,9 +804,9 @@ namespace ft_irc
 	void	Server::exec_pass_cmd(Message& msg)
 	{
 		if (msg.getParams().empty())
-			err_needmoreparams(msg);
+			err_needmoreparams(msg, true);
 		else if (msg.getSender().isRegistered())
-			err_alreadyregistered(msg);
+			err_alreadyregistered(msg, true);
 		else
 			msg.getSender().setPassword(msg.getParams().at(0));
 	}
@@ -857,17 +858,17 @@ namespace ft_irc
 	void	Server::exec_privmsg_cmd(Message& msg)
 	{
 		if (msg.getParams().empty())
-			err_norecipient(msg);
+			err_norecipient(msg, true);
 		else if (msg.getParams().size() < 2)
-			err_notexttosend(msg);
+			err_notexttosend(msg, true);
 		else
 		{
 			std::string	msgtarget = msg.getParams().at(0);
 
 			if (channel_is_valid(msgtarget) && !_userOnChannel(msg.getSender(), msgtarget))
-				err_cannotsendtochan(msg);
+				err_cannotsendtochan(msg, true);
 			else if (!channel_is_valid(msgtarget) && getClient(msgtarget) == this->_clients.end() )
-				err_nosuchnick(msg, msgtarget);
+				err_nosuchnick(msg, msgtarget, true);
 			else
 				_setResponseRecipients(msg);
 		}
@@ -892,22 +893,22 @@ namespace ft_irc
 	void	Server::exec_topic_cmd(Message& msg)
 	{
 		if (msg.getParams().empty())
-			err_needmoreparams(msg);
+			err_needmoreparams(msg, true);
 		else
 		{
 			std::string						chan_name = msg.getParams().at(0);
 			t_channels::iterator	channel = getChannel(chan_name);
 
 			if (channel == this->_channels.end())
-				err_nosuchchannel(msg, chan_name);
+				err_nosuchchannel(msg, chan_name, true);
 			else if (!_userOnChannel(msg.getSender(), *channel))
-				err_notonchannel(msg, chan_name);
+				err_notonchannel(msg, chan_name, true);
 			else if (msg.getParams().size() > 1 && !channel_is_valid(msg.getParams().at(1)))
 				channel->changeTopic(msg.getParams().at(1), msg);
 			else if (channel->getTopic().empty())
-				rpl_notopic(msg, channel->getName());
+				rpl_notopic(msg, channel->getName(), true);
 			else
-				rpl_topic(msg, *channel);
+				rpl_topic(msg, *channel, true);
 		}
 	}
 
@@ -924,7 +925,7 @@ namespace ft_irc
 		std::vector<std::string>	params = msg.getParams();
 	
 		if (msg.getParams().size() < 4)
-			err_needmoreparams(msg);
+			err_needmoreparams(msg, true);
 		else
 		{
 			client.setUsername(params.at(0));
@@ -1040,7 +1041,7 @@ namespace ft_irc
 	void	Server::exec_test_cmd(Message& msg)
 	{
 		if (msg.getParams().empty())
-			err_needmoreparams(msg);
+			err_needmoreparams(msg, true);
 		for (std::vector<std::string>::const_iterator it = msg.getParams().begin();
 			 it != msg.getParams().end();
 			 ++it)
