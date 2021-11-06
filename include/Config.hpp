@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Config.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/19 16:41:45 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/03 15:44:27 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/06 10:46:50 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ namespace ft_irc
 		/* Settings constructor */
 						Config(std::string bind_address="0.0.0.0",
 							   std::string port="6697",
-							   std::string password="",
+							   std::string password="²",
 							   std::string hostname="irc.42.fr"
 							   );
 

@@ -19,7 +19,8 @@ INC_FILES 			= 	ft_irc.hpp \
 						numeric_replies.hpp \
 						Server.hpp \
 						server_operations.hpp \
-						server_operations.tpp
+						server_operations.tpp \
+						Logger.hpp
 
 SRC_FILES 			= 	main.cpp \
 						Channel.cpp \
@@ -31,7 +32,9 @@ SRC_FILES 			= 	main.cpp \
 						numeric_replies.cpp \
 						Server.cpp \
 						server_operations.cpp \
-						utils.cpp
+						utils.cpp \
+						Logger.cpp \
+						const.cpp
 
 # tests
 SRC_FILES 			+= 	test_parsing.cpp
@@ -47,7 +50,9 @@ OBJ_DIR				= 	obj
 SUB_DIRS			=	client \
 						parsing \
 						server \
-						utils
+						utils \
+						logger \
+						const
 
 SRC_SUBDIRS			:=	$(addprefix $(SRC_DIR)/, $(SUB_DIRS))
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/03 15:32:11 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/06 15:40:47 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,8 @@ namespace ft_irc
 	  _parser(),
 	  _commands(),
 	  _clients(),
-	  _channels()
+	  _channels(),
+	  _logger(DEBUG)
 	{
 		// create a new address struct
 		this->_address.sin_family = AF_INET;
@@ -74,7 +75,8 @@ namespace ft_irc
 	  _parser(other._parser),
 	  _commands(other._commands),
 	  _clients(other._clients),
-	  _channels(other._channels)
+	  _channels(other._channels),
+	  _logger(other._logger)
 	{
 	}
 
@@ -93,6 +95,7 @@ namespace ft_irc
 			this->_commands = other._commands;
 			this->_clients = other._clients;
 			this->_channels = other._channels;
+			this->_logger = other._logger;
 		}
 		return (*this);
 	}
@@ -156,6 +159,11 @@ namespace ft_irc
 			++it;
 		}
 		return (it);
+	}
+
+	void	Server::_log(int level, const std::string& msg) const
+	{
+		_logger.log(level, msg);
 	}
 
 	Server::t_channels::iterator	Server::getChannel(const std::string& chan_name)
@@ -399,7 +407,7 @@ namespace ft_irc
 		// this->_commands["KICK"]	= &Server::exec_kick_cmd;
 		// this->_commands["KILL"]	= &Server::exec_kill_cmd;
 		// this->_commands["LIST"]	= &Server::exec_list_cmd;
-		// this->_commands["MODE"]	= &Server::exec_mode_cmd;
+		this->_commands["MODE"]	= &Server::exec_mode_cmd;
 		// this->_commands["NAMES"]	= &Server::exec_names_cmd;
 		this->_commands["NICK"]		= &Server::exec_nick_cmd;
 		this->_commands["NOTICE"]	= &Server::exec_notice_cmd;
@@ -473,7 +481,8 @@ namespace ft_irc
 
 			if (pos != std::string::npos)
 				logOutput.replace(pos, 2, CRLF_PRINTABLE); 
-			std::cout << "Sending: '" << logOutput << "' to " << (*dst)->getIpAddressStr() << std::endl;
+		//	std::cout << "Sending: '" << logOutput << "' to " << (*dst)->getIpAddressStr() << std::endl;
+			_log(0, "Sending: '" + logOutput + "' to " + (*dst)->getIpAddressStr());	
 			if (send((*dst)->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
 			{
 				throw std::runtime_error("send() failed");
@@ -604,8 +613,6 @@ namespace ft_irc
 
 	//void	Server::exec_list_cmd(Message& msg);
 
-	//void	Server::exec_mode_cmd(Message& msg);
-
 	//void	Server::exec_names_cmd(Message& msg);
 
 	/*
@@ -660,11 +667,99 @@ namespace ft_irc
 				Message	rpl_msg(msg.getSender()); // tmp
 				rpl_youreoper(rpl_msg);
 				_sendResponse(rpl_msg);
-				//exec_mode_cmd(msg);
+				exec_mode_cmd(msg);
 			}
 			else
 				err_passwdmismatch(msg);
 		}
+	}
+
+	void	Server::exec_mode_cmd(Message& msg)
+	{
+		if (msg.getParams().size() < 2)
+			err_needmoreparams(msg);
+		else
+		{
+			std::string	target = msg.getParams().at(0);
+			std::string	mode_str = msg.getParams().at(1);
+
+			if (target == "0")
+				err_nosuchnick(msg, target);
+			else if (target == "*")
+				err_needmoreparams(msg);
+			else if (target[0] == '#')
+			{
+				t_channels::iterator	channel = getChannel(target);
+
+				if (channel == this->_channels.end())
+					err_nosuchchannel(msg, target);
+				else
+					channel->setMode(mode_str);
+			}
+			else
+			{
+				t_clients::iterator	client = getClient(target);
+
+				if (client == this->_clients.end())
+					err_nosuchnick(msg, target);
+				else
+					_setUserMode(*client, mode_str, msg);
+			}
+		}	
+	}
+
+	int Server::_setUserMode(Client &client, const std::string& mode_str, Message& msg)
+	{
+		std::string	mode_str_copy = mode_str;
+		int			error_code = 0;
+
+		if (mode_str_copy.empty())
+			return (1);
+		if (mode_str_copy[0] == '+')
+			mode_str_copy.erase(0, 1);
+		for (std::string::iterator mode_char = mode_str_copy.begin();
+			 mode_char != mode_str_copy.end();
+			 ++mode_char)
+		{
+			if (*mode_char == '-')
+			{
+				error_code = client.removeMode(*mode_char);
+			}
+			else
+			{
+				error_code = client.addMode(*mode_char);
+			}
+			if (error_code)
+			{
+				//Append error message
+				msg.appendResponse(error_msg[error_code]);
+			}
+		}
+		return (0);
+	}
+
+	int	Client::addMode(char mode_char)
+	{
+		std::string valid_modes = "iswo";
+
+		if (valid_modes.find(mode_char) != std::string::npos)
+		{
+			this->_mode += mode_char;
+			return (ERR_SUCCESS);
+		}
+		return (ERR_UNKNOWNMODE);
+	}
+
+	int	Client::removeMode(char mode_char)
+	{
+		std::string valid_modes = "iswo";
+
+		if (valid_modes.find(mode_char) != std::string::npos)
+		{
+			this->_mode.erase(this->_mode.find(mode_char), 1);
+			return (ERR_SUCCESS);
+		}
+		return (ERR_UNKNOWNMODE);
 	}
 
 	/*
@@ -723,7 +818,7 @@ namespace ft_irc
 		std::string	origin;
 
 		if (msg.getParams().empty())
-			err_needmoreparams(msg, "No origin specified");
+			err_needmoreparams(msg, error_msg[ERR_NOORIGIN]);
 		else
 		{
 			origin = msg.getParams().front();
@@ -745,7 +840,7 @@ namespace ft_irc
 		std::string	origin;
 
 		if (msg.getParams().empty())
-			err_needmoreparams(msg, "No origin specified");
+			err_needmoreparams(msg, error_msg[ERR_NOORIGIN]);
 		else
 		{
 			origin = msg.getParams().front();
