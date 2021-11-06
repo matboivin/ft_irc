@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/06 14:46:41 by root              #+#    #+#             */
-/*   Updated: 2021/11/06 15:17:05 by root             ###   ########.fr       */
+/*   Updated: 2021/11/06 17:42:19 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ namespace ft_irc
 	}
 
 	Logger::Logger(int log_level)
-	{
+	{	
 		_log_level = log_level;
 	}
 

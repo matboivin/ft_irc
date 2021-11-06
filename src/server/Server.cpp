@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/06 17:36:35 by root             ###   ########.fr       */
+/*   Updated: 2021/11/06 17:43:54 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -896,7 +896,7 @@ namespace ft_irc
 			err_needmoreparams(msg, true);
 		else
 		{
-			std::string						chan_name = msg.getParams().at(0);
+			std::string				chan_name = msg.getParams().at(0);
 			t_channels::iterator	channel = getChannel(chan_name);
 
 			if (channel == this->_channels.end())
