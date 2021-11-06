@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/03 14:57:57 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/06 16:37:59 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ namespace ft_irc
 	void	rpl_yourhost(Message& msg, const std::string& version); // 002
 	void	rpl_umodeis(Message& msg, const std::string& user_mode); // 221
 	void	rpl_whoisuser(Message& msg); // 311
+	void	rpl_whoisserver(Message& msg, const std::string& description); // 312
 	void	rpl_whoisoperator(Message& msg); // 313
 	void	rpl_endofwho(Message& msg, const std::string& name); // 315
 	void	rpl_endofwhois(Message& msg, const std::string& nick); // 318

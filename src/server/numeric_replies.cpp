@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/03 14:47:28 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/06 16:37:52 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,176 +23,208 @@ namespace ft_irc
 	void	rpl_welcome(Message& msg)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 001 Welcome to the Internet Relay Network "
-			+ build_full_client_id(msg.getSender())
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 001 Welcome to the Internet Relay Network ");
+		msg.appendResponse(build_full_client_id(msg.getSender()));
 		msg.appendSeparator();
 	}
 
 	void	rpl_yourhost(Message& msg, const std::string& version)
 	{
 		msg.setRecipient(msg.getSender());
-		// beware it is append and not set
-		msg.appendResponse(
-			build_prefix(msg.getServHostname())
-			+ " 002 " + msg.getSender().getNick() + " :Your host is "
-			+ msg.getServHostname() + ", running version " + version
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 002 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" :Your host is ");
+		msg.appendResponse(", running version ");
+		msg.appendResponse(version);
 		msg.appendSeparator();
 	}
 
 	void	rpl_umodeis(Message& msg, const std::string& user_mode)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 221 " + user_mode
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 221 ");
+		msg.appendResponse(user_mode);
 		msg.appendSeparator();
 	}
 
 	void	rpl_whoisuser(Message& msg)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 311 " + msg.getSender().getNick() + " " + msg.getSender().getUsername() + " "
-			+ msg.getSender().getIpAddressStr() + " :" + msg.getSender().getRealName()
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 311 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
+		msg.appendResponse(msg.getSender().getUsername());
+		msg.appendResponse(" ");
+		msg.appendResponse(msg.getSender().getIpAddressStr());
+		msg.appendResponse(" :");
+		msg.appendResponse(msg.getSender().getRealName());
+		msg.appendSeparator();
+	}
+
+	void	rpl_whoisserver(Message& msg, const std::string& description)
+	{
+		msg.setRecipient(msg.getSender());
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 312 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
+		msg.appendResponse(msg.getServHostname());
+		msg.appendResponse(" :");
+		msg.appendResponse(description);
 		msg.appendSeparator();
 	}
 
 	void	rpl_whoisoperator(Message& msg)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 313 " + msg.getSender().getNick() + " :is an IRC operator"
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 313 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" :is an IRC operator");
 		msg.appendSeparator();
 	}
 
 	void	rpl_endofwho(Message& msg, const std::string& name)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(build_prefix(msg.getServHostname()) + " 315 " + name + " :End of WHO list");
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 315 ");
+		msg.appendResponse(name);
+		msg.appendResponse(" :End of WHO list");
 		msg.appendSeparator();
 	}
 
 	void	rpl_endofwhois(Message& msg, const std::string& nick)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(build_prefix(msg.getServHostname()) + " 318 " + nick + " :End of WHOIS list");
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 318 ");
+		msg.appendResponse(nick);
+		msg.appendResponse(" :End of WHOIS list");
 		msg.appendSeparator();
 	}
 
 	void	rpl_whoischannels(Message& msg, const std::string& nick, const std::string& chan_name)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(build_prefix(
-			msg.getServHostname())
-			+ " 319 " + nick + " :*" + chan_name // todo
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 319 ");
+		msg.appendResponse(nick);
+		msg.appendResponse(" :");
+		msg.appendResponse(chan_name);
 		msg.appendSeparator();
 	}
 
 	void	rpl_list(Message& msg, Channel& channel)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 322 " + channel.getName() + " :" + channel.getTopic()
-			);
-		msg.appendSeparator();
-	}
-
-	void	rpl_channelmodeis(Message& msg, Channel& channel)
-	{
-		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 322 " + channel.getName() + " " + channel.getMode() // todo + <mode params>
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 322 ");
+		msg.appendResponse(channel.getName());
+		msg.appendResponse(" :");
+		msg.appendResponse(channel.getTopic());
 		msg.appendSeparator();
 	}
 
 	void	rpl_listend(Message& msg)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(build_prefix(msg.getServHostname()) + " 323 :End of LIST");
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 323 :End of LIST");
+		msg.appendSeparator();
+	}
+
+	void	rpl_channelmodeis(Message& msg, Channel& channel)
+	{
+		msg.setRecipient(msg.getSender());
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 324 ");
+		msg.appendResponse(channel.getName());
+		msg.appendResponse(" ");
+		msg.appendResponse(channel.getMode());
 		msg.appendSeparator();
 	}
 
 	void	rpl_notopic(Message& msg, const std::string& chan_name)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 331 " + chan_name + " :No topic is set"
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 331 ");
+		msg.appendResponse(chan_name);
+		msg.appendResponse(" :No topic is set");
 		msg.appendSeparator();
 	}
 
 	void	rpl_topic(Message& msg, Channel& channel)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 332 " + channel.getName() + " :" + channel.getTopic()
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 332 ");
+		msg.appendResponse(channel.getName());
+		msg.appendResponse(" :");
+		msg.appendResponse(channel.getTopic());
 		msg.appendSeparator();
 	}
 
 	void	rpl_inviting(Message& msg, const std::string& chan_name, const std::string& nick)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 341 " + chan_name + " " + nick
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 341 ");
+		msg.appendResponse(chan_name);
+		msg.appendResponse(" ");
+		msg.appendResponse(nick);
 		msg.appendSeparator();
 	}
 
 	void	rpl_whoreply(Message& msg, const std::string& chan_name, Client& target)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 352 " + chan_name + " " + target.getUsername() + " " + target.getIpAddressStr()
-			+ " " + "getServer" + " " + target.getNick() + " :" + target.getRealName()
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 352 ");
+		msg.appendResponse(chan_name);
+		msg.appendResponse(" ");
+		msg.appendResponse(target.getUsername());
+		msg.appendResponse(" ");
+		msg.appendResponse(target.getIpAddressStr());
+		msg.appendResponse(" ");
+		//msg.appendResponse();  todo server
+		msg.appendResponse(" ");
+		msg.appendResponse(target.getNick());
+		msg.appendResponse(" :");
+		msg.appendResponse(target.getRealName());
 		msg.appendSeparator();
 	}
 
 	void	rpl_namreply(Message& msg, Channel& channel)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 353 " + channel.getName() // todo
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 353 ");
+		msg.appendResponse(channel.getName());
+		// todo
 		msg.appendSeparator();
 	}
 
 	void	rpl_endofnames(Message& msg, const std::string& chan_name)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 366 " + chan_name + " :End of NAMES list"
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 366 ");
+		msg.appendResponse(chan_name);
+		msg.appendResponse(" :End of NAMES list");
 		msg.appendSeparator();
 	}
 
 	void	rpl_youreoper(Message& msg)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 381 :You are now an IRC operator"
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 381 :You are now an IRC operator");
 		msg.appendSeparator();
 	}
 
