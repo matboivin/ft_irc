@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/06 17:43:54 by root             ###   ########.fr       */
+/*   Updated: 2021/11/07 16:17:33 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -819,7 +819,7 @@ namespace ft_irc
 		std::string	origin;
 
 		if (msg.getParams().empty())
-			err_needmoreparams(msg, error_msg[ERR_NOORIGIN]);
+			err_needmoreparams(msg, true, error_msg[ERR_NOORIGIN]);
 		else
 		{
 			origin = msg.getParams().front();
@@ -841,7 +841,7 @@ namespace ft_irc
 		std::string	origin;
 
 		if (msg.getParams().empty())
-			err_needmoreparams(msg, error_msg[ERR_NOORIGIN]);
+			err_needmoreparams(msg, true, error_msg[ERR_NOORIGIN]);
 		else
 		{
 			origin = msg.getParams().front();
@@ -1009,6 +1009,7 @@ namespace ft_irc
 		{
 			if (match_nick(to_match, it->getNick()))
 			{
+				
 				response += ":" + this->getHostname() + " 311 " + msg.getSender().getNick() + " ";
 				response += it->getNick();
 				response += " " + it->getUsername();

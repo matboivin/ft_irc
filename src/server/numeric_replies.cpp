@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/06 17:36:06 by root             ###   ########.fr       */
+/*   Updated: 2021/11/07 16:17:06 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -489,7 +489,7 @@ namespace ft_irc
 		//:public-irc.w3.org 461 ezakjhzkjehkjzehdk WHO :Syntax error
 		msg.setResponse(
 			build_prefix(msg.getServHostname()) 
-			+ " 461 " + sender.getNick() + " " + cmd + " :Syntax error"
+			+ " 461 " + msg.getSender().getNick() + " " + cmd + " :Syntax error"
 			);
 		msg.appendSeparator();
 	}
