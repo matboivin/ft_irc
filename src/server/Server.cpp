@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/03 16:54:57 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/06 17:06:15 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -685,9 +685,17 @@ namespace ft_irc
 			std::string	nick = msg.getParams().at(0);
 
 			if (nick == this->getHostname())
+			{
 				err_cantkillserver(msg);
-			if (getClient(nick) == this->_clients.end())
+				return ;
+			}
+
+			t_clients::iterator	user = getClient(nick);
+
+			if (user == this->_clients.end())
 				err_nosuchnick(msg, nick);
+			else
+				user->setAlive(false); // will be clean by server loop
 		}
 	}
 
