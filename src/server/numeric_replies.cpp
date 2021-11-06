@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/06 16:58:51 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/06 17:14:46 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -277,6 +277,18 @@ namespace ft_irc
 		msg.appendResponse(" 401 ");
 		msg.appendResponse(nick);
 		msg.appendResponse(" :No such nick/channel");
+		msg.appendSeparator();
+	}
+
+	void	err_nosuchserver(Message& msg, const std::string& serv_name, bool rewrite)
+	{
+		msg.setRecipient(msg.getSender());
+		if (rewrite)
+			msg.clearResponse();
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 402 ");
+		msg.appendResponse(serv_name);
+		msg.appendResponse(" :No such server");
 		msg.appendSeparator();
 	}
 
