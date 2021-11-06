@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/06 16:37:52 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/06 16:49:50 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -233,261 +233,276 @@ namespace ft_irc
 	void	err_nosuchnick(Message& msg, const std::string& nick)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 401 " + nick + " :No such nick/channel"
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 401 ");
+		msg.appendResponse(nick);
+		msg.appendResponse(" :No such nick/channel");
 		msg.appendSeparator();
 	}
 
 	void	err_nosuchchannel(Message& msg, const std::string& chan_name)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 403 " + chan_name + " :No such channel"
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 403 ");
+		msg.appendResponse(chan_name);
+		msg.appendResponse(" :No such channel");
 		msg.appendSeparator();
 	}
 
 	void	err_cannotsendtochan(Message& msg)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 404 " + msg.getParams().front() + " :Cannot send to channel"
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 404 ");
+		msg.appendResponse(msg.getParams().at(0));
+		msg.appendResponse(" :Cannot send to channel");
 		msg.appendSeparator();
 	}
 
 	void	err_toomanychannels(Message& msg, const std::string& chan_name)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 405 " + chan_name + " :You have joined too many channels"
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 405 ");
+		msg.appendResponse(chan_name);
+		msg.appendResponse(" :You have joined too many channels");
 		msg.appendSeparator();
 	}
 
-	void	err_toomanytargets(Message& msg, const std::string& target) // necessary?
+	void	err_toomanytargets(Message& msg, const std::string& target) // maybe not necessary?
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 407 " + target + " :<error code> recipients. <abort message>" // todo
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 407 ");
+		msg.appendResponse(target);
+		msg.appendResponse(" :<error code> recipients. <abort message>"); // todo
 		msg.appendSeparator();
 	}
 
 	void	err_noorigin(Message& msg)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(build_prefix(msg.getServHostname()) + " 409 :No origin specified");
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 409 :No origin specified");
 		msg.appendSeparator();
 	}
 
 	void	err_norecipient(Message& msg)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 411 :No recipient given (" + msg.getCommand() + ")"
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 411 :No recipient given (");
+		msg.appendResponse(msg.getCommand());
+		msg.appendResponse(")");
 		msg.appendSeparator();
 	}
 
 	void	err_notexttosend(Message& msg)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(build_prefix(msg.getServHostname()) + " 412 :No text to send");
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 412 :No text to send");
 		msg.appendSeparator();
 	}
 
 	void	err_unknowncommand(Message& msg)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 421 " + msg.getCommand() + " :Unknown command"
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 421 ");
+		msg.appendResponse(msg.getCommand());
+		msg.appendResponse(" :Unknown command");
 		msg.appendSeparator();
 	}
 
 	void	err_nonicknamegiven(Message& msg)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(build_prefix(msg.getServHostname()) + " 431 :No nickname given");
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 431 :No nickname given");
 		msg.appendSeparator();
 	}
 
 	void	err_erroneusnickname(Message& msg)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 432 " + msg.getParams().front() + " :Erroneous nickname"
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 432 ");
+		msg.appendResponse(msg.getParams().at(0));
+		msg.appendResponse(" :Erroneous nickname");
 		msg.appendSeparator();
 	}
 
 	void	err_nicknameinuse(Message& msg)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 433 * " + msg.getParams().front() + " :Nickname already in use"
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 433 ");
+		msg.appendResponse(msg.getParams().at(0));
+		msg.appendResponse(" :Nickname already in use");
 		msg.appendSeparator();
 	}
 
-	void	err_unavailresource(Message& msg, const std::string& target)
+	void	err_unavailresource(Message& msg, const std::string& target) // maybe not necessary?
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 437 " + target + " :Nick/channel is temporarily unavailable"
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 437 ");
+		msg.appendResponse(target);
+		msg.appendResponse(" :Nick/channel is temporarily unavailable");
 		msg.appendSeparator();
 	}
 
 	void	err_usernotinchannel(Message& msg, const std::string& nick, const std::string& chan_name)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 441 " + nick + " " + chan_name + " :They aren't on that channel");
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 441 ");
+		msg.appendResponse(nick);
+		msg.appendResponse(" ");
+		msg.appendResponse(chan_name);
+		msg.appendResponse(" :They aren't on that channel");
 		msg.appendSeparator();
 	}
 
 	void	err_notonchannel(Message& msg, const std::string& chan_name)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 442 " + chan_name + " :You're not on that channel");
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 442 ");
+		msg.appendResponse(chan_name);
+		msg.appendResponse(" :You're not on that channel");
 		msg.appendSeparator();
 	}
 
 	void	err_useronchannel(Message& msg, const std::string& nick, const std::string& chan_name)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 443 " + nick + " " + chan_name + " :is already on channel");
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 443 ");
+		msg.appendResponse(nick);
+		msg.appendResponse(" ");
+		msg.appendResponse(chan_name);
+		msg.appendResponse(" :is already on channel");
 		msg.appendSeparator();
 	}
 
 	void	err_notregistered(Message& msg)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(build_prefix(msg.getServHostname()) + " 451 :You have not registered");
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 451 :You have not registered");
 		msg.appendSeparator();
 	}
 
 	void	err_needmoreparams(Message& msg, const std::string& error_string)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 461 " + msg.getCommand() + " :" + error_string
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 461 ");
+		msg.appendResponse(msg.getCommand());
+		msg.appendResponse(" :");
+		msg.appendResponse(error_string);
 		msg.appendSeparator();
 	}
 
 	void	err_syntaxerror(Message& msg, std::string cmd)
 	{
-		Client& sender = msg.getSender();
-		msg.setRecipient(sender);
+		msg.setRecipient(msg.getSender());
 		//:public-irc.w3.org 461 ezakjhzkjehkjzehdk WHO :Syntax error
-		msg.setResponse(
-			build_prefix(msg.getServHostname()) 
-			+ " 461 " + sender.getNick() + " " + cmd + " :Syntax error"
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 461 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
+		msg.appendResponse(cmd);
+		msg.appendResponse(" :Syntax error");
 		msg.appendSeparator();
 	}
 
 	void	err_alreadyregistered(Message& msg)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 462 :Unauthorized command (already registered)"
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 462 :Unauthorized command (already registered)");
 		msg.appendSeparator();
 	}
 
 	void	err_passwdmismatch(Message& msg)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(build_prefix(msg.getServHostname()) + " 464 :Password incorrect");
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 464 :Password incorrect");
 		msg.appendSeparator();
 	}
 
 	void	err_channelisfull(Message& msg, const std::string& chan_name)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 471 " + chan_name + " :Cannot join channel (+l)"
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 471 ");
+		msg.appendResponse(chan_name);
+		msg.appendResponse(" :Cannot join channel (+l)");
 		msg.appendSeparator();
 	}
 
 	void	err_bannedfromchan(Message& msg, const std::string& chan_name)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 474 " + chan_name + " :Cannot join channel (+b)"
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 474 ");
+		msg.appendResponse(chan_name);
+		msg.appendResponse(" :Cannot join channel (+b)");
 		msg.appendSeparator();
 	}
 
 	void	err_noprivileges(Message& msg)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(build_prefix(
-			msg.getServHostname()) + " 481 :Permission Denied- You're not an IRC operator"
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 481 :Permission Denied- You're not an IRC operator");
 		msg.appendSeparator();
 	}
 
 	void	err_chanoprivsneeded(Message& msg, const std::string& chan_name)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(
-			build_prefix(msg.getServHostname())
-			+ " 482 " + chan_name + " :You're not channel operator"
-			);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 482 ");
+		msg.appendResponse(chan_name);
+		msg.appendResponse(" :You're not channel operator");
 		msg.appendSeparator();
 	}
 
 	void	err_cantkillserver(Message& msg)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(build_prefix(msg.getServHostname()) + " 483 :You can't kill a server!");
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 483 :You can't kill a server!");
 		msg.appendSeparator();
 	}
 
 	void	err_nooperhost(Message& msg)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(build_prefix(msg.getServHostname()) + " 491 :No O-lines for your host");
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 491 :No O-lines for your host");
 		msg.appendSeparator();
 	}
 
 	void	err_unknownmodeflag(Message& msg)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(build_prefix(msg.getServHostname()) + " 501 :Unknown MODE flag");
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 501 :Unknown MODE flag");
 		msg.appendSeparator();
 	}
 
 	void	err_usersdontmatch(Message& msg)
 	{
 		msg.setRecipient(msg.getSender());
-		msg.setResponse(build_prefix(msg.getServHostname()) + " 502 :Cannot change mode for other users");
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 502 :Cannot change mode for other users");
 		msg.appendSeparator();
 	}
 } // !namespace ft_irc
