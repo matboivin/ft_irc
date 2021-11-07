@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/07 16:17:33 by root             ###   ########.fr       */
+/*   Updated: 2021/11/07 20:20:10 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,6 +210,8 @@ namespace ft_irc
 		while (it != this->_clients.end())
 		{
 			this->_disconnectClient(*it);
+			_logger.log(1, "Client " + it->getNick() 
+			+ "@" + it->getIpAddressStr() + " disconnected");
 			it = this->_clients.erase(it);
 		}
 	}
@@ -267,8 +269,7 @@ namespace ft_irc
 		if (new_client.getSocketFd() < 0)
 			return (false);
 		//log the clients IP address
-		std::cout << "Client " << new_client.getIpAddressStr()
-				  << " connected" << std::endl;
+		_logger.log(1, "Client " + new_client.getIpAddressStr() + " connected");
 
 		this->_clients.push_back(new_client);
 		return (true);
@@ -303,8 +304,8 @@ namespace ft_irc
 				if (client.isRegistered() == false && !client.getNick().empty() &&
 					!client.getUsername().empty() && !client.getHostname().empty())
 				{
-					std::cout << "Client " << client.getNick() << "@" << client.getIpAddressStr()
-							  << " has just registered" << std::endl;
+					_logger.log(1, "Client " + client.getNick() + "@" + client.getIpAddressStr()
+							  + " has just registered");
 
 					Message	welcome_msg(client);
 
@@ -330,6 +331,7 @@ namespace ft_irc
 			if (it->isAlive() == false)
 			{
 				this->_disconnectClient(*it);
+				this->_logger.log(1, "Client " + it->getIpAddressStr() + " disconnected");
 				it = this->_clients.erase(it);
 				continue ;
 			}
@@ -365,6 +367,11 @@ namespace ft_irc
 	{
 		t_clients::iterator	it = std::find(this->_clients.begin(), this->_clients.end(), client);
 
+		if (it == this->_clients.end())
+		{
+			_logger.log(3, "Client " + client.getNick() + client.getIpAddressStr() + " is not in the client list!");
+			return (-1);
+		}
 		if (it->getSocketFd() > 0)
 		{
 			close(it->getSocketFd());
@@ -372,8 +379,6 @@ namespace ft_irc
 		}
 		it->setAlive(false);
 		it->setConnected(false);
-		std::cout << "Client " << it->getIpAddressStr()
-			<< " disconnected" << std::endl;
 		return (0);
 	}
 
@@ -433,7 +438,7 @@ namespace ft_irc
 
 		if (it != this->_commands.end())
 		{
-			std::cout << "Executing command \"" << msg.getCommand() << "\"" << std::endl;
+			this->_logger.log(0, "Executing command \"" + msg.getCommand() + "\"");
 			(this->*it->second)(msg);
 		}
 		return (0);
@@ -963,7 +968,7 @@ namespace ft_irc
 				continue;
 			if (match_nick(to_match, it->getNick()))
 			{
-				std::cout << "WHO matched " << it->getNick() << std::endl;
+				this->_logger.log(0, "WHO matched " + it->getNick());
 				response += ":" + this->getHostname() + " 352 " + msg.getSender().getNick() + " * ";
 				response += it->getNick();
 				response += " " + it->getIpAddressStr();
@@ -1002,37 +1007,24 @@ namespace ft_irc
 			err_syntaxerror(msg, msg.getCommand());
 			return ;
 		}
-		std::string	response = "";
+		msg.setResponse("");
 		for (t_clients::iterator it = this->_clients.begin();
 			 it != this->_clients.end();
 			 ++it)
 		{
 			if (match_nick(to_match, it->getNick()))
 			{
-				
-				response += ":" + this->getHostname() + " 311 " + msg.getSender().getNick() + " ";
-				response += it->getNick();
-				response += " " + it->getUsername();
-				response += " " + it->getHostname();
-				response += " * :";
-				response += it->getRealName();
-				response += CRLF;
-				response += ":" + this->getHostname() + " 312 " + msg.getSender().getNick() + " ";
-				response += this->getHostname();
-				response += " :";
-				response += this->_description;
-				response += CRLF;
+				// :mynick 311 mynick nickname user hostname * :realname
+				rpl_whoisuser(msg, *it, false);
+				rpl_whoisserver(msg, this->_description, false);
 				if (it->isOper())
 				{
-					response += ":" + this->getHostname() + " 313 " + msg.getSender().getNick() + " ";
-					response += it->getNick();
-					response += " :is an IRC operator" CRLF;
+					rpl_whoisoperator(msg, *it, false);
 				}
 			}
 		}
-		response += ":" + this->getHostname() + " 318 " + msg.getSender().getNick() +
-		" " + to_match + " :End of /WHOIS list." + CRLF;
-		msg.setResponse(response);
+		msg.appendResponse(":" + this->getHostname() + " 318 " + msg.getSender().getNick() +
+		" " + to_match + " :End of /WHOIS list." CRLF);
 		msg.setRecipient(msg.getSender());
 	}
 
@@ -1083,7 +1075,7 @@ namespace ft_irc
 		response += error;
 		response += "\r\n";
 		//log the response
-		std::cout << "Sending: " << response << "to " << client.getIpAddressStr() << std::endl;
+		this->_logger.log(0, "Sending: " + response + "to " + client.getIpAddressStr());
 		if (send(client.getSocketFd(), response.c_str(), response.size(), 0) < 0)
 		{
 			throw std::runtime_error("send() failed");

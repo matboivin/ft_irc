@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/06 14:52:57 by root             ###   ########.fr       */
+/*   Updated: 2021/11/07 20:12:55 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ int		test_modes();
 # endif
 
 #ifndef DEBUG
-# define DEBUG 3
+# define DEBUG 0
 
 #endif // !DEBUG
 

@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/06 14:46:41 by root              #+#    #+#             */
-/*   Updated: 2021/11/06 17:42:19 by root             ###   ########.fr       */
+/*   Updated: 2021/11/07 20:16:59 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,6 @@ namespace ft_irc
 		{
 			copy = str_replace(copy, toReplace, replaceWith[i]);
 		}
-		std::cout << log_level_color[level] << "[" << log_level_str[level] << "] " << copy << "\033[0m" << std::endl;
+		std::cerr << log_level_color[level] << "[" << log_level_str[level] << "] " << copy << "\033[0m" << std::endl;
 	}
 }

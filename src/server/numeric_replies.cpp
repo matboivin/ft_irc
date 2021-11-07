@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/07 16:17:06 by root             ###   ########.fr       */
+/*   Updated: 2021/11/07 16:37:30 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,24 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
+	void	rpl_whoisuser(Message& msg, const Client& user, bool rewrite)
+	{
+		if (rewrite)
+			msg.clearResponse();
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 311 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
+		msg.appendResponse(user.getNick());
+		msg.appendResponse(" ");
+		msg.appendResponse(msg.getSender().getUsername());
+		msg.appendResponse(" :");
+		msg.appendResponse(msg.getSender().getHostname());
+		msg.appendResponse(" * : ");
+		msg.appendResponse(user.getRealName());
+		msg.appendSeparator();
+	}
+
 	void	rpl_whoisserver(Message& msg, const std::string& description, bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
@@ -96,6 +114,17 @@ namespace ft_irc
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 313 ");
 		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" :is an IRC operator");
+		msg.appendSeparator();
+	}
+	
+	void	rpl_whoisoperator(Message& msg, const Client& user, bool rewrite)
+	{
+		if (rewrite)
+			msg.clearResponse();
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 313 ");
+		msg.appendResponse(user.getNick());
 		msg.appendResponse(" :is an IRC operator");
 		msg.appendSeparator();
 	}
