@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/07 20:20:10 by root             ###   ########.fr       */
+/*   Updated: 2021/11/08 21:44:33 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,8 +206,8 @@ namespace ft_irc
 	{
 		t_clients::iterator	it = this->_clients.begin();
 
-		std::cout << "Shutting down server" << std::endl;
 		while (it != this->_clients.end())
+		_logger.log(5, "Shutting down server");
 		{
 			this->_disconnectClient(*it);
 			_logger.log(1, "Client " + it->getNick() 
@@ -232,7 +232,7 @@ namespace ft_irc
 		this->_sockfd = socket(AF_INET, SOCK_STREAM, 0);
 		if (this->_sockfd < 0)
 		{
-			std::cerr << "Error: Could not create socket." << std::endl;
+			_logger.log(4, "Error: Could not create socket.");
 			return (false);
 		}
 		setNonblocking(this->_sockfd);
@@ -241,19 +241,19 @@ namespace ft_irc
 		int	optval = 1;
 		if (setsockopt(this->_sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) < 0)
 		{
-			std::cerr << "Error: Could not set socket options." << std::endl;
+			_logger.log(4, "Error: Could not set socket options.");
 			return (false);
 		}
 		//Bind the socket to the address.
 		if (bind(this->_sockfd, (struct sockaddr *)&_address, sizeof(_address)) < 0)
 		{
-			std::cerr << "Error: Could not bind socket." << std::endl;
+			_logger.log(4, "Error: Could not bind socket.");
 			return (false);
 		}
 		//Listen for connections.
 		if (listen(this->_sockfd, this->_backlog_max) < 0)
 		{
-			std::cerr << "Error: Could not listen on socket." << std::endl;
+			_logger.log(4, "Error: Could not listen on socket.");
 			return (false);
 		}
 		return (true);
@@ -283,7 +283,7 @@ namespace ft_irc
 
 		if (poll_result < 0)
 		{
-			std::cerr << "Error: Could not poll socket." << std::endl;
+			_logger.log(3, "Error: Could not poll socket.");
 			return (false);
 		}
 		if (poll_result == 0)
@@ -412,7 +412,7 @@ namespace ft_irc
 		// this->_commands["KICK"]	= &Server::exec_kick_cmd;
 		// this->_commands["KILL"]	= &Server::exec_kill_cmd;
 		// this->_commands["LIST"]	= &Server::exec_list_cmd;
-		this->_commands["MODE"]	= &Server::exec_mode_cmd;
+		this->_commands["MODE"]		= &Server::exec_mode_cmd;
 		// this->_commands["NAMES"]	= &Server::exec_names_cmd;
 		this->_commands["NICK"]		= &Server::exec_nick_cmd;
 		this->_commands["NOTICE"]	= &Server::exec_notice_cmd;
