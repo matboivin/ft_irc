@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/09 16:53:01 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/09 17:48:41 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -290,7 +290,6 @@ namespace ft_irc
 
 			if (_parse(msg, client.popUnprocessedCommand()) == true) // parse the message
 			{
-				msg.displayMessage();
 				_executeCommand(msg); // execute the command
 				//if the client has just registered, send him a nice welcome message :D
 				if (client.isRegistered() == false && !client.getNick().empty() &&
@@ -632,36 +631,72 @@ namespace ft_irc
 	}
 
 	/*
-	 * KICK <channel> <client> :[<message>]
+	 * KICK <channel> <client> [<comment>]
 	 * Forcibly removes <client> from <channel>
+	 *
+	 * The user must be a channel operator.
+	 */
+	void	Server::_kickClient(Message& msg,
+								const std::string& chan_name, const std::string& nick,
+								const std::string& comment
+								)
+	{
+		t_channels::iterator	channel = getChannel(chan_name);
+		t_clients::iterator		user = getClient(nick);
+
+		if (channel == this->_channels.end())
+			err_nosuchchannel(msg, chan_name);
+		else if (!msg.getSender().isChanOp(*channel))
+			err_chanoprivsneeded(msg, chan_name);
+		else if (!_userOnChannel(msg.getSender(), *channel))
+			err_notonchannel(msg, chan_name);
+		else if ((user != this->_clients.end()) && !_userOnChannel(*user, *channel))
+			err_usernotinchannel(msg, nick, chan_name);
+		else if (user != this->_clients.end()) // TODO: if the client don't exist, what is the reply?
+		{
+			Message	kick_msg(msg);
+
+			kick_msg.setRecipient(*user);
+			kick_msg.setResponse(build_prefix(build_full_client_id( msg.getSender())));
+			kick_msg.appendResponse(" KICK ");
+			kick_msg.appendResponse(chan_name);
+			kick_msg.appendResponse(" ");
+			kick_msg.appendResponse(nick);
+			if (!comment.empty())
+			{
+				kick_msg.appendResponse(" ");
+				kick_msg.appendResponse(comment);
+			}
+			_sendResponse(kick_msg);
+		}
+	}
+
+	/*
+	 * KICK <channel> *( "," <channel> ) <user> *( "," <user> ) [<comment>]
 	 *
 	 * The server MUST NOT send KICK messages with multiple channels or
 	 * users to clients.  This is necessarily to maintain backward
 	 * compatibility with old client software.
-	 *
-	 * The user must be a channel operator.
 	 */
 	void	Server::exec_kick_cmd(Message& msg)
 	{
-		// TODO: multiple kicks
 		if (msg.getParams().size() < 2)
 			err_needmoreparams(msg);
 		else
 		{
-			std::string				chan_name = msg.getParams().at(0);
-			t_channels::iterator	channel = getChannel(chan_name);
-			std::string				nick = msg.getParams().at(1);
-			t_clients::iterator		user = getClient(nick);
+			std::string	comment = "";
+			t_params	chan_names = splitListOfParams(msg.getParams().at(0));
+			t_params	nicknames = splitListOfParams(msg.getParams().at(1));
 
-			if (channel == this->_channels.end())
-				err_nosuchchannel(msg, chan_name);
-			else if (!msg.getSender().isChanOp(*channel))
-				err_chanoprivsneeded(msg, chan_name);
-			else if (!_userOnChannel(msg.getSender(), *channel))
-				err_notonchannel(msg, chan_name);
-			// TODO: if the client don't exist, what is the reply?
-			else if ((user != this->_clients.end()) && !_userOnChannel(*user, *channel))
-				err_usernotinchannel(msg, nick, chan_name);
+			if (msg.getParams().size() == 3)
+				comment = msg.getParams().at(2);
+
+			std::size_t	len = chan_names.size();
+
+			for (std::size_t i = 0; i < len; ++i)
+				_kickClient(msg, chan_names[i], nicknames[i], comment);
+			// Handle different number of channels and nicknames
+			// if (len != nicknames.size())
 		}
 	}
 

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:35:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/03 12:01:13 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/09 17:31:38 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <list>
 # include <string>
+# include <vector>
 
 /* Operations helpers needed for building responses, checking channels, ... */
 
@@ -34,6 +35,7 @@ namespace ft_irc
 	bool		user_mode_is_valid(const std::string& mode);
 	bool		channel_mode_is_valid(const std::string& mode);
 	bool		match_nick(const std::string& to_match, const std::string& nick);
+	std::vector<std::string>	splitListOfParams(const std::string& params);
 
 	/* Remove duplicates from lists */
 	template<typename T>

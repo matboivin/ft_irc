@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/03 16:03:58 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/09 17:31:18 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ namespace ft_irc
 		/* Aliases */
 		typedef void (Server::*cmd_fun)(Message& msg);
 		typedef std::map<std::string, cmd_fun>	t_cmds;
+		typedef std::vector<std::string>		t_params;
 		typedef std::list<Client>				t_clients;
 		typedef std::list<Channel>				t_channels;
 
@@ -66,6 +67,10 @@ namespace ft_irc
 		/* Commands */
 		void					exec_invite_cmd(Message& msg);
 		void					exec_join_cmd(Message& msg);
+		void					_kickClient(Message& msg,
+											const std::string& chan_name, const std::string& nick,
+											const std::string& comment = ""
+											);
 		void					exec_kick_cmd(Message& msg);
 		void					exec_kill_cmd(Message& msg);
 		//void					exec_list_cmd(Message& msg);
