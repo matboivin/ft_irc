@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/01 18:57:37 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/09 17:13:51 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,7 +154,7 @@ namespace ft_irc
 		while (_nocrlf(this->_current))
 			++this->_current;
 
-		msg.setParam(std::string(this->_start, this->_current));;
+		msg.setParam(std::string(this->_start, this->_current));
 	}
 
 	/*
@@ -164,16 +164,24 @@ namespace ft_irc
 	 */
 	void	Parser::_parseMiddle(Message& msg)
 	{
-		while ((_nospcrlfcl(this->_current) || (*this->_current == ':')) && (*this->_current != ','))
+		while ((_nospcrlfcl(this->_current)) || (*this->_current == ':'))
+		{
 			++this->_current;
+			// KICK can have two lists and requires a special parsing in command execution
+			if ((msg.getCommand() != "KICK") && (*this->_current == ','))
+			{
+				msg.setParam(std::string(this->_start, this->_current));
+				_eat(','); // parse list of parameters, ex: JOIN #foo,#bar
+				this->_start = this->_current;
+			}
+		}
 		msg.setParam(std::string(this->_start, this->_current));
 	}
 
 	/* Parses the command parameters */
 	bool	Parser::_parseParams(Message& msg)
 	{
-		// the comma means it's a list of parameters (e.g., <channel>,<channel>)
-		while (_eat(' ') || _eat(','))
+		while (_eat(' '))
 		{
 			this->_start = this->_current;
 			if ((this->_current != this->_end) && (*this->_current == ':'))
@@ -200,7 +208,7 @@ namespace ft_irc
 	/* Fill response if Message will be forwarded to other clients */
 	void	Parser::_fillForwardResponse(Message& msg, std::string cmd)
 	{
-		const std::string	cmds = "INVITE JOIN KICK KILL LIST MODE NOTICE OPER "
+		const std::string	cmds = "INVITE JOIN KILL LIST MODE NOTICE OPER "
 									"PART PING PONG PRIVMSG QUIT TEST";
 
 		if (cmds.find(msg.getCommand()) != std::string::npos)

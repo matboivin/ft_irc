@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:47:11 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/06 16:21:09 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/09 16:31:16 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ namespace ft_irc
 
 		/* Helpers */
 		void				appendSeparator();
+		void				clearParams();
 		void				clearResponse();
 
 		/* Clients operations */

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 12:25:08 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/06 16:19:47 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/09 17:12:28 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,7 +173,6 @@ int	test_parsing()
 		expected.setParam("#Finnish");
 		expected.setParam("John");
 		expected.setParam(":Speaking English");
-		expected.setResponse(":nick!username@0.0.0.0 KICK #Finnish John :Speaking English\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -212,6 +211,19 @@ int	test_parsing()
 		expected.setCommand("QUIT");
 		expected.setParam(":#foo,#bar");
 		expected.setResponse(":nick!username@0.0.0.0 QUIT :#foo,#bar\r\n");
+		assert(cmp_msg(msg, expected));
+	}
+
+	// exception for KICK
+	{
+		ft_irc::Message	msg(dummy_client);
+		ft_irc::Message	expected(dummy_client);
+
+		parser.parseMessage(msg, "KICK #general,#random John,Jane :Speaking English");
+		expected.setCommand("KICK");
+		expected.setParam("#general,#random");
+		expected.setParam("John,Jane");
+		expected.setParam(":Speaking English");
 		assert(cmp_msg(msg, expected));
 	}
 

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/06 16:24:51 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/09 16:31:39 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,6 +159,12 @@ namespace ft_irc
 	void	Message::appendSeparator()
 	{
 		this->_response += "\r\n";
+	}
+
+	/* Remove params */
+	void	Message::clearParams()
+	{
+		this->_params.clear();
 	}
 
 	/* Remove response */
