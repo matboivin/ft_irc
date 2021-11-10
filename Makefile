@@ -95,14 +95,14 @@ $(OBJ_DIR):
 
 $(OBJ_DIR)/%.o : 	%.cpp
 					@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ -c $<
-					@echo "$(COL_YELLOW)[compilation]$(COL_RESET)$(COL_WHITE_B) objects $(COL_RESET)$(STYLE_ITALIC)$@$(STYLE_RESET) created"
+					@printf "$(COL_YELLOW)[compilation]$(COL_RESET)$(COL_WHITE_B) objects $(COL_RESET)$(STYLE_ITALIC)$@$(STYLE_RESET) created\n"
 
 # LINKING
 
 $(NAME):			$(OBJ_DIR) $(OBJ) $(INC)
 					@$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OBJ) -o $@
-					@echo "$(STYLE_BOLD)[link]$(STYLE_RESET) ...linking objects..."
-					@echo "$(COL_GREEN_B)[success]$(COL_WHITE_B) $@$(COL_RESET) created in working directory"
+					@printf "$(STYLE_BOLD)[link]$(STYLE_RESET) ...linking objects...\n"
+					@printf "$(COL_GREEN_B)[success]$(COL_WHITE_B) $@$(COL_RESET) created in working directory\n"
 
 # DEBUG
 
