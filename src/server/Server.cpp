@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/09 17:48:41 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/10 22:13:10 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -549,8 +549,16 @@ namespace ft_irc
 	/* Removes a user from all joined channels */
 	void	Server::_removeUserFromAllChannels(Client& client, Message& msg)
 	{
-		msg.setRecipients(client.getAllContacts());
-		client.partAllChannels();
+		Message	part_msg(msg);
+
+		part_msg.setRecipients(client.getAllContacts()); // get all client contacts
+		// all contacts == clients from all the channels joined by the client
+		part_msg.setResponse(build_prefix(build_full_client_id( msg.getSender())));
+		part_msg.appendResponse(" PART ");
+		part_msg.appendResponse(msg.getSender().getNick());
+		part_msg.appendSeparator();
+		client.partAllChannels(); // client parts all joined channels
+		_sendResponse(part_msg); // send the message to all contacts
 
 		client.displayJoinedChannels(); // debug
 		std::cout << std::endl;
@@ -611,7 +619,10 @@ namespace ft_irc
 		if (msg.getParams().empty())
 			err_needmoreparams(msg, true);
 		else if (msg.getParams().at(0) == "0") // JOIN 0
+		{
 			_removeUserFromAllChannels(msg.getSender(), msg);
+			msg.clearRecipients(); // a part message is sent instead
+		}
 		else
 		{
 			for (std::vector<std::string>::const_iterator chan_name = msg.getParams().begin();
@@ -656,7 +667,7 @@ namespace ft_irc
 		{
 			Message	kick_msg(msg);
 
-			kick_msg.setRecipient(*user);
+			kick_msg.setRecipient(channel->getClients());
 			kick_msg.setResponse(build_prefix(build_full_client_id( msg.getSender())));
 			kick_msg.appendResponse(" KICK ");
 			kick_msg.appendResponse(chan_name);
