@@ -600,10 +600,7 @@ namespace ft_irc
 				t_channels::iterator	channel = getChannel(*chan_name);
 
 				if (!channel_is_valid(*chan_name))
-				{
-					err_nosuchchannel(msg, *chan_name);
 					return ;
-				}
 				if (channel == this->_channels.end())
 					_addUserToChannel(msg.getSender(), _addChannel(*chan_name));
 				else
