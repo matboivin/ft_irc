@@ -50,6 +50,32 @@ namespace ft_irc
 			throw std::runtime_error("gettimeofday() failed");
 	}
 
+	/* Constructor */
+	Client::Client(std::string nick,
+				   std::string realname,
+				   std::string username,
+				   std::string password,
+				   std::string hostname)
+	: _nick(nick), _realname(realname), _hostname(hostname), _username(username),
+	  _mode(),
+	  _password(password),
+	  _timeout(),
+	  _socket_fd(-1),
+	  _connected(false),
+	  _in_buffer(),
+	  _out_buffer(),
+	  _max_cmd_length(512),
+	  _joined_channels(),
+	  _alive(true),
+	  _registered(false)
+	{
+		this->_timeout = (struct timeval){.tv_sec = 0, .tv_usec = 50};
+		this->_keep_alive = (struct timeval){.tv_sec = 30, .tv_usec = 0};
+
+		if (gettimeofday(&this->_last_event_time, NULL))
+			throw std::runtime_error("gettimeofday() failed");
+	}
+
 	/* Copy constructor */
 	Client::Client(const Client& other)
 	: _nick(other._nick), _realname(other._realname), _hostname(other._hostname),

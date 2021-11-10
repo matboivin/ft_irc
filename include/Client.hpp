@@ -40,7 +40,14 @@ namespace ft_irc
 		typedef std::list<Client*>	t_clients;
 
 		/* Default constructor */
-							Client(struct sockaddr_in address=(struct sockaddr_in){0,0,{0},{0}},
+							Client(std::string nick="",
+							std::string realname="",
+							std::string username="",
+							std::string password="",
+							std::string hostname=""
+							);
+
+							Client(struct sockaddr_in address,
 								   std::string nick="",
 								   std::string realname="",
 								   std::string username="",
