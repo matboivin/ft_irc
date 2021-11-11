@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/07 16:37:30 by root             ###   ########.fr       */
+/*   Updated: 2021/11/11 03:11:26 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,24 +73,6 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	rpl_whoisuser(Message& msg, const Client& user, bool rewrite)
-	{
-		if (rewrite)
-			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 311 ");
-		msg.appendResponse(msg.getSender().getNick());
-		msg.appendResponse(" ");
-		msg.appendResponse(user.getNick());
-		msg.appendResponse(" ");
-		msg.appendResponse(msg.getSender().getUsername());
-		msg.appendResponse(" :");
-		msg.appendResponse(msg.getSender().getHostname());
-		msg.appendResponse(" * : ");
-		msg.appendResponse(user.getRealName());
-		msg.appendSeparator();
-	}
-
 	void	rpl_whoisserver(Message& msg, const std::string& description, bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
@@ -114,17 +96,6 @@ namespace ft_irc
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 313 ");
 		msg.appendResponse(msg.getSender().getNick());
-		msg.appendResponse(" :is an IRC operator");
-		msg.appendSeparator();
-	}
-	
-	void	rpl_whoisoperator(Message& msg, const Client& user, bool rewrite)
-	{
-		if (rewrite)
-			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 313 ");
-		msg.appendResponse(user.getNick());
 		msg.appendResponse(" :is an IRC operator");
 		msg.appendSeparator();
 	}
@@ -295,6 +266,35 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
+	void	rpl_whoisoperator(Message& msg, const Client& user, bool rewrite)
+	{
+		if (rewrite)
+			msg.clearResponse();
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 313 ");
+		msg.appendResponse(user.getNick());
+		msg.appendResponse(" :is an IRC operator");
+		msg.appendSeparator();
+	}
+
+	void	rpl_whoisuser(Message& msg, const Client& user, bool rewrite)
+	{
+		if (rewrite)
+			msg.clearResponse();
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 311 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
+		msg.appendResponse(user.getNick());
+		msg.appendResponse(" ");
+		msg.appendResponse(msg.getSender().getUsername());
+		msg.appendResponse(" :");
+		msg.appendResponse(msg.getSender().getHostname());
+		msg.appendResponse(" * : ");
+		msg.appendResponse(user.getRealName());
+		msg.appendSeparator();
+	}
+
 	// error replies
 
 	void	err_nosuchnick(Message& msg, const std::string& nick, bool rewrite)
@@ -309,8 +309,7 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-//	void	err_nosuchchannel(Message& msg, const std::string& chan_name, bool rewrite)
-	void	err_nosuchserver(Message& msg, const std::string& serv_name, bool rewrite)
+	void	err_nosuchchannel(Message& msg, const std::string& chan_name, bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
@@ -323,14 +322,6 @@ namespace ft_irc
 	}
 
 	void	err_cannotsendtochan(Message& msg, bool rewrite)
-	{	
-		msg.appendResponse(" 402 ");
-		msg.appendResponse(serv_name);
-		msg.appendResponse(" :No such server");
-		msg.appendSeparator();
-	}
-
-	void	err_nosuchchannel(Message& msg, const std::string& chan_name, bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
@@ -343,14 +334,6 @@ namespace ft_irc
 	}
 
 	void	err_toomanychannels(Message& msg, const std::string& chan_name, bool rewrite)
-	{
-		msg.appendResponse(" 403 ");
-		msg.appendResponse(chan_name);
-		msg.appendResponse(" :No such channel");
-		msg.appendSeparator();
-	}
-
-	void	err_cannotsendtochan(Message& msg, bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
@@ -363,14 +346,6 @@ namespace ft_irc
 	}
 
 	void	err_toomanytargets(Message& msg, const std::string& target, bool rewrite) // maybe not necessary?
-	{
-		msg.appendResponse(" 404 ");
-		msg.appendResponse(msg.getParams().at(0));
-		msg.appendResponse(" :Cannot send to channel");
-		msg.appendSeparator();
-	}
-
-	void	err_toomanychannels(Message& msg, const std::string& chan_name, bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
@@ -383,14 +358,6 @@ namespace ft_irc
 	}
 
 	void	err_noorigin(Message& msg, bool rewrite)
-	{
-		msg.appendResponse(" 405 ");
-		msg.appendResponse(chan_name);
-		msg.appendResponse(" :You have joined too many channels");
-		msg.appendSeparator();
-	}
-
-	void	err_toomanytargets(Message& msg, const std::string& target, bool rewrite) // maybe not necessary?
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
@@ -401,14 +368,6 @@ namespace ft_irc
 	}
 
 	void	err_norecipient(Message& msg, bool rewrite)
-	{
-		msg.appendResponse(" 407 ");
-		msg.appendResponse(target);
-		msg.appendResponse(" :<error code> recipients. <abort message>"); // todo
-		msg.appendSeparator();
-	}
-
-	void	err_noorigin(Message& msg, bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
@@ -421,12 +380,6 @@ namespace ft_irc
 	}
 
 	void	err_notexttosend(Message& msg, bool rewrite)
-	{
-		msg.appendResponse(" 409 :No origin specified");
-		msg.appendSeparator();
-	}
-
-	void	err_norecipient(Message& msg, bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
@@ -437,14 +390,6 @@ namespace ft_irc
 	}
 
 	void	err_unknowncommand(Message& msg, bool rewrite)
-	{
-		msg.appendResponse(" 411 :No recipient given (");
-		msg.appendResponse(msg.getCommand());
-		msg.appendResponse(")");
-		msg.appendSeparator();
-	}
-
-	void	err_notexttosend(Message& msg, bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
@@ -457,12 +402,6 @@ namespace ft_irc
 	}
 
 	void	err_nonicknamegiven(Message& msg, bool rewrite)
-	{
-		msg.appendResponse(" 412 :No text to send");
-		msg.appendSeparator();
-	}
-
-	void	err_unknowncommand(Message& msg, bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
@@ -473,14 +412,6 @@ namespace ft_irc
 	}
 
 	void	err_erroneusnickname(Message& msg, bool rewrite)
-	{
-		msg.appendResponse(" 421 ");
-		msg.appendResponse(msg.getCommand());
-		msg.appendResponse(" :Unknown command");
-		msg.appendSeparator();
-	}
-
-	void	err_nonicknamegiven(Message& msg, bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
@@ -493,12 +424,6 @@ namespace ft_irc
 	}
 
 	void	err_nicknameinuse(Message& msg, bool rewrite)
-	{
-		msg.appendResponse(" 431 :No nickname given");
-		msg.appendSeparator();
-	}
-
-	void	err_erroneusnickname(Message& msg, bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
@@ -511,14 +436,6 @@ namespace ft_irc
 	}
 
 	void	err_unavailresource(Message& msg, const std::string& target, bool rewrite) // maybe not necessary?
-	{
-		msg.appendResponse(" 432 ");
-		msg.appendResponse(msg.getParams().at(0));
-		msg.appendResponse(" :Erroneous nickname");
-		msg.appendSeparator();
-	}
-
-	void	err_nicknameinuse(Message& msg, bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
@@ -531,14 +448,6 @@ namespace ft_irc
 	}
 
 	void	err_usernotinchannel(Message& msg, const std::string& nick, const std::string& chan_name, bool rewrite)
-	{
-		msg.appendResponse(" 433 ");
-		msg.appendResponse(msg.getParams().at(0));
-		msg.appendResponse(" :Nickname already in use");
-		msg.appendSeparator();
-	}
-
-	void	err_unavailresource(Message& msg, const std::string& target, bool rewrite) // maybe not necessary?
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
@@ -553,14 +462,6 @@ namespace ft_irc
 	}
 
 	void	err_notonchannel(Message& msg, const std::string& chan_name, bool rewrite)
-	{
-		msg.appendResponse(" 437 ");
-		msg.appendResponse(target);
-		msg.appendResponse(" :Nick/channel is temporarily unavailable");
-		msg.appendSeparator();
-	}
-
-	void	err_usernotinchannel(Message& msg, const std::string& nick, const std::string& chan_name, bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
@@ -573,16 +474,6 @@ namespace ft_irc
 	}
 
 	void	err_useronchannel(Message& msg, const std::string& nick, const std::string& chan_name, bool rewrite)
-	{
-		msg.appendResponse(" 441 ");
-		msg.appendResponse(nick);
-		msg.appendResponse(" ");
-		msg.appendResponse(chan_name);
-		msg.appendResponse(" :They aren't on that channel");
-		msg.appendSeparator();
-	}
-
-	void	err_notonchannel(Message& msg, const std::string& chan_name, bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
@@ -597,14 +488,6 @@ namespace ft_irc
 	}
 
 	void	err_notregistered(Message& msg, bool rewrite)
-	{
-		msg.appendResponse(" 442 ");
-		msg.appendResponse(chan_name);
-		msg.appendResponse(" :You're not on that channel");
-		msg.appendSeparator();
-	}
-
-	void	err_useronchannel(Message& msg, const std::string& nick, const std::string& chan_name, bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
@@ -615,16 +498,6 @@ namespace ft_irc
 	}
 
 	void	err_needmoreparams(Message& msg, bool rewrite, const std::string& error_string)
-	{
-		msg.appendResponse(" 443 ");
-		msg.appendResponse(nick);
-		msg.appendResponse(" ");
-		msg.appendResponse(chan_name);
-		msg.appendResponse(" :is already on channel");
-		msg.appendSeparator();
-	}
-
-	void	err_notregistered(Message& msg, bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
@@ -638,12 +511,6 @@ namespace ft_irc
 	}
 
 	void	err_syntaxerror(Message& msg, std::string cmd, bool rewrite)
-	{
-		msg.appendResponse(" 451 :You have not registered");
-		msg.appendSeparator();
-	}
-
-	void	err_needmoreparams(Message& msg, bool rewrite, const std::string& error_string)
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
@@ -653,26 +520,6 @@ namespace ft_irc
 			build_prefix(msg.getServHostname()) 
 			+ " 461 " + msg.getSender().getNick() + " " + cmd + " :Syntax error"
 			);
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 461 ");
-		msg.appendResponse(msg.getCommand());
-		msg.appendResponse(" :");
-		msg.appendResponse(error_string);
-		msg.appendSeparator();
-	}
-
-	void	err_syntaxerror(Message& msg, std::string cmd, bool rewrite)
-	{
-		msg.setRecipient(msg.getSender());
-		if (rewrite)
-			msg.clearResponse();
-		//:public-irc.w3.org 461 ezakjhzkjehkjzehdk WHO :Syntax error
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 461 ");
-		msg.appendResponse(msg.getSender().getNick());
-		msg.appendResponse(" ");
-		msg.appendResponse(cmd);
-		msg.appendResponse(" :Syntax error");
 		msg.appendSeparator();
 	}
 

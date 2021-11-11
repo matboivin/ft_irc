@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/06 16:24:51 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 03:00:58 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,12 +159,6 @@ namespace ft_irc
 	void	Message::appendSeparator()
 	{
 		this->_response += "\r\n";
-	}
-
-	/* Remove response */
-	void	Message::clearResponse()
-	{
-		this->_response.clear();
 	}
 
 	/* Remove response */
