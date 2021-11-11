@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/11 16:23:57 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 17:59:25 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -585,7 +585,7 @@ namespace ft_irc
 
 	/* Oper operations ********************************************************** */
 
-	bool	Server::_giveOperPriv(const std::string& name, const std::string& password)
+	bool	Server::_canGiveOperPriv(const std::string& name, const std::string& password)
 	{
 		return (this->_config.operBlockIsValid(name, password));
 	}
@@ -813,7 +813,7 @@ namespace ft_irc
 			err_needmoreparams(msg, true);
 		else if (!msg.getSender().isOper())
 		{
-			if (_giveOperPriv(msg.getParams().at(0), msg.getParams().at(1)))
+			if (_canGiveOperPriv(msg.getParams().at(0), msg.getParams().at(1)))
 			{
 				msg.getSender().addMode("o");
 

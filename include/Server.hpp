@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/11 16:23:10 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 17:59:17 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,7 @@ namespace ft_irc
 		int						_setUserMode(Client& client, const std::string& mode, Message& msg);
 
 		/* Oper operations */
-		bool					_giveOperPriv(const std::string& name, const std::string& password);
+		bool					_canGiveOperPriv(const std::string& name, const std::string& password);
 
 		/* debug */
 		int						_sendList(Client& client);
