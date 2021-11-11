@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_irc.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/07 20:12:55 by root             ###   ########.fr       */
+/*   Updated: 2021/11/11 20:12:33 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,12 @@
 # include "Client.hpp"
 # include "CLIParser.hpp"
 # include "Config.hpp"
+# include "Logger.hpp"
 # include "Message.hpp"
 # include "numeric_replies.hpp"
 # include "Parser.hpp"
 # include "Server.hpp"
 # include "server_operations.hpp"
-//# include "UserInterface.hpp"
-
 
 enum	e_error_code
 {
@@ -75,13 +74,6 @@ extern const char *error_msg[];
 void	displayUsage(const char* program_name);
 int		test_parsing();
 int		test_modes();
-
-// enum	Status
-// {
-// 		e_admin,
-// 		e_ircop,
-// 		e_member
-// };
 
 # ifndef nullptr
 #  define nullptr NULL

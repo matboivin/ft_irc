@@ -14,26 +14,26 @@ INC_FILES			=	ft_irc.hpp \
 						Client.hpp \
 						CLIParser.hpp \
 						Config.hpp \
-						Parser.hpp \
+						Logger.hpp \
 						Message.hpp \
 						numeric_replies.hpp \
+						Parser.hpp \
 						Server.hpp \
 						server_operations.hpp \
-						server_operations.tpp \
-						Logger.hpp
+						server_operations.tpp
 
 SRC_FILES			=	main.cpp \
 						Channel.cpp \
 						Client.cpp \
 						CLIParser.cpp \
 						Config.cpp \
-						Parser.cpp \
+						Logger.cpp \
 						Message.cpp \
 						numeric_replies.cpp \
+						Parser.cpp \
 						Server.cpp \
 						server_operations.cpp \
 						utils.cpp \
-						Logger.cpp \
 						const.cpp
 
 # TESTS

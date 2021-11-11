@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/11 20:01:46 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 20:17:08 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include "Message.hpp"
 #include "numeric_replies.hpp"
 #include "server_operations.hpp"
+#include "ft_irc.hpp"
 
 namespace ft_irc
 {
@@ -284,6 +285,8 @@ namespace ft_irc
 	/* Main parsing function */
 	bool	Parser::parseMessage(Message& msg, const std::string& cmd)
 	{
+		Logger	logger(DEBUG);
+
 		setIterators(cmd);
 
 		if (_parseCommand(msg))
@@ -296,6 +299,7 @@ namespace ft_irc
 			}
 			return (true);
 		}
+		logger.log(LOG_LEVEL_INFO, "Invalid command is silently ignored (" + cmd + ")");
 		return (false);
 	}
 } // !namespace ft_irc
