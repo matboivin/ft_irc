@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 12:25:08 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/09 17:12:28 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 16:46:37 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ int	test_parsing()
 	// Set dummy values to client
 	dummy_client.setNick("nick");
 	dummy_client.setUsername("username");
+	dummy_client.setHostname("hostname");
 
 	// Wrong command format is silently ignored
 	{
@@ -97,7 +98,7 @@ int	test_parsing()
 
 		parser.parseMessage(msg, "PArt");
 		expected.setCommand("PART");
-		expected.setResponse(":nick!username@0.0.0.0 PART\r\n");
+		expected.setResponse(":nick!username@hostname PART\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -108,7 +109,7 @@ int	test_parsing()
 
 		parser.parseMessage(msg, "QUIT");
 		expected.setCommand("QUIT");
-		expected.setResponse(":nick!username@0.0.0.0 QUIT\r\n");
+		expected.setResponse(":nick!username@hostname QUIT\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -119,12 +120,12 @@ int	test_parsing()
 
 		parser.parseMessage(msg, "JOIN  ");
 		expected.setCommand("JOIN");
-		expected.setResponse(":nick!username@0.0.0.0 JOIN\r\n");
+		expected.setResponse(":nick!username@hostname JOIN\r\n");
 		assert(cmp_msg(msg, expected));
 
 		parser.parseMessage(msg, "JOIN #general");
 		expected.setParam("#general");
-		expected.setResponse(":nick!username@0.0.0.0 JOIN #general\r\n");
+		expected.setResponse(":nick!username@hostname JOIN #general\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -136,7 +137,7 @@ int	test_parsing()
 		parser.parseMessage(msg, "QUIT :Gone to have lunch at: MyFavPlace");
 		expected.setCommand("QUIT");
 		expected.setParam(":Gone to have lunch at: MyFavPlace");
-		expected.setResponse(":nick!username@0.0.0.0 QUIT :Gone to have lunch at: MyFavPlace\r\n");
+		expected.setResponse(":nick!username@hostname QUIT :Gone to have lunch at: MyFavPlace\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -148,7 +149,7 @@ int	test_parsing()
 		parser.parseMessage(msg, "QUIT :Gone to have lunch");
 		expected.setCommand("QUIT");
 		expected.setParam(":Gone to have lunch");
-		expected.setResponse(":nick!username@0.0.0.0 QUIT :Gone to have lunch\r\n");
+		expected.setResponse(":nick!username@hostname QUIT :Gone to have lunch\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -185,7 +186,7 @@ int	test_parsing()
 		expected.setCommand("JOIN");
 		expected.setParam("#foo");
 		expected.setParam("#bar");
-		expected.setResponse(":nick!username@0.0.0.0 JOIN #foo,#bar\r\n");
+		expected.setResponse(":nick!username@hostname JOIN #foo,#bar\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -199,7 +200,7 @@ int	test_parsing()
 		expected.setParam("#");
 		expected.setParam("#bcd");
 		expected.setParam("x");
-		expected.setResponse(":nick!username@0.0.0.0 JOIN #abc,# #bcd,x\r\n");
+		expected.setResponse(":nick!username@hostname JOIN #abc,# #bcd,x\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -210,7 +211,7 @@ int	test_parsing()
 		parser.parseMessage(msg, "QUIT :#foo,#bar");
 		expected.setCommand("QUIT");
 		expected.setParam(":#foo,#bar");
-		expected.setResponse(":nick!username@0.0.0.0 QUIT :#foo,#bar\r\n");
+		expected.setResponse(":nick!username@hostname QUIT :#foo,#bar\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 

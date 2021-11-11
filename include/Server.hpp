@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/11 15:48:01 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 16:23:10 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ namespace ft_irc
 		/* Aliases */
 		typedef void (Server::*cmd_fun)(Message& msg);
 		typedef std::map<std::string, cmd_fun>	t_cmds;
-		typedef std::vector<std::string>		t_params;
 		typedef std::list<Client>				t_clients;
 		typedef std::list<Channel>				t_channels;
 
@@ -123,6 +122,7 @@ namespace ft_irc
 
 		/* Parsing */
 		bool					_parse(Message& msg, const std::string& cmd);
+		Parser::t_params		_splitListOfParams(const std::string& params);
 
 		/* Commands execution */
 		void					_init_commands_map();

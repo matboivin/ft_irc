@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/11 15:35:04 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 16:46:03 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,6 +135,11 @@ namespace ft_irc
 	{
 		if (!param.empty() && (this->_params.size() < MSG_MAX_PARAMS))
 			this->_params.push_back(param);
+	}
+
+	void	Message::setParams(const t_params& params)
+	{
+		this->_params = params;
 	}
 
 	void	Message::setRecipients(const t_clients& recipients)

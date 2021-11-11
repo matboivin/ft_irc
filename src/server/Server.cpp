@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/11 15:51:32 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 16:23:57 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -402,6 +402,11 @@ namespace ft_irc
 		return (this->_parser.parseMessage(msg, cmd));
 	}
 
+	Parser::t_params	Server::_splitListOfParams(const std::string& params)
+	{
+		return (this->_parser.splitListOfParams(params));
+	}
+
 	/* Commands execution *************************************************** */
 
 	/* Inits the map containing the commands */
@@ -712,8 +717,8 @@ namespace ft_irc
 		else
 		{
 			std::string	comment = "";
-			t_params	chan_names = splitListOfParams(msg.getParams().at(0));
-			t_params	nicknames = splitListOfParams(msg.getParams().at(1));
+			Parser::t_params	chan_names = _splitListOfParams(msg.getParams().at(0));
+			Parser::t_params	nicknames = _splitListOfParams(msg.getParams().at(1));
 
 			if (msg.getParams().size() == 3)
 				comment = msg.getParams().at(2);

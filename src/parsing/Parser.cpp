@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/09 17:13:51 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 16:46:11 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,56 @@ namespace ft_irc
 
 	/* Helpers ****************************************************************** */
 
+	/* Split list of params such as: #foo,#bar -> '#foo' '#bar' */
+	Parser::t_params	Parser::splitListOfParams(const std::string& params)
+	{
+		t_params	result;
+
+		if (params.find(",") == std::string::npos)
+		{
+			result.push_back(params);
+			return (result);
+		}
+
+		std::string::const_iterator	current = params.begin();
+		std::string::const_iterator	start = current;
+
+		while (current != params.end())
+		{
+			if (*current == ',')
+			{
+				result.push_back(std::string(start, current));
+				++current;
+				start = current;
+			}
+			++current;
+		}
+		result.push_back(std::string(start, current));
+		return (result);
+	}
+
+	/* Checks whether command name is valid */
+	void	Parser::_handleListOfParams(Message& msg)
+	{
+		const std::string	cmds = "LIST JOIN NAMES PART WHOIS";
+
+		if (cmds.find(msg.getCommand()) == std::string::npos)
+			return ;
+		if (msg.getParams().empty())
+			return ;
+
+		std::size_t	len = msg.getParams().size();
+		t_params	params;
+		t_params	tmp;
+
+		for (std::size_t i = 0; i < len; ++i)
+		{
+			tmp = splitListOfParams(msg.getParams().at(i));
+			params.insert(params.end(), tmp.begin(), tmp.end());
+		}
+		msg.setParams(params);
+	}
+
 	/* Checks whether command name is valid */
 	bool	Parser::_commandIsValid(Message& msg)
 	{
@@ -165,16 +215,7 @@ namespace ft_irc
 	void	Parser::_parseMiddle(Message& msg)
 	{
 		while ((_nospcrlfcl(this->_current)) || (*this->_current == ':'))
-		{
 			++this->_current;
-			// KICK can have two lists and requires a special parsing in command execution
-			if ((msg.getCommand() != "KICK") && (*this->_current == ','))
-			{
-				msg.setParam(std::string(this->_start, this->_current));
-				_eat(','); // parse list of parameters, ex: JOIN #foo,#bar
-				this->_start = this->_current;
-			}
-		}
 		msg.setParam(std::string(this->_start, this->_current));
 	}
 
@@ -245,6 +286,7 @@ namespace ft_irc
 			if (_commandIsValid(msg))
 			{
 				_parseParams(msg);
+				_handleListOfParams(msg);
 				_fillForwardResponse(msg, cmd.substr( msg.getCommand().size() ));
 			}
 			return (true);

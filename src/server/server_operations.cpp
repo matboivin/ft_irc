@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:37:26 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/09 17:46:11 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 16:10:35 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,33 +143,5 @@ namespace ft_irc
 			return (false);
 		}
 		return (to_match == "0" || to_match == nick);
-	}
-
-	/* Helper for list of parameters such as for KICK */
-	std::vector<std::string>	splitListOfParams(const std::string& params)
-	{
-		std::vector<std::string>	result;
-
-		if (params.find(",") == std::string::npos)
-		{
-			result.push_back(params);
-			return (result);
-		}
-
-		std::string::const_iterator	current = params.begin();
-		std::string::const_iterator	start = current;
-
-		while (current != params.end())
-		{
-			if (*current == ',')
-			{
-				result.push_back(std::string(start, current));
-				++current;
-				start = current;
-			}
-			++current;
-		}
-		result.push_back(std::string(start, current));
-		return (result);
 	}
 } // namespace ft_irc
