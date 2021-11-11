@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   numeric_replies.hpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
 /*   Updated: 2021/11/06 17:15:00 by mboivin          ###   ########.fr       */
@@ -26,7 +26,9 @@ namespace ft_irc
 	void	rpl_yourhost(Message& msg, const std::string& version, bool rewrite = false); // 002
 	void	rpl_umodeis(Message& msg, const std::string& user_mode, bool rewrite = false); // 221
 	void	rpl_whoisuser(Message& msg, bool rewrite = false); // 311
+	void	rpl_whoisuser(Message& msg, const Client& user, bool rewrite = false); // 311
 	void	rpl_whoisserver(Message& msg, const std::string& description, bool rewrite = false); // 312
+	void	rpl_whoisoperator(Message& msg, const Client& user, bool rewrite = false); // 313
 	void	rpl_whoisoperator(Message& msg, bool rewrite = false); // 313
 	void	rpl_endofwho(Message& msg, const std::string& name, bool rewrite = false); // 315
 	void	rpl_endofwhois(Message& msg, const std::string& nick, bool rewrite = false); // 318

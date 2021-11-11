@@ -19,7 +19,8 @@ INC_FILES 			= 	ft_irc.hpp \
 						numeric_replies.hpp \
 						Server.hpp \
 						server_operations.hpp \
-						server_operations.tpp
+						server_operations.tpp \
+						Logger.hpp
 
 SRC_FILES 			= 	main.cpp \
 						Channel.cpp \
@@ -31,7 +32,9 @@ SRC_FILES 			= 	main.cpp \
 						numeric_replies.cpp \
 						Server.cpp \
 						server_operations.cpp \
-						utils.cpp
+						utils.cpp \
+						Logger.cpp \
+						const.cpp
 
 # tests
 SRC_FILES 			+= 	test_parsing.cpp
@@ -47,7 +50,9 @@ OBJ_DIR				= 	obj
 SUB_DIRS			=	client \
 						parsing \
 						server \
-						utils
+						utils \
+						logger \
+						const
 
 SRC_SUBDIRS			:=	$(addprefix $(SRC_DIR)/, $(SUB_DIRS))
 
@@ -90,14 +95,14 @@ $(OBJ_DIR):
 
 $(OBJ_DIR)/%.o : 	%.cpp
 					@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ -c $<
-					@echo "$(COL_YELLOW)[compilation]$(COL_RESET)$(COL_WHITE_B) objects $(COL_RESET)$(STYLE_ITALIC)$@$(STYLE_RESET) created"
+					@printf "$(COL_YELLOW)[compilation]$(COL_RESET)$(COL_WHITE_B) objects $(COL_RESET)$(STYLE_ITALIC)$@$(STYLE_RESET) created\n"
 
 # LINKING
 
 $(NAME):			$(OBJ_DIR) $(OBJ) $(INC)
 					@$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OBJ) -o $@
-					@echo "$(STYLE_BOLD)[link]$(STYLE_RESET) ...linking objects..."
-					@echo "$(COL_GREEN_B)[success]$(COL_WHITE_B) $@$(COL_RESET) created in working directory"
+					@printf "$(STYLE_BOLD)[link]$(STYLE_RESET) ...linking objects...\n"
+					@printf "$(COL_GREEN_B)[success]$(COL_WHITE_B) $@$(COL_RESET) created in working directory\n"
 
 # DEBUG
 

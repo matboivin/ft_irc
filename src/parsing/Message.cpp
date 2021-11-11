@@ -167,6 +167,12 @@ namespace ft_irc
 		this->_response.clear();
 	}
 
+	/* Remove response */
+	void	Message::clearResponse()
+	{
+		this->_response.clear();
+	}
+
 	/* Clients operations ******************************************************* */
 
 	/*
