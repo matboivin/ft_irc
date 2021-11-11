@@ -9,7 +9,6 @@ RM					=	/bin/rm
 # FILES
 
 INC_FILES			=	ft_irc.hpp \
-						UserInterface.hpp \
 						Channel.hpp \
 						Client.hpp \
 						CLIParser.hpp \
