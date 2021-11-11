@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/01 18:57:37 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 20:00:53 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,7 +205,9 @@ namespace ft_irc
 
 		if (cmds.find(msg.getCommand()) != std::string::npos)
 		{
-			std::string	response = build_prefix( build_full_client_id( msg.getSender() ) ) + ' ' + msg.getCommand();
+			std::string	response = build_prefix(build_full_client_id(msg.getSender()));
+			response += " ";
+			response += msg.getCommand();
 
 			if (cmd.size() > 0) // trim spaces
 			{
@@ -220,7 +222,10 @@ namespace ft_irc
 				std::string	params(it, ite);
 
 				if (!params.empty())
-					response.append(' ' + params);
+				{
+					response += " ";
+					response += params;
+				}
 			}
 			msg.setResponse(response);
 			msg.appendSeparator();
