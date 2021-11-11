@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/11 20:27:20 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 20:35:05 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -342,18 +342,6 @@ namespace ft_irc
 		msg.appendResponse(" 405 ");
 		msg.appendResponse(chan_name);
 		msg.appendResponse(" :You have joined too many channels");
-		msg.appendSeparator();
-	}
-
-	void	err_toomanytargets(Message& msg, const std::string& target, bool rewrite) // maybe not necessary?
-	{
-		msg.setRecipient(msg.getSender());
-		if (rewrite)
-			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 407 ");
-		msg.appendResponse(target);
-		msg.appendResponse(" :<error code> recipients. <abort message>"); // todo
 		msg.appendSeparator();
 	}
 
