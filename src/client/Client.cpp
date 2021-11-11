@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/11/03 16:40:30 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/07 20:09:42 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "Channel.hpp"
 #include "Client.hpp"
 #include "server_operations.hpp"
-
+#include "ft_irc.hpp"
 int	setNonblocking(int fd);
 
 namespace ft_irc
@@ -33,6 +33,32 @@ namespace ft_irc
 	  _address(address),
 	  _address_size(sizeof(address)),
 	  _address_str(inet_ntoa(address.sin_addr)),
+	  _timeout(),
+	  _socket_fd(-1),
+	  _connected(false),
+	  _in_buffer(),
+	  _out_buffer(),
+	  _max_cmd_length(512),
+	  _joined_channels(),
+	  _alive(true),
+	  _registered(false)
+	{
+		this->_timeout = (struct timeval){.tv_sec = 0, .tv_usec = 50};
+		this->_keep_alive = (struct timeval){.tv_sec = 30, .tv_usec = 0};
+
+		if (gettimeofday(&this->_last_event_time, NULL))
+			throw std::runtime_error("gettimeofday() failed");
+	}
+
+	/* Constructor */
+	Client::Client(std::string nick,
+				   std::string realname,
+				   std::string username,
+				   std::string password,
+				   std::string hostname)
+	: _nick(nick), _realname(realname), _hostname(hostname), _username(username),
+	  _mode(),
+	  _password(password),
 	  _timeout(),
 	  _socket_fd(-1),
 	  _connected(false),
@@ -325,7 +351,9 @@ namespace ft_irc
 	std::string	Client::popUnprocessedCommand()
 	{
 		std::string	cmd = this->_in_buffer.substr(0, this->_in_buffer.find(CRLF));
-		
+
+		Logger logger(DEBUG);
+		logger.log(0, "Received: " + cmd);
 		this->_in_buffer.erase(0, this->_in_buffer.find(CRLF) + sizeof(CRLF) - 1);
 		return (cmd);
 	}

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/06 17:16:50 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 15:35:26 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -266,6 +266,35 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
+	void	rpl_whoisoperator(Message& msg, const Client& user, bool rewrite)
+	{
+		if (rewrite)
+			msg.clearResponse();
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 313 ");
+		msg.appendResponse(user.getNick());
+		msg.appendResponse(" :is an IRC operator");
+		msg.appendSeparator();
+	}
+
+	void	rpl_whoisuser(Message& msg, const Client& user, bool rewrite)
+	{
+		if (rewrite)
+			msg.clearResponse();
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 311 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
+		msg.appendResponse(user.getNick());
+		msg.appendResponse(" ");
+		msg.appendResponse(msg.getSender().getUsername());
+		msg.appendResponse(" :");
+		msg.appendResponse(msg.getSender().getHostname());
+		msg.appendResponse(" * : ");
+		msg.appendResponse(user.getRealName());
+		msg.appendSeparator();
+	}
+
 	// error replies
 
 	void	err_nosuchnick(Message& msg, const std::string& nick, bool rewrite)
@@ -277,18 +306,6 @@ namespace ft_irc
 		msg.appendResponse(" 401 ");
 		msg.appendResponse(nick);
 		msg.appendResponse(" :No such nick/channel");
-		msg.appendSeparator();
-	}
-
-	void	err_nosuchserver(Message& msg, const std::string& serv_name, bool rewrite)
-	{
-		msg.setRecipient(msg.getSender());
-		if (rewrite)
-			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 402 ");
-		msg.appendResponse(serv_name);
-		msg.appendResponse(" :No such server");
 		msg.appendSeparator();
 	}
 
@@ -499,12 +516,10 @@ namespace ft_irc
 		if (rewrite)
 			msg.clearResponse();
 		//:public-irc.w3.org 461 ezakjhzkjehkjzehdk WHO :Syntax error
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 461 ");
-		msg.appendResponse(msg.getSender().getNick());
-		msg.appendResponse(" ");
-		msg.appendResponse(cmd);
-		msg.appendResponse(" :Syntax error");
+		msg.setResponse(
+			build_prefix(msg.getServHostname()) 
+			+ " 461 " + msg.getSender().getNick() + " " + cmd + " :Syntax error"
+			);
 		msg.appendSeparator();
 	}
 

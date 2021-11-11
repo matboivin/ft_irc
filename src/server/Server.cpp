@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/10 22:13:10 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 15:48:49 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,8 @@ namespace ft_irc
 	  _parser(),
 	  _commands(),
 	  _clients(),
-	  _channels()
+	  _channels(),
+	  _logger(DEBUG)
 	{
 		// create a new address struct
 		this->_address.sin_family = AF_INET;
@@ -74,7 +75,8 @@ namespace ft_irc
 	  _parser(other._parser),
 	  _commands(other._commands),
 	  _clients(other._clients),
-	  _channels(other._channels)
+	  _channels(other._channels),
+	  _logger(other._logger)
 	{
 	}
 
@@ -93,6 +95,7 @@ namespace ft_irc
 			this->_commands = other._commands;
 			this->_clients = other._clients;
 			this->_channels = other._channels;
+			this->_logger = other._logger;
 		}
 		return (*this);
 	}
@@ -158,6 +161,11 @@ namespace ft_irc
 		return (it);
 	}
 
+	void	Server::_log(int level, const std::string& msg) const
+	{
+		_logger.log(level, msg);
+	}
+
 	Server::t_channels::iterator	Server::getChannel(const std::string& chan_name)
 	{
 		if (!channel_is_valid(chan_name))
@@ -198,10 +206,12 @@ namespace ft_irc
 	{
 		t_clients::iterator	it = this->_clients.begin();
 
-		std::cout << "Shutting down server" << std::endl;
 		while (it != this->_clients.end())
+		_logger.log(5, "Shutting down server");
 		{
 			this->_disconnectClient(*it);
+			_logger.log(1, "Client " + it->getNick() 
+			+ "@" + it->getIpAddressStr() + " disconnected");
 			it = this->_clients.erase(it);
 		}
 	}
@@ -222,7 +232,7 @@ namespace ft_irc
 		this->_sockfd = socket(AF_INET, SOCK_STREAM, 0);
 		if (this->_sockfd < 0)
 		{
-			std::cerr << "Error: Could not create socket." << std::endl;
+			_logger.log(4, "Error: Could not create socket.");
 			return (false);
 		}
 		setNonblocking(this->_sockfd);
@@ -231,19 +241,19 @@ namespace ft_irc
 		int	optval = 1;
 		if (setsockopt(this->_sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) < 0)
 		{
-			std::cerr << "Error: Could not set socket options." << std::endl;
+			_logger.log(4, "Error: Could not set socket options.");
 			return (false);
 		}
 		//Bind the socket to the address.
 		if (bind(this->_sockfd, (struct sockaddr *)&_address, sizeof(_address)) < 0)
 		{
-			std::cerr << "Error: Could not bind socket." << std::endl;
+			_logger.log(4, "Error: Could not bind socket.");
 			return (false);
 		}
 		//Listen for connections.
 		if (listen(this->_sockfd, this->_backlog_max) < 0)
 		{
-			std::cerr << "Error: Could not listen on socket." << std::endl;
+			_logger.log(4, "Error: Could not listen on socket.");
 			return (false);
 		}
 		return (true);
@@ -259,8 +269,7 @@ namespace ft_irc
 		if (new_client.getSocketFd() < 0)
 			return (false);
 		//log the clients IP address
-		std::cout << "Client " << new_client.getIpAddressStr()
-				  << " connected" << std::endl;
+		_logger.log(1, "Client " + new_client.getIpAddressStr() + " connected");
 
 		this->_clients.push_back(new_client);
 		return (true);
@@ -274,7 +283,7 @@ namespace ft_irc
 
 		if (poll_result < 0)
 		{
-			std::cerr << "Error: Could not poll socket." << std::endl;
+			_logger.log(3, "Error: Could not poll socket.");
 			return (false);
 		}
 		if (poll_result == 0)
@@ -295,8 +304,8 @@ namespace ft_irc
 				if (client.isRegistered() == false && !client.getNick().empty() &&
 					!client.getUsername().empty() && !client.getHostname().empty())
 				{
-					std::cout << "Client " << client.getNick() << "@" << client.getIpAddressStr()
-							  << " has just registered" << std::endl;
+					_logger.log(1, "Client " + client.getNick() + "@" + client.getIpAddressStr()
+							  + " has just registered");
 
 					Message	welcome_msg(client);
 
@@ -322,6 +331,7 @@ namespace ft_irc
 			if (it->isAlive() == false)
 			{
 				this->_disconnectClient(*it);
+				this->_logger.log(1, "Client " + it->getIpAddressStr() + " disconnected");
 				it = this->_clients.erase(it);
 				continue ;
 			}
@@ -357,6 +367,11 @@ namespace ft_irc
 	{
 		t_clients::iterator	it = std::find(this->_clients.begin(), this->_clients.end(), client);
 
+		if (it == this->_clients.end())
+		{
+			_logger.log(3, "Client " + client.getNick() + client.getIpAddressStr() + " is not in the client list!");
+			return (-1);
+		}
 		if (it->getSocketFd() > 0)
 		{
 			close(it->getSocketFd());
@@ -364,8 +379,6 @@ namespace ft_irc
 		}
 		it->setAlive(false);
 		it->setConnected(false);
-		std::cout << "Client " << it->getIpAddressStr()
-			<< " disconnected" << std::endl;
 		return (0);
 	}
 
@@ -399,7 +412,7 @@ namespace ft_irc
 		this->_commands["KICK"]		= &Server::exec_kick_cmd;
 		this->_commands["KILL"]		= &Server::exec_kill_cmd;
 		// this->_commands["LIST"]	= &Server::exec_list_cmd;
-		// this->_commands["MODE"]	= &Server::exec_mode_cmd;
+		this->_commands["MODE"]		= &Server::exec_mode_cmd;
 		// this->_commands["NAMES"]	= &Server::exec_names_cmd;
 		this->_commands["NICK"]		= &Server::exec_nick_cmd;
 		this->_commands["NOTICE"]	= &Server::exec_notice_cmd;
@@ -425,7 +438,7 @@ namespace ft_irc
 
 		if (it != this->_commands.end())
 		{
-			std::cout << "Executing command \"" << msg.getCommand() << "\"" << std::endl;
+			this->_logger.log(0, "Executing command \"" + msg.getCommand() + "\"");
 			(this->*it->second)(msg);
 		}
 		return (0);
@@ -473,7 +486,8 @@ namespace ft_irc
 
 			if (pos != std::string::npos)
 				logOutput.replace(pos, 2, CRLF_PRINTABLE); 
-			std::cout << "Sending: '" << logOutput << "' to " << (*dst)->getIpAddressStr() << std::endl;
+		//	std::cout << "Sending: '" << logOutput << "' to " << (*dst)->getIpAddressStr() << std::endl;
+			_log(0, "Sending: '" + logOutput + "' to " + (*dst)->getIpAddressStr());	
 			if (send((*dst)->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
 			{
 				throw std::runtime_error("send() failed");
@@ -547,15 +561,15 @@ namespace ft_irc
 	}
 
 	/* Removes a user from all joined channels */
-	void	Server::_removeUserFromAllChannels(Client& client, Message& msg)
+	void	Server::_removeUserFromAllChannels(Client& client)
 	{
-		Message	part_msg(msg);
+		Message	part_msg(client);
 
 		part_msg.setRecipients(client.getAllContacts()); // get all client contacts
-		// all contacts == clients from all the channels joined by the client
-		part_msg.setResponse(build_prefix(build_full_client_id( msg.getSender())));
+		// all contacts: clients from all the channels joined by the client
+		part_msg.setResponse(build_prefix(getHostname()));
 		part_msg.appendResponse(" PART ");
-		part_msg.appendResponse(msg.getSender().getNick());
+		part_msg.appendResponse(client.getNick());
 		part_msg.appendSeparator();
 		client.partAllChannels(); // client parts all joined channels
 		_sendResponse(part_msg); // send the message to all contacts
@@ -620,7 +634,7 @@ namespace ft_irc
 			err_needmoreparams(msg, true);
 		else if (msg.getParams().at(0) == "0") // JOIN 0
 		{
-			_removeUserFromAllChannels(msg.getSender(), msg);
+			_removeUserFromAllChannels(msg.getSender());
 			msg.clearRecipients(); // a part message is sent instead
 		}
 		else
@@ -663,11 +677,13 @@ namespace ft_irc
 			err_notonchannel(msg, chan_name);
 		else if ((user != this->_clients.end()) && !_userOnChannel(*user, *channel))
 			err_usernotinchannel(msg, nick, chan_name);
-		else if (user != this->_clients.end()) // TODO: if the client don't exist, what is the reply?
+		else if (user == this->_clients.end())
+			err_nosuchnick(msg, nick);
+		else
 		{
 			Message	kick_msg(msg);
 
-			kick_msg.setRecipient(channel->getClients());
+			kick_msg.setRecipients(channel->getClients());
 			kick_msg.setResponse(build_prefix(build_full_client_id( msg.getSender())));
 			kick_msg.appendResponse(" KICK ");
 			kick_msg.appendResponse(chan_name);
@@ -745,8 +761,6 @@ namespace ft_irc
 
 	//void	Server::exec_list_cmd(Message& msg);
 
-	//void	Server::exec_mode_cmd(Message& msg);
-
 	//void	Server::exec_names_cmd(Message& msg);
 
 	/*
@@ -802,11 +816,99 @@ namespace ft_irc
 
 				rpl_youreoper(rpl_msg);
 				_sendResponse(rpl_msg);
-				//exec_mode_cmd(msg);
+				exec_mode_cmd(msg);
 			}
 			else
 				err_passwdmismatch(msg, true);
 		}
+	}
+
+	void	Server::exec_mode_cmd(Message& msg)
+	{
+		if (msg.getParams().size() < 2)
+			err_needmoreparams(msg);
+		else
+		{
+			std::string	target = msg.getParams().at(0);
+			std::string	mode_str = msg.getParams().at(1);
+
+			if (target == "0")
+				err_nosuchnick(msg, target);
+			else if (target == "*")
+				err_needmoreparams(msg);
+			else if (target[0] == '#')
+			{
+				t_channels::iterator	channel = getChannel(target);
+
+				if (channel == this->_channels.end())
+					err_nosuchchannel(msg, target);
+				else
+					channel->setMode(mode_str);
+			}
+			else
+			{
+				t_clients::iterator	client = getClient(target);
+
+				if (client == this->_clients.end())
+					err_nosuchnick(msg, target);
+				else
+					_setUserMode(*client, mode_str, msg);
+			}
+		}	
+	}
+
+	int Server::_setUserMode(Client &client, const std::string& mode_str, Message& msg)
+	{
+		std::string	mode_str_copy = mode_str;
+		int			error_code = 0;
+
+		if (mode_str_copy.empty())
+			return (1);
+		if (mode_str_copy[0] == '+')
+			mode_str_copy.erase(0, 1);
+		for (std::string::iterator mode_char = mode_str_copy.begin();
+			 mode_char != mode_str_copy.end();
+			 ++mode_char)
+		{
+			if (*mode_char == '-')
+			{
+				error_code = client.removeMode(*mode_char);
+			}
+			else
+			{
+				error_code = client.addMode(*mode_char);
+			}
+			if (error_code)
+			{
+				//Append error message
+				msg.appendResponse(error_msg[error_code]);
+			}
+		}
+		return (0);
+	}
+
+	int	Client::addMode(char mode_char)
+	{
+		std::string valid_modes = "iswo";
+
+		if (valid_modes.find(mode_char) != std::string::npos)
+		{
+			this->_mode += mode_char;
+			return (ERR_SUCCESS);
+		}
+		return (ERR_UNKNOWNMODE);
+	}
+
+	int	Client::removeMode(char mode_char)
+	{
+		std::string valid_modes = "iswo";
+
+		if (valid_modes.find(mode_char) != std::string::npos)
+		{
+			this->_mode.erase(this->_mode.find(mode_char), 1);
+			return (ERR_SUCCESS);
+		}
+		return (ERR_UNKNOWNMODE);
 	}
 
 	/*
@@ -865,15 +967,15 @@ namespace ft_irc
 		std::string	origin;
 
 		if (msg.getParams().empty())
-			err_needmoreparams(msg, true, "No origin specified");
+			err_needmoreparams(msg, true, error_msg[ERR_NOORIGIN]);
 		else
 		{
 			origin = msg.getParams().front();
 
 			msg.setRecipient(msg.getSender());
 			msg.setResponse(
-				build_prefix(msg.getServHostname())
-			+ " PONG " + msg.getSender().getNick() + msg.getServHostname()
+				build_prefix(getHostname())
+			+ " PONG " + msg.getSender().getNick() + getHostname()
 			+ " :" + origin + CRLF
 			);
 		}
@@ -887,7 +989,7 @@ namespace ft_irc
 		std::string	origin;
 
 		if (msg.getParams().empty())
-			err_needmoreparams(msg, true, "No origin specified");
+			err_needmoreparams(msg, true, error_msg[ERR_NOORIGIN]);
 		else
 		{
 			origin = msg.getParams().front();
@@ -1009,7 +1111,7 @@ namespace ft_irc
 				continue;
 			if (match_nick(to_match, it->getNick()))
 			{
-				std::cout << "WHO matched " << it->getNick() << std::endl;
+				this->_logger.log(0, "WHO matched " + it->getNick());
 				response += ":" + this->getHostname() + " 352 " + msg.getSender().getNick() + " * ";
 				response += it->getNick();
 				response += " " + it->getIpAddressStr();
@@ -1048,36 +1150,24 @@ namespace ft_irc
 			err_syntaxerror(msg, msg.getCommand());
 			return ;
 		}
-		std::string	response = "";
+		msg.setResponse("");
 		for (t_clients::iterator it = this->_clients.begin();
 			 it != this->_clients.end();
 			 ++it)
 		{
 			if (match_nick(to_match, it->getNick()))
 			{
-				response += ":" + this->getHostname() + " 311 " + msg.getSender().getNick() + " ";
-				response += it->getNick();
-				response += " " + it->getUsername();
-				response += " " + it->getHostname();
-				response += " * :";
-				response += it->getRealName();
-				response += CRLF;
-				response += ":" + this->getHostname() + " 312 " + msg.getSender().getNick() + " ";
-				response += this->getHostname();
-				response += " :";
-				response += this->_description;
-				response += CRLF;
+				// :mynick 311 mynick nickname user hostname * :realname
+				rpl_whoisuser(msg, *it, false);
+				rpl_whoisserver(msg, this->_description, false);
 				if (it->isOper())
 				{
-					response += ":" + this->getHostname() + " 313 " + msg.getSender().getNick() + " ";
-					response += it->getNick();
-					response += " :is an IRC operator" CRLF;
+					rpl_whoisoperator(msg, *it, false);
 				}
 			}
 		}
-		response += ":" + this->getHostname() + " 318 " + msg.getSender().getNick() +
-		" " + to_match + " :End of /WHOIS list." + CRLF;
-		msg.setResponse(response);
+		msg.appendResponse(":" + this->getHostname() + " 318 " + msg.getSender().getNick() +
+		" " + to_match + " :End of /WHOIS list." CRLF);
 		msg.setRecipient(msg.getSender());
 	}
 
@@ -1128,7 +1218,7 @@ namespace ft_irc
 		response += error;
 		response += "\r\n";
 		//log the response
-		std::cout << "Sending: " << response << "to " << client.getIpAddressStr() << std::endl;
+		this->_logger.log(0, "Sending: " + response + "to " + client.getIpAddressStr());
 		if (send(client.getSocketFd(), response.c_str(), response.size(), 0) < 0)
 		{
 			throw std::runtime_error("send() failed");

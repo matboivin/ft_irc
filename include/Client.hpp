@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/11/03 16:40:36 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/06 14:48:30 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,6 @@
 # include <unistd.h>
 
 # define MAX_COMMAND_SIZE 512
-# define CRLF "\n"
-# define CRLF_PRINTABLE "\\n"
 
 namespace ft_irc
 {
@@ -42,7 +40,14 @@ namespace ft_irc
 		typedef std::list<Client*>	t_clients;
 
 		/* Default constructor */
-							Client(struct sockaddr_in address=(struct sockaddr_in){0,0,{0},{0}},
+							Client(std::string nick="",
+							std::string realname="",
+							std::string username="",
+							std::string password="",
+							std::string hostname=""
+							);
+
+							Client(struct sockaddr_in address,
 								   std::string nick="",
 								   std::string realname="",
 								   std::string username="",
@@ -84,6 +89,9 @@ namespace ft_irc
 		void				setAlive(bool alive);
 		void				setRegistered(bool registered);
 		void				setPinged(bool pinged);
+		int					addMode(char mode_char);
+		int					removeMode(char mode_char);
+		bool				isInvisible() const;
 
 		/* Helpers */
 		bool				isConnected() const;

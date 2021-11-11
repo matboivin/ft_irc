@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/09 17:31:18 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 15:48:01 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 # include <map>
 # include <string>
 # include <ctime>
+# include "ft_irc.hpp"
+# include "Logger.hpp"
 
 namespace ft_irc
 {
@@ -26,6 +28,7 @@ namespace ft_irc
 	class Channel;
 	class Client;
 	class Parser;
+	class Logger;
 
 	class Server
 	{
@@ -74,7 +77,7 @@ namespace ft_irc
 		void					exec_kick_cmd(Message& msg);
 		void					exec_kill_cmd(Message& msg);
 		//void					exec_list_cmd(Message& msg);
-		//void					exec_mode_cmd(Message& msg);
+		void					exec_mode_cmd(Message& msg);
 		//void					exec_names_cmd(Message& msg);
 		void					exec_nick_cmd(Message& msg);
 		void					exec_notice_cmd(Message& msg);
@@ -103,6 +106,7 @@ namespace ft_irc
 		t_cmds					_commands;
 		t_clients				_clients;
 		t_channels				_channels;
+		Logger					_logger;
 
 		/* Cleaning */
 		void					_shutdown();
@@ -138,7 +142,7 @@ namespace ft_irc
 		void					_addUserToChannel(Client& client, Channel& channel);
 		void					_removeUserFromChannel(Client& client, Channel& channel);
 		void					_removeUserFromAllChannels(Client& client);
-		void					_removeUserFromAllChannels(Client& client, Message& msg);
+		int						_setUserMode(Client& client, const std::string& mode, Message& msg);
 
 		/* Oper operations */
 		bool					_giveOperPriv(const std::string& name, const std::string& password);
@@ -146,6 +150,7 @@ namespace ft_irc
 		/* debug */
 		int						_sendList(Client& client);
 		int						_sendError(Client& client, const std::string& error);
+		void					_log(int level, const std::string& message) const;
 	};
 }
 
