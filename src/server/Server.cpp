@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/11 20:22:15 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 20:25:57 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1052,10 +1052,7 @@ namespace ft_irc
 	 */
 	void	Server::exec_user_cmd(Message& msg)
 	{
-		std::string	username;
-		std::string	realname;
-		std::string	hostname;
-		Client&		client = msg.getSender();
+		Client&	client = msg.getSender();
 		//copy list of parameters
 		std::vector<std::string>	params = msg.getParams();
 	
