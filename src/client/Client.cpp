@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/11/07 20:09:42 by root             ###   ########.fr       */
+/*   Updated: 2021/11/11 20:11:24 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -352,8 +352,9 @@ namespace ft_irc
 	{
 		std::string	cmd = this->_in_buffer.substr(0, this->_in_buffer.find(CRLF));
 
-		Logger logger(DEBUG);
-		logger.log(0, "Received: " + cmd);
+		Logger	logger(DEBUG);
+
+		logger.log(LOG_LEVEL_DEBUG, "Received: " + cmd);
 		this->_in_buffer.erase(0, this->_in_buffer.find(CRLF) + sizeof(CRLF) - 1);
 		return (cmd);
 	}
