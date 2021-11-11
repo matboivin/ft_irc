@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/06 14:56:19 by root             ###   ########.fr       */
+/*   Updated: 2021/11/11 17:24:39 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,6 +142,9 @@ namespace ft_irc
 
 		/* Oper operations */
 		bool					_giveOperPriv(const std::string& name, const std::string& password);
+
+		/* Command helpers */
+		void					_addWhoisToMsg(Message& msg, const Client& client);
 
 		/* debug */
 		int						_sendList(Client& client);

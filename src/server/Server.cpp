@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/08 21:44:33 by root             ###   ########.fr       */
+/*   Updated: 2021/11/11 19:48:06 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -990,33 +990,50 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 	}
 
+	void	Server::_addWhoisToMsg(Message& msg, const Client& client)
+	{
+				// :mynick 311 mynick nickname user hostname * :realname
+		rpl_whoisuser(msg, client, false);
+		rpl_whoisserver(msg, this->_description, false);
+		if (client.isOper())
+		{
+			rpl_whoisoperator(msg, client, false);
+		}
+	}
+	
 	/*
 	 * WHOIS [target]
 	 * https://datatracker.ietf.org/doc/html/rfc1459#section-4.5.2
 	*/
 	void	Server::exec_whois_cmd(Message& msg)
 	{
-		std::string	to_match = "0";
-		if (msg.getParams().empty() == false)
-			to_match = msg.getParams().front();
-		else if (msg.getParams().size() > 1)
-		{
-			err_syntaxerror(msg, msg.getCommand());
-			return ;
-		}
+		std::vector<std::string>::const_iterator	paramsIt;
+		std::string							to_match = "0"; //match all by default
+		bool								matchAll = false;
+
 		msg.setResponse("");
+		matchAll = msg.getParams().empty() || msg.getParams().front() == "0";
 		for (t_clients::iterator it = this->_clients.begin();
 			 it != this->_clients.end();
 			 ++it)
 		{
-			if (match_nick(to_match, it->getNick()))
+			if (matchAll)
 			{
-				// :mynick 311 mynick nickname user hostname * :realname
-				rpl_whoisuser(msg, *it, false);
-				rpl_whoisserver(msg, this->_description, false);
-				if (it->isOper())
+				this->_addWhoisToMsg(msg, *it);
+			}
+			else
+			{
+				paramsIt = msg.getParams().begin();
+				//iterate over params
+				for (; paramsIt != msg.getParams().end(); ++paramsIt)
 				{
-					rpl_whoisoperator(msg, *it, false);
+					//_logger.log(0, "WHOIS: " + *paramsIt  + ":" + it->getNick());
+					if (match_nick(*paramsIt, it->getNick()))
+					{
+					//	_logger.log(0, "WHOIS matched " + it->getNick());
+						this->_addWhoisToMsg(msg, *it);
+						break;
+					}
 				}
 			}
 		}
