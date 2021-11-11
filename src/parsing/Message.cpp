@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/11 03:00:58 by root             ###   ########.fr       */
+/*   Updated: 2021/11/11 16:46:03 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,6 +137,11 @@ namespace ft_irc
 			this->_params.push_back(param);
 	}
 
+	void	Message::setParams(const t_params& params)
+	{
+		this->_params = params;
+	}
+
 	void	Message::setRecipients(const t_clients& recipients)
 	{
 		this->_recipients = recipients;
@@ -159,6 +164,12 @@ namespace ft_irc
 	void	Message::appendSeparator()
 	{
 		this->_response += "\r\n";
+	}
+
+	/* Remove params */
+	void	Message::clearParams()
+	{
+		this->_params.clear();
 	}
 
 	/* Remove response */

@@ -1,14 +1,14 @@
-NAME 				=	ircserv
+NAME				=	ircserv
 
-SHELL				= 	/bin/sh
-RM 					= 	/bin/rm
+SHELL				=	/bin/sh
+RM					=	/bin/rm
 
 .SUFFIXES:
 .SUFFIXES:				.cpp .hpp .o
 
 # FILES
 
-INC_FILES 			= 	ft_irc.hpp \
+INC_FILES			=	ft_irc.hpp \
 						UserInterface.hpp \
 						Channel.hpp \
 						Client.hpp \
@@ -22,7 +22,7 @@ INC_FILES 			= 	ft_irc.hpp \
 						server_operations.tpp \
 						Logger.hpp
 
-SRC_FILES 			= 	main.cpp \
+SRC_FILES			=	main.cpp \
 						Channel.cpp \
 						Client.cpp \
 						CLIParser.cpp \
@@ -36,16 +36,16 @@ SRC_FILES 			= 	main.cpp \
 						Logger.cpp \
 						const.cpp
 
-# tests
-SRC_FILES 			+= 	test_parsing.cpp
+# TESTS
+SRC_FILES			+=	test_parsing.cpp
 
 OBJ_FILES			= $(SRC_FILES:%.cpp=%.o)
 
 # DIRS AND PATHS
 
-INC_DIR				= 	include
-SRC_DIR				= 	src
-OBJ_DIR				= 	obj
+INC_DIR				=	include
+SRC_DIR				=	src
+OBJ_DIR				=	obj
 
 SUB_DIRS			=	client \
 						parsing \
@@ -57,24 +57,24 @@ SUB_DIRS			=	client \
 SRC_SUBDIRS			:=	$(addprefix $(SRC_DIR)/, $(SUB_DIRS))
 
 INC					:=	$(addprefix $(INC_DIR)/, $(INC_FILES))
-OBJ					:= 	$(addprefix $(OBJ_DIR)/, $(OBJ_FILES))
+OBJ					:=	$(addprefix $(OBJ_DIR)/, $(OBJ_FILES))
 
-VPATH = 			$(SRC_DIR) $(SRC_SUBDIRS)
+VPATH =				$(SRC_DIR) $(SRC_SUBDIRS)
 
 # COMPIL AND FLAGS
 
-CPPFLAGS			:= 	-I$(INC_DIR)
-CXX					:= 	clang++
-CXXFLAGS 			:=	-Wall -Wextra -Werror -g -fsanitize=address #-std=c++98 -pedantic A REMETTRE PLUS TARD APRES LE MERGE
+CPPFLAGS			:=	-I$(INC_DIR)
+CXX					:=	clang++
+CXXFLAGS			:=	-Wall -Wextra -Werror -g -fsanitize=address #-std=c++98 -pedantic A REMETTRE PLUS TARD APRES LE MERGE
 
 # COLORS
 
-COL_GREEN 			:= \033[0;32m
-COL_GREEN_B 		:= \033[1;32m
-COL_BLUE_B 			:= \033[1;34m
-COL_WHITE_B 		:= \033[1;37m
+COL_GREEN			:= \033[0;32m
+COL_GREEN_B			:= \033[1;32m
+COL_BLUE_B			:= \033[1;34m
+COL_WHITE_B			:= \033[1;37m
 COL_YELLOW			:= \033[1;33m
-COL_RESET 			:= \033[0m
+COL_RESET			:= \033[0m
 
 # STYLES
 
@@ -93,7 +93,7 @@ $(OBJ_DIR):
 
 # COMPILING
 
-$(OBJ_DIR)/%.o : 	%.cpp
+$(OBJ_DIR)/%.o :	%.cpp
 					@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ -c $<
 					@printf "$(COL_YELLOW)[compilation]$(COL_RESET)$(COL_WHITE_B) objects $(COL_RESET)$(STYLE_ITALIC)$@$(STYLE_RESET) created\n"
 
@@ -112,6 +112,10 @@ debug:				$(NAME)
 debug_replies:
 					./tests/replies_tester.sh
 
+debug_parsing:		CXXFLAGS+= -D DEBUG_PARSING
+debug_parsing:		re
+					./$(NAME) 0.0.0.0 2727 test
+
 show:
 					@echo "VPATH: $(VPATH)"
 
@@ -125,6 +129,6 @@ fclean:				clean
 					@$(RM) -f $(NAME)
 					@echo "$(COL_BLUE_B)[fclean]$(COL_WHITE_B) $(NAME) $(COL_RESET)removed"
 
-re: 				fclean all
+re:					fclean all
 
 .PHONY:				all debug clean fclean re
