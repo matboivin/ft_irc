@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/11 20:25:57 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 20:37:24 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -513,9 +513,12 @@ namespace ft_irc
 	/* Channel operations ******************************************************* */
 
 	/* Adds a new channel to the server's list */
-	Channel&	Server::_addChannel(const std::string& name)
+	Channel&	Server::_addChannel(const std::string& name, Client& creator)
 	{
 		this->_channels.push_back(Channel(name));
+
+		Channel	chan = this->_channels.back();
+		chan.addChanOp(creator);
 		return (this->_channels.back());
 	}
 
@@ -612,7 +615,7 @@ namespace ft_irc
 			else
 			{
 				if (!chan_exists )
-					_addChannel(chan_name);
+					_addChannel(chan_name, msg.getSender());
 
 				Message	confirm_invite_msg(msg.getSender());
 
@@ -646,7 +649,7 @@ namespace ft_irc
 				if (!channel_is_valid(*chan_name))
 					return ;
 				if (channel == this->_channels.end())
-					_addUserToChannel(msg.getSender(), _addChannel(*chan_name));
+					_addUserToChannel(msg.getSender(), _addChannel(*chan_name, msg.getSender()));
 				else
 					_addUserToChannel(msg.getSender(), *channel);
 			}

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/11 17:59:17 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 20:36:29 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,7 @@ namespace ft_irc
 		void					_make_welcome_msg(Message& msg);
 
 		/* Channel operations */
-		Channel&				_addChannel(const std::string& name);
+		Channel&				_addChannel(const std::string& name, Client& creator);
 		void					_removeChannel(t_channels::iterator channel);
 		bool					_userOnChannel(Client& client, Channel& channel);
 		bool					_userOnChannel(Client& client, const std::string& chan_name);
