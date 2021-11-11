@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/11 18:02:37 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 18:35:04 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,22 +110,26 @@ namespace ft_irc
 
 	std::string	Server::getHostname() const
 	{
-		return (this->_config.getHostname());
+		std::string	hostname = this->_config.getHostname();
+		return (hostname);
 	}
 
 	std::string	Server::getBindAddress() const
 	{
-		return (this->_config.getBindAddress());
+		std::string	bind_address = this->_config.getBindAddress();
+		return (bind_address);
 	}
 
 	std::string	Server::getPort() const
 	{
-		return (this->_config.getPort());
+		std::string	port = this->_config.getPort();
+		return (port);
 	}
 
 	std::string	Server::getPassword() const
 	{
-		return (this->_config.getPassword());
+		std::string	password = this->_config.getPassword();
+		return (password);
 	}
 
 	std::string	Server::getCreationDate() const
@@ -541,12 +545,8 @@ namespace ft_irc
 	{
 		if (!_userOnChannel(client, channel))
 		{
-			std::cout << "Add " << client.getNick() << " to channel "
-					  << channel.getName() << std::endl;
+			_log(LOG_LEVEL_DEBUG, "Add " + client.getNick() + " to channel " + channel.getName());
 			client.joinChannel(channel);
-
-			channel.displayClients(); // debug
-			std::cout << std::endl;
 		}
 	}
 
@@ -555,12 +555,8 @@ namespace ft_irc
 	{
 		if (_userOnChannel(client, channel))
 		{
-			std::cout << "Remove " << client.getNick() << " from channel "
-					  << channel.getName() << std::endl;
+			_log(LOG_LEVEL_DEBUG, "Remove " + client.getNick() + " from channel " + channel.getName());
 			client.partChannel(channel);
-
-			channel.displayClients(); // debug
-			std::cout << std::endl;
 		}
 	}
 
@@ -575,11 +571,9 @@ namespace ft_irc
 		part_msg.appendResponse(" PART ");
 		part_msg.appendResponse(client.getNick());
 		part_msg.appendSeparator();
+		_log(LOG_LEVEL_DEBUG, "Remove " + client.getNick() + " from all the channels they joined");
 		client.partAllChannels(); // client parts all joined channels
 		_sendResponse(part_msg); // send the message to all contacts
-
-		client.displayJoinedChannels(); // debug
-		std::cout << std::endl;
 	}
 
 	/* Oper operations ********************************************************** */
@@ -814,13 +808,26 @@ namespace ft_irc
 		{
 			if (_canGiveOperPriv(msg.getParams().at(0), msg.getParams().at(1)))
 			{
-				msg.getSender().addMode("o");
+				std::string	nick = msg.getSender().getNick();
 
-				Message	rpl_msg(msg.getSender()); // tmp
+				Message	rpl_msg(msg);
 
-				rpl_youreoper(rpl_msg);
-				_sendResponse(rpl_msg);
+				msg.setRecipient(msg.getSender());
+				msg.setCommand("MODE");
+				msg.clearParams();
+				msg.setParam(nick);
+				msg.setParam("+o");
+				msg.setResponse(build_prefix(this->getHostname()));
+				msg.appendResponse(" MODE ");
+				msg.appendResponse(nick);
+				msg.appendResponse(" +o");
+				msg.appendSeparator();
 				exec_mode_cmd(msg);
+				if (msg.getSender().isOper() == true)
+				{
+					rpl_youreoper(rpl_msg);
+					_sendResponse(rpl_msg);
+				}
 			}
 			else
 				err_passwdmismatch(msg, true);
