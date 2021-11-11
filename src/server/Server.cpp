@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/11 18:01:18 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 18:02:37 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -490,9 +490,8 @@ namespace ft_irc
 			size_t	pos = logOutput.find(CRLF);
 
 			if (pos != std::string::npos)
-				logOutput.replace(pos, 2, CRLF_PRINTABLE); 
-		//	std::cout << "Sending: '" << logOutput << "' to " << (*dst)->getIpAddressStr() << std::endl;
-			_log(0, "Sending: '" + logOutput + "' to " + (*dst)->getIpAddressStr());	
+				logOutput.replace(pos, 2, CRLF_PRINTABLE);
+			_log(0, "Sending: '" + logOutput + "' to " + (*dst)->getIpAddressStr());
 			if (send((*dst)->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
 			{
 				throw std::runtime_error("send() failed");
