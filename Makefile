@@ -114,7 +114,7 @@ debug_replies:
 
 debug_parsing:		CXXFLAGS+= -D DEBUG_PARSING
 debug_parsing:		re
-					./$(NAME) 0.0.0.0 6667 test
+					./$(NAME) 0.0.0.0 2727 test
 
 show:
 					@echo "VPATH: $(VPATH)"
