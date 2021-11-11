@@ -6,12 +6,13 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:37:26 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/03 12:16:04 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 16:10:35 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <cctype>
 #include <string>
+#include <vector>
 #include "Client.hpp"
 #include "Channel.hpp"
 #include "Message.hpp"

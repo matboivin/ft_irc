@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:35:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/03 12:01:13 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 16:10:45 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <list>
 # include <string>
+# include <vector>
 
 /* Operations helpers needed for building responses, checking channels, ... */
 

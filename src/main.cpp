@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:21 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/01 19:07:35 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 16:40:53 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,11 @@
 
 int	main(int argc, char** argv)
 {
+#if defined(DEBUG_PARSING)
+	test_parsing();
+	test_modes();
+	return (0);
+#endif
 	try
 	{
 		ft_irc::CLIParser	CLI_parser(argc, argv);

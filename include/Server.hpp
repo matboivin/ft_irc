@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/06 14:56:19 by root             ###   ########.fr       */
+/*   Updated: 2021/11/11 17:59:17 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,10 +67,14 @@ namespace ft_irc
 		int						run();
 
 		/* Commands */
-		//void					exec_invite_cmd(Message& msg);
+		void					exec_invite_cmd(Message& msg);
 		void					exec_join_cmd(Message& msg);
-		//void					exec_kick_cmd(Message& msg);
-		//void					exec_kill_cmd(Message& msg);
+		void					_kickClient(Message& msg,
+											const std::string& chan_name, const std::string& nick,
+											const std::string& comment = ""
+											);
+		void					exec_kick_cmd(Message& msg);
+		void					exec_kill_cmd(Message& msg);
 		//void					exec_list_cmd(Message& msg);
 		void					exec_mode_cmd(Message& msg);
 		//void					exec_names_cmd(Message& msg);
@@ -118,6 +122,7 @@ namespace ft_irc
 
 		/* Parsing */
 		bool					_parse(Message& msg, const std::string& cmd);
+		Parser::t_params		_splitListOfParams(const std::string& params);
 
 		/* Commands execution */
 		void					_init_commands_map();
@@ -137,11 +142,10 @@ namespace ft_irc
 		void					_addUserToChannel(Client& client, Channel& channel);
 		void					_removeUserFromChannel(Client& client, Channel& channel);
 		void					_removeUserFromAllChannels(Client& client);
-		void					_removeUserFromAllChannels(Client& client, Message& msg);
 		int						_setUserMode(Client& client, const std::string& mode, Message& msg);
 
 		/* Oper operations */
-		bool					_giveOperPriv(const std::string& name, const std::string& password);
+		bool					_canGiveOperPriv(const std::string& name, const std::string& password);
 
 		/* debug */
 		int						_sendList(Client& client);
