@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/11 16:46:11 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 16:50:40 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -249,7 +249,7 @@ namespace ft_irc
 	/* Fill response if Message will be forwarded to other clients */
 	void	Parser::_fillForwardResponse(Message& msg, std::string cmd)
 	{
-		const std::string	cmds = "INVITE JOIN KILL LIST MODE NOTICE OPER "
+		const std::string	cmds = "INVITE JOIN KILL MODE NOTICE OPER "
 									"PART PING PONG PRIVMSG QUIT TEST";
 
 		if (cmds.find(msg.getCommand()) != std::string::npos)
@@ -286,7 +286,7 @@ namespace ft_irc
 			if (_commandIsValid(msg))
 			{
 				_parseParams(msg);
-				_handleListOfParams(msg);
+				_handleListOfParams(msg); // split list of params (param1,param2)
 				_fillForwardResponse(msg, cmd.substr( msg.getCommand().size() ));
 			}
 			return (true);

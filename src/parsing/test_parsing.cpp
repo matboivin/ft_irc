@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 12:25:08 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/11 16:46:37 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 16:49:34 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,6 +212,75 @@ int	test_parsing()
 		expected.setCommand("QUIT");
 		expected.setParam(":#foo,#bar");
 		expected.setResponse(":nick!username@hostname QUIT :#foo,#bar\r\n");
+		assert(cmp_msg(msg, expected));
+	}
+
+	{
+		ft_irc::Message	msg(dummy_client);
+		ft_irc::Message	expected(dummy_client);
+
+		parser.parseMessage(msg, "NAMES #foo");
+		expected.setCommand("NAMES");
+		expected.setParam("#foo");
+		assert(cmp_msg(msg, expected));
+	}
+
+	{
+		ft_irc::Message	msg(dummy_client);
+		ft_irc::Message	expected(dummy_client);
+
+		parser.parseMessage(msg, "NAMES #foo,#bar,#baz");
+		expected.setCommand("NAMES");
+		expected.setParam("#foo");
+		expected.setParam("#bar");
+		expected.setParam("#baz");
+		assert(cmp_msg(msg, expected));
+	}
+
+	{
+		ft_irc::Message	msg(dummy_client);
+		ft_irc::Message	expected(dummy_client);
+
+		parser.parseMessage(msg, "LIST #foo");
+		expected.setCommand("LIST");
+		expected.setParam("#foo");
+		assert(cmp_msg(msg, expected));
+	}
+
+	{
+		ft_irc::Message	msg(dummy_client);
+		ft_irc::Message	expected(dummy_client);
+
+		parser.parseMessage(msg, "LIST #foo,#bar,#baz");
+		expected.setCommand("LIST");
+		expected.setParam("#foo");
+		expected.setParam("#bar");
+		expected.setParam("#baz");
+		assert(cmp_msg(msg, expected));
+	}
+
+	{
+		ft_irc::Message	msg(dummy_client);
+		ft_irc::Message	expected(dummy_client);
+
+		parser.parseMessage(msg, "LIST #foo,#bar,#baz server");
+		expected.setCommand("LIST");
+		expected.setParam("#foo");
+		expected.setParam("#bar");
+		expected.setParam("#baz");
+		expected.setParam("server");
+		assert(cmp_msg(msg, expected));
+	}
+
+	{
+		ft_irc::Message	msg(dummy_client);
+		ft_irc::Message	expected(dummy_client);
+
+		parser.parseMessage(msg, "WHOIS user1,user2,user3");
+		expected.setCommand("WHOIS");
+		expected.setParam("user1");
+		expected.setParam("user2");
+		expected.setParam("user3");
 		assert(cmp_msg(msg, expected));
 	}
 
