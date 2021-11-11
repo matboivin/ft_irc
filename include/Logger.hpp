@@ -5,12 +5,13 @@
 # define CRLF "\n"
 # define CRLF_PRINTABLE "\\n"
 
-enum LogLevel {
-	LOG_LEVEL_DEBUG,
-	LOG_LEVEL_INFO,
-	LOG_LEVEL_WARNING,
-	LOG_LEVEL_ERROR,
-	LOG_LEVEL_FATAL
+enum LogLevel
+{
+	LOG_LEVEL_DEBUG = 0,
+	LOG_LEVEL_INFO = 1,
+	LOG_LEVEL_WARNING = 2,
+	LOG_LEVEL_ERROR = 3,
+	LOG_LEVEL_FATAL = 4
 };
 
 namespace ft_irc
@@ -18,14 +19,15 @@ namespace ft_irc
 	class Logger
 	{
 		private:
-			int _log_level;
+			int		_log_level;
+
 		public:
 					Logger(void);
 					Logger(int log_level);
-					Logger(const Logger &src);
-					Logger &operator=(const Logger &src);
+					Logger(const Logger& src);
+					Logger&	operator=(const Logger& src);
 					~Logger(void);
-			void	log(int level, std::string message) const;
+			void	log(int level, const std::string& message) const;
 	};
 }
 
