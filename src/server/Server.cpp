@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/11 20:09:42 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 20:22:15 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -896,30 +896,6 @@ namespace ft_irc
 			}
 		}
 		return (0);
-	}
-
-	int	Client::addMode(char mode_char)
-	{
-		std::string valid_modes = "iswo";
-
-		if (valid_modes.find(mode_char) != std::string::npos)
-		{
-			this->_mode += mode_char;
-			return (ERR_SUCCESS);
-		}
-		return (ERR_UNKNOWNMODE);
-	}
-
-	int	Client::removeMode(char mode_char)
-	{
-		std::string valid_modes = "iswo";
-
-		if (valid_modes.find(mode_char) != std::string::npos)
-		{
-			this->_mode.erase(this->_mode.find(mode_char), 1);
-			return (ERR_SUCCESS);
-		}
-		return (ERR_UNKNOWNMODE);
 	}
 
 	/*

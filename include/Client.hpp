@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/11/06 14:48:30 by root             ###   ########.fr       */
+/*   Updated: 2021/11/11 20:22:06 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,9 +89,6 @@ namespace ft_irc
 		void				setAlive(bool alive);
 		void				setRegistered(bool registered);
 		void				setPinged(bool pinged);
-		int					addMode(char mode_char);
-		int					removeMode(char mode_char);
-		bool				isInvisible() const;
 
 		/* Helpers */
 		bool				isConnected() const;
@@ -101,6 +98,7 @@ namespace ft_irc
 		bool				isOper() const;
 		bool				isChanOp(Channel& channel);
 		bool				isPinged() const;
+		bool				isInvisible() const;
 
 		/* Connection handling */
 		int					awaitConnection(int socket_fd);
@@ -121,8 +119,8 @@ namespace ft_irc
 		void				partAllChannels();
 
 		/* Mode operations */
-		void				addMode(const std::string& mode);
-		void				removeMode(const std::string& mode);
+		int					addMode(char mode_char);
+		int					removeMode(char mode_char);
 
 		friend bool			operator==(const Client& lhs, const Client& rhs);
 

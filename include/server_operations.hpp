@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:35:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/11 16:10:45 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 20:21:19 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ namespace ft_irc
 	bool		is_special(char c);
 	bool		nick_is_valid(const std::string& newnick);
 	bool		channel_is_valid(const std::string& chan_name);
-	bool		user_mode_is_valid(const std::string& mode);
 	bool		channel_mode_is_valid(const std::string& mode);
 	bool		match_nick(const std::string& to_match, const std::string& nick);
 

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 12:25:08 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/11 16:49:34 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 20:23:08 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -302,23 +302,6 @@ int	test_parsing()
 
 int	test_modes()
 {
-	assert(ft_irc::user_mode_is_valid("+i"));
-	assert(ft_irc::user_mode_is_valid("-i"));
-	assert(ft_irc::user_mode_is_valid("+w"));
-	assert(ft_irc::user_mode_is_valid("-w"));
-	assert(ft_irc::user_mode_is_valid("+o"));
-	assert(ft_irc::user_mode_is_valid("-o"));
-	assert(ft_irc::user_mode_is_valid("+O"));
-	assert(ft_irc::user_mode_is_valid("-O"));
-	assert(ft_irc::user_mode_is_valid("+r"));
-	assert(ft_irc::user_mode_is_valid("-r"));
-
-	assert(ft_irc::user_mode_is_valid("+o+") == false);
-	assert(ft_irc::user_mode_is_valid("-o+") == false);
-	assert(ft_irc::user_mode_is_valid("o+") == false);
-	assert(ft_irc::user_mode_is_valid("+a") == false);
-	assert(ft_irc::user_mode_is_valid("-I") == false);
-
 	assert(ft_irc::channel_mode_is_valid("+o"));
 	assert(ft_irc::channel_mode_is_valid("-o"));
 	assert(ft_irc::channel_mode_is_valid("+O"));
