@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/11 17:59:25 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 18:01:18 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -295,7 +295,7 @@ namespace ft_irc
 	{
 		if (client.hasUnprocessedCommands() == true)
 		{
-			Message	msg(client, getHostname());
+			Message	msg(client, this->getHostname());
 
 			if (_parse(msg, client.popUnprocessedCommand()) == true) // parse the message
 			{
