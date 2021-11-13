@@ -6,12 +6,13 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:37:26 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/11 19:37:07 by root             ###   ########.fr       */
+/*   Updated: 2021/11/11 20:21:12 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <cctype>
 #include <string>
+#include <vector>
 #include "Client.hpp"
 #include "Channel.hpp"
 #include "Message.hpp"
@@ -79,25 +80,6 @@ namespace ft_irc
 	{
 		return ((chan_name[0] == '#') || (chan_name[0] == '+')
 				|| (chan_name[0] == '!') || (chan_name[0] == '&'));
-	}
-
-	/*
-	 * Check user mode
-	 * In ft_irc, we only use the 'o'/'O' flag
-	 * *( ( "+" / "-" ) *( "i" / "w" / "o" / "O" / "r" ) )
-	 */
-	bool	user_mode_is_valid(const std::string& mode)
-	{
-		if (mode.size() == 2)
-		{
-			if ((mode[0] == '+') || (mode[0] == '-'))
-			{
-				std::string	user_modes = "iwoOr";
-
-				return (user_modes.find(mode[1]) != std::string::npos);
-			}
-		}
-		return (false);
 	}
 
 	/*

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   numeric_replies.hpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/06 17:15:00 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 20:35:14 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ namespace ft_irc
 	void	err_nosuchchannel(Message& msg, const std::string& chan_name, bool rewrite = false); // 403
 	void	err_cannotsendtochan(Message& msg, bool rewrite = false); // 404
 	void	err_toomanychannels(Message& msg, const std::string& chan_name, bool rewrite = false); // 405
-	void	err_toomanytargets(Message& msg, const std::string& target, bool rewrite = false); // 407
 	void	err_noorigin(Message& msg, bool rewrite = false); // 409
 	void	err_norecipient(Message& msg, bool rewrite = false); // 411
 	void	err_notexttosend(Message& msg, bool rewrite = false); // 412
@@ -65,7 +64,7 @@ namespace ft_irc
 	void	err_useronchannel(Message& msg, const std::string& nick, const std::string& chan_name, bool rewrite = false); // 443
 	void	err_notregistered(Message& msg, bool rewrite = false); // 451
 	void	err_needmoreparams(Message& msg, bool rewrite = false, const std::string& error_string = "Not enough parameters"); // 461
-	void	err_syntaxerror(Message& msg, std::string cmd = "", bool rewrite = false); // 461
+	void	err_syntaxerror(Message& msg, const std::string& cmd = "", bool rewrite = false); // 461
 	void	err_alreadyregistered(Message& msg, bool rewrite = false); // 462
 	void	err_passwdmismatch(Message& msg, bool rewrite = false); // 464
 	void	err_channelisfull(Message& msg, const std::string& chan_name, bool rewrite = false); // 471

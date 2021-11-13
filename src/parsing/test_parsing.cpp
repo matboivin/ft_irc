@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 12:25:08 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/06 16:19:47 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 20:23:08 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ int	test_parsing()
 	// Set dummy values to client
 	dummy_client.setNick("nick");
 	dummy_client.setUsername("username");
+	dummy_client.setHostname("hostname");
 
 	// Wrong command format is silently ignored
 	{
@@ -97,7 +98,7 @@ int	test_parsing()
 
 		parser.parseMessage(msg, "PArt");
 		expected.setCommand("PART");
-		expected.setResponse(":nick!username@0.0.0.0 PART\r\n");
+		expected.setResponse(":nick!username@hostname PART\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -108,7 +109,7 @@ int	test_parsing()
 
 		parser.parseMessage(msg, "QUIT");
 		expected.setCommand("QUIT");
-		expected.setResponse(":nick!username@0.0.0.0 QUIT\r\n");
+		expected.setResponse(":nick!username@hostname QUIT\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -119,12 +120,12 @@ int	test_parsing()
 
 		parser.parseMessage(msg, "JOIN  ");
 		expected.setCommand("JOIN");
-		expected.setResponse(":nick!username@0.0.0.0 JOIN\r\n");
+		expected.setResponse(":nick!username@hostname JOIN\r\n");
 		assert(cmp_msg(msg, expected));
 
 		parser.parseMessage(msg, "JOIN #general");
 		expected.setParam("#general");
-		expected.setResponse(":nick!username@0.0.0.0 JOIN #general\r\n");
+		expected.setResponse(":nick!username@hostname JOIN #general\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -136,7 +137,7 @@ int	test_parsing()
 		parser.parseMessage(msg, "QUIT :Gone to have lunch at: MyFavPlace");
 		expected.setCommand("QUIT");
 		expected.setParam(":Gone to have lunch at: MyFavPlace");
-		expected.setResponse(":nick!username@0.0.0.0 QUIT :Gone to have lunch at: MyFavPlace\r\n");
+		expected.setResponse(":nick!username@hostname QUIT :Gone to have lunch at: MyFavPlace\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -148,7 +149,7 @@ int	test_parsing()
 		parser.parseMessage(msg, "QUIT :Gone to have lunch");
 		expected.setCommand("QUIT");
 		expected.setParam(":Gone to have lunch");
-		expected.setResponse(":nick!username@0.0.0.0 QUIT :Gone to have lunch\r\n");
+		expected.setResponse(":nick!username@hostname QUIT :Gone to have lunch\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -173,7 +174,6 @@ int	test_parsing()
 		expected.setParam("#Finnish");
 		expected.setParam("John");
 		expected.setParam(":Speaking English");
-		expected.setResponse(":nick!username@0.0.0.0 KICK #Finnish John :Speaking English\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -186,7 +186,7 @@ int	test_parsing()
 		expected.setCommand("JOIN");
 		expected.setParam("#foo");
 		expected.setParam("#bar");
-		expected.setResponse(":nick!username@0.0.0.0 JOIN #foo,#bar\r\n");
+		expected.setResponse(":nick!username@hostname JOIN #foo,#bar\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -200,7 +200,7 @@ int	test_parsing()
 		expected.setParam("#");
 		expected.setParam("#bcd");
 		expected.setParam("x");
-		expected.setResponse(":nick!username@0.0.0.0 JOIN #abc,# #bcd,x\r\n");
+		expected.setResponse(":nick!username@hostname JOIN #abc,# #bcd,x\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -211,7 +211,89 @@ int	test_parsing()
 		parser.parseMessage(msg, "QUIT :#foo,#bar");
 		expected.setCommand("QUIT");
 		expected.setParam(":#foo,#bar");
-		expected.setResponse(":nick!username@0.0.0.0 QUIT :#foo,#bar\r\n");
+		expected.setResponse(":nick!username@hostname QUIT :#foo,#bar\r\n");
+		assert(cmp_msg(msg, expected));
+	}
+
+	{
+		ft_irc::Message	msg(dummy_client);
+		ft_irc::Message	expected(dummy_client);
+
+		parser.parseMessage(msg, "NAMES #foo");
+		expected.setCommand("NAMES");
+		expected.setParam("#foo");
+		assert(cmp_msg(msg, expected));
+	}
+
+	{
+		ft_irc::Message	msg(dummy_client);
+		ft_irc::Message	expected(dummy_client);
+
+		parser.parseMessage(msg, "NAMES #foo,#bar,#baz");
+		expected.setCommand("NAMES");
+		expected.setParam("#foo");
+		expected.setParam("#bar");
+		expected.setParam("#baz");
+		assert(cmp_msg(msg, expected));
+	}
+
+	{
+		ft_irc::Message	msg(dummy_client);
+		ft_irc::Message	expected(dummy_client);
+
+		parser.parseMessage(msg, "LIST #foo");
+		expected.setCommand("LIST");
+		expected.setParam("#foo");
+		assert(cmp_msg(msg, expected));
+	}
+
+	{
+		ft_irc::Message	msg(dummy_client);
+		ft_irc::Message	expected(dummy_client);
+
+		parser.parseMessage(msg, "LIST #foo,#bar,#baz");
+		expected.setCommand("LIST");
+		expected.setParam("#foo");
+		expected.setParam("#bar");
+		expected.setParam("#baz");
+		assert(cmp_msg(msg, expected));
+	}
+
+	{
+		ft_irc::Message	msg(dummy_client);
+		ft_irc::Message	expected(dummy_client);
+
+		parser.parseMessage(msg, "LIST #foo,#bar,#baz server");
+		expected.setCommand("LIST");
+		expected.setParam("#foo");
+		expected.setParam("#bar");
+		expected.setParam("#baz");
+		expected.setParam("server");
+		assert(cmp_msg(msg, expected));
+	}
+
+	{
+		ft_irc::Message	msg(dummy_client);
+		ft_irc::Message	expected(dummy_client);
+
+		parser.parseMessage(msg, "WHOIS user1,user2,user3");
+		expected.setCommand("WHOIS");
+		expected.setParam("user1");
+		expected.setParam("user2");
+		expected.setParam("user3");
+		assert(cmp_msg(msg, expected));
+	}
+
+	// exception for KICK
+	{
+		ft_irc::Message	msg(dummy_client);
+		ft_irc::Message	expected(dummy_client);
+
+		parser.parseMessage(msg, "KICK #general,#random John,Jane :Speaking English");
+		expected.setCommand("KICK");
+		expected.setParam("#general,#random");
+		expected.setParam("John,Jane");
+		expected.setParam(":Speaking English");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -220,23 +302,6 @@ int	test_parsing()
 
 int	test_modes()
 {
-	assert(ft_irc::user_mode_is_valid("+i"));
-	assert(ft_irc::user_mode_is_valid("-i"));
-	assert(ft_irc::user_mode_is_valid("+w"));
-	assert(ft_irc::user_mode_is_valid("-w"));
-	assert(ft_irc::user_mode_is_valid("+o"));
-	assert(ft_irc::user_mode_is_valid("-o"));
-	assert(ft_irc::user_mode_is_valid("+O"));
-	assert(ft_irc::user_mode_is_valid("-O"));
-	assert(ft_irc::user_mode_is_valid("+r"));
-	assert(ft_irc::user_mode_is_valid("-r"));
-
-	assert(ft_irc::user_mode_is_valid("+o+") == false);
-	assert(ft_irc::user_mode_is_valid("-o+") == false);
-	assert(ft_irc::user_mode_is_valid("o+") == false);
-	assert(ft_irc::user_mode_is_valid("+a") == false);
-	assert(ft_irc::user_mode_is_valid("-I") == false);
-
 	assert(ft_irc::channel_mode_is_valid("+o"));
 	assert(ft_irc::channel_mode_is_valid("-o"));
 	assert(ft_irc::channel_mode_is_valid("+O"));

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/11/07 20:09:42 by root             ###   ########.fr       */
+/*   Updated: 2021/11/11 20:20:55 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include "Client.hpp"
 #include "server_operations.hpp"
 #include "ft_irc.hpp"
+
 int	setNonblocking(int fd);
 
 namespace ft_irc
@@ -352,8 +353,9 @@ namespace ft_irc
 	{
 		std::string	cmd = this->_in_buffer.substr(0, this->_in_buffer.find(CRLF));
 
-		Logger logger(DEBUG);
-		logger.log(0, "Received: " + cmd);
+		Logger	logger(DEBUG);
+
+		logger.log(LOG_LEVEL_DEBUG, "Received: " + cmd);
 		this->_in_buffer.erase(0, this->_in_buffer.find(CRLF) + sizeof(CRLF) - 1);
 		return (cmd);
 	}
@@ -444,19 +446,29 @@ namespace ft_irc
 	/* Mode operations ********************************************************** */
 
 	/* Adds the mode passed as parameter to the client mode string */
-	void	Client::addMode(const std::string& mode)
+	int	Client::addMode(char mode_char)
 	{
-		if (this->_mode.find(mode) == std::string::npos)
-			this->_mode.append(mode);
+		std::string	valid_modes = "iswo";
+
+		if (valid_modes.find(mode_char) != std::string::npos)
+		{
+			this->_mode += mode_char;
+			return (ERR_SUCCESS);
+		}
+		return (ERR_UNKNOWNMODE);
 	}
 
 	/* Removes the mode passed as parameter from the client mode string */
-	void	Client::removeMode(const std::string& mode)
+	int	Client::removeMode(char mode_char)
 	{
-		size_t	pos = this->_mode.find(mode);
+		std::string	valid_modes = "iswo";
 
-		if (pos != std::string::npos)
-			this->_mode.erase(pos, 1);
+		if (valid_modes.find(mode_char) != std::string::npos)
+		{
+			this->_mode.erase(this->_mode.find(mode_char), 1);
+			return (ERR_SUCCESS);
+		}
+		return (ERR_UNKNOWNMODE);
 	}
 
 	/* ************************************************************************** */

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:20:57 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/03 15:45:28 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/11 16:21:53 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define PARSER_HPP
 
 # include <string>
+# include <vector>
 
 namespace ft_irc
 {
@@ -31,6 +32,9 @@ namespace ft_irc
 		typedef std::string::const_iterator	t_str_it;
 
 	public:
+		/* Alias */
+		typedef std::vector<std::string>	t_params;
+
 		/* Default constructor */
 					Parser();
 
@@ -53,6 +57,9 @@ namespace ft_irc
 		void		setItEnd(t_str_it end);
 		void		setIterators(const std::string& str);
 
+		/* Helpers */
+		t_params	splitListOfParams(const std::string& params);
+
 		/* Main parsing function */
 		bool		parseMessage(Message& msg, const std::string& cmd);
 
@@ -62,6 +69,7 @@ namespace ft_irc
 		t_str_it	_end;
 
 		/* Helpers */
+		void		_handleListOfParams(Message& msg);
 		bool		_commandIsValid(Message& msg);
 		bool		_eat(char expected);
 		bool		_nocrlf(t_str_it it);

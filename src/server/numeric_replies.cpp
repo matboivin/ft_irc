@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   numeric_replies.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/11 03:11:26 by root             ###   ########.fr       */
+/*   Updated: 2021/11/11 20:35:05 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -345,18 +345,6 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	err_toomanytargets(Message& msg, const std::string& target, bool rewrite) // maybe not necessary?
-	{
-		msg.setRecipient(msg.getSender());
-		if (rewrite)
-			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 407 ");
-		msg.appendResponse(target);
-		msg.appendResponse(" :<error code> recipients. <abort message>"); // todo
-		msg.appendSeparator();
-	}
-
 	void	err_noorigin(Message& msg, bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
@@ -510,7 +498,7 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	err_syntaxerror(Message& msg, std::string cmd, bool rewrite)
+	void	err_syntaxerror(Message& msg, const std::string& cmd, bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
