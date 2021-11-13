@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/11 20:37:24 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/13 20:51:05 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -320,6 +320,13 @@ namespace ft_irc
 			}
 			if (!msg.getRecipients().empty())
 				_sendResponse(msg); // send response to recipient(s)
+			else
+			{
+				_log(LOG_LEVEL_ERROR, "Message \"" + msg.getResponse() + "\" from " +
+				msg.getSender().getNick() + "@" +
+				msg.getSender().getIpAddressStr() + " has no recipients.");
+				return (false);
+			}
 			client.updateLastEventTime();
 			return (true);
 		}
@@ -373,7 +380,8 @@ namespace ft_irc
 
 		if (it == this->_clients.end())
 		{
-			_log(LOG_LEVEL_ERROR, "Client " + client.getNick() + client.getIpAddressStr() + " is not in the client list!");
+			_log(LOG_LEVEL_ERROR, "Client " + client.getNick() + client.getIpAddressStr()
+			+ " is not in the client list!");
 			return (-1);
 		}
 		if (it->getSocketFd() > 0)
@@ -422,7 +430,7 @@ namespace ft_irc
 		this->_commands["KILL"]		= &Server::exec_kill_cmd;
 		// this->_commands["LIST"]	= &Server::exec_list_cmd;
 		this->_commands["MODE"]		= &Server::exec_mode_cmd;
-		// this->_commands["NAMES"]	= &Server::exec_names_cmd;
+		this->_commands["NAMES"]	= &Server::exec_names_cmd;
 		this->_commands["NICK"]		= &Server::exec_nick_cmd;
 		this->_commands["NOTICE"]	= &Server::exec_notice_cmd;
 		this->_commands["OPER"]		= &Server::exec_oper_cmd;
@@ -760,9 +768,86 @@ namespace ft_irc
 		}
 	}
 
-	//void	Server::exec_list_cmd(Message& msg);
+	bool is_string_in_msg_params(const Message& msg, const std::string& str)
+	{
+		for (Parser::t_params::const_iterator it = msg.getParams().begin();
+			 it != msg.getParams().end();
+			 ++it)
+		{
+			if (*it == str)
+				return true;
+		}
+		return false;
+	}
+	
 
-	//void	Server::exec_names_cmd(Message& msg);
+	//void	Server::exec_list_cmd(Message& msg);
+	//https://datatracker.ietf.org/doc/html/rfc1459#section-4.2.5
+	/*
+	 * NAMES <channel> *( "," <channel> )
+	 *
+	 *	By using the NAMES command, a user can list all nicknames that are
+   	 *	visible to them on any channel that they can see.  Channel names
+   	 *	which they can see are those which aren't private (+p) or secret (+s)
+   	 *	or those which they are actually on.  The <channel> parameter
+   	 *	specifies which channel(s) to return information about if valid.
+   	 *	There is no error reply for bad channel names.
+
+   	 *	If no <channel> parameter is given, a list of all channels and their
+   	 *	occupants is returned.  At the end of this list, a list of users who
+   	 *	are visible but either not on any channel or not on a visible channel
+   	 *	are listed as being on `channel' "*".
+	 */
+
+	
+	void	Server::exec_names_cmd(Message& msg)
+	{
+		bool	matchAll = msg.getParams().size() == 0;
+
+		msg.setResponse("");
+		msg.setRecipient(msg.getSender());
+		this->_logger(LOG_LEVEL_DEBUG, std::to_string(msg.getParams().size()));
+		for (t_channels::iterator channels_it = this->_channels.begin();
+			channels_it != this->_channels.end(); ++channels_it)
+		{
+			if (matchAll || is_string_in_msg_params(msg, channels_it->getName()))
+			{
+				msg.appendResponse(build_prefix(build_full_client_id( msg.getSender())));
+				msg.appendResponse(" 353 ");
+				msg.appendResponse(msg.getSender().getNick());
+				msg.appendResponse(" = ");
+				msg.appendResponse(channels_it->getName());
+				msg.appendResponse(" :");
+				//std::list<Client*>
+				for (Channel::t_clients::const_iterator it2 = channels_it->getClients().begin();
+					it2 != channels_it->getClients().end(); ++it2)
+				{
+					msg.appendResponse(" ");
+					msg.appendResponse((*it2)->getNick());
+				}
+			}
+			msg.appendSeparator();
+			rpl_endofnames(msg, channels_it->getName());
+		}
+		if (matchAll)
+		{
+			msg.appendResponse(build_prefix(build_full_client_id( msg.getSender())));
+			msg.appendResponse(" 353 ");
+			msg.appendResponse(msg.getSender().getNick());
+			msg.appendResponse(" * * :");
+			//check users not belonging to any channel
+			for (t_clients::iterator it = this->_clients.begin(); it != this->_clients.end(); ++it)
+			{
+				if (it->getJoinedChannels().empty())
+				{
+					msg.appendResponse(" ");
+					msg.appendResponse(it->getNick());
+				}
+			}
+			msg.appendSeparator();
+			rpl_endofnames(msg, "*");
+		}
+	}
 
 	/*
 	 * NICK <nickname>

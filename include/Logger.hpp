@@ -28,6 +28,8 @@ namespace ft_irc
 					Logger&	operator=(const Logger& src);
 					~Logger(void);
 			void	log(int level, const std::string& message) const;
+			//call overload
+			void	operator()(int level, const std::string& message) const;
 	};
 }
 
