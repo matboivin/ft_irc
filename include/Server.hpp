@@ -147,6 +147,9 @@ namespace ft_irc
 		/* Oper operations */
 		bool					_canGiveOperPriv(const std::string& name, const std::string& password);
 
+		/* Command helpers */
+		void					_addWhoisToMsg(Message& msg, const Client& client);
+
 		/* debug */
 		int						_sendList(Client& client);
 		int						_sendError(Client& client, const std::string& error);

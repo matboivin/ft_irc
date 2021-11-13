@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   server_operations.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:37:26 by mboivin           #+#    #+#             */
 /*   Updated: 2021/11/11 20:21:12 by mboivin          ###   ########.fr       */
