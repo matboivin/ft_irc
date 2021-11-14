@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/11 20:36:29 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/14 21:14:01 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,9 @@ namespace ft_irc
 		void					exec_nick_cmd(Message& msg);
 		void					exec_notice_cmd(Message& msg);
 		void					exec_oper_cmd(Message& msg);
+		void					_partClient(Message& msg, const std::string& chan_name,
+											const std::string& comment = ""
+											);
 		void					exec_part_cmd(Message& msg);
 		void					exec_pass_cmd(Message& msg);
 		void					exec_ping_cmd(Message& msg);
@@ -140,8 +143,12 @@ namespace ft_irc
 		bool					_userOnChannel(Client& client, Channel& channel);
 		bool					_userOnChannel(Client& client, const std::string& chan_name);
 		void					_addUserToChannel(Client& client, Channel& channel);
-		void					_removeUserFromChannel(Client& client, Channel& channel);
-		void					_removeUserFromAllChannels(Client& client);
+		void					_removeUserFromChannel(Client& client, Channel& channel,
+													   const std::string& comment = ""
+													   );
+		void					_removeUserFromAllChannels(Client& client,
+														   const std::string& comment = ""
+														   );
 		int						_setUserMode(Client& client, const std::string& mode, Message& msg);
 
 		/* Oper operations */

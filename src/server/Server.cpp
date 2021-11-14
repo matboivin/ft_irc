@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/14 20:57:53 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/14 21:49:05 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -550,21 +550,45 @@ namespace ft_irc
 		{
 			_log(LOG_LEVEL_DEBUG, "Add " + client.getNick() + " to channel " + channel.getName());
 			client.joinChannel(channel);
+
+			Message	join_msg(client);
+
+			join_msg.setRecipients(channel.getClients());
+			join_msg.setResponse(build_prefix(build_full_client_id(client)));
+			join_msg.appendResponse(" JOIN ");
+			join_msg.appendResponse(channel.getName());
+			join_msg.appendSeparator();
+			_sendResponse(join_msg);
 		}
 	}
 
 	/* Removes user from channel */
-	void	Server::_removeUserFromChannel(Client& client, Channel& channel)
+	void	Server::_removeUserFromChannel(Client& client, Channel& channel, const std::string& comment)
 	{
 		if (_userOnChannel(client, channel))
 		{
 			_log(LOG_LEVEL_DEBUG, "Remove " + client.getNick() + " from channel " + channel.getName());
+
+			Message	part_msg(client);
+
+			part_msg.setRecipients(channel.getClients());
+			part_msg.setResponse(build_prefix(build_full_client_id(client)));
+			part_msg.appendResponse(" PART ");
+			part_msg.appendResponse(channel.getName());
+			if (!comment.empty())
+			{
+				part_msg.appendResponse(" ");
+				part_msg.appendResponse(comment);
+			}
+			part_msg.appendSeparator();
+			_sendResponse(part_msg);
+
 			client.partChannel(channel);
 		}
 	}
 
 	/* Removes a user from all joined channels */
-	void	Server::_removeUserFromAllChannels(Client& client)
+	void	Server::_removeUserFromAllChannels(Client& client, const std::string& comment)
 	{
 		Message	part_msg(client);
 
@@ -573,6 +597,11 @@ namespace ft_irc
 		part_msg.setResponse(build_prefix(getHostname()));
 		part_msg.appendResponse(" PART ");
 		part_msg.appendResponse(client.getNick());
+		if (!comment.empty())
+		{
+			part_msg.appendResponse(" ");
+			part_msg.appendResponse(comment);
+		}
 		part_msg.appendSeparator();
 		_log(LOG_LEVEL_DEBUG, "Remove " + client.getNick() + " from all the channels they joined");
 		client.partAllChannels(); // client parts all joined channels
@@ -695,6 +724,7 @@ namespace ft_irc
 				kick_msg.appendResponse(" ");
 				kick_msg.appendResponse(comment);
 			}
+			kick_msg.appendSeparator();
 			_sendResponse(kick_msg);
 		}
 	}
@@ -902,6 +932,28 @@ namespace ft_irc
 	}
 
 	/*
+	 * PART <channel> [<message>]
+	 * The client quits the channel
+	 */
+	void	Server::_partClient(Message& msg,
+								const std::string& chan_name, const std::string& comment
+								)
+	{
+		t_channels::iterator	channel = getChannel(chan_name);
+
+		if (channel == this->_channels.end())
+			err_nosuchchannel(msg, chan_name, true);
+		else if (!_userOnChannel(msg.getSender(), *channel))
+			err_notonchannel(msg, chan_name, true);
+		else
+		{
+			_removeUserFromChannel(msg.getSender(), *channel, comment);
+			if (channel->isEmpty())
+				_removeChannel(channel);
+		}
+	}
+
+	/*
 	 * PART <channels> [<message>]
 	 * The client quits the channel(s)
 	 */
@@ -913,26 +965,16 @@ namespace ft_irc
 			return ;
 		}
 
-		for (std::vector<std::string>::const_iterator chan_name = msg.getParams().begin();
-			 chan_name != msg.getParams().end();
-			 ++chan_name)
-		{
-			if ( ((*chan_name)[0] == ':') && (++chan_name == msg.getParams().end()) )
-				break ;
+		std::string			comment = "";
+		Parser::t_params	chan_names = _splitListOfParams(msg.getParams().at(0));
 
-			t_channels::iterator	channel = getChannel(*chan_name);
+		if (msg.getParams().size() == 2)
+			comment = msg.getParams().at(1);
 
-			if (channel == this->_channels.end())
-				err_nosuchchannel(msg, *chan_name, true);
-			else if (!_userOnChannel(msg.getSender(), *channel))
-				err_notonchannel(msg, *chan_name, true);
-			else
-			{
-				_removeUserFromChannel(msg.getSender(), *channel);
-				if (channel->isEmpty())
-					_removeChannel(channel);
-			}
-		}
+		std::size_t	len = chan_names.size();
+
+		for (std::size_t i = 0; i < len; ++i)
+			_partClient(msg, chan_names[i], comment);
 	}
 
 	/*
@@ -1019,7 +1061,10 @@ namespace ft_irc
 	void	Server::exec_quit_cmd(Message& msg)
 	{
 		msg.setRecipients(msg.getSender().getAllContacts());
-		_removeUserFromAllChannels(msg.getSender());
+		if (msg.getParams().empty())
+			_removeUserFromAllChannels(msg.getSender());
+		else
+			_removeUserFromAllChannels(msg.getSender(), msg.getParams().at(0));
 		// TODO: if no message, set default message?
 		msg.getSender().setAlive(false);
 	}

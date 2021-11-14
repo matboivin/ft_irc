@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 12:25:08 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/11 20:23:08 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/14 21:46:47 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,9 +96,11 @@ int	test_parsing()
 		ft_irc::Message	msg(dummy_client);
 		ft_irc::Message	expected(dummy_client);
 
-		parser.parseMessage(msg, "PArt");
-		expected.setCommand("PART");
-		expected.setResponse(":nick!username@hostname PART\r\n");
+		parser.parseMessage(msg, "PRIVmsg #foo :Hey everyone");
+		expected.setCommand("PRIVMSG");
+		expected.setParam("#foo");
+		expected.setParam(":Hey everyone");
+		expected.setResponse(":nick!username@hostname PRIVMSG #foo :Hey everyone\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -120,12 +122,10 @@ int	test_parsing()
 
 		parser.parseMessage(msg, "JOIN  ");
 		expected.setCommand("JOIN");
-		expected.setResponse(":nick!username@hostname JOIN\r\n");
 		assert(cmp_msg(msg, expected));
 
 		parser.parseMessage(msg, "JOIN #general");
 		expected.setParam("#general");
-		expected.setResponse(":nick!username@hostname JOIN #general\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -186,7 +186,6 @@ int	test_parsing()
 		expected.setCommand("JOIN");
 		expected.setParam("#foo");
 		expected.setParam("#bar");
-		expected.setResponse(":nick!username@hostname JOIN #foo,#bar\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -200,7 +199,6 @@ int	test_parsing()
 		expected.setParam("#");
 		expected.setParam("#bcd");
 		expected.setParam("x");
-		expected.setResponse(":nick!username@hostname JOIN #abc,# #bcd,x\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
