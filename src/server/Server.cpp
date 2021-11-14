@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/11 20:37:24 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/14 20:57:53 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1019,9 +1019,9 @@ namespace ft_irc
 	void	Server::exec_quit_cmd(Message& msg)
 	{
 		msg.setRecipients(msg.getSender().getAllContacts());
+		_removeUserFromAllChannels(msg.getSender());
 		// TODO: if no message, set default message?
 		msg.getSender().setAlive(false);
-		// TODO: The server acknowledges this by sending an ERROR message to the client
 	}
 
 	/*
