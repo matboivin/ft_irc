@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/23 16:08:06 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/23 16:30:23 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -505,6 +505,8 @@ namespace ft_irc
 
 		rpl_welcome(welcome_msg);
 		rpl_yourhost(welcome_msg, this->_version);
+		rpl_created(welcome_msg, this->_creation_date);
+		rpl_myinfo(welcome_msg, this->_version);
 		_sendResponse(welcome_msg);
 		client.setRegistered(true);
 	}

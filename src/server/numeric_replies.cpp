@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/23 16:06:33 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/23 16:29:40 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,35 @@ namespace ft_irc
 		msg.appendResponse(msg.getServHostname());
 		msg.appendResponse(", running version ");
 		msg.appendResponse(version);
+		msg.appendSeparator();
+	}
+
+	void	rpl_created(Message& msg, const std::string& creation_date, bool rewrite)
+	{
+		msg.setRecipient(msg.getSender());
+		if (rewrite)
+			msg.clearResponse();
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 003 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" :This server was created ");
+		msg.appendResponse(creation_date);
+		msg.appendSeparator();
+	}
+
+	void	rpl_myinfo(Message& msg, const std::string& version, bool rewrite)
+	{
+		msg.setRecipient(msg.getSender());
+		if (rewrite)
+			msg.clearResponse();
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 004 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
+		msg.appendResponse(msg.getServHostname());
+		msg.appendResponse(" ");
+		msg.appendResponse(version);
+		msg.appendResponse(" o o");
 		msg.appendSeparator();
 	}
 
