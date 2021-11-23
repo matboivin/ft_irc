@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/23 15:13:28 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/23 15:26:00 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -318,7 +318,7 @@ namespace ft_irc
 					client.setRegistered(true);
 				}
 			}
-			if (!msg.getRecipients().empty())
+			if (!msg.getRecipients().empty() && !msg.getResponse().empty())
 				_sendResponse(msg); // send response to recipient(s)
 			client.updateLastEventTime();
 			return (true);
