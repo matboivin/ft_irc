@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/23 15:35:07 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/23 16:04:40 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ namespace ft_irc
 	class Client;
 
 	// command responses
-	Message	rpl_welcome(Client& client, const std::string& serv_hostname); // 001
+	void	rpl_welcome(Message& msg, bool rewrite = false); // 001
 	void	rpl_yourhost(Message& msg, const std::string& version, bool rewrite = false); // 002
 	void	rpl_umodeis(Message& msg, const std::string& user_mode, bool rewrite = false); // 221
 	void	rpl_whoisuser(Message& msg, bool rewrite = false); // 311

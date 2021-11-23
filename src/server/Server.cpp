@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/23 16:00:25 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/23 16:08:06 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -501,8 +501,9 @@ namespace ft_irc
 	/* Sends a nice welcome message */
 	void	Server::_make_welcome_msg(Client& client)
 	{
-		Message	welcome_msg = rpl_welcome(client, this->getHostname());
+		Message	welcome_msg(client, this->getHostname());
 
+		rpl_welcome(welcome_msg);
 		rpl_yourhost(welcome_msg, this->_version);
 		_sendResponse(welcome_msg);
 		client.setRegistered(true);

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/23 15:57:42 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/23 16:06:33 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,18 +20,17 @@
 namespace ft_irc
 {
 	// command responses
-	Message	rpl_welcome(Client& client, const std::string& serv_hostname)
+	void	rpl_welcome(Message& msg, bool rewrite)
 	{
-		Message	msg(client, serv_hostname);
-
-		msg.setRecipient(client);
-		msg.appendResponse(build_prefix(serv_hostname));
+		msg.setRecipient(msg.getSender());
+		if (rewrite)
+			msg.clearResponse();
+		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 001 ");
-		msg.appendResponse(client.getNick());
+		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" :Welcome to the Internet Relay Network ");
-		msg.appendResponse(build_full_client_id(client));
+		msg.appendResponse(build_full_client_id(msg.getSender()));
 		msg.appendSeparator();
-		return (msg);
 	}
 
 	void	rpl_yourhost(Message& msg, const std::string& version, bool rewrite)
