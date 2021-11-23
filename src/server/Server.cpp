@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/23 15:26:00 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/23 15:36:15 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -310,12 +310,7 @@ namespace ft_irc
 				{
 					_log(LOG_LEVEL_INFO, "Client " + client.getNick() + "@" + client.getIpAddressStr()
 							  + " has just registered");
-
-					Message	welcome_msg(client);
-
-					_make_welcome_msg(welcome_msg);
-					_sendResponse(welcome_msg);
-					client.setRegistered(true);
+					_make_welcome_msg(client);
 				}
 			}
 			if (!msg.getRecipients().empty() && !msg.getResponse().empty())
@@ -504,10 +499,13 @@ namespace ft_irc
 	}
 
 	/* Sends a nice welcome message */
-	void	Server::_make_welcome_msg(Message& msg)
+	void	Server::_make_welcome_msg(Client& client)
 	{
-		rpl_welcome(msg);
-		rpl_yourhost(msg, this->_version);
+		Message	welcome_msg = rpl_welcome(client, this->getHostname());
+
+		rpl_yourhost(welcome_msg, this->_version);
+		_sendResponse(welcome_msg);
+		client.setRegistered(true);
 	}
 
 	/* Channel operations ******************************************************* */
