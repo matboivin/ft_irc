@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/14 21:49:05 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/23 15:08:06 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1007,7 +1007,7 @@ namespace ft_irc
 			msg.setRecipient(msg.getSender());
 			msg.setResponse(
 				build_prefix(getHostname())
-			+ " PONG " + msg.getSender().getNick() + getHostname()
+			+ " PING " + msg.getSender().getNick() + getHostname()
 			+ " :" + origin + CRLF
 			);
 		}
