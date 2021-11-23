@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/11 20:35:05 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/23 15:24:50 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ namespace ft_irc
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 001 Welcome to the Internet Relay Network ");
+		msg.appendResponse(" 001 :Welcome to the Internet Relay Network ");
 		msg.appendResponse(build_full_client_id(msg.getSender()));
 		msg.appendSeparator();
 	}
@@ -40,6 +40,7 @@ namespace ft_irc
 		msg.appendResponse(" 002 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" :Your host is ");
+		msg.appendResponse(msg.getServHostname());
 		msg.appendResponse(", running version ");
 		msg.appendResponse(version);
 		msg.appendSeparator();
