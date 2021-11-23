@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/23 16:30:23 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/23 17:09:02 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -469,7 +469,12 @@ namespace ft_irc
 		t_channels::iterator	channel = getChannel(msg.getParams().at(0));
 
 		if (channel != this->_channels.end())
-			msg.setRecipients(channel->getClients());
+		{
+			std::list<Client*>	recipients = channel->getClients();
+
+			recipients.remove(&msg.getSender());
+			msg.setRecipients(recipients);
+		}
 	}
 
 	/* Sends response */
@@ -812,7 +817,16 @@ namespace ft_irc
 			else if (getClient(new_nick) != this->_clients.end())
 				err_nicknameinuse(msg, true);
 			else
+			{
+				msg.setRecipients(msg.getSender().getAllContacts());
+				msg.setResponse(build_prefix(msg.getServHostname()));
+				msg.appendResponse(" :");
+				msg.appendResponse(msg.getSender().getNick());
+				msg.appendResponse(" NICK ");
+				msg.appendResponse(new_nick);
+				msg.appendSeparator();
 				msg.getSender().setNick(new_nick);
+			}
 		}
 	}
 
