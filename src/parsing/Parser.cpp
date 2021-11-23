@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/14 21:06:07 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/23 15:45:48 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,7 +148,7 @@ namespace ft_irc
 	/* Checks whether command name is valid */
 	bool	Parser::_commandIsValid(Message& msg)
 	{
-		const std::string	cmds = "INVITE JOIN KICK KILL LIST MODE NAMES "
+		const std::string	cmds = "CAP INVITE JOIN KICK KILL LIST MODE NAMES "
 									"NICK NOTICE OPER PASS PART PING PONG "
 									"PRIVMSG TOPIC QUIT USER WHOIS WHO TEST";
 
