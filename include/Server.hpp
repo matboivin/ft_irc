@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/26 16:48:44 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/26 18:22:42 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,26 +124,26 @@ namespace ft_irc
 		bool					_canGiveOperPriv(const std::string& name, const std::string& password);
 
 		/* Commands */
-		void					_exec_invite_cmd(Message& msg);
-		void					_exec_join_cmd(Message& msg);
-		void					_exec_kick_cmd(Message& msg);
-		void					_exec_kill_cmd(Message& msg);
-		//void					_exec_list_cmd(Message& msg);
-		void					_exec_mode_cmd(Message& msg);
-		void					_exec_names_cmd(Message& msg);
-		void					_exec_nick_cmd(Message& msg);
-		void					_exec_notice_cmd(Message& msg);
-		void					_exec_oper_cmd(Message& msg);
-		void					_exec_part_cmd(Message& msg);
-		void					_exec_pass_cmd(Message& msg);
-		void					_exec_ping_cmd(Message& msg);
-		void					_exec_pong_cmd(Message& msg);
-		void					_exec_privmsg_cmd(Message& msg);
-		void					_exec_quit_cmd(Message& msg);
-		void					_exec_topic_cmd(Message& msg);
-		void					_exec_user_cmd(Message& msg);
-		void					_exec_who_cmd(Message& msg);
-		void					_exec_whois_cmd(Message& msg);
+		void					_execInviteCmd(Message& msg);
+		void					_execJoinCmd(Message& msg);
+		void					_execKickCmd(Message& msg);
+		void					_execKillCmd(Message& msg);
+		//void					_execListCmd(Message& msg);
+		void					_execModeCmd(Message& msg);
+		void					_execNamesCmd(Message& msg);
+		void					_execNickCmd(Message& msg);
+		void					_execNoticeCmd(Message& msg);
+		void					_execOperCmd(Message& msg);
+		void					_execPartCmd(Message& msg);
+		void					_execPassCmd(Message& msg);
+		void					_execPingCmd(Message& msg);
+		void					_execPongCmd(Message& msg);
+		void					_execPrivmsgCmd(Message& msg);
+		void					_execQuitCmd(Message& msg);
+		void					_execTopicCmd(Message& msg);
+		void					_execUserCmd(Message& msg);
+		void					_execWhoCmd(Message& msg);
+		void					_execWhoisCmd(Message& msg);
 
 		/* Command helpers */
 		void					_addWhoisToMsg(Message& msg, const Client& client);

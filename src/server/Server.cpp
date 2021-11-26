@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/26 17:23:18 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/26 18:25:36 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -413,26 +413,26 @@ namespace ft_irc
 	/* Inits the map containing the commands */
 	void	Server::_init_commands_map()
 	{
-		this->_commands["INVITE"]	= &Server::_exec_invite_cmd;
-		this->_commands["JOIN"]		= &Server::_exec_join_cmd;
-		this->_commands["KICK"]		= &Server::_exec_kick_cmd;
-		this->_commands["KILL"]		= &Server::_exec_kill_cmd;
-		// this->_commands["LIST"]	= &Server::_exec_list_cmd;
-		this->_commands["MODE"]		= &Server::_exec_mode_cmd;
-		this->_commands["NAMES"]	= &Server::_exec_names_cmd;
-		this->_commands["NICK"]		= &Server::_exec_nick_cmd;
-		this->_commands["NOTICE"]	= &Server::_exec_notice_cmd;
-		this->_commands["OPER"]		= &Server::_exec_oper_cmd;
-		this->_commands["PART"]		= &Server::_exec_part_cmd;
-		this->_commands["PASS"]		= &Server::_exec_pass_cmd;
-		this->_commands["PING"]		= &Server::_exec_ping_cmd;
-		this->_commands["PONG"]		= &Server::_exec_pong_cmd;
-		this->_commands["PRIVMSG"]	= &Server::_exec_privmsg_cmd;
-		this->_commands["QUIT"]		= &Server::_exec_quit_cmd;
-		this->_commands["TOPIC"]	= &Server::_exec_topic_cmd;
-		this->_commands["USER"]		= &Server::_exec_user_cmd;
-		this->_commands["WHO"]		= &Server::_exec_who_cmd;
-		this->_commands["WHOIS"]	= &Server::_exec_whois_cmd;
+		this->_commands["INVITE"]	= &Server::_execInviteCmd;
+		this->_commands["JOIN"]		= &Server::_execJoinCmd;
+		this->_commands["KICK"]		= &Server::_execKickCmd;
+		this->_commands["KILL"]		= &Server::_execKillCmd;
+		// this->_commands["LIST"]	= &Server::_execListCmd;
+		this->_commands["MODE"]		= &Server::_execModeCmd;
+		this->_commands["NAMES"]	= &Server::_execNamesCmd;
+		this->_commands["NICK"]		= &Server::_execNickCmd;
+		this->_commands["NOTICE"]	= &Server::_execNoticeCmd;
+		this->_commands["OPER"]		= &Server::_execOperCmd;
+		this->_commands["PART"]		= &Server::_execPartCmd;
+		this->_commands["PASS"]		= &Server::_execPassCmd;
+		this->_commands["PING"]		= &Server::_execPingCmd;
+		this->_commands["PONG"]		= &Server::_execPongCmd;
+		this->_commands["PRIVMSG"]	= &Server::_execPrivmsgCmd;
+		this->_commands["QUIT"]		= &Server::_execQuitCmd;
+		this->_commands["TOPIC"]	= &Server::_execTopicCmd;
+		this->_commands["USER"]		= &Server::_execUserCmd;
+		this->_commands["WHO"]		= &Server::_execWhoCmd;
+		this->_commands["WHOIS"]	= &Server::_execWhoisCmd;
 	}
 
 	/* Execute a command */
@@ -627,7 +627,7 @@ namespace ft_irc
 	 * INVITE <nickname> <channel>
 	 * Invite a user to a channel
 	 */
-	void	Server::_exec_invite_cmd(Message& msg)
+	void	Server::_execInviteCmd(Message& msg)
 	{
 		if (msg.getParams().size() != 2)
 			err_needmoreparams(msg);
@@ -664,7 +664,7 @@ namespace ft_irc
 	 * JOIN <channels>
 	 * JOIN 0: leave all channels
 	 */
-	void	Server::_exec_join_cmd(Message& msg)
+	void	Server::_execJoinCmd(Message& msg)
 	{
 		if (msg.getParams().empty())
 			err_needmoreparams(msg, true);
@@ -742,7 +742,7 @@ namespace ft_irc
 	 * users to clients.  This is necessarily to maintain backward
 	 * compatibility with old client software.
 	 */
-	void	Server::_exec_kick_cmd(Message& msg)
+	void	Server::_execKickCmd(Message& msg)
 	{
 		if (msg.getParams().size() < 2)
 			err_needmoreparams(msg);
@@ -771,7 +771,7 @@ namespace ft_irc
 	 * The user must be an IRC operator.
 	 * The comment given is the actual reason for the KILL.
 	 */
-	void	Server::_exec_kill_cmd(Message& msg)
+	void	Server::_execKillCmd(Message& msg)
 	{
 		if (msg.getParams().size() < 2)
 			err_needmoreparams(msg, true);
@@ -796,7 +796,7 @@ namespace ft_irc
 		}
 	}
 
-	//void	Server::_exec_list_cmd(Message& msg);
+	//void	Server::_execListCmd(Message& msg);
 	//https://datatracker.ietf.org/doc/html/rfc1459#section-4.2.5
 
 	int	Server::_setUserMode(Client &client, const std::string& mode_str, Message& msg)
@@ -834,7 +834,7 @@ namespace ft_irc
 	 * MODE <channel> <flags>
 	 * Set a user or a channel mode.
 	 */
-	void	Server::_exec_mode_cmd(Message& msg)
+	void	Server::_execModeCmd(Message& msg)
 	{
 		if (msg.getParams().size() < 2)
 			err_needmoreparams(msg);
@@ -896,7 +896,7 @@ namespace ft_irc
 	 *	are visible but either not on any channel or not on a visible channel
 	 *	are listed as being on `channel' "*".
 	 */
-	void	Server::_exec_names_cmd(Message& msg)
+	void	Server::_execNamesCmd(Message& msg)
 	{
 		bool	matchAll = msg.getParams().size() == 0;
 
@@ -949,7 +949,7 @@ namespace ft_irc
 	 * NICK <nickname>
 	 * Change a user nickname
 	 */
-	void	Server::_exec_nick_cmd(Message& msg)
+	void	Server::_execNickCmd(Message& msg)
 	{
 		if (msg.getParams().empty())
 			err_nonicknamegiven(msg, true);
@@ -980,7 +980,7 @@ namespace ft_irc
 	 * Send messages to a user or a channel
 	 * The server musn't reply to NOTICE message
 	 */
-	void	Server::_exec_notice_cmd(Message& msg)
+	void	Server::_execNoticeCmd(Message& msg)
 	{
 		if (msg.getParams().size() < 2) // params are mandatory
 			msg.clearRecipients();
@@ -993,7 +993,7 @@ namespace ft_irc
 	 * Authenticates a user as an IRC operator if the username/password combination exists
 	 * for that server
 	 */
-	void	Server::_exec_oper_cmd(Message& msg)
+	void	Server::_execOperCmd(Message& msg)
 	{
 		if (msg.getParams().size() < 2)
 			err_needmoreparams(msg, true);
@@ -1015,7 +1015,7 @@ namespace ft_irc
 				msg.appendResponse(nick);
 				msg.appendResponse(" +o");
 				msg.appendSeparator();
-				this->_exec_mode_cmd(msg);
+				this->_execModeCmd(msg);
 				if (msg.getSender().isOper() == true)
 				{
 					rpl_youreoper(rpl_msg);
@@ -1053,7 +1053,7 @@ namespace ft_irc
 	 * PART <channels> [<message>]
 	 * The client quits the channel(s)
 	 */
-	void	Server::_exec_part_cmd(Message& msg)
+	void	Server::_execPartCmd(Message& msg)
 	{
 		if (msg.getParams().empty())
 		{
@@ -1077,7 +1077,7 @@ namespace ft_irc
 	 * PASS <password>
 	 * set a connection password
 	 */
-	void	Server::_exec_pass_cmd(Message& msg)
+	void	Server::_execPassCmd(Message& msg)
 	{
 		if (msg.getParams().empty())
 			err_needmoreparams(msg, true);
@@ -1090,7 +1090,7 @@ namespace ft_irc
 	/*
 	 * PING <server1>
 	 */
-	void	Server::_exec_ping_cmd(Message& msg)
+	void	Server::_execPingCmd(Message& msg)
 	{
 		std::string	origin;
 
@@ -1113,7 +1113,7 @@ namespace ft_irc
 	/*
 	 * PONG <server1>
 	 */
-	void	Server::_exec_pong_cmd(Message& msg)
+	void	Server::_execPongCmd(Message& msg)
 	{
 		std::string	origin;
 
@@ -1132,7 +1132,7 @@ namespace ft_irc
 	 * PRIVMSG <msgtarget> :<message>
 	 * Send messages to a user or a channel
 	 */
-	void	Server::_exec_privmsg_cmd(Message& msg)
+	void	Server::_execPrivmsgCmd(Message& msg)
 	{
 		if (msg.getParams().empty())
 			err_norecipient(msg, true);
@@ -1155,7 +1155,7 @@ namespace ft_irc
 	 * QUIT [<message>]
 	 * A client session is terminated with a quit message
 	 */
-	void	Server::_exec_quit_cmd(Message& msg)
+	void	Server::_execQuitCmd(Message& msg)
 	{
 		msg.setRecipients(msg.getSender().getAllContacts());
 		if (msg.getParams().empty())
@@ -1170,7 +1170,7 @@ namespace ft_irc
 	 * TOPIC <channel> [ <topic> ]
 	 * Changes or displays the topic of a channel
 	 */
-	void	Server::_exec_topic_cmd(Message& msg)
+	void	Server::_execTopicCmd(Message& msg)
 	{
 		if (msg.getParams().empty())
 			err_needmoreparams(msg, true);
@@ -1195,7 +1195,7 @@ namespace ft_irc
 	/*
 	 * USER <user> <mode> <unused> <realname>
 	 */
-	void	Server::_exec_user_cmd(Message& msg)
+	void	Server::_execUserCmd(Message& msg)
 	{
 		Client&	client = msg.getSender();
 		//copy list of parameters
@@ -1216,7 +1216,7 @@ namespace ft_irc
 	/*
 	 * WHO [ "o" ]
 	 */
-	void	Server::_exec_who_cmd(Message& msg)
+	void	Server::_execWhoCmd(Message& msg)
 	{
 		bool			oper_only = false;
 		std::string		to_match = "0"; //match all by default
@@ -1280,7 +1280,7 @@ namespace ft_irc
 	 * WHOIS [target]
 	 * https://datatracker.ietf.org/doc/html/rfc1459#section-4.5.2
 	*/
-	void	Server::_exec_whois_cmd(Message& msg)
+	void	Server::_execWhoisCmd(Message& msg)
 	{
 		std::vector<std::string>::const_iterator	paramsIt;
 		std::string							to_match = "0"; //match all by default
