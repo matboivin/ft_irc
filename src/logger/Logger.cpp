@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Logger.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/06 14:46:41 by root              #+#    #+#             */
-/*   Updated: 2021/11/11 20:06:54 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/13 17:11:49 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,5 +77,11 @@ namespace ft_irc
 			copy = str_replace(copy, toReplace, replaceWith[i]);
 		}
 		std::cerr << log_level_color[level] << "[" << log_level_str[level] << "] " << copy << "\033[0m" << std::endl;
+	}
+
+	//call overload
+	void Logger::operator()(int level, const std::string& message) const
+	{
+		this->log(level, message);
 	}
 } // namespace ft_irc

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/23 16:29:40 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/26 15:39:05 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -278,7 +278,6 @@ namespace ft_irc
 
 	void	rpl_endofnames(Message& msg, const std::string& chan_name, bool rewrite)
 	{
-		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
