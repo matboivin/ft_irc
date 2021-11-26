@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/26 15:38:53 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/26 16:35:39 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,6 @@ namespace ft_irc
 		void					exec_user_cmd(Message& msg);
 		void					exec_who_cmd(Message& msg);
 		void					exec_whois_cmd(Message& msg);
-		void					exec_test_cmd(Message& msg); // debug
 
 	private:
 		struct sockaddr_in		_address; /* Structure describing an Internet socket address. */
@@ -112,6 +111,9 @@ namespace ft_irc
 
 		/* Cleaning */
 		void					_shutdown();
+
+		/* Logging */
+		void					_log(int level, const std::string& message) const;
 
 		/* Connections handling */
 		bool					_createSocket();
@@ -156,11 +158,6 @@ namespace ft_irc
 
 		/* Command helpers */
 		void					_addWhoisToMsg(Message& msg, const Client& client);
-
-		/* debug */
-		int						_sendList(Client& client);
-		int						_sendError(Client& client, const std::string& error);
-		void					_log(int level, const std::string& message) const;
 	};
 }
 

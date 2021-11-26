@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/26 15:39:09 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/26 16:36:12 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,11 +165,6 @@ namespace ft_irc
 		return (it);
 	}
 
-	void	Server::_log(int level, const std::string& msg) const
-	{
-		this->_logger.log(level, msg);
-	}
-
 	Server::t_channels::iterator	Server::getChannel(const std::string& chan_name)
 	{
 		if (!channel_is_valid(chan_name))
@@ -218,6 +213,13 @@ namespace ft_irc
 			+ "@" + it->getIpAddressStr() + " disconnected");
 			it = this->_clients.erase(it);
 		}
+	}
+
+	/* Logging ****************************************************************** */
+
+	void	Server::_log(int level, const std::string& msg) const
+	{
+		this->_logger.log(level, msg);
 	}
 
 	/* Connections handling ***************************************************** */
@@ -439,8 +441,6 @@ namespace ft_irc
 		this->_commands["USER"]		= &Server::exec_user_cmd;
 		this->_commands["WHO"]		= &Server::exec_who_cmd;
 		this->_commands["WHOIS"]	= &Server::exec_whois_cmd;
-		// debug
-		this->_commands["TEST"]		= &Server::exec_test_cmd;
 	}
 
 	/* Execute a command */
@@ -815,27 +815,25 @@ namespace ft_irc
 		}
 		return false;
 	}
-	
 
 	//void	Server::exec_list_cmd(Message& msg);
 	//https://datatracker.ietf.org/doc/html/rfc1459#section-4.2.5
+
 	/*
 	 * NAMES <channel> *( "," <channel> )
 	 *
 	 *	By using the NAMES command, a user can list all nicknames that are
-   	 *	visible to them on any channel that they can see.  Channel names
-   	 *	which they can see are those which aren't private (+p) or secret (+s)
-   	 *	or those which they are actually on.  The <channel> parameter
-   	 *	specifies which channel(s) to return information about if valid.
-   	 *	There is no error reply for bad channel names.
+	 *	visible to them on any channel that they can see.  Channel names
+	 *	which they can see are those which aren't private (+p) or secret (+s)
+	 *	or those which they are actually on.  The <channel> parameter
+	 *	specifies which channel(s) to return information about if valid.
+	 *	There is no error reply for bad channel names.
 
-   	 *	If no <channel> parameter is given, a list of all channels and their
-   	 *	occupants is returned.  At the end of this list, a list of users who
-   	 *	are visible but either not on any channel or not on a visible channel
-   	 *	are listed as being on `channel' "*".
+	 *	If no <channel> parameter is given, a list of all channels and their
+	 *	occupants is returned.  At the end of this list, a list of users who
+	 *	are visible but either not on any channel or not on a visible channel
+	 *	are listed as being on `channel' "*".
 	 */
-
-	
 	void	Server::exec_names_cmd(Message& msg)
 	{
 		bool	matchAll = msg.getParams().size() == 0;
@@ -1319,60 +1317,5 @@ namespace ft_irc
 		msg.appendResponse(":" + this->getHostname() + " 318 " + msg.getSender().getNick() +
 		" " + to_match + " :End of /WHOIS list." CRLF);
 		msg.setRecipient(msg.getSender());
-	}
-
-	/* ************************************************************************** */
-
-	// debug
-	void	Server::exec_test_cmd(Message& msg)
-	{
-		if (msg.getParams().empty())
-			err_needmoreparams(msg, true);
-		for (std::vector<std::string>::const_iterator it = msg.getParams().begin();
-			 it != msg.getParams().end();
-			 ++it)
-		{
-			std::cout << *it << std::endl;
-		}
-	}
-
-	int	Server::_sendList(Client& client)
-	{
-		for (t_clients::iterator it = this->_clients.begin();
-			 it != this->_clients.end();
-			 ++it)
-		{
-			std::string response = ":";
-			response += it->getNick();
-			response += " 322 ";
-			response += client.getNick();
-			response += " ";
-			response += it->getNick();
-			response += " 0 :";
-			response += it->getNick();
-			response += " :";
-			response += it->getNick();
-			response += " 0\r\n";
-			//log the response
-			std::cout << "Sending: " << response << "to " << it->getIpAddressStr() << std::endl;
-			client.sendCommand(response);
-		}
-		return (0);
-	}
-
-	int	Server::_sendError(Client& client, const std::string& error)
-	{
-		std::string response = ":" + getHostname() + " 451 ";
-		response += client.getNick();
-		response += " ";
-		response += error;
-		response += "\r\n";
-		//log the response
-		this->_log(LOG_LEVEL_DEBUG, "Sending: " + response + "to " + client.getIpAddressStr());
-		if (send(client.getSocketFd(), response.c_str(), response.size(), 0) < 0)
-		{
-			throw std::runtime_error("send() failed");
-		}
-		return (0);
 	}
 }
