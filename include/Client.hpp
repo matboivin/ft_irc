@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/11/11 20:30:42 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/13 17:18:30 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ namespace ft_irc
 		std::string			popUnprocessedCommand();
 		int					updateInBuffer();
 		int					updateOutBuffer();
-		/* Adds response to the output buffer */
+		/*811 Adds response to the output buffer */
 		void				sendCommand(std::string cmd);
 
 		/* Channel operations */
