@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/13 20:51:05 by root             ###   ########.fr       */
+/*   Updated: 2021/11/26 22:13:13 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,9 @@ namespace ft_irc
 	  _channels(),
 	  _logger(DEBUG)
 	{
+		_log(LOG_LEVEL_INFO, "Server constructor");
 		// create a new address struct
+		this->_alive=false;
 		this->_address.sin_family = AF_INET;
 		this->_address.sin_port = htons(atoi(getPort().c_str()));
 		this->_address.sin_addr.s_addr = inet_addr(getBindAddress().c_str());
@@ -62,11 +64,13 @@ namespace ft_irc
 
 		// init map of commands
 		_init_commands_map();
+		_log(LOG_LEVEL_INFO, "Server constructed");
 	}
 
 	/* Copy constructor */
 	Server::Server(const Server& other)
-	: _sockfd(other._sockfd),
+	: 
+	  _sockfd(other._sockfd),
 	  _backlog_max(other._backlog_max),
 	  _creation_date(other._creation_date),
 	  _version(other._version),
@@ -76,8 +80,10 @@ namespace ft_irc
 	  _commands(other._commands),
 	  _clients(other._clients),
 	  _channels(other._channels),
-	  _logger(other._logger)
+	  _logger(other._logger),
+	  _alive(other._alive)
 	{
+		_log(LOG_LEVEL_INFO, "Server copy constructor");
 	}
 
 	/* Copy assignment operator */
@@ -96,13 +102,20 @@ namespace ft_irc
 			this->_clients = other._clients;
 			this->_channels = other._channels;
 			this->_logger = other._logger;
+			this->_alive = other._alive;
 		}
 		return (*this);
+	}
+
+	bool	Server::isAlive() const
+	{
+		return (this->_alive);
 	}
 
 	/* Destructor */
 	Server::~Server()
 	{
+		_log(LOG_LEVEL_FATAL, "Server destructor.");
 		this->_shutdown();
 	}
 
@@ -195,13 +208,17 @@ namespace ft_irc
 			return (-1);
 		}
 
-		//accept incoming connections
-		while (true)
+		_log(LOG_LEVEL_INFO, "Server listening on localhost:" + this->getPort());
+		_alive=true;
+		while (_alive)
 		{
+			//accept incoming connections
 			if (_hasPendingConnections() == true)
 				_awaitNewConnection();
 			_processClients();
 		}
+		_log(LOG_LEVEL_FATAL, "Server has died");
+		return (-1);
 	}
 
 	/* Shutting down server ***************************************************** */
@@ -210,8 +227,9 @@ namespace ft_irc
 	{
 		t_clients::iterator	it = this->_clients.begin();
 
-		while (it != this->_clients.end())
 		_log(LOG_LEVEL_FATAL, "Shutting down server");
+		_alive=false;
+		while (it != this->_clients.end())
 		{
 			this->_disconnectClient(*it);
 			_log(LOG_LEVEL_INFO, "Client " + it->getNick() 
@@ -342,7 +360,8 @@ namespace ft_irc
 			if (it->isAlive() == false)
 			{
 				this->_disconnectClient(*it);
-				this->_log(LOG_LEVEL_INFO, "Client " + it->getIpAddressStr() + " disconnected");
+				this->_log(LOG_LEVEL_INFO, "Client " + it->getNick() +
+				"@" + it->getIpAddressStr() + " disconnected");
 				it = this->_clients.erase(it);
 				continue ;
 			}
@@ -428,7 +447,7 @@ namespace ft_irc
 		this->_commands["JOIN"]		= &Server::exec_join_cmd;
 		this->_commands["KICK"]		= &Server::exec_kick_cmd;
 		this->_commands["KILL"]		= &Server::exec_kill_cmd;
-		// this->_commands["LIST"]	= &Server::exec_list_cmd;
+		this->_commands["LIST"]		= &Server::exec_list_cmd;
 		this->_commands["MODE"]		= &Server::exec_mode_cmd;
 		this->_commands["NAMES"]	= &Server::exec_names_cmd;
 		this->_commands["NICK"]		= &Server::exec_nick_cmd;
@@ -779,9 +798,7 @@ namespace ft_irc
 		}
 		return false;
 	}
-	
 
-	//void	Server::exec_list_cmd(Message& msg);
 	//https://datatracker.ietf.org/doc/html/rfc1459#section-4.2.5
 	/*
 	 * NAMES <channel> *( "," <channel> )
@@ -847,6 +864,30 @@ namespace ft_irc
 			msg.appendSeparator();
 			rpl_endofnames(msg, "*");
 		}
+	}
+
+	/*
+	 * LIST [<channel>]
+	 *
+	 * If <channel> is specified, only lists information about that channel.
+	 * Otherwise, lists all channels and their topics.
+	 */
+
+	void	Server::exec_list_cmd(Message& msg)
+	{
+		bool	matchAll = msg.getParams().size() == 0;
+
+		msg.setResponse("");
+		msg.setRecipient(msg.getSender());
+		for (t_channels::iterator channels_it = this->_channels.begin();
+			channels_it != this->_channels.end(); ++channels_it)
+		{
+			if (matchAll || is_string_in_msg_params(msg, channels_it->getName()))
+			{
+				rpl_list(msg, *channels_it);
+			}
+		}
+			rpl_listend(msg);
 	}
 
 	/*

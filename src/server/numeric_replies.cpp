@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/13 20:46:56 by root             ###   ########.fr       */
+/*   Updated: 2021/11/14 19:42:14 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,6 +144,7 @@ namespace ft_irc
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 322 ");
+		msg.appendResponse(msg.getSender().getNick() + " ");
 		msg.appendResponse(channel.getName());
 		msg.appendResponse(" :");
 		msg.appendResponse(channel.getTopic());

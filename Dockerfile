@@ -16,5 +16,6 @@ curl -SL "$LINK" \
  mv clang* clang_10 
 
 RUN  cp -r ./clang_10/bin/* /bin/. ; cp -r ./clang_10/lib/* /lib/. 
+
 #start bash
 CMD [ "/bin/bash" ]
