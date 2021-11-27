@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/26 15:39:05 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 16:50:02 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,6 +176,7 @@ namespace ft_irc
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 322 ");
+		msg.appendResponse(msg.getSender().getNick() + " ");
 		msg.appendResponse(channel.getName());
 		msg.appendResponse(" :");
 		msg.appendResponse(channel.getTopic());

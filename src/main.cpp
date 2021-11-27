@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:21 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/11 16:40:53 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 17:01:03 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,15 +31,15 @@ int	main(int argc, char** argv)
 
 			server.run();
 		}
-		catch (std::runtime_error &e)
+		catch (std::runtime_error& e)
 		{
-			std::cerr << e.what() << std::endl;
+			std::cerr << __FILE__ ":" <<__LINE__ << " : " << e.what() << std::endl;
 			return (EXIT_FAILURE);
 		}
 	}
 	catch (std::runtime_error& e)
 	{
-		std::cerr << e.what() << std::endl;
+		std::cerr << __FILE__ ":" <<__LINE__ << " : " << e.what() << std::endl;
 		displayUsage(argv[0]);
 		return (EXIT_FAILURE);
 	}

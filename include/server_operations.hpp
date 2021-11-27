@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:35:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/11 20:21:19 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 17:02:57 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,9 @@ namespace ft_irc
 	class Message;
 	class Client;
 
+	/* Aliases */
+	typedef std::vector<std::string>	t_params;
+
 	/* Response helpers */
 	std::string	build_prefix(const std::string& sender);
 	std::string	build_full_client_id(const Client& client);
@@ -34,6 +37,7 @@ namespace ft_irc
 	bool		channel_is_valid(const std::string& chan_name);
 	bool		channel_mode_is_valid(const std::string& mode);
 	bool		match_nick(const std::string& to_match, const std::string& nick);
+	bool		is_string_in_msg_params(const Message& msg, const std::string& str);
 
 	/* Remove duplicates from lists */
 	template<typename T>

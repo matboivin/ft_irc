@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/27 16:01:50 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 17:03:10 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,9 @@ namespace ft_irc
 	  _channels(),
 	  _logger(DEBUG)
 	{
+		_log(LOG_LEVEL_INFO, "Server constructor");
 		// create a new address struct
+		this->_alive=false;
 		this->_address.sin_family = AF_INET;
 		this->_address.sin_port = htons(atoi(getPort().c_str()));
 		this->_address.sin_addr.s_addr = inet_addr(getBindAddress().c_str());
@@ -56,6 +58,7 @@ namespace ft_irc
 
 		// init map of commands
 		_init_commands_map();
+		_log(LOG_LEVEL_INFO, "Server constructed");
 	}
 
 	/* Copy constructor */
@@ -71,8 +74,10 @@ namespace ft_irc
 	  _commands(other._commands),
 	  _clients(other._clients),
 	  _channels(other._channels),
-	  _logger(other._logger)
+	  _logger(other._logger),
+	  _alive(other._alive)
 	{
+		_log(LOG_LEVEL_INFO, "Server copy constructor");
 	}
 
 	/* Copy assignment operator */
@@ -91,13 +96,20 @@ namespace ft_irc
 			this->_clients = other._clients;
 			this->_channels = other._channels;
 			this->_logger = other._logger;
+			this->_alive = other._alive;
 		}
 		return (*this);
+	}
+
+	bool	Server::isAlive() const
+	{
+		return (this->_alive);
 	}
 
 	/* Destructor */
 	Server::~Server()
 	{
+		_log(LOG_LEVEL_FATAL, "Server destructor.");
 		this->_shutdown();
 	}
 
@@ -183,13 +195,17 @@ namespace ft_irc
 		if (_createSocket() == false)
 			return (-1);
 
-		//accept incoming connections
-		while (true)
+		_log(LOG_LEVEL_INFO, "Server listening on localhost:" + this->getPort());
+		_alive=true;
+		while (_alive)
 		{
+			//accept incoming connections
 			if (_hasPendingConnections() == true)
 				_awaitNewConnection();
 			_processClients();
 		}
+		_log(LOG_LEVEL_FATAL, "Server has died");
+		return (-1);
 	}
 
 	/* Shutting down server ***************************************************** */
@@ -199,6 +215,7 @@ namespace ft_irc
 		t_clients::iterator	it = this->_clients.begin();
 
 		_log(LOG_LEVEL_FATAL, "Shutting down server");
+		_alive=false;
 		while (it != this->_clients.end())
 		{
 			this->_disconnectClient(*it);
@@ -333,7 +350,8 @@ namespace ft_irc
 			if (it->isAlive() == false)
 			{
 				this->_disconnectClient(*it);
-				this->_log(LOG_LEVEL_INFO, "Client " + it->getIpAddressStr() + " disconnected");
+				this->_log(LOG_LEVEL_INFO, "Client " + it->getNick() +
+				"@" + it->getIpAddressStr() + " disconnected");
 				it = this->_clients.erase(it);
 				continue ;
 			}
@@ -418,7 +436,7 @@ namespace ft_irc
 		this->_commands["JOIN"]		= &Server::_execJoinCmd;
 		this->_commands["KICK"]		= &Server::_execKickCmd;
 		this->_commands["KILL"]		= &Server::_execKillCmd;
-		// this->_commands["LIST"]	= &Server::_execListCmd;
+		this->_commands["LIST"]		= &Server::_execListCmd;
 		this->_commands["MODE"]		= &Server::_execModeCmd;
 		this->_commands["NAMES"]	= &Server::_execNamesCmd;
 		this->_commands["NICK"]		= &Server::_execNickCmd;
@@ -831,6 +849,30 @@ namespace ft_irc
 	}
 
 	/*
+	 * LIST [<channel>]
+	 *
+	 * If <channel> is specified, only lists information about that channel.
+	 * Otherwise, lists all channels and their topics.
+	 */
+
+	void	Server::_execListCmd(Message& msg)
+	{
+		bool	matchAll = msg.getParams().size() == 0;
+
+		msg.setResponse("");
+		msg.setRecipient(msg.getSender());
+		for (t_channels::iterator channels_it = this->_channels.begin();
+			channels_it != this->_channels.end(); ++channels_it)
+		{
+			if (matchAll || is_string_in_msg_params(msg, channels_it->getName()))
+			{
+				rpl_list(msg, *channels_it);
+			}
+		}
+			rpl_listend(msg);
+	}
+
+	/*
 	 * MODE <nickname> <flags>
 	 * MODE <channel> <flags>
 	 * Set a user or a channel mode.
@@ -869,19 +911,7 @@ namespace ft_irc
 		}	
 	}
 
-	/* Helper for names */
-	bool	is_string_in_msg_params(const Message& msg, const std::string& str)
-	{
-		for (Parser::t_params::const_iterator it = msg.getParams().begin();
-			 it != msg.getParams().end();
-			 ++it)
-		{
-			if (*it == str)
-				return true;
-		}
-		return false;
-	}
-
+	//https://datatracker.ietf.org/doc/html/rfc1459#section-4.2.5
 	/*
 	 * NAMES <channel> *( "," <channel> )
 	 *
@@ -915,9 +945,10 @@ namespace ft_irc
 				msg.appendResponse(" = ");
 				msg.appendResponse(channels_it->getName());
 				msg.appendResponse(" :");
-				//std::list<Client*>
+
 				for (Channel::t_clients::const_iterator it2 = channels_it->getClients().begin();
-					it2 != channels_it->getClients().end(); ++it2)
+					it2 != channels_it->getClients().end();
+					++it2)
 				{
 					msg.appendResponse(" ");
 					msg.appendResponse((*it2)->getNick());

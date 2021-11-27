@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/26 18:22:42 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 17:01:19 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ namespace ft_irc
 
 		/* Main loop */
 		int						run();
+		bool					isAlive() const;
 
 	private:
 		struct sockaddr_in		_address; /* Structure describing an Internet socket address. */
@@ -79,6 +80,7 @@ namespace ft_irc
 		t_clients				_clients;
 		t_channels				_channels;
 		Logger					_logger;
+		bool					_alive;
 
 		/* Cleaning */
 		void					_shutdown();
@@ -118,7 +120,7 @@ namespace ft_irc
 		void					_addUserToChannel(Client& client, Channel& channel);
 		void					_removeUserFromChannel(Client& client, Channel& channel,
 													   const std::string& comment = "");
-		void					_removeUserFromAllChannels(Client& client,const std::string& comment = "");
+		void					_removeUserFromAllChannels(Client& client, const std::string& comment = "");
 
 		/* Oper operations */
 		bool					_canGiveOperPriv(const std::string& name, const std::string& password);
@@ -128,7 +130,7 @@ namespace ft_irc
 		void					_execJoinCmd(Message& msg);
 		void					_execKickCmd(Message& msg);
 		void					_execKillCmd(Message& msg);
-		//void					_execListCmd(Message& msg);
+		void					_execListCmd(Message& msg);
 		void					_execModeCmd(Message& msg);
 		void					_execNamesCmd(Message& msg);
 		void					_execNickCmd(Message& msg);
