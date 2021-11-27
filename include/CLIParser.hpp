@@ -1,5 +1,5 @@
-#ifndef CLI_PARSER_HPP
-# define CLI_PARSER_HPP
+#ifndef CLIPARSER_HPP
+# define CLIPARSER_HPP
 
 # include <string>
 
@@ -45,4 +45,4 @@ namespace ft_irc
 	};
 } // namespace ft_irc
 
-#endif // !CLIParser
+#endif // !CLIPARSER_HPP

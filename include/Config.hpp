@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Config.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/19 16:41:45 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/06 17:17:55 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 18:03:59 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,9 +63,11 @@ namespace ft_irc
 
 		/* Oper operations */
 		void			addOperBlock(const std::string& name, const std::string& password);
+		bool			operUserIsValid(const std::string& name);
 		bool			operBlockIsValid(const std::string& name, const std::string& password);
 
 	private:
+		/* Attributes */
 		std::string		_bind_address;
 		std::string		_port;
 		std::string		_connection_password;
@@ -74,4 +76,4 @@ namespace ft_irc
 	};
 } // !namespace ft_irc
 
-#endif // !Config
+#endif // !CONFIG_HPP

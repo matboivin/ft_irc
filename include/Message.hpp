@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:47:11 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/11 16:32:10 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 17:48:17 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,7 @@ namespace ft_irc
 		void				displayMessage() const;
 
 	private:
+		/* Attributes */
 		Client&				_sender;
 		std::string			_serv_hostname;
 		std::string			_response;
@@ -88,4 +89,4 @@ namespace ft_irc
 	};
 } // !namespace ft_irc
 
-#endif // !Message
+#endif // !MESSAGE_HPP

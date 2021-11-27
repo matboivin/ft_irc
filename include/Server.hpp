@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/14 19:29:24 by root             ###   ########.fr       */
+/*   Updated: 2021/11/27 18:04:48 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,38 +63,14 @@ namespace ft_irc
 		t_clients::iterator		getClient(const std::string& nick);
 		t_channels::iterator	getChannel(const std::string& chan_name);
 
-		/* Main loop */
-		int						run();
+		/* Checkers */
 		bool					isAlive() const;
 
-		/* Commands */
-		void					exec_invite_cmd(Message& msg);
-		void					exec_join_cmd(Message& msg);
-		void					_kickClient(Message& msg,
-											const std::string& chan_name, const std::string& nick,
-											const std::string& comment = ""
-											);
-		void					exec_kick_cmd(Message& msg);
-		void					exec_kill_cmd(Message& msg);
-		void					exec_list_cmd(Message& msg);
-		void					exec_mode_cmd(Message& msg);
-		void					exec_names_cmd(Message& msg);
-		void					exec_nick_cmd(Message& msg);
-		void					exec_notice_cmd(Message& msg);
-		void					exec_oper_cmd(Message& msg);
-		void					exec_part_cmd(Message& msg);
-		void					exec_pass_cmd(Message& msg);
-		void					exec_ping_cmd(Message& msg);
-		void					exec_pong_cmd(Message& msg);
-		void					exec_privmsg_cmd(Message& msg);
-		void					exec_quit_cmd(Message& msg);
-		void					exec_topic_cmd(Message& msg);
-		void					exec_user_cmd(Message& msg);
-		void					exec_who_cmd(Message& msg);
-		void					exec_whois_cmd(Message& msg);
-		void					exec_test_cmd(Message& msg); // debug
+		/* Main loop */
+		int						run();
 
 	private:
+		/* Attributes */
 		struct sockaddr_in		_address; /* Structure describing an Internet socket address. */
 		int						_sockfd; /* Socket descriptor. */
 		int						_backlog_max;
@@ -111,6 +87,9 @@ namespace ft_irc
 
 		/* Cleaning */
 		void					_shutdown();
+
+		/* Logging */
+		void					_log(int level, const std::string& message) const;
 
 		/* Connections handling */
 		bool					_createSocket();
@@ -134,7 +113,7 @@ namespace ft_irc
 		/* Command response */
 		void					_setResponseRecipients(Message& msg);
 		void					_sendResponse(Message& msg);
-		void					_make_welcome_msg(Message& msg);
+		void					_make_welcome_msg(Client& client);
 
 		/* Channel operations */
 		Channel&				_addChannel(const std::string& name, Client& creator);
@@ -142,21 +121,47 @@ namespace ft_irc
 		bool					_userOnChannel(Client& client, Channel& channel);
 		bool					_userOnChannel(Client& client, const std::string& chan_name);
 		void					_addUserToChannel(Client& client, Channel& channel);
-		void					_removeUserFromChannel(Client& client, Channel& channel);
-		void					_removeUserFromAllChannels(Client& client);
-		int						_setUserMode(Client& client, const std::string& mode, Message& msg);
+		void					_removeUserFromChannel(Client& client, Channel& channel,
+													   const std::string& comment = "");
+		void					_removeUserFromAllChannels(Client& client,
+														   const std::string& comment = "");
 
 		/* Oper operations */
+		bool					_userCanBeOper(const std::string& name);
 		bool					_canGiveOperPriv(const std::string& name, const std::string& password);
+
+		/* Commands */
+		void					_execInviteCmd(Message& msg);
+		void					_execJoinCmd(Message& msg);
+		void					_execKickCmd(Message& msg);
+		void					_execKillCmd(Message& msg);
+		void					_execListCmd(Message& msg);
+		void					_execModeCmd(Message& msg);
+		void					_execNamesCmd(Message& msg);
+		void					_execNickCmd(Message& msg);
+		void					_execNoticeCmd(Message& msg);
+		void					_execOperCmd(Message& msg);
+		void					_execPartCmd(Message& msg);
+		void					_execPassCmd(Message& msg);
+		void					_execPingCmd(Message& msg);
+		void					_execPongCmd(Message& msg);
+		void					_execPrivmsgCmd(Message& msg);
+		void					_execQuitCmd(Message& msg);
+		void					_execTopicCmd(Message& msg);
+		void					_execUserCmd(Message& msg);
+		void					_execWhoCmd(Message& msg);
+		void					_execWhoisCmd(Message& msg);
 
 		/* Command helpers */
 		void					_addWhoisToMsg(Message& msg, const Client& client);
-
-		/* debug */
-		int						_sendList(Client& client);
-		int						_sendError(Client& client, const std::string& error);
-		void					_log(int level, const std::string& message) const;
+		int						_setUserMode(Client& client, const std::string& mode, Message& msg);
+		void					_kickClient(Message& msg,
+											const std::string& chan_name, const std::string& nick,
+											const std::string& comment = "");
+		void					_partClient(Message& msg,
+											const std::string& chan_name,
+											const std::string& comment = "");
 	};
-}
+} // !namespace ft_irc
 
-#endif
+#endif // !SERVER_HPP

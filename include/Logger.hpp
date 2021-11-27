@@ -5,7 +5,7 @@
 # define CRLF "\n"
 # define CRLF_PRINTABLE "\\n"
 
-enum LogLevel
+enum	LogLevel
 {
 	LOG_LEVEL_DEBUG = 0,
 	LOG_LEVEL_INFO = 1,
@@ -31,6 +31,6 @@ namespace ft_irc
 			//call overload
 			void	operator()(int level, const std::string& message) const;
 	};
-}
+} // !namespace ft_irc
 
-#endif
+#endif // !LOGGER_HPP

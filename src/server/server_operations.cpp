@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server_operations.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:37:26 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/11 20:21:12 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 17:42:27 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,5 +124,18 @@ namespace ft_irc
 			return (false);
 		}
 		return (to_match == "0" || to_match == nick);
+	}
+
+	/* Helper for names */
+	bool	is_string_in_msg_params(const Message& msg, const std::string& str)
+	{
+		for (t_params::const_iterator it = msg.getParams().begin();
+			 it != msg.getParams().end();
+			 ++it)
+		{
+			if (*it == str)
+				return true;
+		}
+		return false;
 	}
 } // namespace ft_irc

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   numeric_replies.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/14 19:42:14 by root             ###   ########.fr       */
+/*   Updated: 2021/11/27 18:37:55 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,9 @@ namespace ft_irc
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 001 Welcome to the Internet Relay Network ");
+		msg.appendResponse(" 001 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" :Welcome to the Internet Relay Network ");
 		msg.appendResponse(build_full_client_id(msg.getSender()));
 		msg.appendSeparator();
 	}
@@ -40,8 +42,38 @@ namespace ft_irc
 		msg.appendResponse(" 002 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" :Your host is ");
+		msg.appendResponse(msg.getServHostname());
 		msg.appendResponse(", running version ");
 		msg.appendResponse(version);
+		msg.appendSeparator();
+	}
+
+	void	rpl_created(Message& msg, const std::string& creation_date, bool rewrite)
+	{
+		msg.setRecipient(msg.getSender());
+		if (rewrite)
+			msg.clearResponse();
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 003 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" :This server was created ");
+		msg.appendResponse(creation_date);
+		msg.appendSeparator();
+	}
+
+	void	rpl_myinfo(Message& msg, const std::string& version, bool rewrite)
+	{
+		msg.setRecipient(msg.getSender());
+		if (rewrite)
+			msg.clearResponse();
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 004 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
+		msg.appendResponse(msg.getServHostname());
+		msg.appendResponse(" ");
+		msg.appendResponse(version);
+		msg.appendResponse(" o o");
 		msg.appendSeparator();
 	}
 
@@ -100,7 +132,9 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	rpl_endofwho(Message& msg, const std::string& name, bool rewrite)
+	void	rpl_endofwho(Message& msg,
+						const std::string& name, const std::string& to_match,
+						bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
@@ -108,11 +142,15 @@ namespace ft_irc
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 315 ");
 		msg.appendResponse(name);
-		msg.appendResponse(" :End of WHO list");
+		msg.appendResponse(" ");
+		msg.appendResponse(to_match);
+		msg.appendResponse(" :End of /WHO list");
 		msg.appendSeparator();
 	}
 
-	void	rpl_endofwhois(Message& msg, const std::string& nick, bool rewrite)
+	void	rpl_endofwhois(Message& msg,
+						   const std::string& nick, const std::string& to_match,
+						   bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
@@ -120,11 +158,14 @@ namespace ft_irc
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 318 ");
 		msg.appendResponse(nick);
-		msg.appendResponse(" :End of WHOIS list");
+		msg.appendResponse(" ");
+		msg.appendResponse(to_match);
+		msg.appendResponse(" :End of /WHOIS list");
 		msg.appendSeparator();
 	}
 
-	void	rpl_whoischannels(Message& msg, const std::string& nick, const std::string& chan_name, bool rewrite)
+	void	rpl_whoischannels(Message& msg, const std::string& nick, const std::string& chan_name,
+							  bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
@@ -212,23 +253,23 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	rpl_whoreply(Message& msg, const std::string& chan_name, Client& target, bool rewrite)
+	void	rpl_whoreply(Message& msg, const std::string& nick, Client& target, bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 352 ");
-		msg.appendResponse(chan_name);
-		msg.appendResponse(" ");
+		msg.appendResponse(nick);
+		msg.appendResponse(" * ");
 		msg.appendResponse(target.getUsername());
 		msg.appendResponse(" ");
 		msg.appendResponse(target.getIpAddressStr());
 		msg.appendResponse(" ");
-		//msg.appendResponse();  todo server
+		msg.appendResponse(target.getHostname());
 		msg.appendResponse(" ");
 		msg.appendResponse(target.getNick());
-		msg.appendResponse(" :");
+		msg.appendResponse(" H :0 ");
 		msg.appendResponse(target.getRealName());
 		msg.appendSeparator();
 	}
@@ -240,8 +281,18 @@ namespace ft_irc
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 353 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" = ");
 		msg.appendResponse(channel.getName());
-		// todo
+		msg.appendResponse(" :");
+
+		for (Channel::t_clients::const_iterator it = channel.getClients().begin();
+			 it != channel.getClients().end();
+			 ++it)
+		{
+			msg.appendResponse(" ");
+			msg.appendResponse((*it)->getNick());
+		}
 		msg.appendSeparator();
 	}
 
@@ -333,17 +384,17 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	err_toomanychannels(Message& msg, const std::string& chan_name, bool rewrite)
-	{
-		msg.setRecipient(msg.getSender());
-		if (rewrite)
-			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 405 ");
-		msg.appendResponse(chan_name);
-		msg.appendResponse(" :You have joined too many channels");
-		msg.appendSeparator();
-	}
+	// void	err_toomanychannels(Message& msg, const std::string& chan_name, bool rewrite)
+	// {
+	// 	msg.setRecipient(msg.getSender());
+	// 	if (rewrite)
+	// 		msg.clearResponse();
+	// 	msg.appendResponse(build_prefix(msg.getServHostname()));
+	// 	msg.appendResponse(" 405 ");
+	// 	msg.appendResponse(chan_name);
+	// 	msg.appendResponse(" :You have joined too many channels");
+	// 	msg.appendSeparator();
+	// }
 
 	void	err_noorigin(Message& msg, bool rewrite)
 	{
@@ -420,18 +471,6 @@ namespace ft_irc
 		msg.appendResponse(" 433 ");
 		msg.appendResponse(msg.getParams().at(0));
 		msg.appendResponse(" :Nickname already in use");
-		msg.appendSeparator();
-	}
-
-	void	err_unavailresource(Message& msg, const std::string& target, bool rewrite) // maybe not necessary?
-	{
-		msg.setRecipient(msg.getSender());
-		if (rewrite)
-			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 437 ");
-		msg.appendResponse(target);
-		msg.appendResponse(" :Nick/channel is temporarily unavailable");
 		msg.appendSeparator();
 	}
 
@@ -531,29 +570,29 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	err_channelisfull(Message& msg, const std::string& chan_name, bool rewrite)
-	{
-		msg.setRecipient(msg.getSender());
-		if (rewrite)
-			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 471 ");
-		msg.appendResponse(chan_name);
-		msg.appendResponse(" :Cannot join channel (+l)");
-		msg.appendSeparator();
-	}
+	// void	err_channelisfull(Message& msg, const std::string& chan_name, bool rewrite)
+	// {
+	// 	msg.setRecipient(msg.getSender());
+	// 	if (rewrite)
+	// 		msg.clearResponse();
+	// 	msg.appendResponse(build_prefix(msg.getServHostname()));
+	// 	msg.appendResponse(" 471 ");
+	// 	msg.appendResponse(chan_name);
+	// 	msg.appendResponse(" :Cannot join channel (+l)");
+	// 	msg.appendSeparator();
+	// }
 
-	void	err_bannedfromchan(Message& msg, const std::string& chan_name, bool rewrite)
-	{
-		msg.setRecipient(msg.getSender());
-		if (rewrite)
-			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 474 ");
-		msg.appendResponse(chan_name);
-		msg.appendResponse(" :Cannot join channel (+b)");
-		msg.appendSeparator();
-	}
+	// void	err_bannedfromchan(Message& msg, const std::string& chan_name, bool rewrite)
+	// {
+	// 	msg.setRecipient(msg.getSender());
+	// 	if (rewrite)
+	// 		msg.clearResponse();
+	// 	msg.appendResponse(build_prefix(msg.getServHostname()));
+	// 	msg.appendResponse(" 474 ");
+	// 	msg.appendResponse(chan_name);
+	// 	msg.appendResponse(" :Cannot join channel (+b)");
+	// 	msg.appendSeparator();
+	// }
 
 	void	err_noprivileges(Message& msg, bool rewrite)
 	{

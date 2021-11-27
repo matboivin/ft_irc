@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/11 20:17:08 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 17:34:32 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ namespace ft_irc
 	/* Checks whether command name is valid */
 	void	Parser::_handleListOfParams(Message& msg)
 	{
-		const std::string	cmds = "LIST JOIN NAMES PART WHOIS";
+		const std::string	cmds = "LIST JOIN NAMES WHOIS";
 
 		if (cmds.find(msg.getCommand()) == std::string::npos)
 			return ;
@@ -148,7 +148,7 @@ namespace ft_irc
 	/* Checks whether command name is valid */
 	bool	Parser::_commandIsValid(Message& msg)
 	{
-		const std::string	cmds = "INVITE JOIN KICK KILL LIST MODE NAMES "
+		const std::string	cmds = "CAP INVITE JOIN KICK KILL LIST MODE NAMES "
 									"NICK NOTICE OPER PASS PART PING PONG "
 									"PRIVMSG TOPIC QUIT USER WHOIS WHO TEST";
 
@@ -250,8 +250,7 @@ namespace ft_irc
 	/* Fill response if Message will be forwarded to other clients */
 	void	Parser::_fillForwardResponse(Message& msg, std::string cmd)
 	{
-		const std::string	cmds = "INVITE JOIN KILL MODE NOTICE PART"
-									"PING PONG PRIVMSG QUIT TEST";
+		const std::string	cmds = "INVITE KILL MODE NOTICE PING PONG PRIVMSG QUIT TEST";
 
 		if (cmds.find(msg.getCommand()) != std::string::npos)
 		{
