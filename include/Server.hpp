@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/27 17:01:19 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 17:09:16 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,9 +63,11 @@ namespace ft_irc
 		t_clients::iterator		getClient(const std::string& nick);
 		t_channels::iterator	getChannel(const std::string& chan_name);
 
+		/* Checkers */
+		bool					isAlive() const;
+
 		/* Main loop */
 		int						run();
-		bool					isAlive() const;
 
 	private:
 		struct sockaddr_in		_address; /* Structure describing an Internet socket address. */
@@ -120,7 +122,8 @@ namespace ft_irc
 		void					_addUserToChannel(Client& client, Channel& channel);
 		void					_removeUserFromChannel(Client& client, Channel& channel,
 													   const std::string& comment = "");
-		void					_removeUserFromAllChannels(Client& client, const std::string& comment = "");
+		void					_removeUserFromAllChannels(Client& client,
+														   const std::string& comment = "");
 
 		/* Oper operations */
 		bool					_canGiveOperPriv(const std::string& name, const std::string& password);

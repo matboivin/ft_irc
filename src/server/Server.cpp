@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/27 17:03:10 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 17:14:47 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,11 +101,6 @@ namespace ft_irc
 		return (*this);
 	}
 
-	bool	Server::isAlive() const
-	{
-		return (this->_alive);
-	}
-
 	/* Destructor */
 	Server::~Server()
 	{
@@ -188,6 +183,13 @@ namespace ft_irc
 		return (it);
 	}
 
+	/* Checkers ***************************************************************** */
+
+	bool	Server::isAlive() const
+	{
+		return (this->_alive);
+	}
+
 	/* Main loop **************************************************************** */
 
 	int	Server::run()
@@ -199,7 +201,6 @@ namespace ft_irc
 		_alive=true;
 		while (_alive)
 		{
-			//accept incoming connections
 			if (_hasPendingConnections() == true)
 				_awaitNewConnection();
 			_processClients();
@@ -215,7 +216,8 @@ namespace ft_irc
 		t_clients::iterator	it = this->_clients.begin();
 
 		_log(LOG_LEVEL_FATAL, "Shutting down server");
-		_alive=false;
+		this->_alive = false;
+
 		while (it != this->_clients.end())
 		{
 			this->_disconnectClient(*it);
@@ -405,6 +407,7 @@ namespace ft_irc
 	int	Server::_ping_client(Client& client)
 	{
 		Message	msg(client);
+
 		msg.setRecipient(client);
 		msg.setCommand("PING");
 		msg.setResponse("PING " + this->getHostname() + " :" + this->getHostname() + CRLF);
@@ -480,11 +483,9 @@ namespace ft_irc
 			msg.setRecipient(*dst);
 			return ;
 		}
-
 		if (msg.getParams().empty())
-		{
 			return ;
-		}
+
 		t_channels::iterator	channel = getChannel(msg.getParams().at(0));
 
 		if (channel != this->_channels.end())
@@ -617,8 +618,7 @@ namespace ft_irc
 	{
 		Message	part_msg(client);
 
-		part_msg.setRecipients(client.getAllContacts()); // get all client contacts
-		// all contacts: clients from all the channels joined by the client
+		part_msg.setRecipients(client.getAllContacts());
 		part_msg.setResponse(build_prefix(getHostname()));
 		part_msg.appendResponse(" PART ");
 		part_msg.appendResponse(client.getNick());
@@ -629,8 +629,8 @@ namespace ft_irc
 		}
 		part_msg.appendSeparator();
 		_log(LOG_LEVEL_DEBUG, "Remove " + client.getNick() + " from all the channels they joined");
-		client.partAllChannels(); // client parts all joined channels
-		_sendResponse(part_msg); // send the message to all contacts
+		client.partAllChannels();
+		_sendResponse(part_msg);
 	}
 
 	/* Oper operations ********************************************************** */
@@ -934,8 +934,10 @@ namespace ft_irc
 		msg.setResponse("");
 		msg.setRecipient(msg.getSender());
 		this->_logger(LOG_LEVEL_DEBUG, std::to_string(msg.getParams().size()));
+
 		for (t_channels::iterator channels_it = this->_channels.begin();
-			channels_it != this->_channels.end(); ++channels_it)
+			 channels_it != this->_channels.end();
+			 ++channels_it)
 		{
 			if (matchAll || is_string_in_msg_params(msg, channels_it->getName()))
 			{
@@ -947,8 +949,8 @@ namespace ft_irc
 				msg.appendResponse(" :");
 
 				for (Channel::t_clients::const_iterator it2 = channels_it->getClients().begin();
-					it2 != channels_it->getClients().end();
-					++it2)
+					 it2 != channels_it->getClients().end();
+					 ++it2)
 				{
 					msg.appendResponse(" ");
 					msg.appendResponse((*it2)->getNick());
@@ -1263,7 +1265,7 @@ namespace ft_irc
 			err_syntaxerror(msg, msg.getCommand());
 			return ;
 		}
-		std::string response = "";
+		std::string	response = "";
 		for (t_clients::iterator it = this->_clients.begin();
 			 it != this->_clients.end();
 			 ++it)
@@ -1280,7 +1282,7 @@ namespace ft_irc
 				response += " " + it->getNick();
 				response += " H :0 " + it->getNick() + CRLF;
 			}
-			count++;
+			++count;
 			if (count == 25)
 			{
 				//:public-irc.w3.org NOTICE mynick :WHO list limit (25) reached!
@@ -1307,19 +1309,20 @@ namespace ft_irc
 			rpl_whoisoperator(msg, client, false);
 		}
 	}
-	
+
 	/*
 	 * WHOIS [target]
 	 * https://datatracker.ietf.org/doc/html/rfc1459#section-4.5.2
 	*/
 	void	Server::_execWhoisCmd(Message& msg)
 	{
-		std::vector<std::string>::const_iterator	paramsIt;
+		Parser::t_params::const_iterator	paramsIt;
 		std::string							to_match = "0"; //match all by default
 		bool								matchAll = false;
 
 		msg.setResponse("");
 		matchAll = msg.getParams().empty() || msg.getParams().front() == "0";
+
 		for (t_clients::iterator it = this->_clients.begin();
 			 it != this->_clients.end();
 			 ++it)
@@ -1344,8 +1347,14 @@ namespace ft_irc
 				}
 			}
 		}
-		msg.appendResponse(":" + this->getHostname() + " 318 " + msg.getSender().getNick() +
-		" " + to_match + " :End of /WHOIS list." CRLF);
+		msg.appendResponse(":");
+		msg.appendResponse(this->getHostname());
+		msg.appendResponse(" 318 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
+		msg.appendResponse(to_match);
+		msg.appendResponse(" :End of /WHOIS list.");
+		msg.appendResponse(CRLF);
 		msg.setRecipient(msg.getSender());
 	}
 }
