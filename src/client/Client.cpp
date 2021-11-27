@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/11/27 17:47:33 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 17:57:49 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,21 +34,22 @@ namespace ft_irc
 	  _username(username),
 	  _mode(),
 	  _password(password),
+	  _in_buffer(),
+	  _out_buffer(),
+	  _max_cmd_length(512),
+	  _connected(false),
+	  _alive(true),
+	  _registered(false),
+	  _pinged(false),
 	  _address(address),
 	  _address_size(sizeof(address)),
 	  _address_str(inet_ntoa(address.sin_addr)),
 	  _timeout(),
-	  _socket_fd(-1),
-	  _connected(false),
-	  _in_buffer(),
-	  _out_buffer(),
-	  _max_cmd_length(512),
-	  _joined_channels(),
-	  _alive(true),
 	  _keep_alive(),
 	  _last_event_time(),
-	  _registered(false),
-	  _pinged(false)
+	  _socket_fd(-1),
+	  _joined_channels()
+	  
 	{
 		this->_timeout.tv_sec = 0;
 		this->_timeout.tv_usec = 50;
@@ -71,20 +72,21 @@ namespace ft_irc
 	  _username(username),
 	  _mode(),
 	  _password(password),
+	  _in_buffer(),
+	  _out_buffer(),
+	  _max_cmd_length(512),
+	  _connected(false),
+	  _alive(true),
+	  _registered(false),
+	  _pinged(false),
 	  _address(),
 	  _address_size(),
 	  _address_str(),
 	  _timeout(),
-	  _socket_fd(-1),
-	  _connected(false),
-	  _in_buffer(),
-	  _out_buffer(),
-	  _max_cmd_length(512),
-	  _joined_channels(),
-	  _alive(true),
+	  _keep_alive(),
 	  _last_event_time(),
-	  _registered(false),
-	  _pinged(false)
+	  _socket_fd(-1),
+	  _joined_channels()
 	{
 		this->_timeout.tv_sec = 0;
 		this->_timeout.tv_usec = 50;
@@ -103,21 +105,21 @@ namespace ft_irc
 	  _username(other._username),
 	  _mode(other._mode),
 	  _password(other._password),
+	  _in_buffer(other._in_buffer),
+	  _out_buffer(other._out_buffer),
+	  _max_cmd_length(other._max_cmd_length),
+	  _connected(other._connected),
+	  _alive(other._alive),
+	  _registered(other._registered),
+	  _pinged(other._pinged),
 	  _address(other._address),
 	  _address_size(other._address_size),
 	  _address_str(other._address_str),
 	  _timeout(other._timeout),
-	  _socket_fd(other._socket_fd),
-	  _connected(other._connected),
-	  _in_buffer(other._in_buffer),
-	  _out_buffer(other._out_buffer),
-	  _max_cmd_length(other._max_cmd_length),
-	  _joined_channels(other._joined_channels),
-	  _alive(other._alive),
 	  _keep_alive(other._keep_alive),
 	  _last_event_time(other._last_event_time),
-	  _registered(other._registered),
-	  _pinged(other._pinged)
+	  _socket_fd(other._socket_fd),
+	  _joined_channels(other._joined_channels)
 	{
 	}
 
@@ -126,23 +128,24 @@ namespace ft_irc
 	{
 		if (this != &other)
 		{
-			this->_nick = other.getNick();
-			this->_realname = other.getRealName();
-			this->_username = other.getUsername();
-			this->_password = other.getPassword();
-			this->_hostname = other.getHostname();
+			this->_nick = other._nick;
+			this->_realname = other._realname;
+			this->_hostname = other._hostname;
+			this->_username = other._username;
+			this->_in_buffer = other._in_buffer;
+			this->_out_buffer = other._out_buffer;
+			this->_connected = other._connected;
+			this->_alive = other._alive;
+			this->_registered = other._registered;
+			this->_pinged = other._pinged;
 			this->_address = other._address;
 			this->_address_str = other._address_str;
 			this->_address_size = other._address_size;
 			this->_timeout = other._timeout;
-			this->_socket_fd = other.getSocketFd();
-			this->_connected = other._connected;
-			this->_joined_channels = other.getJoinedChannels();
-			this->_alive = other._alive;
 			this->_keep_alive = other._keep_alive;
 			this->_last_event_time = other._last_event_time;
-			this->_registered = other._registered;
-			this->_pinged = other._pinged;
+			this->_socket_fd = other._socket_fd ;
+			this->_joined_channels = other._joined_channels;
 		}
 		return (*this);
 	}

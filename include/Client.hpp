@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/11/27 17:24:30 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 17:51:41 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,11 +41,11 @@ namespace ft_irc
 
 		/* Default constructor */
 							Client(std::string nick="",
-							std::string realname="",
-							std::string username="",
-							std::string password="",
-							std::string hostname=""
-							);
+								   std::string realname="",
+								   std::string username="",
+								   std::string password="",
+								   std::string hostname=""
+								   );
 
 							Client(struct sockaddr_in address,
 								   std::string nick="",
@@ -135,21 +135,21 @@ namespace ft_irc
 		std::string			_username;
 		std::string			_mode;
 		std::string			_password;
+		std::string			_in_buffer;			/* buffer for incoming data */
+		std::string			_out_buffer;		/* buffer for outgoing data */
+		const size_t		_max_cmd_length;	/* max length of a command */
+		bool				_connected;			/* is the client connected to the server? */
+		bool				_alive;
+		bool				_registered;		/* is the client registered? */
+		bool				_pinged;			/* has the client been pinged? */
 		struct sockaddr_in	_address;			/* IPv4 address	*/	
 		socklen_t			_address_size;		/* IPv4 address size */
 		std::string			_address_str;		/* IPv4 address as string */
 		struct timeval		_timeout;			/* timeout for select() */
-		int					_socket_fd;			/* socket file descriptor */
-		bool				_connected;			/* is the client connected to the server? */
-		std::string			_in_buffer;			/* buffer for incoming data */
-		std::string			_out_buffer;		/* buffer for outgoing data */
-		const size_t		_max_cmd_length;	/* max length of a command */
-		t_channels			_joined_channels;
-		bool				_alive;
 		struct timeval		_keep_alive;		/* keep_alive lenght */
 		struct timeval		_last_event_time;	/* time since last network event */
-		bool				_registered;		/* is the client registered? */	
-		bool				_pinged;			/* has the client been pinged? */
+		int					_socket_fd;			/* socket file descriptor */
+		t_channels			_joined_channels;
 	};
 }
 
