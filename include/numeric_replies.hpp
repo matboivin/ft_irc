@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/27 18:00:15 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 18:08:34 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ namespace ft_irc
 	void	err_nosuchserver(Message& msg, const std::string& serv_name, bool rewrite = false); // 402
 	void	err_nosuchchannel(Message& msg, const std::string& chan_name, bool rewrite = false); // 403
 	void	err_cannotsendtochan(Message& msg, bool rewrite = false); // 404
-	void	err_toomanychannels(Message& msg, const std::string& chan_name, bool rewrite = false); // 405
+	// void	err_toomanychannels(Message& msg, const std::string& chan_name, bool rewrite = false); // 405
 	void	err_noorigin(Message& msg, bool rewrite = false); // 409
 	void	err_norecipient(Message& msg, bool rewrite = false); // 411
 	void	err_notexttosend(Message& msg, bool rewrite = false); // 412
@@ -60,7 +60,6 @@ namespace ft_irc
 	void	err_erroneusnickname(Message& msg, bool rewrite = false); // 432
 	void	err_nicknameinuse(Message& msg, bool rewrite = false); // 433
 	void	err_nickcollision(Message& msg, bool rewrite = false); // 436
-	void	err_unavailresource(Message& msg, const std::string& target, bool rewrite = false); // 437
 	void	err_usernotinchannel(Message& msg, const std::string& nick, const std::string& chan_name, bool rewrite = false); // 441
 	void	err_notonchannel(Message& msg, const std::string& chan_name, bool rewrite = false); // 442
 	void	err_useronchannel(Message& msg, const std::string& nick, const std::string& chan_name, bool rewrite = false); // 443
@@ -69,7 +68,7 @@ namespace ft_irc
 	void	err_syntaxerror(Message& msg, const std::string& cmd = "", bool rewrite = false); // 461
 	void	err_alreadyregistered(Message& msg, bool rewrite = false); // 462
 	void	err_passwdmismatch(Message& msg, bool rewrite = false); // 464
-	void	err_channelisfull(Message& msg, const std::string& chan_name, bool rewrite = false); // 471
+	// void	err_channelisfull(Message& msg, const std::string& chan_name, bool rewrite = false); // 471
 	// void	err_bannedfromchan(Message& msg, const std::string& chan_name, bool rewrite = false); // 474
 	void	err_noprivileges(Message& msg, bool rewrite = false); // 481
 	void	err_chanoprivsneeded(Message& msg, const std::string& chan_name, bool rewrite = false); // 482

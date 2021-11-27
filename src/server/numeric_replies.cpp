@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/27 18:00:07 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 18:08:33 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -365,17 +365,17 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	err_toomanychannels(Message& msg, const std::string& chan_name, bool rewrite)
-	{
-		msg.setRecipient(msg.getSender());
-		if (rewrite)
-			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 405 ");
-		msg.appendResponse(chan_name);
-		msg.appendResponse(" :You have joined too many channels");
-		msg.appendSeparator();
-	}
+	// void	err_toomanychannels(Message& msg, const std::string& chan_name, bool rewrite)
+	// {
+	// 	msg.setRecipient(msg.getSender());
+	// 	if (rewrite)
+	// 		msg.clearResponse();
+	// 	msg.appendResponse(build_prefix(msg.getServHostname()));
+	// 	msg.appendResponse(" 405 ");
+	// 	msg.appendResponse(chan_name);
+	// 	msg.appendResponse(" :You have joined too many channels");
+	// 	msg.appendSeparator();
+	// }
 
 	void	err_noorigin(Message& msg, bool rewrite)
 	{
@@ -452,18 +452,6 @@ namespace ft_irc
 		msg.appendResponse(" 433 ");
 		msg.appendResponse(msg.getParams().at(0));
 		msg.appendResponse(" :Nickname already in use");
-		msg.appendSeparator();
-	}
-
-	void	err_unavailresource(Message& msg, const std::string& target, bool rewrite) // maybe not necessary?
-	{
-		msg.setRecipient(msg.getSender());
-		if (rewrite)
-			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 437 ");
-		msg.appendResponse(target);
-		msg.appendResponse(" :Nick/channel is temporarily unavailable");
 		msg.appendSeparator();
 	}
 
@@ -563,17 +551,17 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	err_channelisfull(Message& msg, const std::string& chan_name, bool rewrite)
-	{
-		msg.setRecipient(msg.getSender());
-		if (rewrite)
-			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 471 ");
-		msg.appendResponse(chan_name);
-		msg.appendResponse(" :Cannot join channel (+l)");
-		msg.appendSeparator();
-	}
+	// void	err_channelisfull(Message& msg, const std::string& chan_name, bool rewrite)
+	// {
+	// 	msg.setRecipient(msg.getSender());
+	// 	if (rewrite)
+	// 		msg.clearResponse();
+	// 	msg.appendResponse(build_prefix(msg.getServHostname()));
+	// 	msg.appendResponse(" 471 ");
+	// 	msg.appendResponse(chan_name);
+	// 	msg.appendResponse(" :Cannot join channel (+l)");
+	// 	msg.appendSeparator();
+	// }
 
 	// void	err_bannedfromchan(Message& msg, const std::string& chan_name, bool rewrite)
 	// {
