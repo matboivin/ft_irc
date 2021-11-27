@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/27 17:20:25 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 17:24:06 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ namespace ft_irc
 		int						run();
 
 	private:
+		/* Attributes */
 		struct sockaddr_in		_address; /* Structure describing an Internet socket address. */
 		int						_sockfd; /* Socket descriptor. */
 		int						_backlog_max;

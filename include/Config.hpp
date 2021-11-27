@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/19 16:41:45 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/27 17:18:35 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 17:47:59 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ namespace ft_irc
 		bool			operBlockIsValid(const std::string& name, const std::string& password);
 
 	private:
+		/* Attributes */
 		std::string		_bind_address;
 		std::string		_port;
 		std::string		_connection_password;

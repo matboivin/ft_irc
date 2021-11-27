@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/11/27 17:19:00 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 17:24:30 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,6 +128,7 @@ namespace ft_irc
 		void				displayJoinedChannels();
 
 	private:
+		/* Attributes */
 		std::string			_nick;
 		std::string			_realname;
 		std::string			_hostname;

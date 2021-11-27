@@ -64,7 +64,7 @@ VPATH =				$(SRC_DIR) $(SRC_SUBDIRS)
 
 CPPFLAGS			:=	-I$(INC_DIR)
 CXX					:=	clang++
-CXXFLAGS			:=	-Wall -Wextra -Werror -g -fsanitize=address #-std=c++98 -pedantic A REMETTRE PLUS TARD APRES LE MERGE
+CXXFLAGS			:=	-Wall -Wextra -Werror -g -fsanitize=address -std=c++98 -pedantic
 
 # COLORS
 

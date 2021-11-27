@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/27 17:14:47 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 17:43:30 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include <map>
 #include <poll.h>
 #include <string>
+#include <sstream>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -929,11 +930,13 @@ namespace ft_irc
 	 */
 	void	Server::_execNamesCmd(Message& msg)
 	{
-		bool	matchAll = msg.getParams().size() == 0;
+		bool				matchAll = msg.getParams().size() == 0;
+		std::stringstream	params_size;
 
 		msg.setResponse("");
 		msg.setRecipient(msg.getSender());
-		this->_logger(LOG_LEVEL_DEBUG, std::to_string(msg.getParams().size()));
+		params_size << msg.getParams().size(); // convert size_t to string
+		this->_logger(LOG_LEVEL_DEBUG, params_size.str());
 
 		for (t_channels::iterator channels_it = this->_channels.begin();
 			 channels_it != this->_channels.end();

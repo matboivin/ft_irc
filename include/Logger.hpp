@@ -5,7 +5,7 @@
 # define CRLF "\n"
 # define CRLF_PRINTABLE "\\n"
 
-enum LogLevel
+enum	LogLevel
 {
 	LOG_LEVEL_DEBUG = 0,
 	LOG_LEVEL_INFO = 1,

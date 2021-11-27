@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/11/11 20:20:55 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 17:47:33 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,10 @@ namespace ft_irc
 				   std::string username,
 				   std::string password,
 				   std::string hostname)
-	: _nick(nick), _realname(realname), _hostname(hostname), _username(username),
+	: _nick(nick),
+	  _realname(realname),
+	  _hostname(hostname),
+	  _username(username),
 	  _mode(),
 	  _password(password),
 	  _address(address),
@@ -42,10 +45,15 @@ namespace ft_irc
 	  _max_cmd_length(512),
 	  _joined_channels(),
 	  _alive(true),
-	  _registered(false)
+	  _keep_alive(),
+	  _last_event_time(),
+	  _registered(false),
+	  _pinged(false)
 	{
-		this->_timeout = (struct timeval){.tv_sec = 0, .tv_usec = 50};
-		this->_keep_alive = (struct timeval){.tv_sec = 30, .tv_usec = 0};
+		this->_timeout.tv_sec = 0;
+		this->_timeout.tv_usec = 50;
+		this->_keep_alive.tv_sec = 30;
+		this->_keep_alive.tv_usec = 0;
 
 		if (gettimeofday(&this->_last_event_time, NULL))
 			throw std::runtime_error("gettimeofday() failed");
@@ -57,9 +65,15 @@ namespace ft_irc
 				   std::string username,
 				   std::string password,
 				   std::string hostname)
-	: _nick(nick), _realname(realname), _hostname(hostname), _username(username),
+	: _nick(nick),
+	  _realname(realname),
+	  _hostname(hostname),
+	  _username(username),
 	  _mode(),
 	  _password(password),
+	  _address(),
+	  _address_size(),
+	  _address_str(),
 	  _timeout(),
 	  _socket_fd(-1),
 	  _connected(false),
@@ -68,10 +82,14 @@ namespace ft_irc
 	  _max_cmd_length(512),
 	  _joined_channels(),
 	  _alive(true),
-	  _registered(false)
+	  _last_event_time(),
+	  _registered(false),
+	  _pinged(false)
 	{
-		this->_timeout = (struct timeval){.tv_sec = 0, .tv_usec = 50};
-		this->_keep_alive = (struct timeval){.tv_sec = 30, .tv_usec = 0};
+		this->_timeout.tv_sec = 0;
+		this->_timeout.tv_usec = 50;
+		this->_keep_alive.tv_sec = 30;
+		this->_keep_alive.tv_usec = 0;
 
 		if (gettimeofday(&this->_last_event_time, NULL))
 			throw std::runtime_error("gettimeofday() failed");
@@ -79,7 +97,9 @@ namespace ft_irc
 
 	/* Copy constructor */
 	Client::Client(const Client& other)
-	: _nick(other._nick), _realname(other._realname), _hostname(other._hostname),
+	: _nick(other._nick),
+	  _realname(other._realname),
+	  _hostname(other._hostname),
 	  _username(other._username),
 	  _mode(other._mode),
 	  _password(other._password),
@@ -96,7 +116,8 @@ namespace ft_irc
 	  _alive(other._alive),
 	  _keep_alive(other._keep_alive),
 	  _last_event_time(other._last_event_time),
-	  _registered(other._registered)
+	  _registered(other._registered),
+	  _pinged(other._pinged)
 	{
 	}
 
@@ -121,6 +142,7 @@ namespace ft_irc
 			this->_keep_alive = other._keep_alive;
 			this->_last_event_time = other._last_event_time;
 			this->_registered = other._registered;
+			this->_pinged = other._pinged;
 		}
 		return (*this);
 	}
@@ -284,6 +306,7 @@ namespace ft_irc
 	bool	Client::isTimeouted() const
 	{
 		struct timeval	now;
+
 		gettimeofday(&now, NULL);
 		return ((now.tv_sec - this->_last_event_time.tv_sec) > this->_keep_alive.tv_sec);
 	}
@@ -328,8 +351,11 @@ namespace ft_irc
 	/* poll */
 	bool	Client::hasNewEvents()
 	{
-		struct pollfd	poll_fd = {.fd = this->_socket_fd, .events = POLLIN};
-		int				ret = poll(&poll_fd, 1, this->_timeout.tv_usec);
+		struct pollfd	poll_fd;
+		poll_fd.fd = this->_socket_fd;
+		poll_fd.events = POLLIN;
+
+		int	ret = poll(&poll_fd, 1, this->_timeout.tv_usec);
 
 		if (ret == -1)
 			throw std::runtime_error("poll() failed");
@@ -368,9 +394,12 @@ namespace ft_irc
 	{
 		char					bytes_buffer[MAX_COMMAND_SIZE];
 		int						ret;
-		struct pollfd			poll_fd = {.fd = this->_socket_fd, .events = POLLIN};
 		int						poll_ret;
 		std::string::size_type	found;
+		struct pollfd			poll_fd;
+
+		poll_fd.fd = this->_socket_fd;
+		poll_fd.events = POLLIN;
 
 		if (this->getSocketFd() < 0)
 			return (-1);
@@ -379,16 +408,16 @@ namespace ft_irc
 			throw std::runtime_error("poll() failed");
 		if (poll_ret == 0)
 			return (0);
-		//read
+		// read
 		ret = recv(this->_socket_fd, bytes_buffer, MAX_COMMAND_SIZE, 0);
 		if (ret == -1)
 			throw std::runtime_error("recv() failed");
 		if (ret == 0)
 			return (0);
-		//std::cerr.write(bytes_buffer, ret);
-		//append to in_buffer
+
+		// append to in_buffer
 		this->_in_buffer.append(bytes_buffer, ret);
-		//if there's not \r\n in the first 512 bytes, insert a \r\n at offset 512
+		// if there's not \r\n in the first 512 bytes, insert a \r\n at offset 512
 		if (this->_in_buffer.size() > this->_max_cmd_length)
 		{
 			found = this->_in_buffer.find(CRLF);
@@ -402,12 +431,11 @@ namespace ft_irc
 	int	Client::updateOutBuffer()
 	{
 		int		ret;
-		size_t	size;
+		size_t	size = std::min(this->_out_buffer.size(), this->_max_cmd_length);
 
-		//write 512 bytes at most and removes them from the out_buffer
-		size = std::min(this->_out_buffer.size(), this->_max_cmd_length);
 		if (!size)
 			return (0);
+		// write 512 bytes at most and removes them from the out_buffer
 		ret = send(this->_socket_fd, this->_out_buffer.c_str(), size, 0);
 		if (ret == -1)
 			throw std::runtime_error("send() failed");
@@ -493,7 +521,7 @@ namespace ft_irc
 
 		std::cout << this->getNick() << " joined channels:\n";
 
-		for (t_channels::iterator	it = this->_joined_channels.begin();
+		for (t_channels::iterator it = this->_joined_channels.begin();
 			 it != this->_joined_channels.end();
 			 ++it)
 		{
