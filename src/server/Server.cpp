@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/27 15:55:23 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 16:01:50 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,12 @@ namespace ft_irc
 {
 	/* Constructor */
 	Server::Server(CLIParser& CLI_parser, int backlog_max)
-	: _sockfd(-1),
+	: _address(),
+	  _sockfd(-1),
 	  _backlog_max(backlog_max),
+	  _creation_date(),
+	  _version("42.42"),
+	  _description("The answer to life the universe and everything"),
 	  _config(CLI_parser.getBindAddress(), CLI_parser.getPort(), CLI_parser.getPassword()),
 	  _parser(),
 	  _commands(),
@@ -47,10 +51,8 @@ namespace ft_irc
 		this->_address.sin_addr.s_addr = inet_addr(getBindAddress().c_str());
 
 		//init creation date string
-		time_t now = time(0);
+		time_t	now = time(0);
 		_creation_date = ctime(&now);
-		_version = "42.42";
-		_description = "The answer to life the universe and everything";
 
 		// init map of commands
 		_init_commands_map();
@@ -58,7 +60,8 @@ namespace ft_irc
 
 	/* Copy constructor */
 	Server::Server(const Server& other)
-	: _sockfd(other._sockfd),
+	: _address(other._address),
+	  _sockfd(other._sockfd),
 	  _backlog_max(other._backlog_max),
 	  _creation_date(other._creation_date),
 	  _version(other._version),
