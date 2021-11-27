@@ -3,15 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/11/13 17:18:30 by root             ###   ########.fr       */
+/*   Updated: 2021/11/27 17:19:00 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef IRC_CLIENT_HPP
-# define IRC_CLIENT_HPP
+#ifndef CLIENT_HPP
+# define CLIENT_HPP
 
 # include <fcntl.h>
 # include <iostream>
@@ -152,4 +152,4 @@ namespace ft_irc
 	};
 }
 
-#endif
+#endif // !CLIENT_HPP

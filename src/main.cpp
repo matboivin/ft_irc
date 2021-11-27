@@ -6,10 +6,11 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:21 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/27 17:01:03 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 17:17:21 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <cstdlib>
 #include <iostream>
 #include <unistd.h>
 #include "ft_irc.hpp"

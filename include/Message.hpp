@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:47:11 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/11 16:32:10 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 17:18:28 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,4 +88,4 @@ namespace ft_irc
 	};
 } // !namespace ft_irc
 
-#endif // !Message
+#endif // !MESSAGE_HPP

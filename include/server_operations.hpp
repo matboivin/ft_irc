@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:35:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/27 17:02:57 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 17:20:03 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,4 +46,4 @@ namespace ft_irc
 
 # include "server_operations.tpp"
 
-#endif
+#endif // !SERVER_OPERATIONS_HPP

@@ -31,6 +31,6 @@ namespace ft_irc
 			//call overload
 			void	operator()(int level, const std::string& message) const;
 	};
-}
+} // !namespace ft_irc
 
-#endif
+#endif // !LOGGER_HPP
