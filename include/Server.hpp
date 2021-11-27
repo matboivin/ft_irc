@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/13 16:08:14 by root             ###   ########.fr       */
+/*   Updated: 2021/11/14 19:29:24 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ namespace ft_irc
 
 		/* Main loop */
 		int						run();
+		bool					isAlive() const;
 
 		/* Commands */
 		void					exec_invite_cmd(Message& msg);
@@ -75,7 +76,7 @@ namespace ft_irc
 											);
 		void					exec_kick_cmd(Message& msg);
 		void					exec_kill_cmd(Message& msg);
-		//void					exec_list_cmd(Message& msg);
+		void					exec_list_cmd(Message& msg);
 		void					exec_mode_cmd(Message& msg);
 		void					exec_names_cmd(Message& msg);
 		void					exec_nick_cmd(Message& msg);
@@ -106,6 +107,7 @@ namespace ft_irc
 		t_clients				_clients;
 		t_channels				_channels;
 		Logger					_logger;
+		bool					_alive;
 
 		/* Cleaning */
 		void					_shutdown();

@@ -315,7 +315,10 @@ namespace ft_irc
 								  );
 
 		if (this->_socket_fd == -1)
-			throw std::runtime_error("accept() failed");
+		{
+			std::cerr << "Accept failed" << std::endl;
+			return (-1);
+		}
 
 		setNonblocking(this->_socket_fd);
 		this->_address_str = inet_ntoa(this->_address.sin_addr);

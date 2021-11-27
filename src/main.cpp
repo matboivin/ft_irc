@@ -33,13 +33,13 @@ int	main(int argc, char** argv)
 		}
 		catch (std::runtime_error &e)
 		{
-			std::cerr << e.what() << std::endl;
+			std::cerr << __FILE__ ":" <<__LINE__ << " : " << e.what() << std::endl;
 			return (EXIT_FAILURE);
 		}
 	}
 	catch (std::runtime_error& e)
 	{
-		std::cerr << e.what() << std::endl;
+		std::cerr << __FILE__ ":" <<__LINE__ << " : " << e.what() << std::endl;
 		displayUsage(argv[0]);
 		return (EXIT_FAILURE);
 	}

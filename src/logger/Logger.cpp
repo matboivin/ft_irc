@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/06 14:46:41 by root              #+#    #+#             */
-/*   Updated: 2021/11/13 17:11:49 by root             ###   ########.fr       */
+/*   Updated: 2021/11/14 20:28:10 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,16 +65,19 @@ namespace ft_irc
 	{
 		const char*	log_level_str[] = {"DEBUG", "INFO", "WARNING", "ERROR", "FATAL"};
 		const char*	log_level_color[] = {"\033[0;36m", "\033[0;32m", "\033[0;33m", "\033[0;31m", "\033[0;35m"};
-		const char*	toReplace = "\n\r\t";
+		const char*	toReplace[] = {"\n", "\r", "\t"};
 		const char*	replaceWith[] = {"\\n", "\\r", "\\t"};
 		std::string	copy;
 
 		if (level < _log_level)
 			return ;
 		copy = message;
-		for (int i = 0; i < 3; i++)
+		for (int j = 0 ; j < 3 ; j++)
 		{
-			copy = str_replace(copy, toReplace, replaceWith[i]);
+			for (int i = 0; i < 3; i++)
+			{
+				copy = str_replace(copy, toReplace[i], replaceWith[i]);
+			}
 		}
 		std::cerr << log_level_color[level] << "[" << log_level_str[level] << "] " << copy << "\033[0m" << std::endl;
 	}
