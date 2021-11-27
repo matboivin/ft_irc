@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/27 16:50:02 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 18:00:07 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -575,17 +575,17 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	err_bannedfromchan(Message& msg, const std::string& chan_name, bool rewrite)
-	{
-		msg.setRecipient(msg.getSender());
-		if (rewrite)
-			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 474 ");
-		msg.appendResponse(chan_name);
-		msg.appendResponse(" :Cannot join channel (+b)");
-		msg.appendSeparator();
-	}
+	// void	err_bannedfromchan(Message& msg, const std::string& chan_name, bool rewrite)
+	// {
+	// 	msg.setRecipient(msg.getSender());
+	// 	if (rewrite)
+	// 		msg.clearResponse();
+	// 	msg.appendResponse(build_prefix(msg.getServHostname()));
+	// 	msg.appendResponse(" 474 ");
+	// 	msg.appendResponse(chan_name);
+	// 	msg.appendResponse(" :Cannot join channel (+b)");
+	// 	msg.appendSeparator();
+	// }
 
 	void	err_noprivileges(Message& msg, bool rewrite)
 	{

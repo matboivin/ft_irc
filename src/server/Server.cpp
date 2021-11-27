@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/27 17:43:30 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 18:05:49 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -636,6 +636,11 @@ namespace ft_irc
 
 	/* Oper operations ********************************************************** */
 
+	bool	Server::_userCanBeOper(const std::string& name)
+	{
+		return (this->_config.operUserIsValid(name));
+	}
+
 	bool	Server::_canGiveOperPriv(const std::string& name, const std::string& password)
 	{
 		return (this->_config.operBlockIsValid(name, password));
@@ -1036,7 +1041,11 @@ namespace ft_irc
 			err_needmoreparams(msg, true);
 		else if (!msg.getSender().isOper())
 		{
-			if (_canGiveOperPriv(msg.getParams().at(0), msg.getParams().at(1)))
+			if (!_userCanBeOper(msg.getParams().at(0)))
+				err_nooperhost(msg, true);
+			if (!_canGiveOperPriv(msg.getParams().at(0), msg.getParams().at(1)))
+				err_passwdmismatch(msg, true);
+			else
 			{
 				std::string	nick = msg.getSender().getNick();
 
@@ -1059,8 +1068,6 @@ namespace ft_irc
 					_sendResponse(rpl_msg);
 				}
 			}
-			else
-				err_passwdmismatch(msg, true);
 		}
 	}
 
