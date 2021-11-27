@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/26 18:25:36 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 15:55:23 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,9 +178,7 @@ namespace ft_irc
 	int	Server::run()
 	{
 		if (_createSocket() == false)
-		{
 			return (-1);
-		}
 
 		//accept incoming connections
 		while (true)
@@ -197,8 +195,8 @@ namespace ft_irc
 	{
 		t_clients::iterator	it = this->_clients.begin();
 
-		while (it != this->_clients.end())
 		_log(LOG_LEVEL_FATAL, "Shutting down server");
+		while (it != this->_clients.end())
 		{
 			this->_disconnectClient(*it);
 			_log(LOG_LEVEL_INFO, "Client " + it->getNick() 
@@ -326,7 +324,8 @@ namespace ft_irc
 	bool	Server::_processClients()
 	{
 		for (t_clients::iterator it = this->_clients.begin();
-			 it != this->_clients.end();)
+			 it != this->_clients.end();
+			 ++it)
 		{
 			if (it->isAlive() == false)
 			{
@@ -358,7 +357,6 @@ namespace ft_irc
 					this->_disconnectClient(*it);
 				}
 			}
-			++it;
 		}
 		return (true);
 	}
