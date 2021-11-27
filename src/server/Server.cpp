@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/27 18:08:35 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 18:40:34 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -910,11 +910,11 @@ namespace ft_irc
 				t_clients::iterator	client = getClient(target);
 
 				if (client == this->_clients.end())
-					err_nosuchnick(msg, target);
+					err_usersdontmatch(msg);
 				else
 					_setUserMode(*client, mode_str, msg);
 			}
-		}	
+		}
 	}
 
 	//https://datatracker.ietf.org/doc/html/rfc1459#section-4.2.5
@@ -949,22 +949,8 @@ namespace ft_irc
 		{
 			if (matchAll || is_string_in_msg_params(msg, channels_it->getName()))
 			{
-				msg.appendResponse(build_prefix(build_full_client_id( msg.getSender())));
-				msg.appendResponse(" 353 ");
-				msg.appendResponse(msg.getSender().getNick());
-				msg.appendResponse(" = ");
-				msg.appendResponse(channels_it->getName());
-				msg.appendResponse(" :");
-
-				for (Channel::t_clients::const_iterator it2 = channels_it->getClients().begin();
-					 it2 != channels_it->getClients().end();
-					 ++it2)
-				{
-					msg.appendResponse(" ");
-					msg.appendResponse((*it2)->getNick());
-				}
+				rpl_namreply(msg, *channels_it);
 			}
-			msg.appendSeparator();
 			rpl_endofnames(msg, channels_it->getName());
 		}
 		if (matchAll)
@@ -1139,7 +1125,7 @@ namespace ft_irc
 		std::string	origin;
 
 		if (msg.getParams().empty())
-			err_needmoreparams(msg, true, error_msg[ERR_NOORIGIN]);
+			err_noorigin(msg, true);
 		else
 		{
 			origin = msg.getParams().front();
@@ -1147,7 +1133,7 @@ namespace ft_irc
 			msg.setRecipient(msg.getSender());
 			msg.setResponse(build_prefix(getHostname()));
 			msg.appendResponse(" PONG ");
-			msg.appendResponse(msg.getSender().getNick() + getHostname());
+			msg.appendResponse(getHostname());
 			msg.appendResponse(" :");
 			msg.appendResponse(origin);
 			msg.appendResponse(CRLF);
@@ -1162,7 +1148,7 @@ namespace ft_irc
 		std::string	origin;
 
 		if (msg.getParams().empty())
-			err_needmoreparams(msg, true, error_msg[ERR_NOORIGIN]);
+			err_noorigin(msg, true);
 		else
 		{
 			origin = msg.getParams().front();
@@ -1275,7 +1261,7 @@ namespace ft_irc
 			err_syntaxerror(msg, msg.getCommand());
 			return ;
 		}
-		std::string	response = "";
+
 		for (t_clients::iterator it = this->_clients.begin();
 			 it != this->_clients.end();
 			 ++it)
@@ -1285,28 +1271,22 @@ namespace ft_irc
 			if (match_nick(to_match, it->getNick()))
 			{
 				this->_log(LOG_LEVEL_DEBUG, "WHO matched " + it->getNick());
-				response += ":" + this->getHostname() + " 352 " + msg.getSender().getNick() + " * ";
-				response += it->getNick();
-				response += " " + it->getIpAddressStr();
-				response += " " + this->getHostname();
-				response += " " + it->getNick();
-				response += " H :0 " + it->getNick() + CRLF;
+				rpl_whoreply(msg, msg.getSender().getNick(), *it);
 			}
 			++count;
 			if (count == 25)
 			{
 				//:public-irc.w3.org NOTICE mynick :WHO list limit (25) reached!
-				response += ":" + this->getHostname() + " NOTICE "
-				+ msg.getSender().getNick() + " :WHO list limit (25) reached!"
-				+ CRLF;
+				msg.setRecipient(msg.getSender());
+				msg.setResponse(build_prefix(getHostname()));
+				msg.appendResponse(" NOTICE ");
+				msg.appendResponse(msg.getSender().getNick());
+				msg.appendResponse(" :WHO list limit (25) reached!");
+				msg.appendResponse(CRLF);
 			}
 		}
 		//END OF WHO COMMAND
-		response += ":" + this->getHostname() + " 315 " +
-		msg.getSender().getNick() + " " + to_match + " :End of /WHO list."
-		+ CRLF;
-		msg.setResponse(response);
-		msg.setRecipient(msg.getSender());
+		rpl_endofwho(msg, msg.getSender().getNick(), to_match);
 	}
 
 	void	Server::_addWhoisToMsg(Message& msg, const Client& client)
@@ -1357,14 +1337,6 @@ namespace ft_irc
 				}
 			}
 		}
-		msg.appendResponse(":");
-		msg.appendResponse(this->getHostname());
-		msg.appendResponse(" 318 ");
-		msg.appendResponse(msg.getSender().getNick());
-		msg.appendResponse(" ");
-		msg.appendResponse(to_match);
-		msg.appendResponse(" :End of /WHOIS list.");
-		msg.appendResponse(CRLF);
-		msg.setRecipient(msg.getSender());
+		rpl_endofwhois(msg, msg.getSender().getNick(), to_match);
 	}
 }

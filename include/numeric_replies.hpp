@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/27 18:08:34 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/27 18:39:45 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@ namespace ft_irc
 	void	rpl_whoisserver(Message& msg, const std::string& description, bool rewrite = false); // 312
 	void	rpl_whoisoperator(Message& msg, const Client& user, bool rewrite = false); // 313
 	void	rpl_whoisoperator(Message& msg, bool rewrite = false); // 313
-	void	rpl_endofwho(Message& msg, const std::string& name, bool rewrite = false); // 315
-	void	rpl_endofwhois(Message& msg, const std::string& nick, bool rewrite = false); // 318
+	void	rpl_endofwho(Message& msg, const std::string& name, const std::string& to_match, bool rewrite = false); // 315
+	void	rpl_endofwhois(Message& msg, const std::string& nick, const std::string& to_match, bool rewrite = false); // 318
 	void	rpl_whoischannels(Message& msg, const std::string& nick, const std::string& chan_name, bool rewrite = false); // 319
 	void	rpl_list(Message& msg, Channel& channel, bool rewrite = false); // 322
 	void	rpl_listend(Message& msg, bool rewrite = false); // 323
@@ -41,8 +41,8 @@ namespace ft_irc
 	void	rpl_notopic(Message& msg, const std::string& chan_name, bool rewrite = false); // 331
 	void	rpl_topic(Message& msg, Channel& channel, bool rewrite = false); // 332
 	void	rpl_inviting(Message& msg, const std::string& chan_name, const std::string& nick, bool rewrite = false); // 341
-	void	rpl_whoreply(Message& msg, const std::string& chan_name, Client& target, bool rewrite = false); // 352
-	void	rpl_namreply(Message& msg, bool rewrite = false); // 353
+	void		rpl_whoreply(Message& msg, const std::string& nick, Client& target, bool rewrite = false); // 352
+	void	rpl_namreply(Message& msg, Channel& channel, bool rewrite = false); // 353
 	void	rpl_endofnames(Message& msg, const std::string& chan_name, bool rewrite = false); // 366
 	void	rpl_youreoper(Message& msg, bool rewrite = false); // 381
 
