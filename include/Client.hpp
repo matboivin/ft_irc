@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/11/27 17:51:41 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/28 16:33:12 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,6 @@ namespace ft_irc
 		/* Channel operations */
 		void				joinChannel(Channel& channel);
 		void				partChannel(Channel& channel);
-		void				partAllChannels();
 
 		/* Mode operations */
 		int					addMode(char mode_char);

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/27 18:40:34 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/28 16:30:53 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -222,8 +222,8 @@ namespace ft_irc
 		while (it != this->_clients.end())
 		{
 			this->_disconnectClient(*it);
-			_log(LOG_LEVEL_INFO, "Client " + it->getNick() 
-			+ "@" + it->getIpAddressStr() + " disconnected");
+			_log(LOG_LEVEL_INFO,
+				"Client " + it->getNick() + "@" + it->getIpAddressStr() + " disconnected");
 			it = this->_clients.erase(it);
 		}
 	}
@@ -590,18 +590,21 @@ namespace ft_irc
 	}
 
 	/* Removes user from channel */
-	void	Server::_removeUserFromChannel(Client& client, Channel& channel, const std::string& comment)
+	void	Server::_removeUserFromChannel(Client& client, t_channels::iterator channel,
+										   const std::string& comment)
 	{
-		if (_userOnChannel(client, channel))
+		if (_userOnChannel(client, *channel))
 		{
-			_log(LOG_LEVEL_DEBUG, "Remove " + client.getNick() + " from channel " + channel.getName());
+			_log(LOG_LEVEL_DEBUG, "Remove " + client.getNick() + " from channel " + channel->getName());
+
+			client.partChannel(*channel);
 
 			Message	part_msg(client);
 
-			part_msg.setRecipients(channel.getClients());
+			part_msg.setRecipients(channel->getClients());
 			part_msg.setResponse(build_prefix(build_full_client_id(client)));
 			part_msg.appendResponse(" PART ");
-			part_msg.appendResponse(channel.getName());
+			part_msg.appendResponse(channel->getName());
 			if (!comment.empty())
 			{
 				part_msg.appendResponse(" ");
@@ -610,28 +613,22 @@ namespace ft_irc
 			part_msg.appendSeparator();
 			_sendResponse(part_msg);
 
-			client.partChannel(channel);
+			if (channel->isEmpty())
+				_removeChannel(channel);
 		}
 	}
 
 	/* Removes a user from all joined channels */
 	void	Server::_removeUserFromAllChannels(Client& client, const std::string& comment)
 	{
-		Message	part_msg(client);
+		Client::t_channels	joined_channels = client.getJoinedChannels();
 
-		part_msg.setRecipients(client.getAllContacts());
-		part_msg.setResponse(build_prefix(getHostname()));
-		part_msg.appendResponse(" PART ");
-		part_msg.appendResponse(client.getNick());
-		if (!comment.empty())
+		for (Client::t_channels::const_iterator it = joined_channels.begin();
+			 it != joined_channels.end();
+			 ++it)
 		{
-			part_msg.appendResponse(" ");
-			part_msg.appendResponse(comment);
+			_removeUserFromChannel(client, getChannel((*it)->getName()), comment);
 		}
-		part_msg.appendSeparator();
-		_log(LOG_LEVEL_DEBUG, "Remove " + client.getNick() + " from all the channels they joined");
-		client.partAllChannels();
-		_sendResponse(part_msg);
 	}
 
 	/* Oper operations ********************************************************** */
@@ -675,12 +672,12 @@ namespace ft_irc
 			else
 			{
 				if (!chan_exists )
+				{
 					_addChannel(chan_name, msg.getSender());
-
-				Message	confirm_invite_msg(msg.getSender());
-
-				rpl_inviting(confirm_invite_msg, chan_name, guest);
-				_sendResponse(confirm_invite_msg);
+					channel = getChannel(chan_name);
+				}
+				_addUserToChannel(*guest_user, *channel);
+				rpl_inviting(msg, chan_name, guest);
 			}
 		}
 	}
@@ -1072,11 +1069,7 @@ namespace ft_irc
 		else if (!_userOnChannel(msg.getSender(), *channel))
 			err_notonchannel(msg, chan_name, true);
 		else
-		{
-			_removeUserFromChannel(msg.getSender(), *channel, comment);
-			if (channel->isEmpty())
-				_removeChannel(channel);
-		}
+			_removeUserFromChannel(msg.getSender(), channel, comment);
 	}
 
 	/*
@@ -1267,7 +1260,7 @@ namespace ft_irc
 			 ++it)
 		{
 			if (oper_only && !it->isOper())
-				continue;
+				continue ;
 			if (match_nick(to_match, it->getNick()))
 			{
 				this->_log(LOG_LEVEL_DEBUG, "WHO matched " + it->getNick());
@@ -1291,13 +1284,12 @@ namespace ft_irc
 
 	void	Server::_addWhoisToMsg(Message& msg, const Client& client)
 	{
-				// :mynick 311 mynick nickname user hostname * :realname
+		// :mynick 311 mynick nickname user hostname * :realname
 		rpl_whoisuser(msg, client, false);
 		rpl_whoisserver(msg, this->_description, false);
+
 		if (client.isOper())
-		{
 			rpl_whoisoperator(msg, client, false);
-		}
 	}
 
 	/*
@@ -1330,9 +1322,9 @@ namespace ft_irc
 					//_logger.log(0, "WHOIS: " + *paramsIt  + ":" + it->getNick());
 					if (match_nick(*paramsIt, it->getNick()))
 					{
-					//	_logger.log(0, "WHOIS matched " + it->getNick());
+						// _logger.log(0, "WHOIS matched " + it->getNick());
 						this->_addWhoisToMsg(msg, *it);
-						break;
+						break ;
 					}
 				}
 			}

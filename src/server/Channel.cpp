@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:58:53 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/27 17:20:49 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/28 16:17:34 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ namespace ft_irc
 
 	void	Channel::setChanOps(const t_clients& chan_ops)
 	{
-		this->_chan_ops= chan_ops;
+		this->_chan_ops = chan_ops;
 	}
 
 	/* Helpers ****************************************************************** */
@@ -149,7 +149,15 @@ namespace ft_irc
 	/* Removes a client from the channel */
 	void	Channel::removeClient(Client& client)
 	{
+		bool	need_chan_op = hasChanOp(client);
+
 		this->_clients.remove(&client);
+		if (need_chan_op)
+		{
+			removeChanOp(client);
+			if (!this->_clients.empty())
+				addChanOp(*this->_clients.front());
+		}
 	}
 
 	/* Manage clients in channel ************************************************ */

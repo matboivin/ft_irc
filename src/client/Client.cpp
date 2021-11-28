@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/11/27 17:57:49 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/28 16:32:59 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -463,18 +463,6 @@ namespace ft_irc
 	{
 		channel.removeClient(*this);
 		this->_joined_channels.remove(&channel);
-	}
-
-	/* The client quits all channels they joined */
-	void	Client::partAllChannels()
-	{
-		for (t_channels::iterator it = this->_joined_channels.begin();
-			 it != this->_joined_channels.end();
-			 ++it)
-		{
-			(*it)->removeClient(*this);
-		}
-		this->_joined_channels.clear();
 	}
 
 	/* Mode operations ********************************************************** */
