@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/28 17:29:51 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/28 17:43:51 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -700,19 +700,33 @@ namespace ft_irc
 		}
 		else
 		{
+			Message	names_msg(msg.getSender(), msg.getServHostname());
+
 			for (std::vector<std::string>::const_iterator chan_name = msg.getParams().begin();
 				 chan_name != msg.getParams().end();
 				 ++chan_name)
 			{
-				t_channels::iterator	channel = getChannel(*chan_name);
-
 				if (!channel_is_valid(*chan_name))
 					return ;
+
+				t_channels::iterator	channel = getChannel(*chan_name);
+
 				if (channel == this->_channels.end())
+				{
 					_addUserToChannel(msg.getSender(), _addChannel(*chan_name, msg.getSender()));
+					channel = getChannel(*chan_name);
+				}
 				else
 					_addUserToChannel(msg.getSender(), *channel);
+				_sendResponse(msg);
+				rpl_topic(msg, *channel, true);
+				_sendResponse(msg);
+				names_msg.clearParams();
+				names_msg.setParam(channel->getName());
+				_execNamesCmd(names_msg);
+				_sendResponse(names_msg);
 			}
+			msg.clearRecipients();
 		}
 	}
 
@@ -938,7 +952,7 @@ namespace ft_irc
 		bool				matchAll = msg.getParams().size() == 0;
 		std::stringstream	params_size;
 
-		msg.setResponse("");
+		msg.clearResponse();
 		msg.setRecipient(msg.getSender());
 		params_size << msg.getParams().size(); // convert size_t to string
 		_logger(LOG_LEVEL_DEBUG, params_size.str());
