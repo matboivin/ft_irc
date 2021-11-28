@@ -6,13 +6,14 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/27 18:39:45 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/28 17:29:04 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef NUMERIC_REPLIES_HPP
 # define NUMERIC_REPLIES_HPP
 
+# include <list>
 # include <string>
 
 namespace ft_irc
@@ -20,6 +21,9 @@ namespace ft_irc
 	class Message;
 	class Channel;
 	class Client;
+
+	/* Aliases */
+	typedef std::list<Client>	t_clients;
 
 	// command responses
 	void	rpl_welcome(Message& msg, bool rewrite = false); // 001
@@ -41,8 +45,9 @@ namespace ft_irc
 	void	rpl_notopic(Message& msg, const std::string& chan_name, bool rewrite = false); // 331
 	void	rpl_topic(Message& msg, Channel& channel, bool rewrite = false); // 332
 	void	rpl_inviting(Message& msg, const std::string& chan_name, const std::string& nick, bool rewrite = false); // 341
-	void		rpl_whoreply(Message& msg, const std::string& nick, Client& target, bool rewrite = false); // 352
+	void	rpl_whoreply(Message& msg, const std::string& nick, Client& target, bool rewrite = false); // 352
 	void	rpl_namreply(Message& msg, Channel& channel, bool rewrite = false); // 353
+	void	rpl_namreply(Message& msg, const t_clients& clients, bool rewrite = false); // 353
 	void	rpl_endofnames(Message& msg, const std::string& chan_name, bool rewrite = false); // 366
 	void	rpl_youreoper(Message& msg, bool rewrite = false); // 381
 

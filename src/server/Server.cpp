@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/28 16:56:25 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/28 17:29:51 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,6 +149,11 @@ namespace ft_irc
 	Server::t_cmds	Server::getCommands() const
 	{
 		return (this->_commands);
+	}
+
+	const Server::t_clients&	Server::getClients() const
+	{
+		return (this->_clients);
 	}
 
 	Server::t_clients::iterator	Server::getClient(const std::string& nick)
@@ -948,20 +953,7 @@ namespace ft_irc
 		}
 		if (matchAll)
 		{
-			msg.appendResponse(build_prefix(build_full_client_id( msg.getSender())));
-			msg.appendResponse(" 353 ");
-			msg.appendResponse(msg.getSender().getNick());
-			msg.appendResponse(" * * :");
-			//check users not belonging to any channel
-			for (t_clients::iterator it = this->_clients.begin(); it != this->_clients.end(); ++it)
-			{
-				if (it->getJoinedChannels().empty())
-				{
-					msg.appendResponse(" ");
-					msg.appendResponse(it->getNick());
-				}
-			}
-			msg.appendSeparator();
+			rpl_namreply(msg, getClients());
 			rpl_endofnames(msg, "*");
 		}
 	}

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/28 16:21:53 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/28 17:24:45 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ namespace ft_irc
 		std::string				getVersion() const;
 		std::string				getDescription() const;
 		t_cmds					getCommands() const;
+		const t_clients&		getClients() const;
 		t_clients::iterator		getClient(const std::string& nick);
 		t_channels::iterator	getChannel(const std::string& chan_name);
 

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/27 18:37:55 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/28 17:29:14 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -293,6 +293,30 @@ namespace ft_irc
 			msg.appendResponse(" ");
 			msg.appendResponse((*it)->getNick());
 		}
+		msg.appendSeparator();
+	}
+
+	void	rpl_namreply(Message& msg, const t_clients& clients, bool rewrite)
+	{
+		msg.setRecipient(msg.getSender());
+		if (rewrite)
+			msg.clearResponse();
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 353 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" * * :");
+
+		//check users not belonging to any channel
+		for (t_clients::const_iterator it = clients.begin();
+			 it != clients.end();
+			 ++it)
+			{
+				if (it->getJoinedChannels().empty())
+				{
+					msg.appendResponse(" ");
+					msg.appendResponse(it->getNick());
+				}
+			}
 		msg.appendSeparator();
 	}
 
