@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/28 16:30:53 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/28 16:56:25 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,6 @@
 #include <unistd.h>
 #include "ft_irc.hpp"
 
-int	setNonblocking(int fd);
-
 namespace ft_irc
 {
 	/* Constructor */
@@ -47,6 +45,7 @@ namespace ft_irc
 	  _logger(DEBUG)
 	{
 		_log(LOG_LEVEL_INFO, "Server constructor");
+
 		// create a new address struct
 		this->_alive=false;
 		this->_address.sin_family = AF_INET;
@@ -55,10 +54,11 @@ namespace ft_irc
 
 		//init creation date string
 		time_t	now = time(0);
-		_creation_date = ctime(&now);
+		this->_creation_date = ctime(&now);
 
 		// init map of commands
 		_init_commands_map();
+
 		_log(LOG_LEVEL_INFO, "Server constructed");
 	}
 
@@ -106,33 +106,29 @@ namespace ft_irc
 	Server::~Server()
 	{
 		_log(LOG_LEVEL_FATAL, "Server destructor.");
-		this->_shutdown();
+		_shutdown();
 	}
 
 	/* Getters ****************************************************************** */
 
 	std::string	Server::getHostname() const
 	{
-		std::string	hostname = this->_config.getHostname();
-		return (hostname);
+		return (this->_config.getHostname());
 	}
 
 	std::string	Server::getBindAddress() const
 	{
-		std::string	bind_address = this->_config.getBindAddress();
-		return (bind_address);
+		return (this->_config.getBindAddress());
 	}
 
 	std::string	Server::getPort() const
 	{
-		std::string	port = this->_config.getPort();
-		return (port);
+		return (this->_config.getPort());
 	}
 
 	std::string	Server::getPassword() const
 	{
-		std::string	password = this->_config.getPassword();
-		return (password);
+		return (this->_config.getPassword());
 	}
 
 	std::string	Server::getCreationDate() const
@@ -199,7 +195,8 @@ namespace ft_irc
 			return (-1);
 
 		_log(LOG_LEVEL_INFO, "Server listening on localhost:" + this->getPort());
-		_alive=true;
+		this->_alive = true;
+
 		while (_alive)
 		{
 			if (_hasPendingConnections() == true)
@@ -221,7 +218,7 @@ namespace ft_irc
 
 		while (it != this->_clients.end())
 		{
-			this->_disconnectClient(*it);
+			_disconnectClient(*it);
 			_log(LOG_LEVEL_INFO,
 				"Client " + it->getNick() + "@" + it->getIpAddressStr() + " disconnected");
 			it = this->_clients.erase(it);
@@ -232,7 +229,7 @@ namespace ft_irc
 
 	void	Server::_log(int level, const std::string& msg) const
 	{
-		this->_logger.log(level, msg);
+		_logger.log(level, msg);
 	}
 
 	/* Connections handling ***************************************************** */
@@ -258,6 +255,7 @@ namespace ft_irc
 
 		//Set socket options.
 		int	optval = 1;
+
 		if (setsockopt(this->_sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) < 0)
 		{
 			_log(LOG_LEVEL_FATAL, "Error: Could not set socket options.");
@@ -314,7 +312,7 @@ namespace ft_irc
 	{
 		if (client.hasUnprocessedCommands() == true)
 		{
-			Message	msg(client, this->getHostname());
+			Message	msg(client, getHostname());
 
 			if (_parse(msg, client.popUnprocessedCommand()) == true) // parse the message
 			{
@@ -323,8 +321,9 @@ namespace ft_irc
 				if (client.isRegistered() == false && !client.getNick().empty() &&
 					!client.getUsername().empty() && !client.getHostname().empty())
 				{
-					_log(LOG_LEVEL_INFO, "Client " + client.getNick() + "@" + client.getIpAddressStr()
-							  + " has just registered");
+					_log(LOG_LEVEL_INFO,
+						"Client " + client.getNick() + "@" + client.getIpAddressStr()
+						+ " has just registered");
 					_make_welcome_msg(client);
 				}
 			}
@@ -332,9 +331,10 @@ namespace ft_irc
 				_sendResponse(msg); // send response to recipient(s)
 			else
 			{
-				_log(LOG_LEVEL_ERROR, "Message \"" + msg.getResponse() + "\" from " +
-				msg.getSender().getNick() + "@" +
-				msg.getSender().getIpAddressStr() + " has no recipients.");
+				_log(LOG_LEVEL_ERROR,
+					"Message \"" + msg.getResponse() + "\" from " +
+					msg.getSender().getNick() + "@" +
+					msg.getSender().getIpAddressStr() + " has no recipients.");
 				return (false);
 			}
 			client.updateLastEventTime();
@@ -352,8 +352,8 @@ namespace ft_irc
 		{
 			if (it->isAlive() == false)
 			{
-				this->_disconnectClient(*it);
-				this->_log(LOG_LEVEL_INFO, "Client " + it->getNick() +
+				_disconnectClient(*it);
+				_log(LOG_LEVEL_INFO, "Client " + it->getNick() +
 				"@" + it->getIpAddressStr() + " disconnected");
 				it = this->_clients.erase(it);
 				continue ;
@@ -378,7 +378,7 @@ namespace ft_irc
 					timeout_msg.setRecipient(*it);
 					timeout_msg.setResponse("ERROR :Ping timeout: 30 seconds" CRLF);
 					_sendResponse(timeout_msg);
-					this->_disconnectClient(*it);
+					_disconnectClient(*it);
 				}
 			}
 		}
@@ -411,8 +411,8 @@ namespace ft_irc
 
 		msg.setRecipient(client);
 		msg.setCommand("PING");
-		msg.setResponse("PING " + this->getHostname() + " :" + this->getHostname() + CRLF);
-		this->_sendResponse(msg);
+		msg.setResponse("PING " + getHostname() + " :" + getHostname() + CRLF);
+		_sendResponse(msg);
 		/* reset timeout and mark the client as pinged */
 		client.updateLastEventTime();
 		client.setPinged(true);
@@ -465,7 +465,7 @@ namespace ft_irc
 
 		if (it != this->_commands.end())
 		{
-			this->_log(LOG_LEVEL_DEBUG, "Executing command \"" + msg.getCommand() + "\"");
+			_log(LOG_LEVEL_DEBUG, "Executing command \"" + msg.getCommand() + "\"");
 			(this->*it->second)(msg);
 		}
 		return (0);
@@ -491,7 +491,7 @@ namespace ft_irc
 
 		if (channel != this->_channels.end())
 		{
-			std::list<Client*>	recipients = channel->getClients();
+			Channel::t_clients	recipients = channel->getClients();
 
 			recipients.remove(&msg.getSender());
 			msg.setRecipients(recipients);
@@ -504,10 +504,10 @@ namespace ft_irc
 		if (msg.getRecipients().empty())
 			return ;
 
-		std::list<Client*>	recipients = msg.getRecipients();
+		Message::t_clients	recipients = msg.getRecipients();
 		std::string			logOutput;
 
-		for (std::list<Client*>::const_iterator	dst = recipients.begin();
+		for (Message::t_clients::const_iterator	dst = recipients.begin();
 			 dst != recipients.end();
 			 ++dst)
 		{
@@ -518,16 +518,14 @@ namespace ft_irc
 				logOutput.replace(pos, 2, CRLF_PRINTABLE);
 			_log(LOG_LEVEL_DEBUG, "Sending: '" + logOutput + "' to " + (*dst)->getIpAddressStr());
 			if (send((*dst)->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
-			{
 				throw std::runtime_error("send() failed");
-			}
 		}
 	}
 
 	/* Sends a nice welcome message */
 	void	Server::_make_welcome_msg(Client& client)
 	{
-		Message	welcome_msg(client, this->getHostname());
+		Message	welcome_msg(client, getHostname());
 
 		rpl_welcome(welcome_msg);
 		rpl_yourhost(welcome_msg, this->_version);
@@ -671,7 +669,7 @@ namespace ft_irc
 				err_useronchannel(msg, guest, chan_name);
 			else
 			{
-				if (!chan_exists )
+				if (!chan_exists)
 				{
 					_addChannel(chan_name, msg.getSender());
 					channel = getChannel(chan_name);
@@ -803,7 +801,7 @@ namespace ft_irc
 		{
 			std::string	nick = msg.getParams().at(0);
 
-			if (nick == this->getHostname())
+			if (nick == getHostname())
 			{
 				err_cantkillserver(msg, true);
 				return ;
@@ -864,15 +862,15 @@ namespace ft_irc
 
 		msg.setResponse("");
 		msg.setRecipient(msg.getSender());
+
 		for (t_channels::iterator channels_it = this->_channels.begin();
-			channels_it != this->_channels.end(); ++channels_it)
+			 channels_it != this->_channels.end();
+			 ++channels_it)
 		{
 			if (matchAll || is_string_in_msg_params(msg, channels_it->getName()))
-			{
 				rpl_list(msg, *channels_it);
-			}
 		}
-			rpl_listend(msg);
+		rpl_listend(msg);
 	}
 
 	/*
@@ -938,16 +936,14 @@ namespace ft_irc
 		msg.setResponse("");
 		msg.setRecipient(msg.getSender());
 		params_size << msg.getParams().size(); // convert size_t to string
-		this->_logger(LOG_LEVEL_DEBUG, params_size.str());
+		_logger(LOG_LEVEL_DEBUG, params_size.str());
 
 		for (t_channels::iterator channels_it = this->_channels.begin();
 			 channels_it != this->_channels.end();
 			 ++channels_it)
 		{
 			if (matchAll || is_string_in_msg_params(msg, channels_it->getName()))
-			{
 				rpl_namreply(msg, *channels_it);
-			}
 			rpl_endofnames(msg, channels_it->getName());
 		}
 		if (matchAll)
@@ -1039,12 +1035,12 @@ namespace ft_irc
 				msg.clearParams();
 				msg.setParam(nick);
 				msg.setParam("+o");
-				msg.setResponse(build_prefix(this->getHostname()));
+				msg.setResponse(build_prefix(getHostname()));
 				msg.appendResponse(" MODE ");
 				msg.appendResponse(nick);
 				msg.appendResponse(" +o");
 				msg.appendSeparator();
-				this->_execModeCmd(msg);
+				_execModeCmd(msg);
 				if (msg.getSender().isOper() == true)
 				{
 					rpl_youreoper(rpl_msg);
@@ -1138,16 +1134,12 @@ namespace ft_irc
 	 */
 	void	Server::_execPongCmd(Message& msg)
 	{
-		std::string	origin;
-
 		if (msg.getParams().empty())
 			err_noorigin(msg, true);
 		else
 		{
-			origin = msg.getParams().front();
-
 			msg.setRecipient(msg.getSender());
-			msg.setResponse("");
+			msg.clearResponse();
 		}
 	}
 
@@ -1263,7 +1255,7 @@ namespace ft_irc
 				continue ;
 			if (match_nick(to_match, it->getNick()))
 			{
-				this->_log(LOG_LEVEL_DEBUG, "WHO matched " + it->getNick());
+				_log(LOG_LEVEL_DEBUG, "WHO matched " + it->getNick());
 				rpl_whoreply(msg, msg.getSender().getNick(), *it);
 			}
 			++count;

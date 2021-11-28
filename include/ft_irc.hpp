@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/27 17:19:24 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/28 16:56:19 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ enum	e_error_code
 };
 
 extern const char *error_msg[];
-
+int		setNonblocking(int fd);
 void	displayUsage(const char* program_name);
 int		test_parsing();
 int		test_modes();

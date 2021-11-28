@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:42:14 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/27 17:18:43 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/28 16:54:33 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,7 @@ namespace ft_irc
 		void				displayClients();
 
 	private:
+		/* Attributes */
 		std::string			_name;
 		std::string			_topic;
 		std::string			_mode;

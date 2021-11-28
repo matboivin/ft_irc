@@ -37,8 +37,9 @@ namespace ft_irc
 		void		parse(const char* bind_address, const char* port, const char* password);
 	
 	private:
-		char**		_argv;
+		/* Attributes */
 		int			_argc;
+		char**		_argv;
 		std::string	_bind_address;
 		std::string	_port;
 		std::string	_password;

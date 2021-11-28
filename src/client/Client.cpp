@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/11/28 16:32:59 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/28 16:56:39 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,7 @@
 #include <string>
 #include "Channel.hpp"
 #include "Client.hpp"
-#include "server_operations.hpp"
 #include "ft_irc.hpp"
-
-int	setNonblocking(int fd);
 
 namespace ft_irc
 {

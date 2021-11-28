@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:20:57 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/27 17:18:12 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/28 16:54:48 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ namespace ft_irc
 		bool		parseMessage(Message& msg, const std::string& cmd);
 
 	private:
+		/* Attributes */
 		t_str_it	_start;
 		t_str_it	_current;
 		t_str_it	_end;

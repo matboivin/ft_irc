@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:34:20 by root              #+#    #+#             */
-/*   Updated: 2021/11/27 17:34:02 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/28 16:54:12 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ namespace ft_irc
 {
 	/* Default constructor */
 	CLIParser::CLIParser()
-	: _argv(), _argc(0), _bind_address(""), _port(""), _password("")
+	: _argc(0), _argv(), _bind_address(""), _port(""), _password("")
 	{
 		this->_argv = nullptr;
 	}
@@ -42,8 +42,10 @@ namespace ft_irc
 
 	/* Copy constructor */
 	CLIParser::CLIParser(const CLIParser& other)
-	: _argv(), _argc(other._argc),
-	  _bind_address(other._bind_address), _port(other._port),
+	: _argc(other._argc),
+	  _argv(other._argv),
+	  _bind_address(other._bind_address),
+	  _port(other._port),
 	  _password(other._password)
 	{
 		this->_argv = nullptr;
@@ -55,9 +57,10 @@ namespace ft_irc
 		if (this != &other)
 		{
 			this->_argc = other._argc;
-			this->_bind_address = other.getBindAddress();
-			this->_port = other.getPort();
-			this->_password = other.getPassword();
+			this->_argv = other._argv;
+			this->_bind_address = other._bind_address;
+			this->_port = other._port;
+			this->_password = other._password;
 		}
 		return (*this);
 	}
@@ -87,8 +90,7 @@ namespace ft_irc
 	/* Parsing ************************************************************** */
 
 	/* Parses the command line arguments */
-	void	CLIParser::parse(const char* bind_address, const char* port,
-							 const char* password)
+	void	CLIParser::parse(const char* bind_address, const char* port, const char* password)
 	{
 		this->_bind_address = bind_address;
 		this->_port = port;
