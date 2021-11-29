@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:21 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/27 17:17:21 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/29 21:51:33 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,5 +44,6 @@ int	main(int argc, char** argv)
 		displayUsage(argv[0]);
 		return (EXIT_FAILURE);
 	}
+	std::cerr << __FILE__ ":" <<__LINE__ << " : " << "FATAL: Exiting." << std::endl;
 	return (EXIT_SUCCESS);
 }

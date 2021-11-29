@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/11/29 21:29:14 by root             ###   ########.fr       */
+/*   Updated: 2021/11/29 21:56:04 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -358,7 +358,10 @@ namespace ft_irc
 		int	ret = poll(&poll_fd, 1, this->_timeout.tv_usec);
 
 		if (ret == -1)
+		{
+			std::cerr << __FILE__ ":" <<__LINE__ << " : " << "FATAL: poll()" << std::endl;
 			throw std::runtime_error("poll() failed");
+		}
 		return (ret > 0);
 	}
 
@@ -375,17 +378,24 @@ namespace ft_irc
 	bool	Client::hasUnprocessedCommands()
 	{
 		//if \r\n is in the in_buffer, return true
-		return (this->_in_buffer.find(CRLF) != std::string::npos);
+		return (this->_in_buffer.find("\n") != std::string::npos);
 	}
 
 	std::string	Client::popUnprocessedCommand()
 	{
-		std::string	cmd = this->_in_buffer.substr(0, this->_in_buffer.find(CRLF) + sizeof(CRLF) - 1);
+		std::string endofline = CRLF;
+		std::string::size_type found = this->_in_buffer.find(CRLF);
+		if (found == std::string::npos)
+		{
+			found = this->_in_buffer.find("\n");
+			endofline = "\n";
+		}
+		std::string	cmd = this->_in_buffer.substr(0, this->_in_buffer.find(endofline) + endofline.size());
 
 		Logger	logger(DEBUG);
 
 		logger.log(LOG_LEVEL_DEBUG, "Received: " + cmd);
-		this->_in_buffer.erase(0, this->_in_buffer.find(CRLF) + sizeof(CRLF) - 1);
+		this->_in_buffer.erase(0, this->_in_buffer.find(endofline) + endofline.size());
 		return (cmd);
 	}
 
@@ -405,13 +415,19 @@ namespace ft_irc
 			return (-1);
 		poll_ret = poll(&poll_fd, 1, this->_timeout.tv_usec);
 		if (poll_ret == -1)
+		{
+			std::cerr << __FILE__ ":" <<__LINE__ << " : " << "FATAL: poll()" << std::endl;
 			throw std::runtime_error("poll() failed");
+		}
 		if (poll_ret == 0)
 			return (0);
 		// read
 		ret = recv(this->_socket_fd, bytes_buffer, MAX_COMMAND_SIZE, 0);
 		if (ret == -1)
+		{
 			throw std::runtime_error("recv() failed");
+			std::cerr << __FILE__ ":" <<__LINE__ << " : " << "FATAL: poll()" << std::endl;
+		}
 		if (ret == 0)
 			return (0);
 
@@ -420,9 +436,15 @@ namespace ft_irc
 		// if there's not \r\n in the first 512 bytes, insert a \r\n at offset 512
 		if (this->_in_buffer.size() > this->_max_cmd_length)
 		{
+			std::string endofline = CRLF;
 			found = this->_in_buffer.find(CRLF);
+			if (found == std::string::npos)
+			{
+				found = this->_in_buffer.find("\n");
+				endofline = "\n";
+			}
 			if (found == std::string::npos || found > this->_max_cmd_length)
-				this->_in_buffer.insert(this->_max_cmd_length, CRLF);
+				this->_in_buffer.insert(this->_max_cmd_length, endofline);
 		}
 		this->updateLastEventTime();
 		return (ret);
@@ -438,7 +460,10 @@ namespace ft_irc
 		// write 512 bytes at most and removes them from the out_buffer
 		ret = send(this->_socket_fd, this->_out_buffer.c_str(), size, 0);
 		if (ret == -1)
+		{
+			std::cerr << __FILE__ ":" <<__LINE__ << " : " << "FATAL: poll()" << std::endl;
 			throw std::runtime_error("send() failed");
+		}
 		this->_out_buffer.erase(0, ret);
 		return (ret);
 	}
