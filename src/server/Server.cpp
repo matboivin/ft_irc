@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/28 17:43:51 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/29 20:42:12 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1183,8 +1183,8 @@ namespace ft_irc
 			_removeUserFromAllChannels(msg.getSender());
 		else
 			_removeUserFromAllChannels(msg.getSender(), msg.getParams().at(0));
+		_disconnectClient(msg.getSender());
 		// TODO: if no message, set default message?
-		msg.getSender().setAlive(false);
 	}
 
 	/*
