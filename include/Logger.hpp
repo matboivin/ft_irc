@@ -2,8 +2,8 @@
 # define LOGGER_HPP
 # include <string>
 # include <iostream>
-# define CRLF "\n"
-# define CRLF_PRINTABLE "\\n"
+# define CRLF "\r\n"
+# define CRLF_PRINTABLE "\\r\\n"
 
 enum	LogLevel
 {

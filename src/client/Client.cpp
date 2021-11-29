@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/11/28 16:56:39 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/29 21:29:14 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -380,7 +380,7 @@ namespace ft_irc
 
 	std::string	Client::popUnprocessedCommand()
 	{
-		std::string	cmd = this->_in_buffer.substr(0, this->_in_buffer.find(CRLF));
+		std::string	cmd = this->_in_buffer.substr(0, this->_in_buffer.find(CRLF) + sizeof(CRLF) - 1);
 
 		Logger	logger(DEBUG);
 

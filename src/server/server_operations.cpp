@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server_operations.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:37:26 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/27 17:42:27 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/29 21:20:27 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ namespace ft_irc
 	 */
 	bool	nick_is_valid(const std::string& newnick)
 	{
-		if (newnick.size() < 10)
+		if (newnick.size() < 20)
 		{
 			std::string::const_iterator	it = newnick.begin();
 
