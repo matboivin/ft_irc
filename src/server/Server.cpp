@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/29 20:42:12 by root             ###   ########.fr       */
+/*   Updated: 2021/11/29 21:07:39 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -402,6 +402,12 @@ namespace ft_irc
 		}
 		if (it->getSocketFd() > 0)
 		{
+			//send them a goodbye message
+			Message	goodbye_msg(*it);
+			
+			goodbye_msg.setRecipient(*it);
+			goodbye_msg.setResponse("ERROR :Closing Link: " + it->getIpAddressStr() + CRLF);
+			_sendResponse(goodbye_msg);
 			close(it->getSocketFd());
 			it->setSocketFd(-1);
 		}
