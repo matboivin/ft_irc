@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/29 21:07:39 by root             ###   ########.fr       */
+/*   Updated: 2021/11/30 17:16:08 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -996,11 +996,15 @@ namespace ft_irc
 				err_nicknameinuse(msg, true);
 			else
 			{
-				msg.setRecipients(msg.getSender().getAllContacts());
+				if (new_nick.size() > 16)
+					new_nick.resize(16);
+
+				msg.setRecipient(msg.getSender());
+				//msg.addRecipients(msg.getSender().getAllContacts());
 				msg.setResponse(build_prefix(msg.getServHostname()));
-				msg.appendResponse(" :");
-				msg.appendResponse(msg.getSender().getNick());
-				msg.appendResponse(" NICK ");
+				// msg.appendResponse(" :");
+				// msg.appendResponse(msg.getSender().getNick());
+				msg.appendResponse(" NICK :");
 				msg.appendResponse(new_nick);
 				msg.appendSeparator();
 				msg.getSender().setNick(new_nick);

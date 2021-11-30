@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server_operations.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:37:26 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/29 21:20:27 by root             ###   ########.fr       */
+/*   Updated: 2021/11/30 17:19:39 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,26 +48,23 @@ namespace ft_irc
 
 	/*
 	 * Check whether a nickname format is valid
-	 * A nickname is composed of 1 to 9 characters which can be digits, letters
-	 * or special characters. It musn't start with a digit.
+	 * A nickname is composed of characters which can be digits, letters or special characters.
+	 * It musn't start with a digit.
 	 */
 	bool	nick_is_valid(const std::string& newnick)
 	{
-		if (newnick.size() < 20)
-		{
-			std::string::const_iterator	it = newnick.begin();
+		std::string::const_iterator	it = newnick.begin();
 
-			if (isalpha(*it) || is_special(*it))
+		if (isalpha(*it) || is_special(*it))
+		{
+			++it;
+			while (it != newnick.end())
 			{
+				if (!isalnum(*it) && !is_special(*it) && (*it != '-'))
+					return (false);
 				++it;
-				while (it != newnick.end())
-				{
-					if (!isalnum(*it) && !is_special(*it) && (*it != '-'))
-						return (false);
-					++it;
-				}
-				return (true);
 			}
+			return (true);
 		}
 		return (false);
 	}
