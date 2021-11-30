@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/30 19:18:23 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/01 00:32:31 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,14 @@ namespace ft_irc
 {
 	/* Default constructor */
 	Parser::Parser()
-	: _start(), _current(), _end()
+	: _start(), _current(), _end(), _paramsNb()
 	{
+		_initParamsNb();
 	}
 
 	/* Copy constructor */
 	Parser::Parser(const Parser& other)
-	: _start(other._start), _current(other._current), _end(other._end)
+	: _start(other._start), _current(other._current), _end(other._end), _paramsNb(other._paramsNb)
 	{
 	}
 
@@ -43,6 +44,7 @@ namespace ft_irc
 			_start = other.getItStart();
 			_current = other.getItCurrent();
 			_end = other.getItEnd();
+			_paramsNb = other.getParamsNb();
 		}
 		return (*this);
 	}
@@ -69,6 +71,11 @@ namespace ft_irc
 		return (this->_end);
 	}
 
+	Parser::t_param_nb	Parser::getParamsNb() const
+	{
+		return (this->_paramsNb);
+	}
+
 	/* Setters ****************************************************************** */
 
 	void	Parser::setItStart(Parser::t_str_it start)
@@ -91,6 +98,11 @@ namespace ft_irc
 		this->setItStart(str.begin());
 		this->setItCurrent(str.begin());
 		this->setItEnd(str.end());
+	}
+
+	void	Parser::setParamsNb(const t_param_nb& cmd_lenghts)
+	{
+		this->_paramsNb = cmd_lenghts;
 	}
 
 	/* Helpers ****************************************************************** */
@@ -123,6 +135,31 @@ namespace ft_irc
 		return (result);
 	}
 
+	/* Init max number of params for each command */
+	void	Parser::_initParamsNb()
+	{
+		this->_paramsNb["INVITE"]	= 2;
+		this->_paramsNb["JOIN"]		= 1;
+		this->_paramsNb["KICK"]		= 3;
+		this->_paramsNb["KILL"]		= 2;
+		this->_paramsNb["LIST"]		= 1;
+		this->_paramsNb["MODE"]		= 2;
+		this->_paramsNb["NICK"]		= 1;
+		this->_paramsNb["NAMES"]	= 1;
+		this->_paramsNb["NOTICE"]	= 2;
+		this->_paramsNb["OPER"]		= 2;
+		this->_paramsNb["PART"]		= 2;
+		this->_paramsNb["PASS"]		= 1;
+		this->_paramsNb["PING"]		= 2;
+		this->_paramsNb["PONG"]		= 2;
+		this->_paramsNb["PRIVMSG"]	= 2;
+		this->_paramsNb["QUIT"]		= 1;
+		this->_paramsNb["TOPIC"]	= 2;
+		this->_paramsNb["USER"]		= 4;
+		this->_paramsNb["WHO"]		= 2;
+		this->_paramsNb["WHOIS"]	= 2;
+	}
+
 	/* Checks whether command name is valid */
 	void	Parser::_handleListOfParams(Message& msg)
 	{
@@ -148,8 +185,8 @@ namespace ft_irc
 	/* Checks whether command name is valid */
 	bool	Parser::_commandIsValid(Message& msg)
 	{
-		const std::string	cmds = "CAP INVITE JOIN KICK KILL LIST MODE NAMES "
-									"NICK NOTICE OPER PASS PART PING PONG "
+		const std::string	cmds = "CAP INVITE JOIN KICK KILL LIST MODE "
+									"NAMES NICK NOTICE OPER PASS PART PING PONG "
 									"PRIVMSG TOPIC QUIT USER WHOIS WHO";
 
 		std::string	cmd_name = msg.getCommand();
@@ -247,34 +284,25 @@ namespace ft_irc
 		return (true);
 	}
 
-	/* Fill response if Message will be forwarded to other clients */
-	void	Parser::_fillForwardResponse(Message& msg, std::string cmd)
+	/* Fill response to be forwarded to other clients */
+	void	Parser::_fillForwardResponse(Message& msg)
 	{
-		const std::string	cmds = "KILL MODE NOTICE PING PONG PRIVMSG";
+		t_param_nb::const_iterator	it = this->_paramsNb.find(msg.getCommand());
 
-		if (cmds.find(msg.getCommand()) != std::string::npos)
+		if (it != this->_paramsNb.end())
 		{
+			std::size_t	i = 0;
+			std::size_t	len = msg.getParams().size();
 			std::string	response = build_prefix(build_full_client_id(msg.getSender()));
+
 			response += " ";
 			response += msg.getCommand();
 
-			if (cmd.size() > 0) // trim spaces
+			while (i < it->second && i < len)
 			{
-				std::string::iterator	it = cmd.begin();
-				std::string::iterator	ite = cmd.end();
-
-				while (it != cmd.end() && *it == ' ')
-					++it;
-				while (ite != it && *ite == ' ')
-					--ite;
-
-				std::string	params(it, ite);
-
-				if (!params.empty())
-				{
-					response += " ";
-					response += params;
-				}
+				response += " ";
+				response += msg.getParams().at(i);
+				++i;
 			}
 			msg.setResponse(response);
 			msg.appendSeparator();
@@ -293,8 +321,8 @@ namespace ft_irc
 			if (_commandIsValid(msg))
 			{
 				_parseParams(msg);
+				_fillForwardResponse(msg);
 				_handleListOfParams(msg); // split list of params (param1,param2)
-				_fillForwardResponse(msg, cmd.substr( msg.getCommand().size() ));
 			}
 			return (true);
 		}
