@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/01 00:28:08 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/01 00:54:07 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -705,7 +705,7 @@ namespace ft_irc
 		{
 			Message	names_msg(msg.getSender(), msg.getServHostname());
 
-			for (std::vector<std::string>::const_iterator chan_name = msg.getParams().begin();
+			for (Message::t_params::const_iterator chan_name = msg.getParams().begin();
 				 chan_name != msg.getParams().end();
 				 ++chan_name)
 			{
@@ -986,15 +986,11 @@ namespace ft_irc
 				err_nicknameinuse(msg, true);
 			else
 			{
-				if (new_nick.size() > 16)
-					new_nick.resize(16);
+				if (new_nick.size() > USERLEN)
+					new_nick.resize(USERLEN);
 
 				msg.setRecipient(msg.getSender());
 				msg.addRecipients(msg.getSender().getAllContacts());
-				msg.setResponse(build_prefix(build_full_client_id(msg.getSender())));
-				msg.appendResponse(" NICK ");
-				msg.appendResponse(new_nick);
-				msg.appendSeparator();
 				msg.getSender().setNick(new_nick);
 			}
 		}
@@ -1192,17 +1188,16 @@ namespace ft_irc
 		Message	quit_msg(msg.getSender(), getHostname());
 
 		// The server acknowledges by sending an ERROR message to the client
+		quit_msg.setRecipient(msg.getSender());
 		quit_msg.setResponse("ERROR :Quit: leaving");
 		quit_msg.appendSeparator();
 
 		msg.setRecipients(msg.getSender().getAllContacts());
-		msg.setResponse(build_prefix(build_full_client_id(msg.getSender())));
-		msg.appendResponse(" QUIT :Quit: ");
-		if (!msg.getParams().empty())
-			msg.appendResponse(msg.getParams().at(0));
-		else
-			msg.appendResponse("leaving");
-		msg.appendSeparator();
+		if (msg.getParams().empty())
+		{
+			msg.setResponse("QUIT :Quit: leaving");
+			msg.appendSeparator();
+		}
 		_sendResponse(msg);
 		_sendResponse(quit_msg);
 
