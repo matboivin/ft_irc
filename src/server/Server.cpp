@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/30 18:47:30 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/30 18:52:51 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1000,11 +1000,9 @@ namespace ft_irc
 					new_nick.resize(16);
 
 				msg.setRecipient(msg.getSender());
-				//msg.addRecipients(msg.getSender().getAllContacts());
-				msg.setResponse(build_prefix(msg.getServHostname()));
-				// msg.appendResponse(" :");
-				// msg.appendResponse(msg.getSender().getNick());
-				msg.appendResponse(" NICK :");
+				msg.addRecipients(msg.getSender().getAllContacts());
+				msg.setResponse(build_prefix(build_full_client_id(msg.getSender())));
+				msg.appendResponse(" NICK ");
 				msg.appendResponse(new_nick);
 				msg.appendSeparator();
 				msg.getSender().setNick(new_nick);
