@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/30 18:39:13 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/30 19:18:23 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,7 +150,7 @@ namespace ft_irc
 	{
 		const std::string	cmds = "CAP INVITE JOIN KICK KILL LIST MODE NAMES "
 									"NICK NOTICE OPER PASS PART PING PONG "
-									"PRIVMSG TOPIC QUIT USER WHOIS WHO TEST";
+									"PRIVMSG TOPIC QUIT USER WHOIS WHO";
 
 		std::string	cmd_name = msg.getCommand();
 		std::transform(cmd_name.begin(), cmd_name.end(), cmd_name.begin(), ::toupper);

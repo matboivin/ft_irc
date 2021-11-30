@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 12:25:08 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/14 21:46:47 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/30 19:13:45 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,16 +104,16 @@ int	test_parsing()
 		assert(cmp_msg(msg, expected));
 	}
 
-	// Valid command
-	{
-		ft_irc::Message	msg(dummy_client);
-		ft_irc::Message	expected(dummy_client);
+	// // Valid command
+	// {
+	// 	ft_irc::Message	msg(dummy_client);
+	// 	ft_irc::Message	expected(dummy_client);
 
-		parser.parseMessage(msg, "QUIT");
-		expected.setCommand("QUIT");
-		expected.setResponse(":nick!username@hostname QUIT\r\n");
-		assert(cmp_msg(msg, expected));
-	}
+	// 	parser.parseMessage(msg, "QUIT");
+	// 	expected.setCommand("QUIT");
+	// 	expected.setResponse(":nick!username@hostname QUIT\r\n");
+	// 	assert(cmp_msg(msg, expected));
+	// }
 
 	// Simple parameter checking
 	{
@@ -129,29 +129,29 @@ int	test_parsing()
 		assert(cmp_msg(msg, expected));
 	}
 
-	// Trailing parameter can contain spaces and colons
-	{
-		ft_irc::Message	msg(dummy_client);
-		ft_irc::Message	expected(dummy_client);
+	// // Trailing parameter can contain spaces and colons
+	// {
+	// 	ft_irc::Message	msg(dummy_client);
+	// 	ft_irc::Message	expected(dummy_client);
 
-		parser.parseMessage(msg, "QUIT :Gone to have lunch at: MyFavPlace");
-		expected.setCommand("QUIT");
-		expected.setParam(":Gone to have lunch at: MyFavPlace");
-		expected.setResponse(":nick!username@hostname QUIT :Gone to have lunch at: MyFavPlace\r\n");
-		assert(cmp_msg(msg, expected));
-	}
+	// 	parser.parseMessage(msg, "QUIT :Gone to have lunch at: MyFavPlace");
+	// 	expected.setCommand("QUIT");
+	// 	expected.setParam(":Gone to have lunch at: MyFavPlace");
+	// 	expected.setResponse(":nick!username@hostname QUIT :Gone to have lunch at: MyFavPlace\r\n");
+	// 	assert(cmp_msg(msg, expected));
+	// }
 
-	// Trailing parameter must start with a colon
-	{
-		ft_irc::Message	msg(dummy_client);
-		ft_irc::Message	expected(dummy_client);
+	// // Trailing parameter must start with a colon
+	// {
+	// 	ft_irc::Message	msg(dummy_client);
+	// 	ft_irc::Message	expected(dummy_client);
 
-		parser.parseMessage(msg, "QUIT :Gone to have lunch");
-		expected.setCommand("QUIT");
-		expected.setParam(":Gone to have lunch");
-		expected.setResponse(":nick!username@hostname QUIT :Gone to have lunch\r\n");
-		assert(cmp_msg(msg, expected));
-	}
+	// 	parser.parseMessage(msg, "QUIT :Gone to have lunch");
+	// 	expected.setCommand("QUIT");
+	// 	expected.setParam(":Gone to have lunch");
+	// 	expected.setResponse(":nick!username@hostname QUIT :Gone to have lunch\r\n");
+	// 	assert(cmp_msg(msg, expected));
+	// }
 
 	{
 		ft_irc::Message	msg(dummy_client);
@@ -202,16 +202,16 @@ int	test_parsing()
 		assert(cmp_msg(msg, expected));
 	}
 
-	{
-		ft_irc::Message	msg(dummy_client);
-		ft_irc::Message	expected(dummy_client);
+	// {
+	// 	ft_irc::Message	msg(dummy_client);
+	// 	ft_irc::Message	expected(dummy_client);
 
-		parser.parseMessage(msg, "QUIT :#foo,#bar");
-		expected.setCommand("QUIT");
-		expected.setParam(":#foo,#bar");
-		expected.setResponse(":nick!username@hostname QUIT :#foo,#bar\r\n");
-		assert(cmp_msg(msg, expected));
-	}
+	// 	parser.parseMessage(msg, "QUIT :#foo,#bar");
+	// 	expected.setCommand("QUIT");
+	// 	expected.setParam(":#foo,#bar");
+	// 	expected.setResponse(":nick!username@hostname QUIT :#foo,#bar\r\n");
+	// 	assert(cmp_msg(msg, expected));
+	// }
 
 	{
 		ft_irc::Message	msg(dummy_client);
