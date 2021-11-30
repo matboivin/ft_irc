@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/11/30 17:16:08 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/11/30 18:47:30 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1188,13 +1188,24 @@ namespace ft_irc
 	 */
 	void	Server::_execQuitCmd(Message& msg)
 	{
+		Message	rpl_quit(msg.getSender(), getHostname());
+
+		// The server acknowledges by sending an ERROR message to the client
+		rpl_quit.setResponse("ERROR :Quit: leaving");
+		rpl_quit.appendSeparator();
+
 		msg.setRecipients(msg.getSender().getAllContacts());
-		if (msg.getParams().empty())
-			_removeUserFromAllChannels(msg.getSender());
+		msg.setResponse(build_prefix(build_full_client_id(msg.getSender())));
+		msg.appendResponse(" QUIT :Quit: ");
+		if (msg.getParams().size() > 0)
+			msg.appendResponse(msg.getParams().at(0));
 		else
-			_removeUserFromAllChannels(msg.getSender(), msg.getParams().at(0));
+			msg.appendResponse("leaving");
+		msg.appendSeparator();
+
+		_sendResponse(rpl_quit);
+		msg.getSender().quitAllChannels();
 		_disconnectClient(msg.getSender());
-		// TODO: if no message, set default message?
 	}
 
 	/*
