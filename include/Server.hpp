@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/28 17:24:45 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/01 00:53:54 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <ctime>
 # include "ft_irc.hpp"
 # include "Logger.hpp"
+# define USERLEN 16
 
 namespace ft_irc
 {
