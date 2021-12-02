@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/02 16:40:55 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/02 17:47:11 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -597,6 +597,14 @@ namespace ft_irc
 			join_msg.appendResponse(channel.getName());
 			join_msg.appendSeparator();
 			_sendResponse(join_msg);
+
+			Message	cli_reply(client, getHostname());
+
+			rpl_topic(cli_reply, channel);
+			_sendResponse(cli_reply); // send the topic
+			cli_reply.setParam(channel.getName());
+			_execNamesCmd(cli_reply);
+			_sendResponse(cli_reply); // send names
 		}
 	}
 
@@ -698,35 +706,40 @@ namespace ft_irc
 	void	Server::_execJoinCmd(Message& msg)
 	{
 		if (msg.getParams().empty())
+		{
 			err_needmoreparams(msg, true);
+			_sendResponse(msg);
+		}
 		else if (msg.getParams().at(0) == "0")
 			_removeUserFromAllChannels(msg.getSender());
 		else
 		{
-			Message	names_msg(msg.getSender(), msg.getServHostname());
-
 			for (Message::t_params::const_iterator chan_name = msg.getParams().begin();
 				 chan_name != msg.getParams().end();
 				 ++chan_name)
 			{
 				if (!channel_is_valid(*chan_name))
 					return ;
-
-				t_channels::iterator	channel = getChannel(*chan_name);
-
-				if (channel == this->_channels.end())
-				{
-					_addUserToChannel(msg.getSender(), _addChannel(*chan_name, msg.getSender()));
-					channel = getChannel(*chan_name);
-				}
+				if (msg.getSender().getJoinedChannels().size() >= CHAN_NB_MAX)
+					err_toomanychannels(msg, *chan_name, true);
 				else
-					_addUserToChannel(msg.getSender(), *channel);
-				rpl_topic(msg, *channel);
+				{
+					t_channels::iterator	channel = getChannel(*chan_name);
+
+					if (channel == this->_channels.end())
+					{
+						_addChannel(*chan_name, msg.getSender());
+						channel = getChannel(*chan_name);
+					}
+					if (channel->getClients().size() < USERS_IN_CHAN_MAX)
+					{
+						_addUserToChannel(msg.getSender(), *channel);
+						continue ;
+					}
+					else
+						err_channelisfull(msg, *chan_name, true);
+				}
 				_sendResponse(msg);
-				names_msg.clearParams();
-				names_msg.setParam(channel->getName());
-				_execNamesCmd(names_msg);
-				_sendResponse(names_msg);
 			}
 		}
 	}
@@ -986,8 +999,8 @@ namespace ft_irc
 				err_nicknameinuse(msg, true);
 			else
 			{
-				if (new_nick.size() > USERLEN)
-					new_nick.resize(USERLEN);
+				if (new_nick.size() > USER_LEN)
+					new_nick.resize(USER_LEN);
 
 				msg.setRecipient(msg.getSender());
 				msg.addRecipients(msg.getSender().getAllContacts());
