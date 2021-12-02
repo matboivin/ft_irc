@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/02 18:57:49 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/02 19:22:23 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -402,7 +402,7 @@ namespace ft_irc
 			it->setSocketFd(-1);
 		}
 		it->setAlive(false);
-		it->setConnected(false);
+		it->setAllowed(false);
 		return (0);
 	}
 

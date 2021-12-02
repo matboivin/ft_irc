@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/12/02 19:13:09 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/02 19:21:39 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ namespace ft_irc
 	  _in_buffer(),
 	  _out_buffer(),
 	  _max_cmd_length(512),
-	  _connected(false),
+	  _allowed(false),
 	  _alive(true),
 	  _registered(false),
 	  _pinged(false),
@@ -68,7 +68,7 @@ namespace ft_irc
 	  _in_buffer(),
 	  _out_buffer(),
 	  _max_cmd_length(512),
-	  _connected(false),
+	  _allowed(false),
 	  _alive(true),
 	  _registered(false),
 	  _pinged(false),
@@ -100,7 +100,7 @@ namespace ft_irc
 	  _in_buffer(other._in_buffer),
 	  _out_buffer(other._out_buffer),
 	  _max_cmd_length(other._max_cmd_length),
-	  _connected(other._connected),
+	  _allowed(other._allowed),
 	  _alive(other._alive),
 	  _registered(other._registered),
 	  _pinged(other._pinged),
@@ -126,7 +126,7 @@ namespace ft_irc
 			this->_username = other._username;
 			this->_in_buffer = other._in_buffer;
 			this->_out_buffer = other._out_buffer;
-			this->_connected = other._connected;
+			this->_allowed = other._allowed;
 			this->_alive = other._alive;
 			this->_registered = other._registered;
 			this->_pinged = other._pinged;
@@ -251,9 +251,9 @@ namespace ft_irc
 		this->_joined_channels = joined_channels;
 	}
 
-	void	Client::setConnected(bool connected)
+	void	Client::setAllowed(bool allowed)
 	{
-		this->_connected = connected;
+		this->_allowed = allowed;
 	}
 
 	void	Client::setAlive(bool alive)
@@ -276,6 +276,11 @@ namespace ft_irc
 	bool	Client::isConnected() const
 	{
 		return (this->_socket_fd != -1);
+	}
+
+	bool	Client::isAllowed() const
+	{
+		return (this->_allowed);
 	}
 
 	bool	Client::isAlive() const
