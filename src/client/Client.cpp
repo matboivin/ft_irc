@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/12/02 17:56:14 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/02 19:13:09 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -275,12 +275,12 @@ namespace ft_irc
 
 	bool	Client::isConnected() const
 	{
-		return (this->_alive);
+		return (this->_socket_fd != -1);
 	}
 
 	bool	Client::isAlive() const
 	{
-		return (this->_socket_fd != -1);
+		return (this->_alive);
 	}
 
 	bool	Client::isRegistered() const
