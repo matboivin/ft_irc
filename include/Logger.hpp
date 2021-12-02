@@ -16,19 +16,29 @@ enum	LogLevel
 
 namespace ft_irc
 {
+	/*
+	 * Logging helper class
+	 */
 	class Logger
 	{
 		private:
 			int		_log_level;
 
 		public:
+			/* Default constructor */
 					Logger(void);
+			/* Level constructor */
 					Logger(int log_level);
-					Logger(const Logger& src);
-					Logger&	operator=(const Logger& src);
+			/* Copy constructor */
+					Logger(const Logger& other);
+			/* Copy assignment operator */
+					Logger&	operator=(const Logger& other);
+			/* Destructor */
 					~Logger(void);
+
+			/* Display log message */
 			void	log(int level, const std::string& message) const;
-			//call overload
+			/* Call overload */
 			void	operator()(int level, const std::string& message) const;
 	};
 } // !namespace ft_irc

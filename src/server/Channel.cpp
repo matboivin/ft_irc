@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:58:53 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/28 16:17:34 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/02 18:13:12 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,11 +48,11 @@ namespace ft_irc
 	{
 		if (this != &other)
 		{
-			_name = other.getName();
-			_topic = other.getTopic();
-			_mode = other.getMode();
-			_clients = other.getClients();
-			_chan_ops = other.getChanOps();
+			_name = other._name;
+			_topic = other._topic;
+			_mode = other._mode;
+			_clients = other._clients;
+			_chan_ops = other._chan_ops;
 		}
 		return (*this);
 	}

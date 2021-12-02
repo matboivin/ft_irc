@@ -33,6 +33,11 @@ namespace ft_irc
 		std::string	getPort() const;
 		std::string	getPassword() const;
 
+		/* Setters */
+		void		setBindAddress(const std::string& bind_address);
+		void		setPort(const std::string& port);
+		void		setPassword(const std::string& password);
+
 		/* Parses the command line arguments */
 		void		parse(const char* bind_address, const char* port, const char* password);
 	

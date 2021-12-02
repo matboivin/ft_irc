@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/12/02 16:23:31 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/02 18:03:27 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,10 @@ namespace ft_irc
 {
 	class Channel;
 
+	/*
+	 * IRC Client
+	 * Attribute of the Server
+	 */
 	class Client
 	{
 	public:
@@ -74,6 +78,7 @@ namespace ft_irc
 		const t_channels&	getJoinedChannels() const;
 		struct timeval&		getLastEventTime();
 		t_clients			getAllContacts();
+
 		/* Setters */
 		void				setNick(const std::string& nick);
 		void				setRealName(const std::string& realname);
@@ -118,10 +123,8 @@ namespace ft_irc
 		int					addMode(char mode_char);
 		int					removeMode(char mode_char);
 
+		/* Comparison operators */
 		friend bool			operator==(const Client& lhs, const Client& rhs);
-
-		/* debug */
-		void				displayJoinedChannels();
 
 	private:
 		/* Attributes */

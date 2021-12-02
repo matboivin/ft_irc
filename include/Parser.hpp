@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:20:57 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/01 00:29:04 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/02 18:07:16 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ namespace ft_irc
 		t_str_it	getItCurrent() const;
 		t_str_it	getItEnd() const;
 		t_param_nb	getParamsNb() const;
+
 		/* Setters */
 		void		setItStart(t_str_it start);
 		void		setItCurrent(t_str_it current);

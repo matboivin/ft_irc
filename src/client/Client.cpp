@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/12/02 16:22:56 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/02 17:56:14 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -336,11 +336,12 @@ namespace ft_irc
 	/* poll */
 	bool	Client::hasNewEvents()
 	{
+		int				ret;
 		struct pollfd	poll_fd;
+
 		poll_fd.fd = this->_socket_fd;
 		poll_fd.events = POLLIN;
-
-		int	ret = poll(&poll_fd, 1, this->_timeout.tv_usec);
+		ret = poll(&poll_fd, 1, this->_timeout.tv_usec);
 
 		if (ret == -1)
 		{
@@ -368,8 +369,9 @@ namespace ft_irc
 
 	std::string	Client::popUnprocessedCommand()
 	{
-		std::string endofline = CRLF;
-		std::string::size_type found = this->_in_buffer.find(CRLF);
+		std::string				endofline = CRLF;
+		std::string::size_type	found = this->_in_buffer.find(CRLF);
+
 		if (found == std::string::npos)
 		{
 			found = this->_in_buffer.find("\n");
@@ -421,7 +423,8 @@ namespace ft_irc
 		// if there's not \r\n in the first 512 bytes, insert a \r\n at offset 512
 		if (this->_in_buffer.size() > this->_max_cmd_length)
 		{
-			std::string endofline = CRLF;
+			std::string	endofline = CRLF;
+
 			found = this->_in_buffer.find(CRLF);
 			if (found == std::string::npos)
 			{
@@ -518,24 +521,5 @@ namespace ft_irc
 	bool	operator==(const Client& lhs, const Client& rhs)
 	{
 		return ((lhs._socket_fd == rhs._socket_fd && lhs._nick == rhs._nick));
-	}
-
-	// debug
-	void	Client::displayJoinedChannels()
-	{
-		if (this->_joined_channels.empty())
-		{
-			std::cout << this->getNick() << " parted all channels.\n";
-			return ;
-		}
-
-		std::cout << this->getNick() << " joined channels:\n";
-
-		for (t_channels::iterator it = this->_joined_channels.begin();
-			 it != this->_joined_channels.end();
-			 ++it)
-		{
-			std::cout << "- " << (*it)->getName() << '\n';
-		}
 	}
 } // namespace ft_irc

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/19 16:47:35 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/27 18:04:58 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/02 18:16:19 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ namespace ft_irc
 	  _hostname(hostname),
 	  _oper_blocks()
 	{
-		addOperBlock("Pusheen", "SUPERPASS");
+		addOperBlock("user42", "user42");
 	}
 
 	/* Copy assignment operator */
@@ -56,10 +56,10 @@ namespace ft_irc
 	{
 		if (this != &other)
 		{
-			this->_bind_address = other.getBindAddress();
-			this->_port = other.getPort();
-			this->_connection_password = other.getPassword();
-			this->_hostname = other.getHostname();
+			this->_bind_address = other._bind_address;
+			this->_port = other._port;
+			this->_connection_password = other._connection_password;
+			this->_hostname = other._hostname;
 			this->_oper_blocks = other._oper_blocks;
 		}
 		return (*this);
@@ -92,6 +92,11 @@ namespace ft_irc
 		return (this->_hostname);
 	}
 
+	const Config::t_oper_block&	Config::getOperBlocks() const
+	{
+		return (this->_oper_blocks);
+	}
+
 	/* Setters ****************************************************************** */
 
 	void	Config::setBindAddress(const std::string& bind_address)
@@ -120,6 +125,11 @@ namespace ft_irc
 	void	Config::addOperBlock(const std::string& name, const std::string& password)
 	{
 		this->_oper_blocks[name] = password;
+	}
+
+	void	Config::clearOperBlocks()
+	{
+		this->_oper_blocks.clear();
 	}
 
 	/* Checks whether the combination passed as parameter is valid */

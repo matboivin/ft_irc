@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/02 17:47:11 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/02 17:52:42 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1060,6 +1060,7 @@ namespace ft_irc
 					rpl_youreoper(rpl_msg);
 					_sendResponse(rpl_msg);
 				}
+				return ;
 			}
 		}
 		_sendResponse(msg);
@@ -1154,7 +1155,7 @@ namespace ft_irc
 			msg.appendResponse(getHostname());
 			msg.appendResponse(" :");
 			msg.appendResponse(origin);
-			msg.appendResponse(CRLF);
+			msg.appendSeparator();
 		}
 		_sendResponse(msg);
 	}
@@ -1312,7 +1313,7 @@ namespace ft_irc
 				msg.appendResponse(" NOTICE ");
 				msg.appendResponse(msg.getSender().getNick());
 				msg.appendResponse(" :WHO list limit (25) reached!");
-				msg.appendResponse(CRLF);
+				msg.appendSeparator();
 			}
 		}
 		//END OF WHO COMMAND

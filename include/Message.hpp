@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Message.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:47:11 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/29 20:41:18 by root             ###   ########.fr       */
+/*   Updated: 2021/12/02 18:04:07 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ namespace ft_irc
 	class Client;
 
 	/*
-	 * Parser for IRC protocol messages
+	 * IRC protocol message
 	 */
 	class Message
 	{
@@ -55,6 +55,7 @@ namespace ft_irc
 		std::string			getCommand() const;
 		const t_params&		getParams() const;
 		const t_clients&	getRecipients() const;
+
 		/* Setters */
 		void				setSender(const Client& sender);
 		void				setServHostname(const std::string& serv_hostname);

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:42:14 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/28 16:54:33 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/02 18:03:20 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@ namespace ft_irc
 	class Message;
 
 	/*
-	 * An IRC Channel
+	 * IRC Channel
+	 * Attribute of the Server
 	 */
 	class Channel
 	{
@@ -51,6 +52,7 @@ namespace ft_irc
 		std::string			getMode() const;
 		const t_clients&	getClients() const;
 		const t_clients&	getChanOps() const;
+
 		/* Setters */
 		void				setName(const std::string& name);
 		void				setTopic(const std::string& topic);

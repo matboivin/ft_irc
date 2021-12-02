@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/01 00:32:31 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/02 18:09:22 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -241,7 +241,6 @@ namespace ft_irc
 	{
 		while (_nocrlf(this->_current))
 			++this->_current;
-
 		msg.setParam(std::string(this->_start, this->_current));
 	}
 
@@ -293,18 +292,17 @@ namespace ft_irc
 		{
 			std::size_t	i = 0;
 			std::size_t	len = msg.getParams().size();
-			std::string	response = build_prefix(build_full_client_id(msg.getSender()));
 
-			response += " ";
-			response += msg.getCommand();
+			msg.setResponse(build_prefix(build_full_client_id(msg.getSender())));
+			msg.appendResponse(" ");
+			msg.appendResponse(msg.getCommand());
 
 			while (i < it->second && i < len)
 			{
-				response += " ";
-				response += msg.getParams().at(i);
+				msg.appendResponse(" ");
+				msg.appendResponse(msg.getParams().at(i));
 				++i;
 			}
-			msg.setResponse(response);
 			msg.appendSeparator();
 		}
 	}

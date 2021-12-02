@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/12/02 17:34:02 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/02 18:06:21 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,9 @@ namespace ft_irc
 	class Parser;
 	class Logger;
 
+	/*
+	 * IRC Server
+	 */
 	class Server
 	{
 	public:
@@ -81,7 +84,7 @@ namespace ft_irc
 		std::string				_creation_date;
 		std::string				_version;
 		std::string				_description;
-		Config					_config; /* Holds all config */
+		Config					_config; /* Holds the config */
 		Parser					_parser;
 		t_cmds					_commands;
 		t_clients				_clients;
