@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/01 00:54:07 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/02 15:56:17 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -530,7 +530,7 @@ namespace ft_irc
 			if (pos != std::string::npos)
 				logOutput.replace(pos, 2, CRLF_PRINTABLE);
 			_log(LOG_LEVEL_DEBUG, "Sending: '" + logOutput + "' to " + (*dst)->getIpAddressStr());
-			if (send((*dst)->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), 0) < 0)
+			if (send((*dst)->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), MSG_NOSIGNAL) < 0)
 				throw std::runtime_error("send() failed");
 		}
 	}
@@ -1187,11 +1187,6 @@ namespace ft_irc
 	{
 		Message	quit_msg(msg.getSender(), getHostname());
 
-		// The server acknowledges by sending an ERROR message to the client
-		quit_msg.setRecipient(msg.getSender());
-		quit_msg.setResponse("ERROR :Quit: leaving");
-		quit_msg.appendSeparator();
-
 		msg.setRecipients(msg.getSender().getAllContacts());
 		if (msg.getParams().empty())
 		{
@@ -1199,6 +1194,11 @@ namespace ft_irc
 			msg.appendSeparator();
 		}
 		_sendResponse(msg);
+
+		// The server acknowledges by sending an ERROR message to the client
+		quit_msg.setRecipient(msg.getSender());
+		quit_msg.setResponse("ERROR :Quit: leaving");
+		quit_msg.appendSeparator();
 		_sendResponse(quit_msg);
 
 		msg.getSender().quitAllChannels();
