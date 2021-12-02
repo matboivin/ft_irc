@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/02 15:56:17 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/02 16:40:55 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1106,13 +1106,19 @@ namespace ft_irc
 	 */
 	void	Server::_execPassCmd(Message& msg)
 	{
-		if (msg.getParams().empty())
-			err_needmoreparams(msg, true);
-		else if (msg.getSender().isRegistered())
+		if (msg.getSender().isRegistered())
 			err_alreadyregistered(msg, true);
+		else if (msg.getParams().empty())
+			err_needmoreparams(msg, true);
+		else if (msg.getParams().front() != getPassword())
+		{
+			err_passwdmismatch(msg, true);
+			msg.appendResponse(build_prefix(msg.getServHostname()));
+			msg.appendResponse(" ERROR :Password incorrect");
+			msg.appendSeparator();
+		}
 		else
-			msg.getSender().setPassword(msg.getParams().at(0));
-			// TODO
+			return ;
 		_sendResponse(msg);
 	}
 

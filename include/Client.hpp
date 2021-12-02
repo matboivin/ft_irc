@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/11/30 18:23:37 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/02 16:23:31 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ namespace ft_irc
 							Client(std::string nick="",
 								   std::string realname="",
 								   std::string username="",
-								   std::string password="",
 								   std::string hostname=""
 								   );
 
@@ -51,7 +50,6 @@ namespace ft_irc
 								   std::string nick="",
 								   std::string realname="",
 								   std::string username="",
-								   std::string password="",
 								   std::string hostname=""
 								   );
 
@@ -68,7 +66,6 @@ namespace ft_irc
 		std::string			getNick() const;
 		std::string			getRealName() const;
 		std::string			getUsername() const;
-		std::string			getPassword() const;
 		std::string			getHostname() const;
 		std::string			getIpAddressStr() const;
 		struct sockaddr_in&	getAddress();
@@ -81,7 +78,6 @@ namespace ft_irc
 		void				setNick(const std::string& nick);
 		void				setRealName(const std::string& realname);
 		void				setUsername(const std::string& username);
-		void				setPassword(const std::string& password);
 		void				setHostname(const std::string& hostname);
 		void				setSocketFd(int socket_fd);
 		void				setJoinedChannels(const t_channels& joined_channels);
@@ -134,7 +130,6 @@ namespace ft_irc
 		std::string			_hostname;
 		std::string			_username;
 		std::string			_mode;
-		std::string			_password;
 		std::string			_in_buffer;			/* buffer for incoming data */
 		std::string			_out_buffer;		/* buffer for outgoing data */
 		const size_t		_max_cmd_length;	/* max length of a command */

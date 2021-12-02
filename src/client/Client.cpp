@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/11/30 18:47:58 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/02 16:22:56 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,14 +23,12 @@ namespace ft_irc
 				   std::string nick,
 				   std::string realname,
 				   std::string username,
-				   std::string password,
 				   std::string hostname)
 	: _nick(nick),
 	  _realname(realname),
 	  _hostname(hostname),
 	  _username(username),
 	  _mode(),
-	  _password(password),
 	  _in_buffer(),
 	  _out_buffer(),
 	  _max_cmd_length(512),
@@ -61,14 +59,12 @@ namespace ft_irc
 	Client::Client(std::string nick,
 				   std::string realname,
 				   std::string username,
-				   std::string password,
 				   std::string hostname)
 	: _nick(nick),
 	  _realname(realname),
 	  _hostname(hostname),
 	  _username(username),
 	  _mode(),
-	  _password(password),
 	  _in_buffer(),
 	  _out_buffer(),
 	  _max_cmd_length(512),
@@ -101,7 +97,6 @@ namespace ft_irc
 	  _hostname(other._hostname),
 	  _username(other._username),
 	  _mode(other._mode),
-	  _password(other._password),
 	  _in_buffer(other._in_buffer),
 	  _out_buffer(other._out_buffer),
 	  _max_cmd_length(other._max_cmd_length),
@@ -167,11 +162,6 @@ namespace ft_irc
 	std::string	Client::getUsername() const
 	{
 		return (this->_username);
-	}
-
-	std::string	Client::getPassword() const
-	{
-		return (this->_password);
 	}
 
 	std::string	Client::getHostname() const
@@ -251,11 +241,6 @@ namespace ft_irc
 		this->_username = username;
 	}
 
-	void	Client::setPassword(const std::string& password)
-	{
-		this->_password = password;
-	}
-	
 	void	Client::setSocketFd(int socket_fd)
 	{
 		this->_socket_fd = socket_fd;
