@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/02 19:22:23 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/02 19:38:17 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -321,16 +321,19 @@ namespace ft_irc
 
 			if (_parse(msg, client.popUnprocessedCommand()) == true) // parse the message
 			{
-				_executeCommand(msg); // execute the command
-				//if the client has just registered, send him a nice welcome message :D
+				_executeCommand(msg, client); // execute the command
+				//if the client has just registered, send them a nice welcome message :D
 				if (client.isRegistered() == false && !client.getNick().empty() &&
-					!client.getUsername().empty() && !client.getHostname().empty())
+					!client.getUsername().empty() && !client.getHostname().empty()
+					&& client.isAllowed() == true)
 				{
 					_log(LOG_LEVEL_INFO,
-						"Client " + client.getNick() + "@" + client.getIpAddressStr()
-						+ " has just registered");
+							"Client " + client.getNick() + "@" + client.getIpAddressStr()
+							+ " has just registered");
 					_make_welcome_msg(client);
 				}
+				else if (client.isRegistered() == false && client.isAllowed() == false)
+					_disconnectClient(client);
 			}
 			client.updateLastEventTime();
 			return (true);
@@ -460,17 +463,21 @@ namespace ft_irc
 	}
 
 	/* Execute a command */
-	int	Server::_executeCommand(Message& msg)
+	int	Server::_executeCommand(Message& msg, Client& client)
 	{
+		// they didn't provide the connection password yet
+		if ((client.isAllowed() == false) && (msg.getCommand() != "PASS"))
+			return (0);
+
 		t_cmds::const_iterator	it = this->_commands.find(msg.getCommand());
 
 		if (it != this->_commands.end())
 		{
 			_log(LOG_LEVEL_DEBUG, "Executing command \"" + msg.getCommand() + "\"");
 			(this->*it->second)(msg);
+			return (1);
 		}
-		else
-			_sendResponse(msg); // send error 421 Unknown command
+		_sendResponse(msg); // send error 421 Unknown command
 		return (0);
 	}
 
@@ -1122,7 +1129,10 @@ namespace ft_irc
 			msg.appendSeparator();
 		}
 		else
+		{
+			msg.getSender().setAllowed(true);
 			return ;
+		}
 		_sendResponse(msg);
 	}
 
