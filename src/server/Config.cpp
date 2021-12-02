@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/19 16:47:35 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/02 18:16:19 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/02 18:52:46 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ namespace ft_irc
 	  _hostname("irc.42.fr"),
 	  _oper_blocks()
 	{
-		addOperBlock("Pusheen", "SUPERPASS");
+		addOperBlock("user42", "user42");
 	}
 
 	/* Copy constructor */
