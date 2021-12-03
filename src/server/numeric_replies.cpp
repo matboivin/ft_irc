@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/02 17:46:40 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/03 19:37:55 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -590,7 +590,7 @@ namespace ft_irc
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 464 :Password incorrect");
+		msg.appendResponse(" 464 * :Password incorrect");
 		msg.appendSeparator();
 	}
 

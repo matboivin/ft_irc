@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/02 19:38:17 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/03 19:42:10 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -328,12 +328,9 @@ namespace ft_irc
 					&& client.isAllowed() == true)
 				{
 					_log(LOG_LEVEL_INFO,
-							"Client " + client.getNick() + "@" + client.getIpAddressStr()
-							+ " has just registered");
+						"Client " + client.getNick() + "@" + client.getIpAddressStr() + " has just registered");
 					_make_welcome_msg(client);
 				}
-				else if (client.isRegistered() == false && client.isAllowed() == false)
-					_disconnectClient(client);
 			}
 			client.updateLastEventTime();
 			return (true);
@@ -389,18 +386,22 @@ namespace ft_irc
 
 		if (it == this->_clients.end())
 		{
-			_log(LOG_LEVEL_ERROR, "Client " + client.getNick() + client.getIpAddressStr()
-			+ " is not in the client list!");
+			_log(LOG_LEVEL_ERROR,
+				"Client " + client.getNick() + client.getIpAddressStr()
+				+ " is not in the client list!");
 			return (-1);
 		}
 		if (it->getSocketFd() > 0)
 		{
-			//send them a goodbye message
-			Message	goodbye_msg(*it);
-			
-			goodbye_msg.setRecipient(*it);
-			goodbye_msg.setResponse("ERROR :Closing Link: " + it->getIpAddressStr() + CRLF);
-			_sendResponse(goodbye_msg);
+			if (it->isAllowed()) // if they logged in using the connection password
+			{
+				// send them a goodbye message
+				Message	goodbye_msg(*it);
+
+				goodbye_msg.setRecipient(*it);
+				goodbye_msg.setResponse("ERROR :Closing Link: " + it->getIpAddressStr() + CRLF);
+				_sendResponse(goodbye_msg);
+			}
 			close(it->getSocketFd());
 			it->setSocketFd(-1);
 		}
@@ -417,7 +418,7 @@ namespace ft_irc
 		msg.setCommand("PING");
 		msg.setResponse("PING " + getHostname() + " :" + getHostname() + CRLF);
 		_sendResponse(msg);
-		/* reset timeout and mark the client as pinged */
+		// reset timeout and mark the client as pinged
 		client.updateLastEventTime();
 		client.setPinged(true);
 		return (0);
@@ -1113,7 +1114,7 @@ namespace ft_irc
 
 	/*
 	 * PASS <password>
-	 * set a connection password
+	 * Verify the connection password (used to login into the server)
 	 */
 	void	Server::_execPassCmd(Message& msg)
 	{
@@ -1124,9 +1125,11 @@ namespace ft_irc
 		else if (msg.getParams().front() != getPassword())
 		{
 			err_passwdmismatch(msg, true);
-			msg.appendResponse(build_prefix(msg.getServHostname()));
-			msg.appendResponse(" ERROR :Password incorrect");
+			msg.appendResponse("ERROR :Password incorrect");
 			msg.appendSeparator();
+			_sendResponse(msg);
+			_disconnectClient(msg.getSender());
+			return ;
 		}
 		else
 		{
