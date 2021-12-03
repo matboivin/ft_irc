@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/03 19:47:52 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/03 19:57:22 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -348,8 +348,8 @@ namespace ft_irc
 			if (it->isAlive() == false)
 			{
 				_disconnectClient(*it);
-				_log(LOG_LEVEL_INFO, "Client " + it->getNick() +
-				"@" + it->getIpAddressStr() + " disconnected");
+				_log(LOG_LEVEL_INFO,
+					"Client " + it->getNick() + "@" + it->getIpAddressStr() + " disconnected");
 				it = this->_clients.erase(it);
 				continue ;
 			}
@@ -371,7 +371,8 @@ namespace ft_irc
 					Message	timeout_msg(*it);
 
 					timeout_msg.setRecipient(*it);
-					timeout_msg.setResponse("ERROR :Ping timeout: 30 seconds" CRLF);
+					timeout_msg.setResponse("ERROR :Ping timeout: 30 seconds");
+					timeout_msg.appendSeparator();
 					_sendResponse(timeout_msg);
 					_disconnectClient(*it);
 				}
@@ -380,7 +381,7 @@ namespace ft_irc
 		return (true);
 	}
 
-	int	Server::_disconnectClient(Client& client)
+	int	Server::_disconnectClient(Client& client, const std::string& comment)
 	{
 		t_clients::iterator	it = std::find(this->_clients.begin(), this->_clients.end(), client);
 
@@ -392,15 +393,20 @@ namespace ft_irc
 		}
 		if (it->getSocketFd() > 0)
 		{
-			if (it->isAllowed()) // if they logged in using the connection password
-			{
-				// send them a goodbye message
-				Message	goodbye_msg(*it);
+			// send them a goodbye message
+			Message	goodbye_msg(*it);
 
-				goodbye_msg.setRecipient(*it);
-				goodbye_msg.setResponse("ERROR :Closing Link: " + it->getIpAddressStr() + CRLF);
-				_sendResponse(goodbye_msg);
+			goodbye_msg.setRecipient(*it);
+			if (comment.empty()) // default content
+			{
+				goodbye_msg.setResponse("ERROR :Closing Link: ");
+				goodbye_msg.appendResponse(it->getIpAddressStr());
 			}
+			else
+				goodbye_msg.setResponse(comment);
+			goodbye_msg.appendSeparator();
+			_sendResponse(goodbye_msg);
+
 			close(it->getSocketFd());
 			it->setSocketFd(-1);
 		}
@@ -1123,10 +1129,8 @@ namespace ft_irc
 		else if (msg.getParams().front() != getPassword())
 		{
 			err_passwdmismatch(msg, true);
-			msg.appendResponse("ERROR :Password incorrect");
-			msg.appendSeparator();
 			_sendResponse(msg);
-			_disconnectClient(msg.getSender());
+			_disconnectClient(msg.getSender(), "ERROR :Password incorrect");
 			return ;
 		}
 		else

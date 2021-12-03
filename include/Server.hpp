@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/12/02 19:23:23 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/03 19:53:22 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ namespace ft_irc
 		bool					_awaitNewConnection();
 		bool					_hasPendingConnections();
 		bool					_processClients();
-		int						_disconnectClient(Client& client);
+		int						_disconnectClient(Client& client, const std::string& comment = "");
 		int						_ping_client(Client& client);
 
 		/* Parsing */
