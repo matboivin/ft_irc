@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/03 19:42:10 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/03 19:47:52 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -387,8 +387,7 @@ namespace ft_irc
 		if (it == this->_clients.end())
 		{
 			_log(LOG_LEVEL_ERROR,
-				"Client " + client.getNick() + client.getIpAddressStr()
-				+ " is not in the client list!");
+				"Client " + client.getNick() + client.getIpAddressStr() + " is not in the client list!");
 			return (-1);
 		}
 		if (it->getSocketFd() > 0)
@@ -1069,8 +1068,7 @@ namespace ft_irc
 	 * The client quits the channel
 	 */
 	void	Server::_partClient(Message& msg,
-								const std::string& chan_name, const std::string& comment
-								)
+								const std::string& chan_name, const std::string& comment)
 	{
 		t_channels::iterator	channel = getChannel(chan_name);
 
@@ -1194,7 +1192,7 @@ namespace ft_irc
 
 			if (channel_is_valid(msgtarget) && !_userOnChannel(msg.getSender(), msgtarget))
 				err_cannotsendtochan(msg, true);
-			else if (!channel_is_valid(msgtarget) && getClient(msgtarget) == this->_clients.end() )
+			else if (!channel_is_valid(msgtarget) && (getClient(msgtarget) == this->_clients.end()))
 				err_nosuchnick(msg, msgtarget, true);
 			else
 				_setResponseRecipients(msg);
@@ -1208,8 +1206,6 @@ namespace ft_irc
 	 */
 	void	Server::_execQuitCmd(Message& msg)
 	{
-		Message	quit_msg(msg.getSender(), getHostname());
-
 		msg.setRecipients(msg.getSender().getAllContacts());
 		if (msg.getParams().empty())
 		{
@@ -1217,14 +1213,8 @@ namespace ft_irc
 			msg.appendSeparator();
 		}
 		_sendResponse(msg);
-
-		// The server acknowledges by sending an ERROR message to the client
-		quit_msg.setRecipient(msg.getSender());
-		quit_msg.setResponse("ERROR :Quit: leaving");
-		quit_msg.appendSeparator();
-		_sendResponse(quit_msg);
-
 		msg.getSender().quitAllChannels();
+		// The server acknowledges by sending an ERROR message to the client
 		_disconnectClient(msg.getSender());
 	}
 
