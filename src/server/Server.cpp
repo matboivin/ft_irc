@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/03 20:00:09 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/03 20:24:49 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -320,7 +320,7 @@ namespace ft_irc
 			if (_parse(msg, client.popUnprocessedCommand()) == true) // parse the message
 			{
 				_executeCommand(msg, client); // execute the command
-				//if the client has just registered, send them a nice welcome message :D
+				// if the client has just registered, send them a nice welcome message :D
 				if (client.isRegistered() == false && !client.getNick().empty() &&
 					!client.getUsername().empty() && !client.getHostname().empty()
 					&& client.isAllowed() == true)
@@ -470,9 +470,16 @@ namespace ft_irc
 	/* Execute a command */
 	int	Server::_executeCommand(Message& msg, Client& client)
 	{
-		// they didn't provide the connection password yet
+		if (msg.getCommand() == "CAP")
+			return (1);
+		// they didn't provide the connection password
 		if ((client.isAllowed() == false) && (msg.getCommand() != "PASS"))
+		{
+			err_passwdmismatch(msg, true);
+			_sendResponse(msg);
+			_disconnectClient(client, "ERROR :Password incorrect");
 			return (0);
+		}
 
 		t_cmds::const_iterator	it = this->_commands.find(msg.getCommand());
 
@@ -754,8 +761,7 @@ namespace ft_irc
 	 */
 	void	Server::_kickClient(Message& msg,
 								const std::string& chan_name, const std::string& nick,
-								const std::string& comment
-								)
+								const std::string& comment)
 	{
 		t_channels::iterator	channel = getChannel(chan_name);
 		t_clients::iterator		user = getClient(nick);
@@ -1122,22 +1128,18 @@ namespace ft_irc
 	void	Server::_execPassCmd(Message& msg)
 	{
 		if (msg.getSender().isRegistered())
+		{
 			err_alreadyregistered(msg, true);
-		else if (msg.getParams().empty())
-			err_needmoreparams(msg, true);
-		else if (msg.getParams().front() != getPassword())
+			_sendResponse(msg);
+		}
+		else if ((msg.getParams().empty()) || (msg.getParams().front() != getPassword()))
 		{
 			err_passwdmismatch(msg, true);
 			_sendResponse(msg);
 			_disconnectClient(msg.getSender(), "ERROR :Password incorrect");
-			return ;
 		}
 		else
-		{
 			msg.getSender().setAllowed(true);
-			return ;
-		}
-		_sendResponse(msg);
 	}
 
 	/*
