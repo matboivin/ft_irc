@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/03 19:57:22 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/03 20:00:09 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,8 +224,6 @@ namespace ft_irc
 		while (it != this->_clients.end())
 		{
 			_disconnectClient(*it);
-			_log(LOG_LEVEL_INFO,
-				"Client " + it->getNick() + "@" + it->getIpAddressStr() + " disconnected");
 			it = this->_clients.erase(it);
 		}
 	}
@@ -348,8 +346,6 @@ namespace ft_irc
 			if (it->isAlive() == false)
 			{
 				_disconnectClient(*it);
-				_log(LOG_LEVEL_INFO,
-					"Client " + it->getNick() + "@" + it->getIpAddressStr() + " disconnected");
 				it = this->_clients.erase(it);
 				continue ;
 			}
@@ -375,6 +371,7 @@ namespace ft_irc
 					timeout_msg.appendSeparator();
 					_sendResponse(timeout_msg);
 					_disconnectClient(*it);
+					it = this->_clients.erase(it);
 				}
 			}
 		}
@@ -412,6 +409,8 @@ namespace ft_irc
 		}
 		it->setAlive(false);
 		it->setAllowed(false);
+		_log(LOG_LEVEL_INFO,
+			"Client " + it->getNick() + "@" + it->getIpAddressStr() + " disconnected");
 		return (0);
 	}
 
