@@ -44,13 +44,15 @@ parsing:
     # Test parsing cases
   - make debug_parsing
 
-replies:
-  stage: test
-  # Install netcat
-  before_script:
-    - apt-get update && apt-get install -y netcat
-  script:
-    # Verify the replies are correct
-  - test -f "$EXE"
-  - ls ; pwd
-  - ./tests/replies_tester.sh
+# No point doing this anymore (client has to logged in)
+#
+# replies:
+#   stage: test
+#   # Install netcat
+#   before_script:
+#     - apt-get update && apt-get install -y netcat
+#   script:
+#     # Verify the replies are correct
+#   - test -f "$EXE"
+#   - ls ; pwd
+#   - ./tests/replies_tester.sh
