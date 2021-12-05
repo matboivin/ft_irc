@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/11/28 16:33:12 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/02 19:21:00 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,10 @@ namespace ft_irc
 {
 	class Channel;
 
+	/*
+	 * IRC Client
+	 * Attribute of the Server
+	 */
 	class Client
 	{
 	public:
@@ -43,7 +47,6 @@ namespace ft_irc
 							Client(std::string nick="",
 								   std::string realname="",
 								   std::string username="",
-								   std::string password="",
 								   std::string hostname=""
 								   );
 
@@ -51,7 +54,6 @@ namespace ft_irc
 								   std::string nick="",
 								   std::string realname="",
 								   std::string username="",
-								   std::string password="",
 								   std::string hostname=""
 								   );
 
@@ -68,7 +70,6 @@ namespace ft_irc
 		std::string			getNick() const;
 		std::string			getRealName() const;
 		std::string			getUsername() const;
-		std::string			getPassword() const;
 		std::string			getHostname() const;
 		std::string			getIpAddressStr() const;
 		struct sockaddr_in&	getAddress();
@@ -77,21 +78,22 @@ namespace ft_irc
 		const t_channels&	getJoinedChannels() const;
 		struct timeval&		getLastEventTime();
 		t_clients			getAllContacts();
+
 		/* Setters */
 		void				setNick(const std::string& nick);
 		void				setRealName(const std::string& realname);
 		void				setUsername(const std::string& username);
-		void				setPassword(const std::string& password);
 		void				setHostname(const std::string& hostname);
 		void				setSocketFd(int socket_fd);
 		void				setJoinedChannels(const t_channels& joined_channels);
-		void				setConnected(bool connected);
+		void				setAllowed(bool allowed);
 		void				setAlive(bool alive);
 		void				setRegistered(bool registered);
 		void				setPinged(bool pinged);
 
 		/* Helpers */
-		bool				isConnected() const;
+		bool				isConnected() const; /* is the client connected to the server? (socket fd check) */
+		bool				isAllowed() const;
 		bool				isAlive() const;
 		bool				isRegistered() const;
 		bool				isTimeouted() const;
@@ -116,15 +118,14 @@ namespace ft_irc
 		/* Channel operations */
 		void				joinChannel(Channel& channel);
 		void				partChannel(Channel& channel);
+		void				quitAllChannels();
 
 		/* Mode operations */
 		int					addMode(char mode_char);
 		int					removeMode(char mode_char);
 
+		/* Comparison operators */
 		friend bool			operator==(const Client& lhs, const Client& rhs);
-
-		/* debug */
-		void				displayJoinedChannels();
 
 	private:
 		/* Attributes */
@@ -133,11 +134,10 @@ namespace ft_irc
 		std::string			_hostname;
 		std::string			_username;
 		std::string			_mode;
-		std::string			_password;
 		std::string			_in_buffer;			/* buffer for incoming data */
 		std::string			_out_buffer;		/* buffer for outgoing data */
 		const size_t		_max_cmd_length;	/* max length of a command */
-		bool				_connected;			/* is the client connected to the server? */
+		bool				_allowed;			/* true if connection password is right */
 		bool				_alive;
 		bool				_registered;		/* is the client registered? */
 		bool				_pinged;			/* has the client been pinged? */

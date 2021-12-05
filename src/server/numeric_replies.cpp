@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   numeric_replies.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/29 21:23:19 by root             ###   ########.fr       */
+/*   Updated: 2021/12/03 19:37:55 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -408,17 +408,17 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	// void	err_toomanychannels(Message& msg, const std::string& chan_name, bool rewrite)
-	// {
-	// 	msg.setRecipient(msg.getSender());
-	// 	if (rewrite)
-	// 		msg.clearResponse();
-	// 	msg.appendResponse(build_prefix(msg.getServHostname()));
-	// 	msg.appendResponse(" 405 ");
-	// 	msg.appendResponse(chan_name);
-	// 	msg.appendResponse(" :You have joined too many channels");
-	// 	msg.appendSeparator();
-	// }
+	void	err_toomanychannels(Message& msg, const std::string& chan_name, bool rewrite)
+	{
+		msg.setRecipient(msg.getSender());
+		if (rewrite)
+			msg.clearResponse();
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 405 ");
+		msg.appendResponse(chan_name);
+		msg.appendResponse(" :You have joined too many channels");
+		msg.appendSeparator();
+	}
 
 	void	err_noorigin(Message& msg, bool rewrite)
 	{
@@ -590,33 +590,21 @@ namespace ft_irc
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 464 :Password incorrect");
+		msg.appendResponse(" 464 * :Password incorrect");
 		msg.appendSeparator();
 	}
 
-	// void	err_channelisfull(Message& msg, const std::string& chan_name, bool rewrite)
-	// {
-	// 	msg.setRecipient(msg.getSender());
-	// 	if (rewrite)
-	// 		msg.clearResponse();
-	// 	msg.appendResponse(build_prefix(msg.getServHostname()));
-	// 	msg.appendResponse(" 471 ");
-	// 	msg.appendResponse(chan_name);
-	// 	msg.appendResponse(" :Cannot join channel (+l)");
-	// 	msg.appendSeparator();
-	// }
-
-	// void	err_bannedfromchan(Message& msg, const std::string& chan_name, bool rewrite)
-	// {
-	// 	msg.setRecipient(msg.getSender());
-	// 	if (rewrite)
-	// 		msg.clearResponse();
-	// 	msg.appendResponse(build_prefix(msg.getServHostname()));
-	// 	msg.appendResponse(" 474 ");
-	// 	msg.appendResponse(chan_name);
-	// 	msg.appendResponse(" :Cannot join channel (+b)");
-	// 	msg.appendSeparator();
-	// }
+	void	err_channelisfull(Message& msg, const std::string& chan_name, bool rewrite)
+	{
+		msg.setRecipient(msg.getSender());
+		if (rewrite)
+			msg.clearResponse();
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 471 ");
+		msg.appendResponse(chan_name);
+		msg.appendResponse(" :Cannot join channel");
+		msg.appendSeparator();
+	}
 
 	void	err_noprivileges(Message& msg, bool rewrite)
 	{

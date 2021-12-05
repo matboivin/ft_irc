@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:35:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/27 17:20:03 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/02 18:04:27 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ namespace ft_irc
 
 	/* Remove duplicates from lists */
 	template<typename T>
-	std::list<T*>	removeDuplicates(const std::list<T*>& src, T* elem=0);
+		std::list<T*>	removeDuplicates(const std::list<T*>& src, T* elem=0);
 } // !namespace ft_irc
 
 # include "server_operations.tpp"

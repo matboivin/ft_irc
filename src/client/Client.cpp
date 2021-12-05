@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/11/29 21:56:04 by root             ###   ########.fr       */
+/*   Updated: 2021/12/02 19:21:39 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,18 +23,16 @@ namespace ft_irc
 				   std::string nick,
 				   std::string realname,
 				   std::string username,
-				   std::string password,
 				   std::string hostname)
 	: _nick(nick),
 	  _realname(realname),
 	  _hostname(hostname),
 	  _username(username),
 	  _mode(),
-	  _password(password),
 	  _in_buffer(),
 	  _out_buffer(),
 	  _max_cmd_length(512),
-	  _connected(false),
+	  _allowed(false),
 	  _alive(true),
 	  _registered(false),
 	  _pinged(false),
@@ -61,18 +59,16 @@ namespace ft_irc
 	Client::Client(std::string nick,
 				   std::string realname,
 				   std::string username,
-				   std::string password,
 				   std::string hostname)
 	: _nick(nick),
 	  _realname(realname),
 	  _hostname(hostname),
 	  _username(username),
 	  _mode(),
-	  _password(password),
 	  _in_buffer(),
 	  _out_buffer(),
 	  _max_cmd_length(512),
-	  _connected(false),
+	  _allowed(false),
 	  _alive(true),
 	  _registered(false),
 	  _pinged(false),
@@ -101,11 +97,10 @@ namespace ft_irc
 	  _hostname(other._hostname),
 	  _username(other._username),
 	  _mode(other._mode),
-	  _password(other._password),
 	  _in_buffer(other._in_buffer),
 	  _out_buffer(other._out_buffer),
 	  _max_cmd_length(other._max_cmd_length),
-	  _connected(other._connected),
+	  _allowed(other._allowed),
 	  _alive(other._alive),
 	  _registered(other._registered),
 	  _pinged(other._pinged),
@@ -131,7 +126,7 @@ namespace ft_irc
 			this->_username = other._username;
 			this->_in_buffer = other._in_buffer;
 			this->_out_buffer = other._out_buffer;
-			this->_connected = other._connected;
+			this->_allowed = other._allowed;
 			this->_alive = other._alive;
 			this->_registered = other._registered;
 			this->_pinged = other._pinged;
@@ -167,11 +162,6 @@ namespace ft_irc
 	std::string	Client::getUsername() const
 	{
 		return (this->_username);
-	}
-
-	std::string	Client::getPassword() const
-	{
-		return (this->_password);
 	}
 
 	std::string	Client::getHostname() const
@@ -251,11 +241,6 @@ namespace ft_irc
 		this->_username = username;
 	}
 
-	void	Client::setPassword(const std::string& password)
-	{
-		this->_password = password;
-	}
-	
 	void	Client::setSocketFd(int socket_fd)
 	{
 		this->_socket_fd = socket_fd;
@@ -266,9 +251,9 @@ namespace ft_irc
 		this->_joined_channels = joined_channels;
 	}
 
-	void	Client::setConnected(bool connected)
+	void	Client::setAllowed(bool allowed)
 	{
-		this->_connected = connected;
+		this->_allowed = allowed;
 	}
 
 	void	Client::setAlive(bool alive)
@@ -290,12 +275,17 @@ namespace ft_irc
 
 	bool	Client::isConnected() const
 	{
-		return (this->_alive);
+		return (this->_socket_fd != -1);
+	}
+
+	bool	Client::isAllowed() const
+	{
+		return (this->_allowed);
 	}
 
 	bool	Client::isAlive() const
 	{
-		return (this->_socket_fd != -1);
+		return (this->_alive);
 	}
 
 	bool	Client::isRegistered() const
@@ -351,11 +341,12 @@ namespace ft_irc
 	/* poll */
 	bool	Client::hasNewEvents()
 	{
+		int				ret;
 		struct pollfd	poll_fd;
+
 		poll_fd.fd = this->_socket_fd;
 		poll_fd.events = POLLIN;
-
-		int	ret = poll(&poll_fd, 1, this->_timeout.tv_usec);
+		ret = poll(&poll_fd, 1, this->_timeout.tv_usec);
 
 		if (ret == -1)
 		{
@@ -383,8 +374,9 @@ namespace ft_irc
 
 	std::string	Client::popUnprocessedCommand()
 	{
-		std::string endofline = CRLF;
-		std::string::size_type found = this->_in_buffer.find(CRLF);
+		std::string				endofline = CRLF;
+		std::string::size_type	found = this->_in_buffer.find(CRLF);
+
 		if (found == std::string::npos)
 		{
 			found = this->_in_buffer.find("\n");
@@ -436,7 +428,8 @@ namespace ft_irc
 		// if there's not \r\n in the first 512 bytes, insert a \r\n at offset 512
 		if (this->_in_buffer.size() > this->_max_cmd_length)
 		{
-			std::string endofline = CRLF;
+			std::string	endofline = CRLF;
+
 			found = this->_in_buffer.find(CRLF);
 			if (found == std::string::npos)
 			{
@@ -487,6 +480,18 @@ namespace ft_irc
 		this->_joined_channels.remove(&channel);
 	}
 
+	/* The client quits all channels they joined */
+	void	Client::quitAllChannels()
+	{
+		for (t_channels::iterator it = this->_joined_channels.begin();
+			 it != this->_joined_channels.end();
+			 ++it)
+		{
+			(*it)->removeClient(*this);
+		}
+		this->_joined_channels.clear();
+	}
+
 	/* Mode operations ********************************************************** */
 
 	/* Adds the mode passed as parameter to the client mode string */
@@ -521,24 +526,5 @@ namespace ft_irc
 	bool	operator==(const Client& lhs, const Client& rhs)
 	{
 		return ((lhs._socket_fd == rhs._socket_fd && lhs._nick == rhs._nick));
-	}
-
-	// debug
-	void	Client::displayJoinedChannels()
-	{
-		if (this->_joined_channels.empty())
-		{
-			std::cout << this->getNick() << " parted all channels.\n";
-			return ;
-		}
-
-		std::cout << this->getNick() << " joined channels:\n";
-
-		for (t_channels::iterator it = this->_joined_channels.begin();
-			 it != this->_joined_channels.end();
-			 ++it)
-		{
-			std::cout << "- " << (*it)->getName() << '\n';
-		}
 	}
 } // namespace ft_irc

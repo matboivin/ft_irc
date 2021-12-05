@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/28 16:56:19 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/05 15:40:07 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ enum	e_error_code
 	ERR_BANNEDFROMCHAN,
 	ERR_BADCHANNELKEY,
 	ERR_NOPRIVILEGES,
-	ERR_CHANOPRIVSNEEDED	
+	ERR_CHANOPRIVSNEEDED
 };
 
 extern const char *error_msg[];

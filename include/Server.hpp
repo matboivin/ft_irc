@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/11/28 17:24:45 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/05 16:08:49 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,9 @@
 # include <ctime>
 # include "ft_irc.hpp"
 # include "Logger.hpp"
+# define USER_LEN 20
+# define CHAN_NB_MAX 20
+# define USERS_IN_CHAN_MAX 50
 
 namespace ft_irc
 {
@@ -30,6 +33,9 @@ namespace ft_irc
 	class Parser;
 	class Logger;
 
+	/*
+	 * IRC Server
+	 */
 	class Server
 	{
 	public:
@@ -78,7 +84,7 @@ namespace ft_irc
 		std::string				_creation_date;
 		std::string				_version;
 		std::string				_description;
-		Config					_config; /* Holds all config */
+		Config					_config; /* Holds the config */
 		Parser					_parser;
 		t_cmds					_commands;
 		t_clients				_clients;
@@ -99,8 +105,8 @@ namespace ft_irc
 		bool					_awaitNewConnection();
 		bool					_hasPendingConnections();
 		bool					_processClients();
-		int						_disconnectClient(Client& client);
-		int						_ping_client(Client& client);
+		int						_disconnectClient(Client& client, const std::string& comment = "");
+		int						_pingClient(Client& client);
 
 		/* Parsing */
 		bool					_parse(Message& msg, const std::string& cmd);
@@ -108,7 +114,7 @@ namespace ft_irc
 
 		/* Commands execution */
 		void					_init_commands_map();
-		int						_executeCommand(Message& msg);
+		int						_executeCommand(Message& msg, Client& client);
 		bool					_processClientCommand(Client& client);
 
 		/* Command response */

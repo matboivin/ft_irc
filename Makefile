@@ -106,7 +106,7 @@ $(NAME):			$(OBJ_DIR) $(OBJ) $(INC)
 # DEBUG
 
 debug:				$(NAME)
-					./$(NAME) 0.0.0.0 6667 test
+					./$(NAME) 0.0.0.0 2727 test
 
 debug_replies:
 					./tests/replies_tester.sh

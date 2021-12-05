@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:34:20 by root              #+#    #+#             */
-/*   Updated: 2021/11/28 16:54:12 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/02 18:11:57 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,23 @@ namespace ft_irc
 	std::string	CLIParser::getPassword() const
 	{
 		return (this->_password);
+	}
+
+	/* Setters ****************************************************************** */
+
+	void	CLIParser::setBindAddress(const std::string& bind_address)
+	{
+		this->_bind_address = bind_address;
+	}
+
+	void	CLIParser::setPort(const std::string& port)
+	{
+		this->_port = port;
+	}
+
+	void	CLIParser::setPassword(const std::string& password)
+	{
+		this->_password = password;
 	}
 
 	/* Parsing ************************************************************** */

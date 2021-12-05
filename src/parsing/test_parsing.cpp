@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 12:25:08 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/14 21:46:47 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/01 00:38:11 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,12 +120,10 @@ int	test_parsing()
 		ft_irc::Message	msg(dummy_client);
 		ft_irc::Message	expected(dummy_client);
 
-		parser.parseMessage(msg, "JOIN  ");
-		expected.setCommand("JOIN");
-		assert(cmp_msg(msg, expected));
-
 		parser.parseMessage(msg, "JOIN #general");
+		expected.setCommand("JOIN");
 		expected.setParam("#general");
+		expected.setResponse(":nick!username@hostname JOIN #general\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -161,6 +159,7 @@ int	test_parsing()
 		expected.setCommand("TOPIC");
 		expected.setParam("#test");
 		expected.setParam(":another topic");
+		expected.setResponse(":nick!username@hostname TOPIC #test :another topic\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -174,6 +173,7 @@ int	test_parsing()
 		expected.setParam("#Finnish");
 		expected.setParam("John");
 		expected.setParam(":Speaking English");
+		expected.setResponse(":nick!username@hostname KICK #Finnish John :Speaking English\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -186,6 +186,7 @@ int	test_parsing()
 		expected.setCommand("JOIN");
 		expected.setParam("#foo");
 		expected.setParam("#bar");
+		expected.setResponse(":nick!username@hostname JOIN #foo,#bar\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -199,6 +200,7 @@ int	test_parsing()
 		expected.setParam("#");
 		expected.setParam("#bcd");
 		expected.setParam("x");
+		expected.setResponse(":nick!username@hostname JOIN #abc,#\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -220,6 +222,7 @@ int	test_parsing()
 		parser.parseMessage(msg, "NAMES #foo");
 		expected.setCommand("NAMES");
 		expected.setParam("#foo");
+		expected.setResponse(":nick!username@hostname NAMES #foo\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -232,6 +235,7 @@ int	test_parsing()
 		expected.setParam("#foo");
 		expected.setParam("#bar");
 		expected.setParam("#baz");
+		expected.setResponse(":nick!username@hostname NAMES #foo,#bar,#baz\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -242,6 +246,7 @@ int	test_parsing()
 		parser.parseMessage(msg, "LIST #foo");
 		expected.setCommand("LIST");
 		expected.setParam("#foo");
+		expected.setResponse(":nick!username@hostname LIST #foo\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -254,6 +259,7 @@ int	test_parsing()
 		expected.setParam("#foo");
 		expected.setParam("#bar");
 		expected.setParam("#baz");
+		expected.setResponse(":nick!username@hostname LIST #foo,#bar,#baz\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -267,6 +273,7 @@ int	test_parsing()
 		expected.setParam("#bar");
 		expected.setParam("#baz");
 		expected.setParam("server");
+		expected.setResponse(":nick!username@hostname LIST #foo,#bar,#baz\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -279,6 +286,7 @@ int	test_parsing()
 		expected.setParam("user1");
 		expected.setParam("user2");
 		expected.setParam("user3");
+		expected.setResponse(":nick!username@hostname WHOIS user1,user2,user3\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -292,6 +300,7 @@ int	test_parsing()
 		expected.setParam("#general,#random");
 		expected.setParam("John,Jane");
 		expected.setParam(":Speaking English");
+		expected.setResponse(":nick!username@hostname KICK #general,#random John,Jane :Speaking English\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 

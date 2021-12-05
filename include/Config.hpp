@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/19 16:41:45 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/27 18:03:59 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/02 18:16:03 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ namespace ft_irc
 	class Message;
 
 	/*
-	 * Configuration for IRC server
+	 * Configuration of the IRC server
 	 * Attribute of the Server
 	 */
 	class Config
@@ -55,6 +55,8 @@ namespace ft_irc
 		std::string		getPort() const;
 		std::string		getPassword() const;
 		std::string		getHostname() const;
+		const t_oper_block&	getOperBlocks() const;
+
 		/* Setters */
 		void			setBindAddress(const std::string& bind_address);
 		void			setPort(const std::string& port);
@@ -63,6 +65,7 @@ namespace ft_irc
 
 		/* Oper operations */
 		void			addOperBlock(const std::string& name, const std::string& password);
+		void			clearOperBlocks();
 		bool			operUserIsValid(const std::string& name);
 		bool			operBlockIsValid(const std::string& name, const std::string& password);
 
