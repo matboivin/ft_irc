@@ -32,5 +32,13 @@
 # Executables
 *.exe
 *.out
+*.err
 *.app
 ircserv
+
+# Vim
+.session
+
+.vscode
+GitHub.copilot*
+*.txt
