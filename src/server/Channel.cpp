@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:58:53 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/02 18:13:12 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/05 18:58:17 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,9 +96,11 @@ namespace ft_irc
 
 	void	Channel::setTopic(const std::string& topic)
 	{
-		this->_topic = topic;
-		if (this->_topic[0] == ':')
-			this->_topic.erase(0, 1);
+		std::size_t	pos = 0;
+
+		if (topic.at(0) == ':')
+			pos = 1;
+		this->_topic = topic.substr(pos);
 	}
 
 	void	Channel::setMode(const std::string& mode)
@@ -198,7 +200,7 @@ namespace ft_irc
 		msg.setRecipients(this->getClients());
 		msg.setResponse(
 			build_prefix( build_full_client_id(msg.getSender()) )
-			+ " TOPIC " + this->_name + ' ' + topic
+			+ " TOPIC " + this->_name + " :" + topic
 			);
 		msg.appendSeparator();
 	}

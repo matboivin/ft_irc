@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/05 18:28:39 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/05 18:58:35 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -608,10 +608,11 @@ namespace ft_irc
 
 			Message	cli_reply(client, getHostname());
 
-			rpl_topic(cli_reply, channel);
-			_sendResponse(cli_reply); // send the topic
 			cli_reply.setParam(channel.getName());
-			_execNamesCmd(cli_reply);
+
+			if (!channel.getTopic().empty())
+				_execTopicCmd(cli_reply); // send topic
+			_execNamesCmd(cli_reply); // send names
 		}
 	}
 
