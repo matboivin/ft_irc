@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/03 20:24:49 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/05 15:44:46 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -371,7 +371,6 @@ namespace ft_irc
 					timeout_msg.appendSeparator();
 					_sendResponse(timeout_msg);
 					_disconnectClient(*it);
-					it = this->_clients.erase(it);
 				}
 			}
 		}
@@ -1063,6 +1062,7 @@ namespace ft_irc
 				msg.appendResponse(" +o");
 				msg.appendSeparator();
 				_execModeCmd(msg);
+
 				if (msg.getSender().isOper() == true)
 				{
 					rpl_youreoper(rpl_msg);

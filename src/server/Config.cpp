@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/19 16:47:35 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/02 18:52:46 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/05 15:42:49 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ namespace ft_irc
 	  _hostname("irc.42.fr"),
 	  _oper_blocks()
 	{
-		addOperBlock("user42", "user42");
+		addOperBlock("user42", "pass42");
 	}
 
 	/* Copy constructor */
@@ -48,7 +48,7 @@ namespace ft_irc
 	  _hostname(hostname),
 	  _oper_blocks()
 	{
-		addOperBlock("user42", "user42");
+		addOperBlock("user42", "pass42");
 	}
 
 	/* Copy assignment operator */

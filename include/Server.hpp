@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/12/03 19:53:22 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/05 15:38:10 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <ctime>
 # include "ft_irc.hpp"
 # include "Logger.hpp"
-# define USER_LEN 16
+# define USER_LEN 20
 # define CHAN_NB_MAX 20
 # define USERS_IN_CHAN_MAX 50
 
