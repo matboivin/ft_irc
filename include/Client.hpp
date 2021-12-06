@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/12/02 19:21:00 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/06 16:01:22 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ namespace ft_irc
 		std::string			getRealName() const;
 		std::string			getUsername() const;
 		std::string			getHostname() const;
+		std::string			getMode() const;
 		std::string			getIpAddressStr() const;
 		struct sockaddr_in&	getAddress();
 		socklen_t&			getAddressSize();
@@ -131,8 +132,8 @@ namespace ft_irc
 		/* Attributes */
 		std::string			_nick;
 		std::string			_realname;
-		std::string			_hostname;
 		std::string			_username;
+		std::string			_hostname;
 		std::string			_mode;
 		std::string			_in_buffer;			/* buffer for incoming data */
 		std::string			_out_buffer;		/* buffer for outgoing data */

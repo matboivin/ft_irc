@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/05 18:48:17 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/06 16:00:22 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,14 +77,16 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	rpl_umodeis(Message& msg, const std::string& user_mode, bool rewrite)
+	void	rpl_umodeis(Message& msg, const Client& client, bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 221 ");
-		msg.appendResponse(user_mode);
+		msg.appendResponse(client.getNick());
+		msg.appendResponse(" ");
+		msg.appendResponse(client.getMode());
 		msg.appendSeparator();
 	}
 

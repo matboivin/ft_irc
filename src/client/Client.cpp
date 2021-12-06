@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/12/02 19:21:39 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/06 16:02:37 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@ namespace ft_irc
 				   std::string hostname)
 	: _nick(nick),
 	  _realname(realname),
-	  _hostname(hostname),
 	  _username(username),
+	  _hostname(hostname),
 	  _mode(),
 	  _in_buffer(),
 	  _out_buffer(),
@@ -62,8 +62,8 @@ namespace ft_irc
 				   std::string hostname)
 	: _nick(nick),
 	  _realname(realname),
-	  _hostname(hostname),
 	  _username(username),
+	  _hostname(hostname),
 	  _mode(),
 	  _in_buffer(),
 	  _out_buffer(),
@@ -94,8 +94,8 @@ namespace ft_irc
 	Client::Client(const Client& other)
 	: _nick(other._nick),
 	  _realname(other._realname),
-	  _hostname(other._hostname),
 	  _username(other._username),
+	  _hostname(other._hostname),
 	  _mode(other._mode),
 	  _in_buffer(other._in_buffer),
 	  _out_buffer(other._out_buffer),
@@ -122,8 +122,9 @@ namespace ft_irc
 		{
 			this->_nick = other._nick;
 			this->_realname = other._realname;
-			this->_hostname = other._hostname;
 			this->_username = other._username;
+			this->_hostname = other._hostname;
+			this->_mode = other._mode;
 			this->_in_buffer = other._in_buffer;
 			this->_out_buffer = other._out_buffer;
 			this->_allowed = other._allowed;
@@ -167,6 +168,11 @@ namespace ft_irc
 	std::string	Client::getHostname() const
 	{
 		return (this->_hostname);
+	}
+
+	std::string	Client::getMode() const
+	{
+		return (this->_mode);
 	}
 
 	struct sockaddr_in&	Client::getAddress()
