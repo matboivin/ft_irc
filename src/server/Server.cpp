@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/06 16:15:15 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/06 17:00:28 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -450,6 +450,7 @@ namespace ft_irc
 		this->_commands["KILL"]		= &Server::_execKillCmd;
 		this->_commands["LIST"]		= &Server::_execListCmd;
 		this->_commands["MODE"]		= &Server::_execModeCmd;
+		this->_commands["MOTD"]		= &Server::_execMotdCmd;
 		this->_commands["NAMES"]	= &Server::_execNamesCmd;
 		this->_commands["NICK"]		= &Server::_execNickCmd;
 		this->_commands["NOTICE"]	= &Server::_execNoticeCmd;
@@ -553,7 +554,7 @@ namespace ft_irc
 		rpl_created(welcome_msg, this->_creation_date);
 		rpl_myinfo(welcome_msg, this->_version);
 		rpl_umodeis(welcome_msg, client);
-		_sendResponse(welcome_msg);
+		_execMotdCmd(welcome_msg); // message is sent here
 		client.setRegistered(true);
 	}
 
@@ -951,6 +952,35 @@ namespace ft_irc
 				}
 			}
 		}
+		_sendResponse(msg);
+	}
+
+	/*
+	 * MOTD
+	 * Send the "Message Of The Day" of the server
+	 */
+	void	Server::_execMotdCmd(Message& msg)
+	{
+		const std::string	start_line = msg.getSender().getNick() + " :- ";
+
+		msg.setRecipient(msg.getSender());
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+
+		// RPL_MOTDSTART
+		msg.appendResponse(" 375 ");
+		msg.appendResponse(start_line);
+		msg.appendResponse(getHostname());
+		msg.appendResponse(" Message of the day - ");
+		// RPL_MOTD
+		msg.appendResponse(" 372 ");
+		msg.appendResponse(start_line);
+		msg.appendResponse("Welcome you users! This server was made by very nice people"); // tmp
+		// RPL_ENDOFMOTD
+		msg.appendResponse(" 376 ");
+		msg.appendResponse(start_line);
+		msg.appendResponse(":End of MOTD command");
+		msg.appendSeparator();
+
 		_sendResponse(msg);
 	}
 

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/02 18:09:22 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/06 16:42:56 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,6 +144,7 @@ namespace ft_irc
 		this->_paramsNb["KILL"]		= 2;
 		this->_paramsNb["LIST"]		= 1;
 		this->_paramsNb["MODE"]		= 2;
+		this->_paramsNb["MOTD"]		= 1;
 		this->_paramsNb["NICK"]		= 1;
 		this->_paramsNb["NAMES"]	= 1;
 		this->_paramsNb["NOTICE"]	= 2;
@@ -185,7 +186,7 @@ namespace ft_irc
 	/* Checks whether command name is valid */
 	bool	Parser::_commandIsValid(Message& msg)
 	{
-		const std::string	cmds = "CAP INVITE JOIN KICK KILL LIST MODE "
+		const std::string	cmds = "CAP INVITE JOIN KICK KILL LIST MODE MOTD "
 									"NAMES NICK NOTICE OPER PASS PART PING PONG "
 									"PRIVMSG TOPIC QUIT USER WHOIS WHO";
 
