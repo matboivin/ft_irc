@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/06 16:03:19 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/06 16:15:15 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -908,18 +908,17 @@ namespace ft_irc
 	}
 
 	/*
-	 * MODE <nickname> <flags>
-	 * MODE <channel> <flags>
+	 * MODE <nickname> [flags]
+	 * MODE <channel> [flags]
 	 * Set a user or a channel mode.
 	 */
 	void	Server::_execModeCmd(Message& msg)
 	{
-		if (msg.getParams().size() < 2)
-			err_needmoreparams(msg);
+		if (msg.getParams().empty())
+			err_needmoreparams(msg, true);
 		else
 		{
 			std::string	target = msg.getParams().at(0);
-			std::string	mode_str = msg.getParams().at(1);
 
 			if (target == "0")
 				err_nosuchnick(msg, target);
@@ -932,7 +931,11 @@ namespace ft_irc
 				if (channel == this->_channels.end())
 					err_nosuchchannel(msg, target);
 				else
-					channel->setMode(mode_str);
+				{
+					if (msg.getParams().size() > 1)
+						channel->setMode(msg.getParams().at(1));
+					rpl_channelmodeis(msg, *channel);
+				}
 			}
 			else
 			{
@@ -941,7 +944,11 @@ namespace ft_irc
 				if (client == this->_clients.end())
 					err_usersdontmatch(msg);
 				else
-					_setUserMode(*client, mode_str, msg);
+				{
+					if (msg.getParams().size() > 1)
+						_setUserMode(*client, msg.getParams().at(1), msg);
+					rpl_umodeis(msg, *client);
+				}
 			}
 		}
 		_sendResponse(msg);
