@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/12/11 15:08:54 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 17:21:50 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,25 +225,21 @@ namespace ft_irc
 
 	void	Client::setNick(const std::string& nick)
 	{
-		std::cout << "Nick: " << nick << std::endl;
 		this->_nick = nick;
 	}
 
 	void	Client::setRealName(const std::string& realname)
 	{
-		std::cout << "Real Name: " << realname << std::endl;
 		this->_realname = realname;
 	}
 
 	void	Client::setHostname(const std::string& hostname)
 	{
-		std::cout << "Hostname: " << hostname << std::endl;
 		this->_hostname = hostname;
 	}
 
 	void	Client::setUsername(const std::string& username)
 	{
-		std::cout << "Username: " << username << std::endl;
 		this->_username = username;
 	}
 

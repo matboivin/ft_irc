@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/11 17:05:00 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 17:22:32 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -565,6 +565,7 @@ namespace ft_irc
 		rpl_umodeis(welcome_msg, client);
 		_execMotdCmd(welcome_msg); // message is sent here
 		client.setRegistered(true);
+		_log(LOG_LEVEL_INFO, "Client " + client.getNick() + " is now registered");
 	}
 
 	/* Channel operations ******************************************************* */
@@ -1073,6 +1074,8 @@ namespace ft_irc
 				msg.setRecipient(msg.getSender());
 				msg.addRecipients(msg.getSender().getAllContacts());
 				msg.getSender().setNick(new_nick);
+				if (!msg.getSender().isAllowed() || !msg.getSender().isRegistered()) // tmp
+					return ;
 			}
 		}
 		_sendResponse(msg);
