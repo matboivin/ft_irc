@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:58:53 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/05 18:58:17 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 16:11:27 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,6 +214,18 @@ namespace ft_irc
 
 		for (t_clients::iterator	it = this->_clients.begin();
 			 it != this->_clients.end();
+			 ++it)
+		{
+			std::cout << "- " << (*it)->getNick() << '\n';
+		}
+	}
+
+	void	Channel::displayChanOps()
+	{
+		std::cout << "ChanOps in channel " << this->getName() << ":\n";
+
+		for (t_clients::iterator	it = this->_chan_ops.begin();
+			 it != this->_chan_ops.end();
 			 ++it)
 		{
 			std::cout << "- " << (*it)->getNick() << '\n';

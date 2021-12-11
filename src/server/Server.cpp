@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/11 15:25:09 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 16:13:50 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -573,8 +573,10 @@ namespace ft_irc
 	{
 		this->_channels.push_back(Channel(name));
 
-		Channel	chan = this->_channels.back();
-		chan.addChanOp(creator);
+		t_channels::iterator	channel = getChannel(name);
+
+		channel->addChanOp(creator);
+		channel->displayChanOps();
 		return (this->_channels.back());
 	}
 

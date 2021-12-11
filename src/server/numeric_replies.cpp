@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/11 15:55:47 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 16:07:34 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -293,7 +293,10 @@ namespace ft_irc
 			 it != channel.getClients().end();
 			 ++it)
 		{
-			msg.appendResponse(" ");
+			if ((*it)->isChanOp(channel))
+				msg.appendResponse(" @");
+			else
+				msg.appendResponse(" ");
 			msg.appendResponse((*it)->getNick());
 		}
 		msg.appendSeparator();
@@ -309,7 +312,7 @@ namespace ft_irc
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" * * :");
 
-		//check users not belonging to any channel
+		// check users not belonging to any channel
 		for (t_clients::const_iterator it = clients.begin();
 			 it != clients.end();
 			 ++it)
