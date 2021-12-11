@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/11 17:22:32 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 17:42:18 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1351,7 +1351,7 @@ namespace ft_irc
 			oper_only = true;
 		else if (msg.getParams().size() > 2)
 		{
-			err_syntaxerror(msg, msg.getCommand());
+			err_needmoreparams(msg, true, "Syntax error");
 			_sendResponse(msg);
 			return ;
 		}

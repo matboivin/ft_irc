@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/11 17:12:57 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 17:44:03 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,7 +188,8 @@ namespace ft_irc
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 322 ");
-		msg.appendResponse(msg.getSender().getNick() + " ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
 		msg.appendResponse(channel.getName());
 		msg.appendResponse(" :");
 		msg.appendResponse(channel.getTopic());
@@ -201,7 +202,9 @@ namespace ft_irc
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 323 :End of LIST");
+		msg.appendResponse(" 323 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" :End of LIST");
 		msg.appendSeparator();
 	}
 
@@ -212,6 +215,8 @@ namespace ft_irc
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 324 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
 		msg.appendResponse(channel.getName());
 		msg.appendResponse(" ");
 		msg.appendResponse(channel.getMode());
@@ -225,6 +230,8 @@ namespace ft_irc
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 331 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
 		msg.appendResponse(chan_name);
 		msg.appendResponse(" :No topic is set");
 		msg.appendSeparator();
@@ -237,6 +244,8 @@ namespace ft_irc
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 332 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
 		msg.appendResponse(channel.getName());
 		msg.appendResponse(" :");
 		msg.appendResponse(channel.getTopic());
@@ -250,6 +259,8 @@ namespace ft_irc
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 341 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
 		msg.appendResponse(chan_name);
 		msg.appendResponse(" ");
 		msg.appendResponse(nick);
@@ -332,6 +343,8 @@ namespace ft_irc
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 366 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
 		msg.appendResponse(chan_name);
 		msg.appendResponse(" :End of NAMES list");
 		msg.appendSeparator();
@@ -381,6 +394,8 @@ namespace ft_irc
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 401 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
 		msg.appendResponse(nick);
 		msg.appendResponse(" :No such nick/channel");
 		msg.appendSeparator();
@@ -393,6 +408,8 @@ namespace ft_irc
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 403 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
 		msg.appendResponse(chan_name);
 		msg.appendResponse(" :No such channel");
 		msg.appendSeparator();
@@ -405,6 +422,8 @@ namespace ft_irc
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 404 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
 		msg.appendResponse(msg.getParams().at(0));
 		msg.appendResponse(" :Cannot send to channel");
 		msg.appendSeparator();
@@ -417,6 +436,8 @@ namespace ft_irc
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 405 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
 		msg.appendResponse(chan_name);
 		msg.appendResponse(" :You have joined too many channels");
 		msg.appendSeparator();
@@ -428,7 +449,9 @@ namespace ft_irc
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 409 :No origin specified");
+		msg.appendResponse(" 409 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" :No origin specified");
 		msg.appendSeparator();
 	}
 
@@ -438,7 +461,9 @@ namespace ft_irc
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 411 :No recipient given (");
+		msg.appendResponse(" 411 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" :No recipient given (");
 		msg.appendResponse(msg.getCommand());
 		msg.appendResponse(")");
 		msg.appendSeparator();
@@ -450,7 +475,9 @@ namespace ft_irc
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 412 :No text to send");
+		msg.appendResponse(" 412 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" :No text to send");
 		msg.appendSeparator();
 	}
 
@@ -461,6 +488,8 @@ namespace ft_irc
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 421 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
 		msg.appendResponse(msg.getCommand());
 		msg.appendResponse(" :Unknown command");
 		if (!comment.empty())
@@ -474,7 +503,9 @@ namespace ft_irc
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 431 :No nickname given");
+		msg.appendResponse(" 431 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" :No nickname given");
 		msg.appendSeparator();
 	}
 
@@ -485,6 +516,8 @@ namespace ft_irc
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 432 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
 		msg.appendResponse(msg.getParams().at(0));
 		msg.appendResponse(" :Erroneous nickname");
 		msg.appendSeparator();
@@ -497,6 +530,8 @@ namespace ft_irc
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 433 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
 		msg.appendResponse(msg.getParams().at(0));
 		msg.appendResponse(" :Nickname already in use");
 		msg.appendSeparator();
@@ -509,6 +544,8 @@ namespace ft_irc
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 441 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
 		msg.appendResponse(nick);
 		msg.appendResponse(" ");
 		msg.appendResponse(chan_name);
@@ -523,6 +560,8 @@ namespace ft_irc
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 442 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
 		msg.appendResponse(chan_name);
 		msg.appendResponse(" :You're not on that channel");
 		msg.appendSeparator();
@@ -548,7 +587,9 @@ namespace ft_irc
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 451 * :You have not registered");
+		msg.appendResponse(" 451 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" :You have not registered");
 		msg.appendSeparator();
 	}
 
@@ -559,22 +600,11 @@ namespace ft_irc
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 461 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
 		msg.appendResponse(msg.getCommand());
 		msg.appendResponse(" :");
 		msg.appendResponse(error_string);
-		msg.appendSeparator();
-	}
-
-	void	err_syntaxerror(Message& msg, const std::string& cmd, bool rewrite)
-	{
-		msg.setRecipient(msg.getSender());
-		if (rewrite)
-			msg.clearResponse();
-		//:public-irc.w3.org 461 ezakjhzkjehkjzehdk WHO :Syntax error
-		msg.setResponse(
-			build_prefix(msg.getServHostname()) 
-			+ " 461 " + msg.getSender().getNick() + " " + cmd + " :Syntax error"
-			);
 		msg.appendSeparator();
 	}
 
@@ -584,7 +614,9 @@ namespace ft_irc
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 462 :Unauthorized command (already registered)");
+		msg.appendResponse(" 462 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" :Unauthorized command (already registered)");
 		msg.appendSeparator();
 	}
 
@@ -594,7 +626,9 @@ namespace ft_irc
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 464 * :Password incorrect");
+		msg.appendResponse(" 464 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" :Password incorrect");
 		msg.appendSeparator();
 	}
 
@@ -605,6 +639,8 @@ namespace ft_irc
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 471 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
 		msg.appendResponse(chan_name);
 		msg.appendResponse(" :Cannot join channel");
 		msg.appendSeparator();
@@ -616,7 +652,9 @@ namespace ft_irc
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 481 :Permission Denied- You're not an IRC operator");
+		msg.appendResponse(" 481 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" :Permission Denied- You're not an IRC operator");
 		msg.appendSeparator();
 	}
 
@@ -627,6 +665,8 @@ namespace ft_irc
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 482 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
 		msg.appendResponse(chan_name);
 		msg.appendResponse(" :You're not channel operator");
 		msg.appendSeparator();
@@ -638,7 +678,9 @@ namespace ft_irc
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 483 :You can't kill a server!");
+		msg.appendResponse(" 483 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" :You can't kill a server!");
 		msg.appendSeparator();
 	}
 
@@ -648,7 +690,9 @@ namespace ft_irc
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 501 :Unknown MODE flag");
+		msg.appendResponse(" 501 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" :Unknown MODE flag");
 		msg.appendSeparator();
 	}
 
@@ -658,7 +702,9 @@ namespace ft_irc
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 502 :Cannot change mode for other users");
+		msg.appendResponse(" 502 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" :Cannot change mode for other users");
 		msg.appendSeparator();
 	}
 } // !namespace ft_irc

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/11 17:11:55 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 17:42:37 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,6 @@ namespace ft_irc
 	void	err_useronchannel(Message& msg, const std::string& nick, const std::string& chan_name, bool rewrite = false); // 443
 	void	err_notregistered(Message& msg, bool rewrite = false); // 451
 	void	err_needmoreparams(Message& msg, bool rewrite = false, const std::string& error_string = "Not enough parameters"); // 461
-	void	err_syntaxerror(Message& msg, const std::string& cmd = "", bool rewrite = false); // 461
 	void	err_alreadyregistered(Message& msg, bool rewrite = false); // 462
 	void	err_passwdmismatch(Message& msg, bool rewrite = false); // 464
 	void	err_channelisfull(Message& msg, const std::string& chan_name, bool rewrite = false); // 471
