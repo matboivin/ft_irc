@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/19 16:47:35 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/05 15:42:49 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 16:41:13 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,13 +133,6 @@ namespace ft_irc
 	}
 
 	/* Checks whether the combination passed as parameter is valid */
-	bool	Config::operUserIsValid(const std::string& name)
-	{
-		t_oper_block::iterator	it = this->_oper_blocks.find(name);
-
-		return (it != this->_oper_blocks.end());
-	}
-
 	bool	Config::operBlockIsValid(const std::string& name, const std::string& password)
 	{
 		t_oper_block::iterator	it = this->_oper_blocks.find(name);

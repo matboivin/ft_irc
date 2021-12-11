@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/12/11 15:13:51 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 16:40:49 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,6 @@ namespace ft_irc
 														   const std::string& comment = "");
 
 		/* Oper operations */
-		bool					_userCanBeOper(const std::string& name);
 		bool					_canGiveOperPriv(const std::string& name, const std::string& password);
 
 		/* Commands */

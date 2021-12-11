@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/11 16:13:50 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 16:51:40 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -576,7 +576,7 @@ namespace ft_irc
 		t_channels::iterator	channel = getChannel(name);
 
 		channel->addChanOp(creator);
-		channel->displayChanOps();
+		_log(LOG_LEVEL_INFO, "Created channel " + name + " by chan op " + creator.getNick());
 		return (this->_channels.back());
 	}
 
@@ -671,11 +671,6 @@ namespace ft_irc
 	}
 
 	/* Oper operations ********************************************************** */
-
-	bool	Server::_userCanBeOper(const std::string& name)
-	{
-		return (this->_config.operUserIsValid(name));
-	}
 
 	bool	Server::_canGiveOperPriv(const std::string& name, const std::string& password)
 	{
@@ -1104,10 +1099,10 @@ namespace ft_irc
 	{
 		if (msg.getParams().size() < 2)
 			err_needmoreparams(msg, true);
-		else if (!msg.getSender().isOper())
+		else if (msg.getSender().isOper())
+			err_alreadyoper(msg, true);
+		else
 		{
-			if (!_userCanBeOper(msg.getParams().at(0)))
-				err_nooperhost(msg, true);
 			if (!_canGiveOperPriv(msg.getParams().at(0), msg.getParams().at(1)))
 				err_passwdmismatch(msg, true);
 			else
@@ -1133,6 +1128,7 @@ namespace ft_irc
 					rpl_youreoper(rpl_msg);
 					_sendResponse(rpl_msg);
 				}
+				_log(LOG_LEVEL_INFO, "Client " + msg.getSender().getNick() + " is now IRC op");
 				return ;
 			}
 		}

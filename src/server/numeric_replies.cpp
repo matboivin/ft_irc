@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/11 16:07:34 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 16:46:59 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -343,7 +343,9 @@ namespace ft_irc
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 381 :You are now an IRC operator");
+		msg.appendResponse(" 381 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" :You are now an IRC operator");
 		msg.appendSeparator();
 	}
 
@@ -359,6 +361,18 @@ namespace ft_irc
 	}
 
 	// error replies
+
+	void	err_alreadyoper(Message& msg, bool rewrite)
+	{
+		msg.setRecipient(msg.getSender());
+		if (rewrite)
+			msg.clearResponse();
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 400 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" OPER :You're already opered-up!");
+		msg.appendSeparator();
+	}
 
 	void	err_nosuchnick(Message& msg, const std::string& nick, bool rewrite)
 	{
@@ -623,16 +637,6 @@ namespace ft_irc
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 483 :You can't kill a server!");
-		msg.appendSeparator();
-	}
-
-	void	err_nooperhost(Message& msg, bool rewrite)
-	{
-		msg.setRecipient(msg.getSender());
-		if (rewrite)
-			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 491 :No O-lines for your host");
 		msg.appendSeparator();
 	}
 

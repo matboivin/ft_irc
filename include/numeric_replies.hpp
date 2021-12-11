@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/11 16:05:03 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 16:45:44 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ namespace ft_irc
 	void	rpl_youreoper(Message& msg, bool rewrite = false); // 381
 
 	// error replies
+	void	err_alreadyoper(Message& msg, bool rewrite = false); // 400
 	void	err_nosuchnick(Message& msg, const std::string& nick, bool rewrite = false); // 401
 	void	err_nosuchserver(Message& msg, const std::string& serv_name, bool rewrite = false); // 402
 	void	err_nosuchchannel(Message& msg, const std::string& chan_name, bool rewrite = false); // 403
@@ -75,7 +76,6 @@ namespace ft_irc
 	void	err_noprivileges(Message& msg, bool rewrite = false); // 481
 	void	err_chanoprivsneeded(Message& msg, const std::string& chan_name, bool rewrite = false); // 482
 	void	err_cantkillserver(Message& msg, bool rewrite = false); // 483
-	void	err_nooperhost(Message& msg, bool rewrite = false); // 491
 	void	err_unknownmodeflag(Message& msg, bool rewrite = false); // 501
 	void	err_usersdontmatch(Message& msg, bool rewrite = false); // 502
 } // !namespace ft_irc
