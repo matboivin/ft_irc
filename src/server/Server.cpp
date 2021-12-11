@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/11 16:51:40 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 17:05:00 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -478,12 +478,13 @@ namespace ft_irc
 	{
 		if (msg.getCommand() == "CAP")
 			return (1);
+
 		// they didn't provide the connection password
-		if ((client.isAllowed() == false) && (msg.getCommand() != "PASS"))
+		if (!client.isAllowed() && (msg.getCommand() != "QUIT" && msg.getCommand() != "PASS"))
 		{
-			err_passwdmismatch(msg, true);
+			err_notregistered(msg, true);
 			_sendResponse(msg);
-			_disconnectClient(client, "ERROR :Password incorrect");
+			// _disconnectClient(client, "ERROR :Password incorrect");
 			return (0);
 		}
 

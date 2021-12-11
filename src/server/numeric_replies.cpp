@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/11 16:46:59 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 16:54:15 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -546,7 +546,7 @@ namespace ft_irc
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 451 :You have not registered");
+		msg.appendResponse(" 451 * :You have not registered");
 		msg.appendSeparator();
 	}
 
