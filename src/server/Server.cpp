@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/06 17:00:28 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 12:17:56 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -444,6 +444,7 @@ namespace ft_irc
 	/* Inits the map containing the commands */
 	void	Server::_init_commands_map()
 	{
+		this->_commands["DIE"]		= &Server::_execDieCmd;
 		this->_commands["INVITE"]	= &Server::_execInviteCmd;
 		this->_commands["JOIN"]		= &Server::_execJoinCmd;
 		this->_commands["KICK"]		= &Server::_execKickCmd;
@@ -673,6 +674,21 @@ namespace ft_irc
 	}
 
 	/* Commands ***************************************************************** */
+
+	/*
+	 * DIE
+	 * Insctructs to shutdown the server
+	 */
+	void	Server::_execDieCmd(Message& msg)
+	{
+		if (!msg.getSender().isOper())
+		{
+			err_noprivileges(msg, true);
+			_sendResponse(msg);
+		}
+		else
+			this->_alive = false;
+	}
 
 	/*
 	 * INVITE <nickname> <channel>
@@ -971,10 +987,12 @@ namespace ft_irc
 		msg.appendResponse(start_line);
 		msg.appendResponse(getHostname());
 		msg.appendResponse(" Message of the day - ");
+		msg.appendSeparator();
 		// RPL_MOTD
 		msg.appendResponse(" 372 ");
 		msg.appendResponse(start_line);
 		msg.appendResponse("Welcome you users! This server was made by very nice people"); // tmp
+		msg.appendSeparator();
 		// RPL_ENDOFMOTD
 		msg.appendResponse(" 376 ");
 		msg.appendResponse(start_line);

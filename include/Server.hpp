@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/12/06 16:59:38 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 12:13:31 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,6 +138,7 @@ namespace ft_irc
 		bool					_canGiveOperPriv(const std::string& name, const std::string& password);
 
 		/* Commands */
+		void					_execDieCmd(Message& msg);
 		void					_execInviteCmd(Message& msg);
 		void					_execJoinCmd(Message& msg);
 		void					_execKickCmd(Message& msg);
