@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/11 16:54:15 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 17:12:57 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -454,7 +454,7 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	err_unknowncommand(Message& msg, bool rewrite)
+	void	err_unknowncommand(Message& msg, const std::string& comment, bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
@@ -463,6 +463,8 @@ namespace ft_irc
 		msg.appendResponse(" 421 ");
 		msg.appendResponse(msg.getCommand());
 		msg.appendResponse(" :Unknown command");
+		if (!comment.empty())
+			msg.appendResponse(comment);
 		msg.appendSeparator();
 	}
 

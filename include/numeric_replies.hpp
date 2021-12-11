@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/11 16:45:44 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 17:11:55 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ namespace ft_irc
 	void	err_noorigin(Message& msg, bool rewrite = false); // 409
 	void	err_norecipient(Message& msg, bool rewrite = false); // 411
 	void	err_notexttosend(Message& msg, bool rewrite = false); // 412
-	void	err_unknowncommand(Message& msg, bool rewrite = false); // 421
+	void	err_unknowncommand(Message& msg, const std::string& comment = "", bool rewrite = false); // 421
 	void	err_nonicknamegiven(Message& msg, bool rewrite = false); // 431
 	void	err_erroneusnickname(Message& msg, bool rewrite = false); // 432
 	void	err_nicknameinuse(Message& msg, bool rewrite = false); // 433

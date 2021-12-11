@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/11 12:14:06 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 17:15:30 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,7 +194,12 @@ namespace ft_irc
 		std::string	cmd_name = msg.getCommand();
 		std::transform(cmd_name.begin(), cmd_name.end(), cmd_name.begin(), ::toupper);
 
-		if (cmds.find(cmd_name) != std::string::npos)
+		if ((cmd_name.at(0) == '/') && (cmds.find(cmd_name.substr(1)) != std::string::npos))
+		{
+			err_unknowncommand(msg, "; the correct syntax is " + cmd_name.substr(1));
+			return (false);
+		}
+		else if (cmds.find(cmd_name) != std::string::npos)
 		{
 			msg.setCommand(cmd_name); // uppercase command name if valid
 			return (true);
@@ -275,6 +280,8 @@ namespace ft_irc
 	/* Parses the command name */
 	bool	Parser::_parseCommand(Message& msg)
 	{
+		if ((this->_current != this->_end) && (*this->_current == '/'))
+			++this->_current;
 		if ((this->_current == this->_end) || !isalpha(*this->_current))
 			return (false);
 		while ((this->_current != this->_end) && isalpha(*this->_current))
