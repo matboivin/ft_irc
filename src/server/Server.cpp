@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/05 16:08:36 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 12:17:56 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -444,12 +444,14 @@ namespace ft_irc
 	/* Inits the map containing the commands */
 	void	Server::_init_commands_map()
 	{
+		this->_commands["DIE"]		= &Server::_execDieCmd;
 		this->_commands["INVITE"]	= &Server::_execInviteCmd;
 		this->_commands["JOIN"]		= &Server::_execJoinCmd;
 		this->_commands["KICK"]		= &Server::_execKickCmd;
 		this->_commands["KILL"]		= &Server::_execKillCmd;
 		this->_commands["LIST"]		= &Server::_execListCmd;
 		this->_commands["MODE"]		= &Server::_execModeCmd;
+		this->_commands["MOTD"]		= &Server::_execMotdCmd;
 		this->_commands["NAMES"]	= &Server::_execNamesCmd;
 		this->_commands["NICK"]		= &Server::_execNickCmd;
 		this->_commands["NOTICE"]	= &Server::_execNoticeCmd;
@@ -552,7 +554,8 @@ namespace ft_irc
 		rpl_yourhost(welcome_msg, this->_version);
 		rpl_created(welcome_msg, this->_creation_date);
 		rpl_myinfo(welcome_msg, this->_version);
-		_sendResponse(welcome_msg);
+		rpl_umodeis(welcome_msg, client);
+		_execMotdCmd(welcome_msg); // message is sent here
 		client.setRegistered(true);
 	}
 
@@ -608,11 +611,11 @@ namespace ft_irc
 
 			Message	cli_reply(client, getHostname());
 
-			rpl_topic(cli_reply, channel);
-			_sendResponse(cli_reply); // send the topic
 			cli_reply.setParam(channel.getName());
-			_execNamesCmd(cli_reply);
-			_sendResponse(cli_reply); // send names
+
+			if (!channel.getTopic().empty())
+				_execTopicCmd(cli_reply); // send topic
+			_execNamesCmd(cli_reply); // send names
 		}
 	}
 
@@ -671,6 +674,21 @@ namespace ft_irc
 	}
 
 	/* Commands ***************************************************************** */
+
+	/*
+	 * DIE
+	 * Insctructs to shutdown the server
+	 */
+	void	Server::_execDieCmd(Message& msg)
+	{
+		if (!msg.getSender().isOper())
+		{
+			err_noprivileges(msg, true);
+			_sendResponse(msg);
+		}
+		else
+			this->_alive = false;
+	}
 
 	/*
 	 * INVITE <nickname> <channel>
@@ -907,18 +925,17 @@ namespace ft_irc
 	}
 
 	/*
-	 * MODE <nickname> <flags>
-	 * MODE <channel> <flags>
+	 * MODE <nickname> [flags]
+	 * MODE <channel> [flags]
 	 * Set a user or a channel mode.
 	 */
 	void	Server::_execModeCmd(Message& msg)
 	{
-		if (msg.getParams().size() < 2)
-			err_needmoreparams(msg);
+		if (msg.getParams().empty())
+			err_needmoreparams(msg, true);
 		else
 		{
 			std::string	target = msg.getParams().at(0);
-			std::string	mode_str = msg.getParams().at(1);
 
 			if (target == "0")
 				err_nosuchnick(msg, target);
@@ -931,7 +948,11 @@ namespace ft_irc
 				if (channel == this->_channels.end())
 					err_nosuchchannel(msg, target);
 				else
-					channel->setMode(mode_str);
+				{
+					if (msg.getParams().size() > 1)
+						channel->setMode(msg.getParams().at(1));
+					rpl_channelmodeis(msg, *channel);
+				}
 			}
 			else
 			{
@@ -940,9 +961,44 @@ namespace ft_irc
 				if (client == this->_clients.end())
 					err_usersdontmatch(msg);
 				else
-					_setUserMode(*client, mode_str, msg);
+				{
+					if (msg.getParams().size() > 1)
+						_setUserMode(*client, msg.getParams().at(1), msg);
+					rpl_umodeis(msg, *client);
+				}
 			}
 		}
+		_sendResponse(msg);
+	}
+
+	/*
+	 * MOTD
+	 * Send the "Message Of The Day" of the server
+	 */
+	void	Server::_execMotdCmd(Message& msg)
+	{
+		const std::string	start_line = msg.getSender().getNick() + " :- ";
+
+		msg.setRecipient(msg.getSender());
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+
+		// RPL_MOTDSTART
+		msg.appendResponse(" 375 ");
+		msg.appendResponse(start_line);
+		msg.appendResponse(getHostname());
+		msg.appendResponse(" Message of the day - ");
+		msg.appendSeparator();
+		// RPL_MOTD
+		msg.appendResponse(" 372 ");
+		msg.appendResponse(start_line);
+		msg.appendResponse("Welcome you users! This server was made by very nice people"); // tmp
+		msg.appendSeparator();
+		// RPL_ENDOFMOTD
+		msg.appendResponse(" 376 ");
+		msg.appendResponse(start_line);
+		msg.appendResponse(":End of MOTD command");
+		msg.appendSeparator();
+
 		_sendResponse(msg);
 	}
 

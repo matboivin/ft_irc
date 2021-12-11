@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/02 18:09:22 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 12:14:06 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,12 +138,14 @@ namespace ft_irc
 	/* Init max number of params for each command */
 	void	Parser::_initParamsNb()
 	{
+		this->_paramsNb["DIE"]		= 0;
 		this->_paramsNb["INVITE"]	= 2;
 		this->_paramsNb["JOIN"]		= 1;
 		this->_paramsNb["KICK"]		= 3;
 		this->_paramsNb["KILL"]		= 2;
 		this->_paramsNb["LIST"]		= 1;
 		this->_paramsNb["MODE"]		= 2;
+		this->_paramsNb["MOTD"]		= 1;
 		this->_paramsNb["NICK"]		= 1;
 		this->_paramsNb["NAMES"]	= 1;
 		this->_paramsNb["NOTICE"]	= 2;
@@ -185,7 +187,7 @@ namespace ft_irc
 	/* Checks whether command name is valid */
 	bool	Parser::_commandIsValid(Message& msg)
 	{
-		const std::string	cmds = "CAP INVITE JOIN KICK KILL LIST MODE "
+		const std::string	cmds = "CAP DIE INVITE JOIN KICK KILL LIST MODE MOTD "
 									"NAMES NICK NOTICE OPER PASS PART PING PONG "
 									"PRIVMSG TOPIC QUIT USER WHOIS WHO";
 
