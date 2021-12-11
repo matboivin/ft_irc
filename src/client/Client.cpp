@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/12/11 15:05:16 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 15:08:54 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -385,7 +385,7 @@ namespace ft_irc
 
 		if (found == std::string::npos)
 		{
-			found = this->_in_buffer.find("\n");
+			// found = this->_in_buffer.find("\n");
 			endofline = "\n";
 		}
 		std::string	cmd = this->_in_buffer.substr(0, this->_in_buffer.find(endofline) + endofline.size());
