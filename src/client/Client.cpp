@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/12/11 20:07:27 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 20:29:39 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -303,7 +303,6 @@ namespace ft_irc
 		return ((now.tv_sec - this->_last_event_time.tv_sec) > this->_keep_alive.tv_sec);
 	}
 
-	//placeholder
 	bool	Client::isOper() const
 	{
 		return (this->_mode.find("o") != std::string::npos);

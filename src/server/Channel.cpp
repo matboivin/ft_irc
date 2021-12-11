@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:58:53 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/11 20:07:23 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 20:35:49 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,13 @@ namespace ft_irc
 {
 	/* Default constructor */
 	Channel::Channel()
-	: _name(), _topic(), _mode(), _clients(), _chan_ops()
+	: _name(), _topic(), _mode("t"), _clients(), _chan_ops()
 	{
 	}
 
 	/* Name constructor */
 	Channel::Channel(const std::string& name)
-	: _name(name), _topic(), _mode(), _clients(), _chan_ops()
+	: _name(name), _topic(), _mode("t"), _clients(), _chan_ops()
 	{
 	}
 
@@ -204,10 +204,18 @@ namespace ft_irc
 
 	/* Mode operations ********************************************************** */
 
-	/* Adds the mode passed as parameter to the client mode string */
-	int	Channel::addMode(char mode_char)
+	/* Check whether the given mode is set */
+	bool	Channel::hasMode(const char& mode_char) const
 	{
-		if (mode_char == 'o')
+		return (this->_mode.find(mode_char) != std::string::npos);
+	}
+
+	/* Adds the mode passed as parameter to the client mode string */
+	int	Channel::addMode(const char& mode_char)
+	{
+		const std::string	modes = "ot";
+
+		if (modes.find(mode_char) != std::string::npos)
 		{
 			if (this->_mode.find(mode_char) == std::string::npos)
 				this->_mode += mode_char;
@@ -217,9 +225,11 @@ namespace ft_irc
 	}
 
 	/* Removes the mode passed as parameter from the client mode string */
-	int	Channel::removeMode(char mode_char)
+	int	Channel::removeMode(const char& mode_char)
 	{
-		if (mode_char == 'o')
+		const std::string	modes = "ot";
+
+		if (modes.find(mode_char) != std::string::npos)
 		{
 			if (this->_mode.find(mode_char) != std::string::npos)
 				this->_mode.erase(this->_mode.find(mode_char), 1);

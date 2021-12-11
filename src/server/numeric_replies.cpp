@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/11 18:28:00 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 20:49:00 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,7 +218,7 @@ namespace ft_irc
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
 		msg.appendResponse(channel.getName());
-		msg.appendResponse(" ");
+		msg.appendResponse(" +");
 		msg.appendResponse(channel.getMode());
 		msg.appendSeparator();
 	}
@@ -261,9 +261,9 @@ namespace ft_irc
 		msg.appendResponse(" 341 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
-		msg.appendResponse(chan_name);
-		msg.appendResponse(" ");
 		msg.appendResponse(nick);
+		msg.appendResponse(" ");
+		msg.appendResponse(chan_name);
 		msg.appendSeparator();
 	}
 

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/11 20:18:05 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 20:41:44 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -722,6 +722,8 @@ namespace ft_irc
 				err_useronchannel(msg, guest, chan_name);
 			else
 			{
+				msg.setRecipient(*guest_user);
+
 				Message	invite_msg(msg.getSender(), getHostname());
 
 				rpl_inviting(invite_msg, chan_name, guest);
@@ -974,7 +976,7 @@ namespace ft_irc
 
 		if (msg.getParams().size() < 2) // just display the mode str
 		{
-			rpl_channelmodeis(msg, channel);
+			rpl_channelmodeis(mode_msg, channel);
 			_sendResponse(mode_msg);
 			return ;
 		}
@@ -983,6 +985,7 @@ namespace ft_irc
 		{
 			err_chanoprivsneeded(msg, channel.getName());
 			_sendResponse(msg);
+			return ;
 		}
 
 		std::string	mode_str = msg.getParams().at(1);
@@ -1010,7 +1013,7 @@ namespace ft_irc
 					msg.appendResponse(*mode_char);
 					msg.appendSeparator();
 					_sendResponse(msg);
-					rpl_channelmodeis(msg, channel);
+					rpl_channelmodeis(mode_msg, channel);
 				}
 			}
 			else
@@ -1024,7 +1027,7 @@ namespace ft_irc
 					msg.appendResponse(*mode_char);
 					msg.appendSeparator();
 					_sendResponse(msg);
-					rpl_channelmodeis(msg, channel);
+					rpl_channelmodeis(mode_msg, channel);
 				}
 			}
 		}
@@ -1405,7 +1408,13 @@ namespace ft_irc
 			else if (!_userOnChannel(msg.getSender(), *channel))
 				err_notonchannel(msg, chan_name, true);
 			else if (msg.getParams().size() > 1 && !channel_is_valid(msg.getParams().at(1)))
-				channel->changeTopic(msg.getParams().at(1), msg);
+			{
+				// if 't' flag is set: the topic is settable by channel operator only
+				if (channel->hasMode('t') && !msg.getSender().isChanOp(*channel))
+					err_chanoprivsneeded(msg, chan_name, true);
+				else
+					channel->changeTopic(msg.getParams().at(1), msg);
+			}
 			else if (channel->getTopic().empty())
 				rpl_notopic(msg, channel->getName(), true);
 			else
