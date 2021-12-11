@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/12/06 16:02:37 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 15:05:16 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -423,8 +423,8 @@ namespace ft_irc
 		ret = recv(this->_socket_fd, bytes_buffer, MAX_COMMAND_SIZE, 0);
 		if (ret == -1)
 		{
+			std::cerr << __FILE__ ":" <<__LINE__ << " : " << "FATAL: recv()" << std::endl;
 			throw std::runtime_error("recv() failed");
-			std::cerr << __FILE__ ":" <<__LINE__ << " : " << "FATAL: poll()" << std::endl;
 		}
 		if (ret == 0)
 			return (0);
