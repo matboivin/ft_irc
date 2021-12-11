@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/12/11 17:21:50 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 17:24:25 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,6 +152,8 @@ namespace ft_irc
 
 	std::string	Client::getNick() const
 	{
+		if (this->_nick.empty())
+			return ("*");
 		return (this->_nick);
 	}
 
