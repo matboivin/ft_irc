@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/11 15:55:23 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 16:05:03 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,6 @@ namespace ft_irc
 	void	err_nonicknamegiven(Message& msg, bool rewrite = false); // 431
 	void	err_erroneusnickname(Message& msg, bool rewrite = false); // 432
 	void	err_nicknameinuse(Message& msg, bool rewrite = false); // 433
-	void	err_nickcollision(Message& msg, bool rewrite = false); // 436
 	void	err_usernotinchannel(Message& msg, const std::string& nick, const std::string& chan_name, bool rewrite = false); // 441
 	void	err_notonchannel(Message& msg, const std::string& chan_name, bool rewrite = false); // 442
 	void	err_useronchannel(Message& msg, const std::string& nick, const std::string& chan_name, bool rewrite = false); // 443
