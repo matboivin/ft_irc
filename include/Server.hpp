@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/12/11 12:13:31 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 15:13:51 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,8 +69,6 @@ namespace ft_irc
 		const t_clients&		getClients() const;
 		t_clients::iterator		getClient(const std::string& nick);
 		t_channels::iterator	getChannel(const std::string& chan_name);
-
-		/* Checkers */
 		bool					isAlive() const;
 
 		/* Main loop */
@@ -120,7 +118,7 @@ namespace ft_irc
 		/* Command response */
 		void					_setResponseRecipients(Message& msg);
 		void					_sendResponse(Message& msg);
-		void					_make_welcome_msg(Client& client);
+		void					_makeWelcomeMsg(Client& client);
 
 		/* Channel operations */
 		Channel&				_addChannel(const std::string& name, Client& creator);

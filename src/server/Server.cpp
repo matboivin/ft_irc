@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/11 12:17:56 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 15:25:09 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,12 +47,12 @@ namespace ft_irc
 		_log(LOG_LEVEL_INFO, "Server constructor");
 
 		// create a new address struct
-		this->_alive=false;
+		this->_alive = false;
 		this->_address.sin_family = AF_INET;
 		this->_address.sin_port = htons(atoi(getPort().c_str()));
 		this->_address.sin_addr.s_addr = inet_addr(getBindAddress().c_str());
 
-		//init creation date string
+		// init creation date string
 		time_t	now = time(0);
 		this->_creation_date = ctime(&now);
 
@@ -185,8 +185,6 @@ namespace ft_irc
 		return (it);
 	}
 
-	/* Checkers ***************************************************************** */
-
 	bool	Server::isAlive() const
 	{
 		return (this->_alive);
@@ -247,16 +245,16 @@ namespace ft_irc
 	//IPPROTO_TCP: TCP protocol
 	bool	Server::_createSocket()
 	{
-		//Create a socket.
+		// Create a socket.
 		this->_sockfd = socket(AF_INET, SOCK_STREAM, 0);
 		if (this->_sockfd < 0)
 		{
 			_log(LOG_LEVEL_FATAL, "Error: Could not create socket.");
 			return (false);
 		}
-		setNonblocking(this->_sockfd);
 
-		//Set socket options.
+		// Set socket options.
+		setNonblocking(this->_sockfd);
 		int	optval = 1;
 
 		if (setsockopt(this->_sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) < 0)
@@ -264,13 +262,13 @@ namespace ft_irc
 			_log(LOG_LEVEL_FATAL, "Error: Could not set socket options.");
 			return (false);
 		}
-		//Bind the socket to the address.
+		// Bind the socket to the address.
 		if (bind(this->_sockfd, (struct sockaddr *)&_address, sizeof(_address)) < 0)
 		{
 			_log(LOG_LEVEL_FATAL, "Error: Could not bind socket.");
 			return (false);
 		}
-		//Listen for connections.
+		// Listen for connections.
 		if (listen(this->_sockfd, this->_backlog_max) < 0)
 		{
 			_log(LOG_LEVEL_FATAL, "Error: Could not listen on socket.");
@@ -284,13 +282,13 @@ namespace ft_irc
 	{
 		Client	new_client;
 
-		//accept a new connection
+		// accept a new connection
 		new_client.awaitConnection(this->_sockfd);
 		if (new_client.getSocketFd() < 0)
 			return (false);
-		//log the clients IP address
-		_log(LOG_LEVEL_INFO, "Client " + new_client.getIpAddressStr() + " connected");
 
+		// log the clients IP address
+		_log(LOG_LEVEL_INFO, "Client " + new_client.getIpAddressStr() + " connected");
 		this->_clients.push_back(new_client);
 		return (true);
 	}
@@ -321,13 +319,13 @@ namespace ft_irc
 			{
 				_executeCommand(msg, client); // execute the command
 				// if the client has just registered, send them a nice welcome message :D
-				if (client.isRegistered() == false && !client.getNick().empty() &&
-					!client.getUsername().empty() && !client.getHostname().empty()
+				if (client.isRegistered() == false && !client.getNick().empty()
+					&& !client.getUsername().empty() && !client.getHostname().empty()
 					&& client.isAllowed() == true)
 				{
 					_log(LOG_LEVEL_INFO,
 						"Client " + client.getNick() + "@" + client.getIpAddressStr() + " has just registered");
-					_make_welcome_msg(client);
+					_makeWelcomeMsg(client);
 				}
 			}
 			client.updateLastEventTime();
@@ -363,7 +361,7 @@ namespace ft_irc
 				}
 				else
 				{
-					//send them a timeout message
+					// send them a timeout message
 					Message	timeout_msg(*it);
 
 					timeout_msg.setRecipient(*it);
@@ -399,7 +397,9 @@ namespace ft_irc
 				goodbye_msg.appendResponse(it->getIpAddressStr());
 			}
 			else
+			{
 				goodbye_msg.setResponse(comment);
+			}
 			goodbye_msg.appendSeparator();
 			_sendResponse(goodbye_msg);
 
@@ -408,8 +408,7 @@ namespace ft_irc
 		}
 		it->setAlive(false);
 		it->setAllowed(false);
-		_log(LOG_LEVEL_INFO,
-			"Client " + it->getNick() + "@" + it->getIpAddressStr() + " disconnected");
+		_log(LOG_LEVEL_INFO, "Client " + it->getNick() + "@" + it->getIpAddressStr() + " disconnected");
 		return (0);
 	}
 
@@ -418,8 +417,14 @@ namespace ft_irc
 		Message	msg(client);
 
 		msg.setRecipient(client);
-		msg.setCommand("PING");
-		msg.setResponse("PING " + getHostname() + " :" + getHostname() + CRLF);
+		// msg.setCommand("PING");
+		// msg.setResponse("PING " + getHostname() + " :" + getHostname() + CRLF);
+		msg.setResponse(build_prefix(getHostname()));
+		msg.appendResponse(" PING ");
+		msg.appendResponse(getHostname());
+		msg.appendResponse(" :");
+		msg.appendResponse(getHostname());
+		msg.appendSeparator();
 		_sendResponse(msg);
 		// reset timeout and mark the client as pinged
 		client.updateLastEventTime();
@@ -539,14 +544,16 @@ namespace ft_irc
 
 			if (pos != std::string::npos)
 				logOutput.replace(pos, 2, CRLF_PRINTABLE);
+
 			_log(LOG_LEVEL_DEBUG, "Sending: '" + logOutput + "' to " + (*dst)->getIpAddressStr());
+
 			if (send((*dst)->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), MSG_NOSIGNAL) < 0)
 				throw std::runtime_error("send() failed");
 		}
 	}
 
 	/* Sends a nice welcome message */
-	void	Server::_make_welcome_msg(Client& client)
+	void	Server::_makeWelcomeMsg(Client& client)
 	{
 		Message	welcome_msg(client, getHostname());
 
@@ -1383,6 +1390,7 @@ namespace ft_irc
 
 		if (client.isOper())
 			rpl_whoisoperator(msg, client, false);
+
 		_sendResponse(msg);
 	}
 
@@ -1410,7 +1418,7 @@ namespace ft_irc
 			else
 			{
 				paramsIt = msg.getParams().begin();
-				//iterate over params
+				// iterate over params
 				for (; paramsIt != msg.getParams().end(); ++paramsIt)
 				{
 					//_logger.log(0, "WHOIS: " + *paramsIt  + ":" + it->getNick());
