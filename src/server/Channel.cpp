@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:58:53 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/11 16:11:27 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 20:07:23 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,7 @@
 #include <list>
 #include <iostream>
 #include <string>
-#include "Client.hpp"
-#include "Message.hpp"
-#include "Channel.hpp"
-#include "server_operations.hpp"
+#include "ft_irc.hpp"
 
 namespace ft_irc
 {
@@ -203,6 +200,32 @@ namespace ft_irc
 			+ " TOPIC " + this->_name + " :" + topic
 			);
 		msg.appendSeparator();
+	}
+
+	/* Mode operations ********************************************************** */
+
+	/* Adds the mode passed as parameter to the client mode string */
+	int	Channel::addMode(char mode_char)
+	{
+		if (mode_char == 'o')
+		{
+			if (this->_mode.find(mode_char) == std::string::npos)
+				this->_mode += mode_char;
+			return (ERR_SUCCESS);
+		}
+		return (ERR_UNKNOWNMODE);
+	}
+
+	/* Removes the mode passed as parameter from the client mode string */
+	int	Channel::removeMode(char mode_char)
+	{
+		if (mode_char == 'o')
+		{
+			if (this->_mode.find(mode_char) != std::string::npos)
+				this->_mode.erase(this->_mode.find(mode_char), 1);
+			return (ERR_SUCCESS);
+		}
+		return (ERR_UNKNOWNMODE);
 	}
 
 	/* ************************************************************************** */

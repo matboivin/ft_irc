@@ -6,14 +6,12 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/12/11 19:44:30 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 20:07:27 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <list>
 #include <string>
-#include "Channel.hpp"
-#include "Client.hpp"
 #include "ft_irc.hpp"
 
 namespace ft_irc

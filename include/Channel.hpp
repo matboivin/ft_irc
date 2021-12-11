@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:42:14 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/11 16:11:36 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 20:05:18 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,10 @@ namespace ft_irc
 
 		/* Manage topic */
 		void				changeTopic(const std::string& topic, Message& msg);
+
+		/* Mode operations */
+		int					addMode(char mode_char);
+		int					removeMode(char mode_char);
 
 		/* debug */
 		void				displayClients();
