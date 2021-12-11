@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/06 16:00:22 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 15:55:47 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,20 +90,21 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	rpl_whoisuser(Message& msg, bool rewrite)
+	void	rpl_whoisuser(Message& msg, const Client& user, bool rewrite)
 	{
-		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 311 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
-		msg.appendResponse(msg.getSender().getUsername());
+		msg.appendResponse(user.getNick());
 		msg.appendResponse(" ");
-		msg.appendResponse(msg.getSender().getIpAddressStr());
+		msg.appendResponse(msg.getSender().getUsername());
 		msg.appendResponse(" :");
-		msg.appendResponse(msg.getSender().getRealName());
+		msg.appendResponse(msg.getSender().getHostname());
+		msg.appendResponse(" * : ");
+		msg.appendResponse(user.getRealName());
 		msg.appendSeparator();
 	}
 
@@ -351,24 +352,6 @@ namespace ft_irc
 		msg.appendResponse(" 313 ");
 		msg.appendResponse(user.getNick());
 		msg.appendResponse(" :is an IRC operator");
-		msg.appendSeparator();
-	}
-
-	void	rpl_whoisuser(Message& msg, const Client& user, bool rewrite)
-	{
-		if (rewrite)
-			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 311 ");
-		msg.appendResponse(msg.getSender().getNick());
-		msg.appendResponse(" ");
-		msg.appendResponse(user.getNick());
-		msg.appendResponse(" ");
-		msg.appendResponse(msg.getSender().getUsername());
-		msg.appendResponse(" :");
-		msg.appendResponse(msg.getSender().getHostname());
-		msg.appendResponse(" * : ");
-		msg.appendResponse(user.getRealName());
 		msg.appendSeparator();
 	}
 

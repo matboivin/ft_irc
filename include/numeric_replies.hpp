@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/06 15:59:53 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 15:55:23 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ namespace ft_irc
 	void	rpl_created(Message& msg, const std::string& creation_date, bool rewrite = false); // 003
 	void	rpl_myinfo(Message& msg, const std::string& version, bool rewrite = false); // 004
 	void	rpl_umodeis(Message& msg, const Client& client, bool rewrite = false); // 221
-	void	rpl_whoisuser(Message& msg, bool rewrite = false); // 311
 	void	rpl_whoisuser(Message& msg, const Client& user, bool rewrite = false); // 311
 	void	rpl_whoisserver(Message& msg, const std::string& description, bool rewrite = false); // 312
 	void	rpl_whoisoperator(Message& msg, const Client& user, bool rewrite = false); // 313
