@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/11 17:42:37 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 18:30:43 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,10 +72,10 @@ namespace ft_irc
 	void	err_alreadyregistered(Message& msg, bool rewrite = false); // 462
 	void	err_passwdmismatch(Message& msg, bool rewrite = false); // 464
 	void	err_channelisfull(Message& msg, const std::string& chan_name, bool rewrite = false); // 471
+	void	err_unknownmode(Message& msg, const char& mode, bool rewrite = false); // 472
 	void	err_noprivileges(Message& msg, bool rewrite = false); // 481
 	void	err_chanoprivsneeded(Message& msg, const std::string& chan_name, bool rewrite = false); // 482
 	void	err_cantkillserver(Message& msg, bool rewrite = false); // 483
-	void	err_unknownmodeflag(Message& msg, bool rewrite = false); // 501
 	void	err_usersdontmatch(Message& msg, bool rewrite = false); // 502
 } // !namespace ft_irc
 

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/12/11 17:24:25 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 19:44:30 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -501,11 +501,15 @@ namespace ft_irc
 	/* Adds the mode passed as parameter to the client mode string */
 	int	Client::addMode(char mode_char)
 	{
-		std::string	valid_modes = "iswo";
+		std::string	valid_modes = "io";
 
 		if (valid_modes.find(mode_char) != std::string::npos)
 		{
-			this->_mode += mode_char;
+			if ((mode_char == 'o') && !this->isOper()) // not enough rights, do nothing
+				return (ERR_SUCCESS);
+
+			if (this->_mode.find(mode_char) == std::string::npos)
+				this->_mode += mode_char;
 			return (ERR_SUCCESS);
 		}
 		return (ERR_UNKNOWNMODE);
@@ -514,11 +518,12 @@ namespace ft_irc
 	/* Removes the mode passed as parameter from the client mode string */
 	int	Client::removeMode(char mode_char)
 	{
-		std::string	valid_modes = "iswo";
+		std::string	valid_modes = "io";
 
 		if (valid_modes.find(mode_char) != std::string::npos)
 		{
-			this->_mode.erase(this->_mode.find(mode_char), 1);
+			if (this->_mode.find(mode_char) != std::string::npos)
+				this->_mode.erase(this->_mode.find(mode_char), 1);
 			return (ERR_SUCCESS);
 		}
 		return (ERR_UNKNOWNMODE);

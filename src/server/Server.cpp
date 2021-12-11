@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/11 17:42:18 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 19:41:59 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -899,35 +899,63 @@ namespace ft_irc
 		_sendResponse(msg);
 	}
 
-	/* Helper for MODE */
-	int	Server::_setUserMode(Client &client, const std::string& mode_str, Message& msg)
+	/*
+	 * MODE <nickname> [flags]
+	 * Set a user mode
+	 */
+	void	Server::_setUserMode(Client& client, Message& msg)
 	{
-		std::string	mode_str_copy = mode_str;
-		int			error_code = 0;
+		Message		mode_msg(client, getHostname());
 
-		if (mode_str_copy.empty())
-			return (1);
-		if (mode_str_copy[0] == '+')
-			mode_str_copy.erase(0, 1);
-		for (std::string::iterator mode_char = mode_str_copy.begin();
-			 mode_char != mode_str_copy.end();
+		mode_msg.setRecipient(client);
+
+		if (msg.getParams().size() < 2)
+		{
+			rpl_umodeis(mode_msg, client);
+			_sendResponse(mode_msg);
+			return ;
+		}
+
+		std::string	mode_str = msg.getParams().at(1);
+
+		msg.addRecipients(msg.getSender().getAllContacts());
+
+		if (mode_str[0] == '+')
+			mode_str.erase(0, 1);
+
+		for (std::string::const_iterator mode_char = mode_str.begin();
+			 mode_char != mode_str.end();
 			 ++mode_char)
 		{
 			if (*mode_char == '-')
 			{
-				error_code = client.removeMode(*mode_char);
+				if (client.removeMode(*mode_char))
+					err_unknownmode(mode_msg, *mode_char);
+				else
+				{
+					msg.setResponse(build_prefix(build_full_client_id(msg.getSender())));
+					msg.appendResponse(" MODE +");
+					msg.appendResponse(*mode_char);
+					msg.appendSeparator();
+					_sendResponse(msg);
+					rpl_umodeis(mode_msg, client);
+				}
 			}
 			else
 			{
-				error_code = client.addMode(*mode_char);
-			}
-			if (error_code)
-			{
-				//Append error message
-				msg.appendResponse(error_msg[error_code]);
+				if (client.addMode(*mode_char))
+					err_unknownmode(mode_msg, *mode_char);
+				else
+				{
+					msg.appendResponse(" MODE -");
+					msg.appendResponse(*mode_char);
+					msg.appendSeparator();
+					_sendResponse(msg);
+					rpl_umodeis(mode_msg, client);
+				}
 			}
 		}
-		return (0);
+		_sendResponse(mode_msg);
 	}
 
 	/*
@@ -957,21 +985,20 @@ namespace ft_irc
 				{
 					if (msg.getParams().size() > 1)
 						channel->setMode(msg.getParams().at(1));
-					rpl_channelmodeis(msg, *channel);
+					rpl_channelmodeis(msg, *channel, true);
 				}
 			}
 			else
 			{
 				t_clients::iterator	client = getClient(target);
 
-				if (client == this->_clients.end())
-					err_usersdontmatch(msg);
-				else
+				if (client != this->_clients.end())
 				{
-					if (msg.getParams().size() > 1)
-						_setUserMode(*client, msg.getParams().at(1), msg);
-					rpl_umodeis(msg, *client);
+					_setUserMode(*client, msg);
+					return ;
 				}
+				else
+					err_usersdontmatch(msg, true);
 			}
 		}
 		_sendResponse(msg);

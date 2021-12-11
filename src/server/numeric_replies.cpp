@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/11 17:44:03 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 18:28:00 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ namespace ft_irc
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 221 ");
 		msg.appendResponse(client.getNick());
-		msg.appendResponse(" ");
+		msg.appendResponse(" +");
 		msg.appendResponse(client.getMode());
 		msg.appendSeparator();
 	}
@@ -646,6 +646,20 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
+	void	err_unknownmode(Message& msg, const char& mode, bool rewrite)
+	{
+		msg.setRecipient(msg.getSender());
+		if (rewrite)
+			msg.clearResponse();
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 472 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
+		msg.appendResponse(mode);
+		msg.appendResponse(" :is unknown mode char to me");
+		msg.appendSeparator();
+	}
+
 	void	err_noprivileges(Message& msg, bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
@@ -681,18 +695,6 @@ namespace ft_irc
 		msg.appendResponse(" 483 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" :You can't kill a server!");
-		msg.appendSeparator();
-	}
-
-	void	err_unknownmodeflag(Message& msg, bool rewrite)
-	{
-		msg.setRecipient(msg.getSender());
-		if (rewrite)
-			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 501 ");
-		msg.appendResponse(msg.getSender().getNick());
-		msg.appendResponse(" :Unknown MODE flag");
 		msg.appendSeparator();
 	}
 
