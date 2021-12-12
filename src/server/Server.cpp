@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/12 16:17:47 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 16:24:58 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -911,7 +911,6 @@ namespace ft_irc
 		std::string	mode_str = msg.getParams().at(1);
 		Message		mode_msg(target, getHostname());
 		char		mode_operator = '*'; // will store + or -
-		bool		send_mode = false;
 
 		msg.setRecipients(target.getAllContacts());
 
@@ -928,7 +927,8 @@ namespace ft_irc
 			{
 				continue ;
 			}
-			else if ((mode_operator == '+') || (mode_operator == '-'))
+			else if (usermode_char_is_valid(*mode_char)
+					 && ((mode_operator == '+') || (mode_operator == '-')))
 			{
 				if (mode_operator == '+')
 					target.addMode(*mode_char);
@@ -940,17 +940,10 @@ namespace ft_irc
 				msg.appendResponse(*mode_char);
 				msg.appendSeparator();
 				_sendResponse(msg);
-				rpl_umodeis(mode_msg, target, true);
-				_sendResponse(mode_msg);
 			}
-			else
-				send_mode = true;
 		}
-		if (send_mode)
-		{
-			rpl_umodeis(mode_msg, target, true);
-			_sendResponse(mode_msg);
-		}
+		rpl_umodeis(mode_msg, target, true);
+		_sendResponse(mode_msg);
 	}
 
 	/*
