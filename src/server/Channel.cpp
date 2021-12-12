@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:58:53 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/05 18:58:17 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 20:35:49 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,19 @@
 #include <list>
 #include <iostream>
 #include <string>
-#include "Client.hpp"
-#include "Message.hpp"
-#include "Channel.hpp"
-#include "server_operations.hpp"
+#include "ft_irc.hpp"
 
 namespace ft_irc
 {
 	/* Default constructor */
 	Channel::Channel()
-	: _name(), _topic(), _mode(), _clients(), _chan_ops()
+	: _name(), _topic(), _mode("t"), _clients(), _chan_ops()
 	{
 	}
 
 	/* Name constructor */
 	Channel::Channel(const std::string& name)
-	: _name(name), _topic(), _mode(), _clients(), _chan_ops()
+	: _name(name), _topic(), _mode("t"), _clients(), _chan_ops()
 	{
 	}
 
@@ -205,6 +202,42 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
+	/* Mode operations ********************************************************** */
+
+	/* Check whether the given mode is set */
+	bool	Channel::hasMode(const char& mode_char) const
+	{
+		return (this->_mode.find(mode_char) != std::string::npos);
+	}
+
+	/* Adds the mode passed as parameter to the client mode string */
+	int	Channel::addMode(const char& mode_char)
+	{
+		const std::string	modes = "ot";
+
+		if (modes.find(mode_char) != std::string::npos)
+		{
+			if (this->_mode.find(mode_char) == std::string::npos)
+				this->_mode += mode_char;
+			return (ERR_SUCCESS);
+		}
+		return (ERR_UNKNOWNMODE);
+	}
+
+	/* Removes the mode passed as parameter from the client mode string */
+	int	Channel::removeMode(const char& mode_char)
+	{
+		const std::string	modes = "ot";
+
+		if (modes.find(mode_char) != std::string::npos)
+		{
+			if (this->_mode.find(mode_char) != std::string::npos)
+				this->_mode.erase(this->_mode.find(mode_char), 1);
+			return (ERR_SUCCESS);
+		}
+		return (ERR_UNKNOWNMODE);
+	}
+
 	/* ************************************************************************** */
 
 	// debug
@@ -214,6 +247,18 @@ namespace ft_irc
 
 		for (t_clients::iterator	it = this->_clients.begin();
 			 it != this->_clients.end();
+			 ++it)
+		{
+			std::cout << "- " << (*it)->getNick() << '\n';
+		}
+	}
+
+	void	Channel::displayChanOps()
+	{
+		std::cout << "ChanOps in channel " << this->getName() << ":\n";
+
+		for (t_clients::iterator	it = this->_chan_ops.begin();
+			 it != this->_chan_ops.end();
 			 ++it)
 		{
 			std::cout << "- " << (*it)->getNick() << '\n';

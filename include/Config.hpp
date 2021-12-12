@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/19 16:41:45 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/11 15:12:00 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 16:41:24 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,6 @@ namespace ft_irc
 		/* Oper operations */
 		void				addOperBlock(const std::string& name, const std::string& password);
 		void				clearOperBlocks();
-		bool				operUserIsValid(const std::string& name);
 		bool				operBlockIsValid(const std::string& name, const std::string& password);
 
 	private:

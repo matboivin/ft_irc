@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 12:25:08 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/01 00:38:11 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 12:49:31 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ int	test_parsing()
 
 		parser.parseMessage(msg, "foo");
 		expected.setCommand("foo");
-		expected.setResponse(":irc.42.fr 421 foo :Unknown command\r\n");
+		expected.setResponse(":irc.42.fr 421 nick foo :Unknown command\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -311,38 +311,10 @@ int	test_modes()
 {
 	assert(ft_irc::channel_mode_is_valid("+o"));
 	assert(ft_irc::channel_mode_is_valid("-o"));
-	assert(ft_irc::channel_mode_is_valid("+O"));
-	assert(ft_irc::channel_mode_is_valid("-O"));
-	assert(ft_irc::channel_mode_is_valid("+v"));
-	assert(ft_irc::channel_mode_is_valid("-v"));
-	assert(ft_irc::channel_mode_is_valid("+a"));
-	assert(ft_irc::channel_mode_is_valid("-a"));
 	assert(ft_irc::channel_mode_is_valid("+i"));
 	assert(ft_irc::channel_mode_is_valid("-i"));
-	assert(ft_irc::channel_mode_is_valid("+m"));
-	assert(ft_irc::channel_mode_is_valid("-m"));
-	assert(ft_irc::channel_mode_is_valid("+n"));
-	assert(ft_irc::channel_mode_is_valid("-n"));
-	assert(ft_irc::channel_mode_is_valid("+q"));
-	assert(ft_irc::channel_mode_is_valid("-q"));
-	assert(ft_irc::channel_mode_is_valid("+p"));
-	assert(ft_irc::channel_mode_is_valid("-p"));
-	assert(ft_irc::channel_mode_is_valid("+s"));
-	assert(ft_irc::channel_mode_is_valid("-s"));
-	assert(ft_irc::channel_mode_is_valid("+r"));
-	assert(ft_irc::channel_mode_is_valid("-r"));
 	assert(ft_irc::channel_mode_is_valid("+t"));
 	assert(ft_irc::channel_mode_is_valid("-t"));
-	assert(ft_irc::channel_mode_is_valid("+k"));
-	assert(ft_irc::channel_mode_is_valid("-k"));
-	assert(ft_irc::channel_mode_is_valid("+l"));
-	assert(ft_irc::channel_mode_is_valid("-l"));
-	assert(ft_irc::channel_mode_is_valid("+b"));
-	assert(ft_irc::channel_mode_is_valid("-b"));
-	assert(ft_irc::channel_mode_is_valid("+e"));
-	assert(ft_irc::channel_mode_is_valid("-e"));
-	assert(ft_irc::channel_mode_is_valid("+I"));
-	assert(ft_irc::channel_mode_is_valid("-I"));
 
 	assert(ft_irc::channel_mode_is_valid("+o+") == false);
 	assert(ft_irc::channel_mode_is_valid("-o+") == false);

@@ -6,14 +6,12 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/12/11 15:08:54 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 20:29:39 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <list>
 #include <string>
-#include "Channel.hpp"
-#include "Client.hpp"
 #include "ft_irc.hpp"
 
 namespace ft_irc
@@ -152,6 +150,8 @@ namespace ft_irc
 
 	std::string	Client::getNick() const
 	{
+		if (this->_nick.empty())
+			return ("*");
 		return (this->_nick);
 	}
 
@@ -225,25 +225,21 @@ namespace ft_irc
 
 	void	Client::setNick(const std::string& nick)
 	{
-		std::cout << "Nick: " << nick << std::endl;
 		this->_nick = nick;
 	}
 
 	void	Client::setRealName(const std::string& realname)
 	{
-		std::cout << "Real Name: " << realname << std::endl;
 		this->_realname = realname;
 	}
 
 	void	Client::setHostname(const std::string& hostname)
 	{
-		std::cout << "Hostname: " << hostname << std::endl;
 		this->_hostname = hostname;
 	}
 
 	void	Client::setUsername(const std::string& username)
 	{
-		std::cout << "Username: " << username << std::endl;
 		this->_username = username;
 	}
 
@@ -307,7 +303,6 @@ namespace ft_irc
 		return ((now.tv_sec - this->_last_event_time.tv_sec) > this->_keep_alive.tv_sec);
 	}
 
-	//placeholder
 	bool	Client::isOper() const
 	{
 		return (this->_mode.find("o") != std::string::npos);
@@ -503,11 +498,15 @@ namespace ft_irc
 	/* Adds the mode passed as parameter to the client mode string */
 	int	Client::addMode(char mode_char)
 	{
-		std::string	valid_modes = "iswo";
+		std::string	valid_modes = "io";
 
 		if (valid_modes.find(mode_char) != std::string::npos)
 		{
-			this->_mode += mode_char;
+			if ((mode_char == 'o') && !this->isOper()) // not enough rights, do nothing
+				return (ERR_SUCCESS);
+
+			if (this->_mode.find(mode_char) == std::string::npos)
+				this->_mode += mode_char;
 			return (ERR_SUCCESS);
 		}
 		return (ERR_UNKNOWNMODE);
@@ -516,11 +515,12 @@ namespace ft_irc
 	/* Removes the mode passed as parameter from the client mode string */
 	int	Client::removeMode(char mode_char)
 	{
-		std::string	valid_modes = "iswo";
+		std::string	valid_modes = "io";
 
 		if (valid_modes.find(mode_char) != std::string::npos)
 		{
-			this->_mode.erase(this->_mode.find(mode_char), 1);
+			if (this->_mode.find(mode_char) != std::string::npos)
+				this->_mode.erase(this->_mode.find(mode_char), 1);
 			return (ERR_SUCCESS);
 		}
 		return (ERR_UNKNOWNMODE);

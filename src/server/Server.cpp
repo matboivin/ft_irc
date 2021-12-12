@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/11 15:25:09 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 12:50:27 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -478,12 +478,13 @@ namespace ft_irc
 	{
 		if (msg.getCommand() == "CAP")
 			return (1);
+
 		// they didn't provide the connection password
-		if ((client.isAllowed() == false) && (msg.getCommand() != "PASS"))
+		if (!client.isAllowed() && (msg.getCommand() != "QUIT" && msg.getCommand() != "PASS"))
 		{
-			err_passwdmismatch(msg, true);
+			err_notregistered(msg, true);
 			_sendResponse(msg);
-			_disconnectClient(client, "ERROR :Password incorrect");
+			// _disconnectClient(client, "ERROR :Password incorrect");
 			return (0);
 		}
 
@@ -564,6 +565,7 @@ namespace ft_irc
 		rpl_umodeis(welcome_msg, client);
 		_execMotdCmd(welcome_msg); // message is sent here
 		client.setRegistered(true);
+		_log(LOG_LEVEL_INFO, "Client " + client.getNick() + " is now registered");
 	}
 
 	/* Channel operations ******************************************************* */
@@ -573,8 +575,10 @@ namespace ft_irc
 	{
 		this->_channels.push_back(Channel(name));
 
-		Channel	chan = this->_channels.back();
-		chan.addChanOp(creator);
+		t_channels::iterator	channel = getChannel(name);
+
+		channel->addChanOp(creator);
+		_log(LOG_LEVEL_INFO, "Created channel " + name + " by chan op " + creator.getNick());
 		return (this->_channels.back());
 	}
 
@@ -670,11 +674,6 @@ namespace ft_irc
 
 	/* Oper operations ********************************************************** */
 
-	bool	Server::_userCanBeOper(const std::string& name)
-	{
-		return (this->_config.operUserIsValid(name));
-	}
-
 	bool	Server::_canGiveOperPriv(const std::string& name, const std::string& password)
 	{
 		return (this->_config.operBlockIsValid(name, password));
@@ -723,6 +722,8 @@ namespace ft_irc
 				err_useronchannel(msg, guest, chan_name);
 			else
 			{
+				msg.setRecipient(*guest_user);
+
 				Message	invite_msg(msg.getSender(), getHostname());
 
 				rpl_inviting(invite_msg, chan_name, guest);
@@ -900,35 +901,137 @@ namespace ft_irc
 		_sendResponse(msg);
 	}
 
-	/* Helper for MODE */
-	int	Server::_setUserMode(Client &client, const std::string& mode_str, Message& msg)
+	/*
+	 * MODE <nickname> [flags]
+	 * Set a user mode
+	 */
+	void	Server::_setUserMode(Message& msg, Client& client)
 	{
-		std::string	mode_str_copy = mode_str;
-		int			error_code = 0;
+		Message		mode_msg(client, getHostname());
 
-		if (mode_str_copy.empty())
-			return (1);
-		if (mode_str_copy[0] == '+')
-			mode_str_copy.erase(0, 1);
-		for (std::string::iterator mode_char = mode_str_copy.begin();
-			 mode_char != mode_str_copy.end();
+		mode_msg.setRecipient(client);
+
+		if (msg.getParams().size() < 2) // just display the mode str
+		{
+			rpl_umodeis(mode_msg, client);
+			_sendResponse(mode_msg);
+			return ;
+		}
+
+		std::string	mode_str = msg.getParams().at(1);
+
+		msg.setRecipients(client.getAllContacts());
+
+		if (mode_str[0] == '+')
+			mode_str.erase(0, 1);
+
+		for (std::string::const_iterator mode_char = mode_str.begin();
+			 mode_char != mode_str.end();
 			 ++mode_char)
 		{
 			if (*mode_char == '-')
 			{
-				error_code = client.removeMode(*mode_char);
+				++mode_char;
+				if (mode_char == mode_str.end())
+					break ;
+				else if (client.removeMode(*mode_char))
+					err_unknownmode(mode_msg, *mode_char);
+				else
+				{
+					msg.setResponse(build_prefix(build_full_client_id(client)));
+					msg.appendResponse(" MODE -");
+					msg.appendResponse(*mode_char);
+					msg.appendSeparator();
+					_sendResponse(msg);
+					rpl_umodeis(mode_msg, client);
+				}
 			}
 			else
 			{
-				error_code = client.addMode(*mode_char);
-			}
-			if (error_code)
-			{
-				//Append error message
-				msg.appendResponse(error_msg[error_code]);
+				if (client.addMode(*mode_char))
+					err_unknownmode(mode_msg, *mode_char);
+				else
+				{
+					msg.setResponse(build_prefix(build_full_client_id(client)));
+					msg.appendResponse(" MODE +");
+					msg.appendResponse(*mode_char);
+					msg.appendSeparator();
+					_sendResponse(msg);
+					rpl_umodeis(mode_msg, client);
+				}
 			}
 		}
-		return (0);
+		_sendResponse(mode_msg);
+	}
+
+	/*
+	 * MODE <channel> [flags]
+	 * Set a channel mode
+	 */
+	void	Server::_setChannelMode(Message& msg, Channel& channel)
+	{
+		Message		mode_msg(msg.getSender(), getHostname());
+
+		mode_msg.setRecipient(msg.getSender());
+
+		if (msg.getParams().size() < 2) // just display the mode str
+		{
+			rpl_channelmodeis(mode_msg, channel);
+			_sendResponse(mode_msg);
+			return ;
+		}
+
+		if (!msg.getSender().isChanOp(channel)) // client is not chan op
+		{
+			err_chanoprivsneeded(msg, channel.getName());
+			_sendResponse(msg);
+			return ;
+		}
+
+		std::string	mode_str = msg.getParams().at(1);
+
+		msg.setRecipients(channel.getClients());
+
+		if (mode_str[0] == '+')
+			mode_str.erase(0, 1);
+
+		for (std::string::const_iterator mode_char = mode_str.begin();
+			 mode_char != mode_str.end();
+			 ++mode_char)
+		{
+			if (*mode_char == '-')
+			{
+				++mode_char;
+				if (mode_char == mode_str.end())
+					break ;
+				if (channel.removeMode(*mode_char))
+					err_unknownmode(mode_msg, *mode_char);
+				else
+				{
+					msg.setResponse(build_prefix(build_full_client_id(msg.getSender())));
+					msg.appendResponse(" MODE -");
+					msg.appendResponse(*mode_char);
+					msg.appendSeparator();
+					_sendResponse(msg);
+					rpl_channelmodeis(mode_msg, channel);
+				}
+			}
+			else
+			{
+				if (channel.addMode(*mode_char))
+					err_unknownmode(mode_msg, *mode_char);
+				else
+				{
+					msg.setResponse(build_prefix(build_full_client_id(msg.getSender())));
+					msg.appendResponse(" MODE +");
+					msg.appendResponse(*mode_char);
+					msg.appendSeparator();
+					_sendResponse(msg);
+					rpl_channelmodeis(mode_msg, channel);
+				}
+			}
+		}
+		_sendResponse(mode_msg);
 	}
 
 	/*
@@ -948,31 +1051,29 @@ namespace ft_irc
 				err_nosuchnick(msg, target);
 			else if (target == "*")
 				err_needmoreparams(msg);
-			else if (target[0] == '#')
+			else if (target[0] == '#') // target is a channel
 			{
 				t_channels::iterator	channel = getChannel(target);
 
-				if (channel == this->_channels.end())
-					err_nosuchchannel(msg, target);
-				else
+				if (channel != this->_channels.end())
 				{
-					if (msg.getParams().size() > 1)
-						channel->setMode(msg.getParams().at(1));
-					rpl_channelmodeis(msg, *channel);
+					_setChannelMode(msg, *channel);
+					return ;
 				}
+				else
+					err_nosuchchannel(msg, target);
 			}
-			else
+			else // target is a client
 			{
 				t_clients::iterator	client = getClient(target);
 
-				if (client == this->_clients.end())
-					err_usersdontmatch(msg);
-				else
+				if (client != this->_clients.end())
 				{
-					if (msg.getParams().size() > 1)
-						_setUserMode(*client, msg.getParams().at(1), msg);
-					rpl_umodeis(msg, *client);
+					_setUserMode(msg, *client);
+					return ;
 				}
+				else
+					err_usersdontmatch(msg, true);
 			}
 		}
 		_sendResponse(msg);
@@ -1075,6 +1176,8 @@ namespace ft_irc
 				msg.setRecipient(msg.getSender());
 				msg.addRecipients(msg.getSender().getAllContacts());
 				msg.getSender().setNick(new_nick);
+				if (!msg.getSender().isAllowed() || !msg.getSender().isRegistered()) // tmp
+					return ;
 			}
 		}
 		_sendResponse(msg);
@@ -1102,10 +1205,10 @@ namespace ft_irc
 	{
 		if (msg.getParams().size() < 2)
 			err_needmoreparams(msg, true);
-		else if (!msg.getSender().isOper())
+		else if (msg.getSender().isOper())
+			err_alreadyoper(msg, true);
+		else
 		{
-			if (!_userCanBeOper(msg.getParams().at(0)))
-				err_nooperhost(msg, true);
 			if (!_canGiveOperPriv(msg.getParams().at(0), msg.getParams().at(1)))
 				err_passwdmismatch(msg, true);
 			else
@@ -1124,13 +1227,14 @@ namespace ft_irc
 				msg.appendResponse(nick);
 				msg.appendResponse(" +o");
 				msg.appendSeparator();
-				_execModeCmd(msg);
+				_setUserMode(msg, msg.getSender());
 
 				if (msg.getSender().isOper() == true)
 				{
 					rpl_youreoper(rpl_msg);
 					_sendResponse(rpl_msg);
 				}
+				_log(LOG_LEVEL_INFO, "Client " + msg.getSender().getNick() + " is now IRC op");
 				return ;
 			}
 		}
@@ -1304,7 +1408,13 @@ namespace ft_irc
 			else if (!_userOnChannel(msg.getSender(), *channel))
 				err_notonchannel(msg, chan_name, true);
 			else if (msg.getParams().size() > 1 && !channel_is_valid(msg.getParams().at(1)))
-				channel->changeTopic(msg.getParams().at(1), msg);
+			{
+				// if 't' flag is set: the topic is settable by channel operator only
+				if (channel->hasMode('t') && !msg.getSender().isChanOp(*channel))
+					err_chanoprivsneeded(msg, chan_name, true);
+				else
+					channel->changeTopic(msg.getParams().at(1), msg);
+			}
 			else if (channel->getTopic().empty())
 				rpl_notopic(msg, channel->getName(), true);
 			else
@@ -1349,7 +1459,7 @@ namespace ft_irc
 			oper_only = true;
 		else if (msg.getParams().size() > 2)
 		{
-			err_syntaxerror(msg, msg.getCommand());
+			err_needmoreparams(msg, true, "Syntax error");
 			_sendResponse(msg);
 			return ;
 		}

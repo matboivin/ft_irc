@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/12/11 15:13:51 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 19:52:22 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,6 @@ namespace ft_irc
 														   const std::string& comment = "");
 
 		/* Oper operations */
-		bool					_userCanBeOper(const std::string& name);
 		bool					_canGiveOperPriv(const std::string& name, const std::string& password);
 
 		/* Commands */
@@ -161,7 +160,8 @@ namespace ft_irc
 
 		/* Command helpers */
 		void					_addWhoisToMsg(Message& msg, const Client& client);
-		int						_setUserMode(Client& client, const std::string& mode, Message& msg);
+		void					_setUserMode(Message& msg, Client& client);
+		void					_setChannelMode(Message& msg, Channel& channel);
 		void					_kickClient(Message& msg,
 											const std::string& chan_name, const std::string& nick,
 											const std::string& comment = "");

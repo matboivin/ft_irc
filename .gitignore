@@ -42,3 +42,4 @@ ircserv
 .vscode
 GitHub.copilot*
 *.txt
+ircd.yaml

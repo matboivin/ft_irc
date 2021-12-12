@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:37:26 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/30 17:19:39 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 19:19:47 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include "Channel.hpp"
 #include "Message.hpp"
 #include "server_operations.hpp"
+#include "numeric_replies.hpp"
 
 namespace ft_irc
 {

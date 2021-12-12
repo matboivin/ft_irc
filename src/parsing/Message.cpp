@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/29 20:41:40 by root             ###   ########.fr       */
+/*   Updated: 2021/12/11 18:28:39 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,11 @@ namespace ft_irc
 	void	Message::appendResponse(const std::string& response)
 	{
 		this->_response += response;
+	}
+
+	void	Message::appendResponse(const char& c)
+	{
+		this->_response += c;
 	}
 
 	void	Message::setCommand(const std::string& command)
