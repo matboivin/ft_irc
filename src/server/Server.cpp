@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/12 17:08:54 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 19:22:16 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -317,16 +317,10 @@ namespace ft_irc
 
 			if (_parse(msg, client.popUnprocessedCommand()) == true) // parse the message
 			{
-				_executeCommand(msg, client); // execute the command
-				// if the client has just registered, send them a nice welcome message :D
-				if (client.isRegistered() == false && !client.getNick().empty()
-					&& !client.getUsername().empty() && !client.getHostname().empty()
-					&& client.isAllowed() == true)
-				{
-					_log(LOG_LEVEL_INFO,
-						"Client " + client.getNick() + "@" + client.getIpAddressStr() + " has just registered");
-					_makeWelcomeMsg(client);
-				}
+				if ((client.isRegistered() && client.isAllowed()) == false)
+					_registerClient(msg, client); // register the client
+				else
+					_executeCommand(msg); // execute the command
 			}
 			client.updateLastEventTime();
 			return (true);
@@ -373,6 +367,67 @@ namespace ft_irc
 			}
 		}
 		return (true);
+	}
+
+	/* Sends a nice welcome message */
+	void	Server::_makeWelcomeMsg(Client& client)
+	{
+		Message	welcome_msg(client, getHostname());
+
+		rpl_welcome(welcome_msg);
+		rpl_yourhost(welcome_msg, this->_version);
+		rpl_created(welcome_msg, this->_creation_date);
+		rpl_myinfo(welcome_msg, this->_version);
+		rpl_umodeis(welcome_msg, client);
+		_execMotdCmd(welcome_msg); // message is sent here
+		client.setRegistered(true);
+		_log(LOG_LEVEL_INFO,
+			"Client " + client.getNick() + "@" + client.getIpAddressStr() + " has just registered");
+	}
+
+	/*
+	 * Connection registration
+	 * 1. Pass message
+	 * 2. Nick message
+	 * 3. User message
+	 */
+	int	Server::_registerClient(Message& msg, Client& client)
+	{
+		if (msg.getCommand() == "QUIT")
+			return (_disconnectClient(client));
+
+		if (this->_commands.find(msg.getCommand()) == this->_commands.end()) // unknown command
+		{
+			_sendResponse(msg);
+			return (0);
+		}
+
+		if (!client.isAllowed() && (msg.getCommand() == "PASS"))
+			_execPassCmd(msg);
+		else if ((msg.getCommand() == "NICK") || (msg.getCommand() == "USER"))
+			_executeCommand(msg);
+		else
+		{
+			err_notregistered(msg);
+			_sendResponse(msg);
+		}
+
+		// if no password was given
+		if (!client.isAllowed() && client.hasNick() && client.hasUser())
+		{
+			err_passwdmismatch(msg, true);
+			_sendResponse(msg);
+			_disconnectClient(client, "ERROR :Password incorrect");
+			return (0);
+		}
+
+		// if the client has just registered, send them a nice welcome message :D
+		if (client.isAllowed() && client.hasNick() && client.hasUser())
+		{
+			_makeWelcomeMsg(client);
+			return (1);
+		}
+		return (0);
 	}
 
 	int	Server::_disconnectClient(Client& client, const std::string& comment)
@@ -474,19 +529,10 @@ namespace ft_irc
 	}
 
 	/* Execute a command */
-	int	Server::_executeCommand(Message& msg, Client& client)
+	int	Server::_executeCommand(Message& msg)
 	{
 		if (msg.getCommand() == "CAP")
 			return (1);
-
-		// they didn't provide the connection password
-		if (!client.isAllowed() && (msg.getCommand() != "QUIT" && msg.getCommand() != "PASS"))
-		{
-			err_notregistered(msg, true);
-			_sendResponse(msg);
-			// _disconnectClient(client, "ERROR :Password incorrect");
-			return (0);
-		}
 
 		t_cmds::const_iterator	it = this->_commands.find(msg.getCommand());
 
@@ -551,21 +597,6 @@ namespace ft_irc
 			if (send((*dst)->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), MSG_NOSIGNAL) < 0)
 				throw std::runtime_error("send() failed");
 		}
-	}
-
-	/* Sends a nice welcome message */
-	void	Server::_makeWelcomeMsg(Client& client)
-	{
-		Message	welcome_msg(client, getHostname());
-
-		rpl_welcome(welcome_msg);
-		rpl_yourhost(welcome_msg, this->_version);
-		rpl_created(welcome_msg, this->_creation_date);
-		rpl_myinfo(welcome_msg, this->_version);
-		rpl_umodeis(welcome_msg, client);
-		_execMotdCmd(welcome_msg); // message is sent here
-		client.setRegistered(true);
-		_log(LOG_LEVEL_INFO, "Client " + client.getNick() + " is now registered");
 	}
 
 	/* Channel operations ******************************************************* */
@@ -1197,11 +1228,12 @@ namespace ft_irc
 				if (new_nick.size() > USER_LEN)
 					new_nick.resize(USER_LEN);
 
+				msg.getSender().setNick(new_nick);
+
+				if (!msg.getSender().isRegistered())
+					return ;
 				msg.setRecipient(msg.getSender());
 				msg.addRecipients(msg.getSender().getAllContacts());
-				msg.getSender().setNick(new_nick);
-				if (!msg.getSender().isAllowed() || !msg.getSender().isRegistered()) // tmp
-					return ;
 			}
 		}
 		_sendResponse(msg);
@@ -1313,19 +1345,22 @@ namespace ft_irc
 	 */
 	void	Server::_execPassCmd(Message& msg)
 	{
-		if (msg.getSender().isRegistered())
-		{
+		if (msg.getParams().empty())
+			err_needmoreparams(msg, true);
+		else if (msg.getSender().isRegistered())
 			err_alreadyregistered(msg, true);
-			_sendResponse(msg);
-		}
-		else if ((msg.getParams().empty()) || (msg.getParams().front() != getPassword()))
+		else if (msg.getParams().front() != getPassword())
 		{
 			err_passwdmismatch(msg, true);
-			_sendResponse(msg);
-			_disconnectClient(msg.getSender(), "ERROR :Password incorrect");
+			msg.appendResponse("ERROR :Password incorrect");
+			msg.appendSeparator();
 		}
 		else
+		{
 			msg.getSender().setAllowed(true);
+			return ;
+		}
+		_sendResponse(msg);
 	}
 
 	/*
@@ -1443,22 +1478,22 @@ namespace ft_irc
 	}
 
 	/*
-	 * USER <user> <mode> <unused> <realname>
+	 * USER <username> <hostname> <servername> <realname>
 	 */
 	void	Server::_execUserCmd(Message& msg)
 	{
 		Client&						client = msg.getSender();
 		std::vector<std::string>	params = msg.getParams(); //copy list of parameters
-	
-		if (msg.getParams().size() < 4)
+
+		if (msg.getSender().isRegistered())
+			err_alreadyregistered(msg, true);
+		else if ((msg.getParams().size() < 4) || (params.at(3)[0] != ':')) // realname must start by ':'
 			err_needmoreparams(msg, true);
 		else
 		{
 			client.setUsername(params.at(0));
-			client.setRealName(params.at(1));
-			client.setHostname(params.at(2));
-			msg.clearResponse();
-			msg.setRecipient(client);
+			client.setHostname(params.at(1));
+			client.setRealName(params.at(3));
 		}
 		_sendResponse(msg);
 	}

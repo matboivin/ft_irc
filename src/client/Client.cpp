@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/12/12 16:09:44 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 18:32:36 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -324,6 +324,16 @@ namespace ft_irc
 	bool	Client::isPinged() const
 	{
 		return (this->_pinged);
+	}
+
+	bool	Client::hasNick() const
+	{
+		return (!this->_nick.empty());
+	}
+
+	bool	Client::hasUser() const
+	{
+		return (!this->_username.empty() && !this->_realname.empty());
 	}
 
 	/* Connection handling ****************************************************** */
