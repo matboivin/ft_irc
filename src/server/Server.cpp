@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/12 13:38:07 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 15:05:06 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -946,7 +946,7 @@ namespace ft_irc
 	}
 
 	/*
-	 * MODE <channel> [flags] [nickname]
+	 * MODE <channel> [flags]
 	 * flags: ( "+" / "-" ) *( "o" / "t" )
 	 * Set a channel mode
 	 */
@@ -990,8 +990,55 @@ namespace ft_irc
 	}
 
 	/*
+	 * MODE <channel> <flags> <nickname>
+	 * flags: ( "+" / "-" ) "o"
+	 * Set a user mode for a given channel
+	 */
+	void	Server::_setUserModeInChan(Message& msg, Client& client, Channel& channel)
+	{
+		std::string					mode_str = msg.getParams().at(1);
+		t_clients::iterator			target = getClient(msg.getParams().at(2));
+		Message						mode_msg(*target, getHostname());
+		bool						add_mode;
+		std::string::const_iterator	mode_char = mode_str.begin();
+
+		msg.setRecipients(channel.getClients());
+
+		if (verify_mode_prefix(*mode_char, add_mode))
+			err_unknownmode(mode_msg, *mode_char);
+		++mode_char;
+
+		for ( ; mode_char != mode_str.end(); ++mode_char)
+		{
+			if (*mode_char != 'o') // only operator is available
+				err_unknownmode(mode_msg, *mode_char);
+			else
+			{
+				msg.setResponse(build_prefix(build_full_client_id(client)));
+				if (add_mode)
+				{
+					channel.addMode(*mode_char);
+					msg.appendResponse(" MODE +");
+				}
+				else
+				{
+					channel.removeMode(*mode_char);
+					msg.appendResponse(" MODE -");
+				}
+				msg.appendResponse(*mode_char);
+				msg.appendResponse(" ");
+				msg.appendResponse(target->getNick());
+				msg.appendSeparator();
+				_sendResponse(msg);
+				rpl_umodeis(mode_msg, *target);
+			}
+		}
+		_sendResponse(mode_msg);
+	}
+
+	/*
 	 * MODE <nickname> [flags]
-	 * MODE <channel> [flags]
+	 * MODE <channel> [flags] [nickname]
 	 * Set a user or a channel mode.
 	 */
 	void	Server::_execModeCmd(Message& msg)
@@ -1018,6 +1065,8 @@ namespace ft_irc
 						rpl_channelmodeis(msg, *channel, true);
 					else if (!msg.getSender().isChanOp(*channel)) // client is not chan op
 						err_chanoprivsneeded(msg, channel->getName(), true);
+					else if (msg.getParams().size() == 3)
+						_setUserModeInChan(msg, msg.getSender(), *channel);
 					else
 					{
 						_setChannelMode(msg, msg.getSender(), *channel);
