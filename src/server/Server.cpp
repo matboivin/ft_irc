@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/12 16:07:45 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 16:17:47 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1123,7 +1123,6 @@ namespace ft_irc
 
 		msg.setRecipient(msg.getSender());
 		msg.appendResponse(build_prefix(msg.getServHostname()));
-
 		// RPL_MOTDSTART
 		msg.appendResponse(" 375 ");
 		msg.appendResponse(start_line);
@@ -1131,11 +1130,13 @@ namespace ft_irc
 		msg.appendResponse(" Message of the day - ");
 		msg.appendSeparator();
 		// RPL_MOTD
+		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 372 ");
 		msg.appendResponse(start_line);
 		msg.appendResponse("Welcome you users! This server was made by very nice people"); // tmp
 		msg.appendSeparator();
 		// RPL_ENDOFMOTD
+		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 376 ");
 		msg.appendResponse(start_line);
 		msg.appendResponse(":End of MOTD command");
