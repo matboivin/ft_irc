@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/12 12:50:27 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 13:13:26 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -903,23 +903,15 @@ namespace ft_irc
 
 	/*
 	 * MODE <nickname> [flags]
+	 * flags: ( "+" / "-" ) *( "o" / "i" )
 	 * Set a user mode
 	 */
 	void	Server::_setUserMode(Message& msg, Client& client)
 	{
+		std::string	mode_str = msg.getParams().at(1);
 		Message		mode_msg(client, getHostname());
 
 		mode_msg.setRecipient(client);
-
-		if (msg.getParams().size() < 2) // just display the mode str
-		{
-			rpl_umodeis(mode_msg, client);
-			_sendResponse(mode_msg);
-			return ;
-		}
-
-		std::string	mode_str = msg.getParams().at(1);
-
 		msg.setRecipients(client.getAllContacts());
 
 		if (mode_str[0] == '+')
@@ -965,31 +957,16 @@ namespace ft_irc
 	}
 
 	/*
-	 * MODE <channel> [flags]
+	 * MODE <channel> [flags] [nickname]
+	 * flags: ( "+" / "-" ) *( "o" / "t" )
 	 * Set a channel mode
 	 */
 	void	Server::_setChannelMode(Message& msg, Channel& channel)
 	{
+		std::string	mode_str = msg.getParams().at(1);
 		Message		mode_msg(msg.getSender(), getHostname());
 
 		mode_msg.setRecipient(msg.getSender());
-
-		if (msg.getParams().size() < 2) // just display the mode str
-		{
-			rpl_channelmodeis(mode_msg, channel);
-			_sendResponse(mode_msg);
-			return ;
-		}
-
-		if (!msg.getSender().isChanOp(channel)) // client is not chan op
-		{
-			err_chanoprivsneeded(msg, channel.getName());
-			_sendResponse(msg);
-			return ;
-		}
-
-		std::string	mode_str = msg.getParams().at(1);
-
 		msg.setRecipients(channel.getClients());
 
 		if (mode_str[0] == '+')
@@ -1048,32 +1025,44 @@ namespace ft_irc
 			std::string	target = msg.getParams().at(0);
 
 			if (target == "0")
-				err_nosuchnick(msg, target);
+				err_nosuchnick(msg, target, true);
 			else if (target == "*")
-				err_needmoreparams(msg);
+				err_needmoreparams(msg, true);
 			else if (target[0] == '#') // target is a channel
 			{
 				t_channels::iterator	channel = getChannel(target);
 
-				if (channel != this->_channels.end())
-				{
-					_setChannelMode(msg, *channel);
-					return ;
-				}
+				if (channel == this->_channels.end())
+					err_nosuchchannel(msg, target, true);
 				else
-					err_nosuchchannel(msg, target);
+				{
+					if (msg.getParams().size() < 2) // just display the channel mode
+						rpl_channelmodeis(msg, *channel, true);
+					else if (!msg.getSender().isChanOp(*channel)) // client is not chan op
+						err_chanoprivsneeded(msg, channel->getName(), true);
+					else
+					{
+						_setChannelMode(msg, *channel);
+						return ;
+					}
+				}
 			}
 			else // target is a client
 			{
 				t_clients::iterator	client = getClient(target);
 
-				if (client != this->_clients.end())
-				{
-					_setUserMode(msg, *client);
-					return ;
-				}
-				else
+				if (client == this->_clients.end())
 					err_usersdontmatch(msg, true);
+				else
+				{
+					if (msg.getParams().size() < 2) // just display the user mode
+						rpl_umodeis(msg, *client, true);
+					else
+					{
+						_setUserMode(msg, *client);
+						return ;
+					}
+				}
 			}
 		}
 		_sendResponse(msg);
@@ -1222,11 +1211,6 @@ namespace ft_irc
 				msg.clearParams();
 				msg.setParam(nick);
 				msg.setParam("+o");
-				msg.setResponse(build_prefix(getHostname()));
-				msg.appendResponse(" MODE ");
-				msg.appendResponse(nick);
-				msg.appendResponse(" +o");
-				msg.appendSeparator();
 				_setUserMode(msg, msg.getSender());
 
 				if (msg.getSender().isOper() == true)
