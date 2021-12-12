@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/12/12 17:57:21 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 19:52:33 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ namespace ft_irc
 		bool				isOper() const;
 		bool				isChanOp(Channel& channel);
 		bool				isPinged() const;
-		bool				isInvisible() const; // not implemented yet
+		bool				isInvisible() const;
 		bool				hasNick() const;
 		bool				hasUser() const;
 
