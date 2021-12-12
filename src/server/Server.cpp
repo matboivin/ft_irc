@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/12 19:33:22 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 19:36:16 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -595,8 +595,8 @@ namespace ft_irc
 
 			if (send((*dst)->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), MSG_NOSIGNAL) < 0)
 			{
-				_log(LOG_LEVEL_FATAL, "Couldn't send message to " + (*dst)->getIpAddressStr());
-				throw std::runtime_error("send() failed");
+				_log(LOG_LEVEL_WARNING, "Couldn't send message to " + (*dst)->getIpAddressStr());
+				// throw std::runtime_error("send() failed");
 			}
 		}
 	}
