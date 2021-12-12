@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:37:26 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/11 19:19:47 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 13:27:32 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,26 +80,6 @@ namespace ft_irc
 				|| (chan_name[0] == '!') || (chan_name[0] == '&'));
 	}
 
-	/*
-	 * Check channel mode
-	 * In ft_irc, we only use the 'o'/'O' flag
-	 * *( ( "+" / "-" ) *( "o" / "O" / "v" / "a" / "i" / "m" / "n" / "q" / "p" /
-	 *                     "s" / "r" / "t" / "k" / "l" / "b" / "e" / "I" ) )
-	 */
-	bool	channel_mode_is_valid(const std::string& mode)
-	{
-		if (mode.size() == 2)
-		{
-			if ((mode[0] == '+') || (mode[0] == '-'))
-			{
-				std::string	chan_modes = "oOvaimnqpsrtklbeI";
-
-				return (chan_modes.find(mode[1]) != std::string::npos);
-			}
-		}
-		return (false);
-	}
-
 	/* Match nicknames */
 	bool	match_nick(const std::string& to_match, const std::string& nick)
 	{
@@ -135,5 +115,19 @@ namespace ft_irc
 				return true;
 		}
 		return false;
+	}
+
+	/* Check mode prefix ( "+" / "-" ) */
+	int	verify_mode_prefix(const char& prefix, bool& add_mode)
+	{
+		if ((prefix == '+') || (prefix == '-'))
+		{
+			if (prefix == '+')
+				add_mode = true;
+			else
+				add_mode = false;
+			return (0);
+		}
+		return (1);
 	}
 } // namespace ft_irc

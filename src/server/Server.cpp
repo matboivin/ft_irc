@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/12 13:13:26 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 13:26:41 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -910,47 +910,38 @@ namespace ft_irc
 	{
 		std::string	mode_str = msg.getParams().at(1);
 		Message		mode_msg(client, getHostname());
+		bool		add_mode;
+		int			error_code;
+
+		std::string::const_iterator	mode_char = mode_str.begin();
 
 		mode_msg.setRecipient(client);
 		msg.setRecipients(client.getAllContacts());
 
-		if (mode_str[0] == '+')
-			mode_str.erase(0, 1);
+		if (verify_mode_prefix(*mode_char, add_mode))
+			err_unknownmode(mode_msg, *mode_char);
+		++mode_char;
 
-		for (std::string::const_iterator mode_char = mode_str.begin();
-			 mode_char != mode_str.end();
-			 ++mode_char)
+		for ( ; mode_char != mode_str.end(); ++mode_char)
 		{
-			if (*mode_char == '-')
-			{
-				++mode_char;
-				if (mode_char == mode_str.end())
-					break ;
-				else if (client.removeMode(*mode_char))
-					err_unknownmode(mode_msg, *mode_char);
-				else
-				{
-					msg.setResponse(build_prefix(build_full_client_id(client)));
-					msg.appendResponse(" MODE -");
-					msg.appendResponse(*mode_char);
-					msg.appendSeparator();
-					_sendResponse(msg);
-					rpl_umodeis(mode_msg, client);
-				}
-			}
+			if (add_mode)
+				error_code = client.addMode(*mode_char);
+			else
+				error_code = client.removeMode(*mode_char);
+
+			if (error_code)
+				err_unknownmode(mode_msg, *mode_char);
 			else
 			{
-				if (client.addMode(*mode_char))
-					err_unknownmode(mode_msg, *mode_char);
-				else
-				{
-					msg.setResponse(build_prefix(build_full_client_id(client)));
+				msg.setResponse(build_prefix(build_full_client_id(client)));
+				if (add_mode)
 					msg.appendResponse(" MODE +");
-					msg.appendResponse(*mode_char);
-					msg.appendSeparator();
-					_sendResponse(msg);
-					rpl_umodeis(mode_msg, client);
-				}
+				else
+					msg.appendResponse(" MODE +");
+				msg.appendResponse(*mode_char);
+				msg.appendSeparator();
+				_sendResponse(msg);
+				rpl_umodeis(mode_msg, client);
 			}
 		}
 		_sendResponse(mode_msg);
