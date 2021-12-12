@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/12/11 20:29:39 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 16:09:44 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,16 +157,23 @@ namespace ft_irc
 
 	std::string	Client::getRealName() const
 	{
+		if (this->_realname.empty())
+			return ("*");
 		return (this->_realname);
 	}
 
 	std::string	Client::getUsername() const
 	{
+		if (this->_username.empty())
+			return ("*");
 		return (this->_username);
 	}
 
 	std::string	Client::getHostname() const
 	{
+		// return IP address if no host
+		if (this->_hostname.empty())
+			return (this->_address_str);
 		return (this->_hostname);
 	}
 
