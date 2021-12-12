@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/11 20:41:44 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 12:50:27 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1227,7 +1227,7 @@ namespace ft_irc
 				msg.appendResponse(nick);
 				msg.appendResponse(" +o");
 				msg.appendSeparator();
-				_execModeCmd(msg);
+				_setUserMode(msg, msg.getSender());
 
 				if (msg.getSender().isOper() == true)
 				{
