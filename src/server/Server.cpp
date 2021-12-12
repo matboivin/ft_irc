@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/12 19:36:16 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 20:50:31 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1526,7 +1526,7 @@ namespace ft_irc
 		{
 			if (oper_only && !it->isOper())
 				continue ;
-			if (match_nick(to_match, it->getNick()))
+			if (match_nick(to_match, it->getNick()) && (it->isInvisible() == false))
 			{
 				_log(LOG_LEVEL_DEBUG, "WHO matched " + it->getNick());
 				rpl_whoreply(msg, msg.getSender().getNick(), *it);

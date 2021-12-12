@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/12 17:06:26 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 20:50:01 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -304,11 +304,14 @@ namespace ft_irc
 			 it != channel.getClients().end();
 			 ++it)
 		{
-			if ((*it)->isChanOp(channel))
-				msg.appendResponse(" @");
-			else
-				msg.appendResponse(" ");
-			msg.appendResponse((*it)->getNick());
+			if ((*it)->isInvisible() == false)
+			{
+				if ((*it)->isChanOp(channel))
+					msg.appendResponse(" @");
+				else
+					msg.appendResponse(" ");
+				msg.appendResponse((*it)->getNick());
+			}
 		}
 		msg.appendSeparator();
 	}
