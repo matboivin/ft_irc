@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:37:26 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/12 13:27:32 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 15:32:11 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ namespace ft_irc
 	/* Late parsing helpers */
 
 	/* Special characters listed in the RFC grammar */
-	bool	is_special(char c)
+	bool	is_special(const char& c)
 	{
 		return (
 			(c == '[') || (c == ']') || (c == '\\') || (c == '`')
@@ -118,16 +118,35 @@ namespace ft_irc
 	}
 
 	/* Check mode prefix ( "+" / "-" ) */
-	int	verify_mode_prefix(const char& prefix, bool& add_mode)
+	int	get_mode_prefix(const char& prefix, char& mode_operator)
 	{
 		if ((prefix == '+') || (prefix == '-'))
 		{
-			if (prefix == '+')
-				add_mode = true;
-			else
-				add_mode = false;
+			mode_operator = prefix;
 			return (0);
 		}
 		return (1);
+	}
+
+	/*
+	 * Check user mode char
+	 * *( ( "+" / "-" ) *( "o" / "i" ) )
+	 */
+	bool	usermode_char_is_valid(const char& c)
+	{
+		std::string	chan_modes = "+-oi";
+
+		return (chan_modes.find(c) != std::string::npos);
+	}
+
+	/*
+	 * Check channel mode char
+	 * *( ( "+" / "-" ) *( "o" / "t" ) )
+	 */
+	bool	chanmode_char_is_valid(const char& c)
+	{
+		std::string	chan_modes = "+-ot";
+
+		return (chan_modes.find(c) != std::string::npos);
 	}
 } // namespace ft_irc

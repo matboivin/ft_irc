@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/12/12 15:03:28 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 15:54:05 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,7 +160,7 @@ namespace ft_irc
 
 		/* Command helpers */
 		void					_addWhoisToMsg(Message& msg, const Client& client);
-		void					_setUserMode(Message& msg, Client& client);
+		void					_setUserMode(Message& msg, Client& target);
 		void					_setChannelMode(Message& msg, Client& client, Channel& channel);
 		void					_setUserModeInChan(Message& msg, Client& client, Channel& channel);
 		void					_kickClient(Message& msg,

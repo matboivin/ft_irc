@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/12 15:05:06 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 16:07:45 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -906,43 +906,51 @@ namespace ft_irc
 	 * flags: ( "+" / "-" ) *( "o" / "i" )
 	 * Set a user mode
 	 */
-	void	Server::_setUserMode(Message& msg, Client& client)
+	void	Server::_setUserMode(Message& msg, Client& target)
 	{
-		std::string					mode_str = msg.getParams().at(1);
-		Message						mode_msg(client, getHostname());
-		bool						add_mode;
-		int							error_code;
-		std::string::const_iterator	mode_char = mode_str.begin();
+		std::string	mode_str = msg.getParams().at(1);
+		Message		mode_msg(target, getHostname());
+		char		mode_operator = '*'; // will store + or -
+		bool		send_mode = false;
 
-		msg.setRecipients(client.getAllContacts());
+		msg.setRecipients(target.getAllContacts());
 
-		if (verify_mode_prefix(*mode_char, add_mode))
-			err_unknownmode(mode_msg, *mode_char);
-		++mode_char;
-
-		for ( ; mode_char != mode_str.end(); ++mode_char)
+		for (std::string::const_iterator mode_char = mode_str.begin();
+			 mode_char != mode_str.end();
+			 ++mode_char)
 		{
-			if (add_mode)
-				error_code = client.addMode(*mode_char);
-			else
-				error_code = client.removeMode(*mode_char);
-
-			if (error_code)
-				err_unknownmode(mode_msg, *mode_char);
-			else
+			if (!usermode_char_is_valid(*mode_char)) // char is not +-oi
 			{
-				msg.setResponse(build_prefix(build_full_client_id(client)));
-				if (add_mode)
-					msg.appendResponse(" MODE +");
-				else
-					msg.appendResponse(" MODE -");
+				err_unknownmode(mode_msg, *mode_char, true);
+				_sendResponse(mode_msg);
+			}
+			else if (get_mode_prefix(*mode_char, mode_operator)) // char is + or -
+			{
+				continue ;
+			}
+			else if ((mode_operator == '+') || (mode_operator == '-'))
+			{
+				if (mode_operator == '+')
+					target.addMode(*mode_char);
+				else if (mode_operator == '-')
+					target.removeMode(*mode_char);
+				msg.setResponse(build_prefix(build_full_client_id(target)));
+				msg.appendResponse(" MODE ");
+				msg.appendResponse(mode_operator);
 				msg.appendResponse(*mode_char);
 				msg.appendSeparator();
 				_sendResponse(msg);
-				rpl_umodeis(mode_msg, client);
+				rpl_umodeis(mode_msg, target, true);
+				_sendResponse(mode_msg);
 			}
+			else
+				send_mode = true;
 		}
-		_sendResponse(mode_msg);
+		if (send_mode)
+		{
+			rpl_umodeis(mode_msg, target, true);
+			_sendResponse(mode_msg);
+		}
 	}
 
 	/*
@@ -952,41 +960,49 @@ namespace ft_irc
 	 */
 	void	Server::_setChannelMode(Message& msg, Client& client, Channel& channel)
 	{
-		std::string					mode_str = msg.getParams().at(1);
-		Message						mode_msg(client, getHostname());
-		bool						add_mode;
-		int							error_code;
-		std::string::const_iterator	mode_char = mode_str.begin();
+		std::string	mode_str = msg.getParams().at(1);
+		Message		mode_msg(client, getHostname());
+		char		mode_operator = '*'; // will store + or -
+		bool		send_mode = false;
 
 		msg.setRecipients(channel.getClients());
 
-		if (verify_mode_prefix(*mode_char, add_mode))
-			err_unknownmode(mode_msg, *mode_char);
-		++mode_char;
-
-		for ( ; mode_char != mode_str.end(); ++mode_char)
+		for (std::string::const_iterator mode_char = mode_str.begin();
+			 mode_char != mode_str.end();
+			 ++mode_char)
 		{
-			if (add_mode)
-				error_code = channel.addMode(*mode_char);
-			else
-				error_code = channel.removeMode(*mode_char);
-
-			if (error_code)
-				err_unknownmode(mode_msg, *mode_char);
-			else
+			if (!chanmode_char_is_valid(*mode_char)) // char is not +-oi
 			{
+				err_unknownmode(mode_msg, *mode_char, true);
+				_sendResponse(mode_msg);
+			}
+			else if (get_mode_prefix(*mode_char, mode_operator)) // char is + or -
+			{
+				continue ;
+			}
+			else if ((mode_operator == '+') || (mode_operator == '-'))
+			{
+				if (mode_operator == '+')
+					channel.addMode(*mode_char);
+				else if (mode_operator == '-')
+					channel.removeMode(*mode_char);
 				msg.setResponse(build_prefix(build_full_client_id(client)));
-				if (add_mode)
-					msg.appendResponse(" MODE +");
-				else
-					msg.appendResponse(" MODE -");
+				msg.appendResponse(" MODE ");
+				msg.appendResponse(mode_operator);
 				msg.appendResponse(*mode_char);
 				msg.appendSeparator();
 				_sendResponse(msg);
-				rpl_channelmodeis(mode_msg, channel);
+				rpl_channelmodeis(mode_msg, channel, true);
+				_sendResponse(mode_msg);
 			}
+			else
+				send_mode = true;
 		}
-		_sendResponse(mode_msg);
+		if (send_mode)
+		{
+			rpl_channelmodeis(mode_msg, channel, true);
+			_sendResponse(mode_msg);
+		}
 	}
 
 	/*
@@ -996,44 +1012,51 @@ namespace ft_irc
 	 */
 	void	Server::_setUserModeInChan(Message& msg, Client& client, Channel& channel)
 	{
-		std::string					mode_str = msg.getParams().at(1);
-		t_clients::iterator			target = getClient(msg.getParams().at(2));
-		Message						mode_msg(*target, getHostname());
-		bool						add_mode;
-		std::string::const_iterator	mode_char = mode_str.begin();
+		std::string			mode_str = msg.getParams().at(1);
+		t_clients::iterator	target = getClient(msg.getParams().at(2));
+		Message				mode_msg(client, getHostname());
+		char				mode_operator = '*'; // will store + or -
+
+		if (target == this->_clients.end())
+		{
+			err_nosuchnick(mode_msg, target->getNick(), true);
+			_sendResponse(mode_msg);
+			return ;
+		}
 
 		msg.setRecipients(channel.getClients());
 
-		if (verify_mode_prefix(*mode_char, add_mode))
-			err_unknownmode(mode_msg, *mode_char);
-		++mode_char;
-
-		for ( ; mode_char != mode_str.end(); ++mode_char)
+		for (std::string::const_iterator mode_char = mode_str.begin();
+			 mode_char != mode_str.end();
+			 ++mode_char)
 		{
-			if (*mode_char != 'o') // only operator is available
-				err_unknownmode(mode_msg, *mode_char);
-			else
+			if (get_mode_prefix(*mode_char, mode_operator)) // char is + or -
 			{
+				continue ;
+			}
+			else if (*mode_char != 'o') // only operator is available
+			{
+				err_unknownmode(mode_msg, *mode_char, true);
+				_sendResponse(mode_msg);
+			}
+			else if ((mode_operator == '+') || (mode_operator == '-'))
+			{
+				if (mode_operator == '+')
+					target->addMode(*mode_char);
+				else if (mode_operator == '-')
+					target->removeMode(*mode_char);
 				msg.setResponse(build_prefix(build_full_client_id(client)));
-				if (add_mode)
-				{
-					channel.addMode(*mode_char);
-					msg.appendResponse(" MODE +");
-				}
-				else
-				{
-					channel.removeMode(*mode_char);
-					msg.appendResponse(" MODE -");
-				}
+				msg.appendResponse(" MODE ");
+				msg.appendResponse(channel.getName());
+				msg.appendResponse(" ");
+				msg.appendResponse(mode_operator);
 				msg.appendResponse(*mode_char);
 				msg.appendResponse(" ");
 				msg.appendResponse(target->getNick());
 				msg.appendSeparator();
 				_sendResponse(msg);
-				rpl_umodeis(mode_msg, *target);
 			}
 		}
-		_sendResponse(mode_msg);
 	}
 
 	/*
@@ -1059,19 +1082,17 @@ namespace ft_irc
 
 				if (channel == this->_channels.end())
 					err_nosuchchannel(msg, target, true);
+				else if (msg.getParams().size() < 2) // just display the channel mode
+					rpl_channelmodeis(msg, *channel, true);
+				else if (!msg.getSender().isChanOp(*channel)) // client is not chan op
+					err_chanoprivsneeded(msg, channel->getName(), true);
 				else
 				{
-					if (msg.getParams().size() < 2) // just display the channel mode
-						rpl_channelmodeis(msg, *channel, true);
-					else if (!msg.getSender().isChanOp(*channel)) // client is not chan op
-						err_chanoprivsneeded(msg, channel->getName(), true);
-					else if (msg.getParams().size() == 3)
+					if (msg.getParams().size() == 3)
 						_setUserModeInChan(msg, msg.getSender(), *channel);
 					else
-					{
 						_setChannelMode(msg, msg.getSender(), *channel);
-						return ;
-					}
+					return ;
 				}
 			}
 			else // target is a client
@@ -1080,15 +1101,12 @@ namespace ft_irc
 
 				if (client == this->_clients.end())
 					err_usersdontmatch(msg, true);
+				else if (msg.getParams().size() < 2) // just display the user mode
+					rpl_umodeis(msg, *client, true);
 				else
 				{
-					if (msg.getParams().size() < 2) // just display the user mode
-						rpl_umodeis(msg, *client, true);
-					else
-					{
-						_setUserMode(msg, *client);
-						return ;
-					}
+					_setUserMode(msg, *client);
+					return ;
 				}
 			}
 		}

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:35:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/12 13:27:22 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 15:32:04 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,14 @@ namespace ft_irc
 	std::string	build_full_client_id(const Client& client);
 
 	/* Secondary parsing helpers and checkers */
-	bool		is_special(char c);
+	bool		is_special(const char& c);
 	bool		nick_is_valid(const std::string& newnick);
 	bool		channel_is_valid(const std::string& chan_name);
 	bool		match_nick(const std::string& to_match, const std::string& nick);
 	bool		is_string_in_msg_params(const Message& msg, const std::string& str);
-	int			verify_mode_prefix(const char& prefix, bool& add_mode);
+	int			get_mode_prefix(const char& prefix, char& mode_operator);
+	bool		usermode_char_is_valid(const char& c);
+	bool		chanmode_char_is_valid(const char& c);
 
 	/* Remove duplicates from lists */
 	template<typename T>
