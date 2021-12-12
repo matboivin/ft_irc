@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:37:26 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/12 16:09:27 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 16:52:24 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,35 +113,33 @@ namespace ft_irc
 		return false;
 	}
 
-	/* Check mode prefix ( "+" / "-" ) */
+	/* Check mode prefix */
 	int	get_mode_prefix(const char& prefix, char& mode_operator)
 	{
 		if ((prefix == '+') || (prefix == '-'))
 		{
 			mode_operator = prefix;
-			return (0);
+			return (1);
 		}
-		return (1);
+		return (0);
 	}
 
 	/*
 	 * Check user mode char
-	 * *( ( "+" / "-" ) *( "o" / "i" ) )
 	 */
 	bool	usermode_char_is_valid(const char& c)
 	{
-		std::string	chan_modes = "+-oi";
+		std::string	chan_modes = "oi";
 
 		return (chan_modes.find(c) != std::string::npos);
 	}
 
 	/*
 	 * Check channel mode char
-	 * *( ( "+" / "-" ) *( "o" / "t" ) )
 	 */
 	bool	chanmode_char_is_valid(const char& c)
 	{
-		std::string	chan_modes = "+-ot";
+		std::string	chan_modes = "ot";
 
 		return (chan_modes.find(c) != std::string::npos);
 	}

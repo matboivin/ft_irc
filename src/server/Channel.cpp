@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:58:53 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/11 20:35:49 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 16:59:33 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,20 +142,19 @@ namespace ft_irc
 	/* Adds a client to the channel */
 	void	Channel::addClient(Client& client)
 	{
-		this->_clients.push_back(&client);
+		if (!this->hasClient(client))
+			this->_clients.push_back(&client);
 	}
 
 	/* Removes a client from the channel */
 	void	Channel::removeClient(Client& client)
 	{
-		bool	need_chan_op = hasChanOp(client);
-
-		this->_clients.remove(&client);
-		if (need_chan_op)
+		if (this->hasClient(client))
 		{
-			removeChanOp(client);
-			if (!this->_clients.empty())
-				addChanOp(*this->_clients.front());
+			if (this->hasChanOp(client))
+				this->removeChanOp(client);
+
+			this->_clients.remove(&client);
 		}
 	}
 
@@ -179,13 +178,15 @@ namespace ft_irc
 	/* Makes a client operator of the channel */
 	void	Channel::addChanOp(Client& chan_op)
 	{
-		this->_chan_ops.push_back(&chan_op);
+		if (!this->hasChanOp(chan_op))
+			this->_chan_ops.push_back(&chan_op);
 	}
 
 	/* Removes the operator privileges to a client */
 	void	Channel::removeChanOp(Client& chan_op)
 	{
-		this->_chan_ops.remove(&chan_op);
+		if (this->hasChanOp(chan_op))
+			this->_chan_ops.remove(&chan_op);
 	}
 
 	/* Manage topic ************************************************************* */

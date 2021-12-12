@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/11 20:49:00 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 17:06:26 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -397,7 +397,7 @@ namespace ft_irc
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
 		msg.appendResponse(nick);
-		msg.appendResponse(" :No such nick/channel");
+		msg.appendResponse(" :No such nick");
 		msg.appendSeparator();
 	}
 
