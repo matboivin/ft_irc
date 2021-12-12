@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/12 19:22:16 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 19:33:22 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -396,7 +396,8 @@ namespace ft_irc
 		if (msg.getCommand() == "QUIT")
 			return (_disconnectClient(client));
 
-		if (this->_commands.find(msg.getCommand()) == this->_commands.end()) // unknown command
+		// unknown command is answered
+		if (this->_commands.find(msg.getCommand()) == this->_commands.end())
 		{
 			_sendResponse(msg);
 			return (0);
@@ -472,8 +473,6 @@ namespace ft_irc
 		Message	msg(client);
 
 		msg.setRecipient(client);
-		// msg.setCommand("PING");
-		// msg.setResponse("PING " + getHostname() + " :" + getHostname() + CRLF);
 		msg.setResponse(build_prefix(getHostname()));
 		msg.appendResponse(" PING ");
 		msg.appendResponse(getHostname());
@@ -595,7 +594,10 @@ namespace ft_irc
 			_log(LOG_LEVEL_DEBUG, "Sending: '" + logOutput + "' to " + (*dst)->getIpAddressStr());
 
 			if (send((*dst)->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), MSG_NOSIGNAL) < 0)
+			{
+				_log(LOG_LEVEL_FATAL, "Couldn't send message to " + (*dst)->getIpAddressStr());
 				throw std::runtime_error("send() failed");
+			}
 		}
 	}
 
