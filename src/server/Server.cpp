@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/12 13:26:41 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 13:38:07 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -908,14 +908,12 @@ namespace ft_irc
 	 */
 	void	Server::_setUserMode(Message& msg, Client& client)
 	{
-		std::string	mode_str = msg.getParams().at(1);
-		Message		mode_msg(client, getHostname());
-		bool		add_mode;
-		int			error_code;
-
+		std::string					mode_str = msg.getParams().at(1);
+		Message						mode_msg(client, getHostname());
+		bool						add_mode;
+		int							error_code;
 		std::string::const_iterator	mode_char = mode_str.begin();
 
-		mode_msg.setRecipient(client);
 		msg.setRecipients(client.getAllContacts());
 
 		if (verify_mode_prefix(*mode_char, add_mode))
@@ -937,7 +935,7 @@ namespace ft_irc
 				if (add_mode)
 					msg.appendResponse(" MODE +");
 				else
-					msg.appendResponse(" MODE +");
+					msg.appendResponse(" MODE -");
 				msg.appendResponse(*mode_char);
 				msg.appendSeparator();
 				_sendResponse(msg);
@@ -952,51 +950,40 @@ namespace ft_irc
 	 * flags: ( "+" / "-" ) *( "o" / "t" )
 	 * Set a channel mode
 	 */
-	void	Server::_setChannelMode(Message& msg, Channel& channel)
+	void	Server::_setChannelMode(Message& msg, Client& client, Channel& channel)
 	{
-		std::string	mode_str = msg.getParams().at(1);
-		Message		mode_msg(msg.getSender(), getHostname());
+		std::string					mode_str = msg.getParams().at(1);
+		Message						mode_msg(client, getHostname());
+		bool						add_mode;
+		int							error_code;
+		std::string::const_iterator	mode_char = mode_str.begin();
 
-		mode_msg.setRecipient(msg.getSender());
 		msg.setRecipients(channel.getClients());
 
-		if (mode_str[0] == '+')
-			mode_str.erase(0, 1);
+		if (verify_mode_prefix(*mode_char, add_mode))
+			err_unknownmode(mode_msg, *mode_char);
+		++mode_char;
 
-		for (std::string::const_iterator mode_char = mode_str.begin();
-			 mode_char != mode_str.end();
-			 ++mode_char)
+		for ( ; mode_char != mode_str.end(); ++mode_char)
 		{
-			if (*mode_char == '-')
-			{
-				++mode_char;
-				if (mode_char == mode_str.end())
-					break ;
-				if (channel.removeMode(*mode_char))
-					err_unknownmode(mode_msg, *mode_char);
-				else
-				{
-					msg.setResponse(build_prefix(build_full_client_id(msg.getSender())));
-					msg.appendResponse(" MODE -");
-					msg.appendResponse(*mode_char);
-					msg.appendSeparator();
-					_sendResponse(msg);
-					rpl_channelmodeis(mode_msg, channel);
-				}
-			}
+			if (add_mode)
+				error_code = channel.addMode(*mode_char);
+			else
+				error_code = channel.removeMode(*mode_char);
+
+			if (error_code)
+				err_unknownmode(mode_msg, *mode_char);
 			else
 			{
-				if (channel.addMode(*mode_char))
-					err_unknownmode(mode_msg, *mode_char);
-				else
-				{
-					msg.setResponse(build_prefix(build_full_client_id(msg.getSender())));
+				msg.setResponse(build_prefix(build_full_client_id(client)));
+				if (add_mode)
 					msg.appendResponse(" MODE +");
-					msg.appendResponse(*mode_char);
-					msg.appendSeparator();
-					_sendResponse(msg);
-					rpl_channelmodeis(mode_msg, channel);
-				}
+				else
+					msg.appendResponse(" MODE -");
+				msg.appendResponse(*mode_char);
+				msg.appendSeparator();
+				_sendResponse(msg);
+				rpl_channelmodeis(mode_msg, channel);
 			}
 		}
 		_sendResponse(mode_msg);
@@ -1033,7 +1020,7 @@ namespace ft_irc
 						err_chanoprivsneeded(msg, channel->getName(), true);
 					else
 					{
-						_setChannelMode(msg, *channel);
+						_setChannelMode(msg, msg.getSender(), *channel);
 						return ;
 					}
 				}
