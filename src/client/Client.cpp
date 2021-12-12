@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/12/11 20:29:39 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 19:53:51 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ namespace ft_irc
 	  _realname(realname),
 	  _username(username),
 	  _hostname(hostname),
-	  _mode(),
+	  _mode("i"),
 	  _in_buffer(),
 	  _out_buffer(),
 	  _max_cmd_length(512),
@@ -62,7 +62,7 @@ namespace ft_irc
 	  _realname(realname),
 	  _username(username),
 	  _hostname(hostname),
-	  _mode(),
+	  _mode("i"),
 	  _in_buffer(),
 	  _out_buffer(),
 	  _max_cmd_length(512),
@@ -157,16 +157,23 @@ namespace ft_irc
 
 	std::string	Client::getRealName() const
 	{
+		if (this->_realname.empty())
+			return ("*");
 		return (this->_realname);
 	}
 
 	std::string	Client::getUsername() const
 	{
+		if (this->_username.empty())
+			return ("*");
 		return (this->_username);
 	}
 
 	std::string	Client::getHostname() const
 	{
+		// return IP address if no host
+		if (this->_hostname.empty())
+			return (this->_address_str);
 		return (this->_hostname);
 	}
 
@@ -313,10 +320,24 @@ namespace ft_irc
 		return (channel.hasChanOp(*this));
 	}
 
-	//isPinged()
 	bool	Client::isPinged() const
 	{
 		return (this->_pinged);
+	}
+
+	bool	Client::isInvisible() const
+	{
+		return (this->_mode.find('i') != std::string::npos);
+	}
+
+	bool	Client::hasNick() const
+	{
+		return (!this->_nick.empty());
+	}
+
+	bool	Client::hasUser() const
+	{
+		return (!this->_username.empty() && !this->_realname.empty());
 	}
 
 	/* Connection handling ****************************************************** */

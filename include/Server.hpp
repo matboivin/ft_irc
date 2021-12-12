@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/12/11 19:52:22 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 17:50:28 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,8 @@ namespace ft_irc
 		bool					_awaitNewConnection();
 		bool					_hasPendingConnections();
 		bool					_processClients();
+		void					_makeWelcomeMsg(Client& client);
+		int						_registerClient(Message& msg, Client& client);
 		int						_disconnectClient(Client& client, const std::string& comment = "");
 		int						_pingClient(Client& client);
 
@@ -112,13 +114,12 @@ namespace ft_irc
 
 		/* Commands execution */
 		void					_init_commands_map();
-		int						_executeCommand(Message& msg, Client& client);
+		int						_executeCommand(Message& msg);
 		bool					_processClientCommand(Client& client);
 
 		/* Command response */
 		void					_setResponseRecipients(Message& msg);
 		void					_sendResponse(Message& msg);
-		void					_makeWelcomeMsg(Client& client);
 
 		/* Channel operations */
 		Channel&				_addChannel(const std::string& name, Client& creator);
@@ -160,8 +161,9 @@ namespace ft_irc
 
 		/* Command helpers */
 		void					_addWhoisToMsg(Message& msg, const Client& client);
-		void					_setUserMode(Message& msg, Client& client);
-		void					_setChannelMode(Message& msg, Channel& channel);
+		void					_setUserMode(Message& msg, Client& target);
+		void					_setChannelMode(Message& msg, Client& client, Channel& channel);
+		void					_setUserModeInChan(Message& msg, Client& client, Channel& channel);
 		void					_kickClient(Message& msg,
 											const std::string& chan_name, const std::string& nick,
 											const std::string& comment = "");

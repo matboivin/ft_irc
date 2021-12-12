@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/12 17:22:33 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 21:07:31 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -317,16 +317,10 @@ namespace ft_irc
 
 			if (_parse(msg, client.popUnprocessedCommand()) == true) // parse the message
 			{
-				_executeCommand(msg, client); // execute the command
-				// if the client has just registered, send them a nice welcome message :D
-				if (client.isRegistered() == false && !client.getNick().empty()
-					&& !client.getUsername().empty() && !client.getHostname().empty()
-					&& client.isAllowed() == true)
-				{
-					_log(LOG_LEVEL_INFO,
-						"Client " + client.getNick() + "@" + client.getIpAddressStr() + " has just registered");
-					_makeWelcomeMsg(client);
-				}
+				if ((client.isRegistered() && client.isAllowed()) == false)
+					_registerClient(msg, client); // register the client
+				else
+					_executeCommand(msg); // execute the command
 			}
 			client.updateLastEventTime();
 			return (true);
@@ -375,6 +369,68 @@ namespace ft_irc
 		return (true);
 	}
 
+	/* Sends a nice welcome message */
+	void	Server::_makeWelcomeMsg(Client& client)
+	{
+		Message	welcome_msg(client, getHostname());
+
+		rpl_welcome(welcome_msg);
+		rpl_yourhost(welcome_msg, this->_version);
+		rpl_created(welcome_msg, this->_creation_date);
+		rpl_myinfo(welcome_msg, this->_version);
+		rpl_umodeis(welcome_msg, client);
+		_execMotdCmd(welcome_msg); // message is sent here
+		client.setRegistered(true);
+		_log(LOG_LEVEL_INFO,
+			"Client " + client.getNick() + "@" + client.getIpAddressStr() + " has just registered");
+	}
+
+	/*
+	 * Connection registration
+	 * 1. Pass message
+	 * 2. Nick message
+	 * 3. User message
+	 */
+	int	Server::_registerClient(Message& msg, Client& client)
+	{
+		if (msg.getCommand() == "QUIT")
+			return (_disconnectClient(client));
+
+		// unknown command is answered
+		if (this->_commands.find(msg.getCommand()) == this->_commands.end())
+		{
+			_sendResponse(msg);
+			return (0);
+		}
+
+		if (!client.isAllowed() && (msg.getCommand() == "PASS"))
+			_execPassCmd(msg);
+		else if ((msg.getCommand() == "NICK") || (msg.getCommand() == "USER"))
+			_executeCommand(msg);
+		else
+		{
+			err_notregistered(msg);
+			_sendResponse(msg);
+		}
+
+		// if no password was given
+		if (!client.isAllowed() && client.hasNick() && client.hasUser())
+		{
+			err_passwdmismatch(msg, true);
+			_sendResponse(msg);
+			_disconnectClient(client, "ERROR :Password incorrect");
+			return (0);
+		}
+
+		// if the client has just registered, send them a nice welcome message :D
+		if (client.isAllowed() && client.hasNick() && client.hasUser())
+		{
+			_makeWelcomeMsg(client);
+			return (1);
+		}
+		return (0);
+	}
+
 	int	Server::_disconnectClient(Client& client, const std::string& comment)
 	{
 		t_clients::iterator	it = std::find(this->_clients.begin(), this->_clients.end(), client);
@@ -417,8 +473,6 @@ namespace ft_irc
 		Message	msg(client);
 
 		msg.setRecipient(client);
-		// msg.setCommand("PING");
-		// msg.setResponse("PING " + getHostname() + " :" + getHostname() + CRLF);
 		msg.setResponse(build_prefix(getHostname()));
 		msg.appendResponse(" PING ");
 		msg.appendResponse(getHostname());
@@ -474,20 +528,10 @@ namespace ft_irc
 	}
 
 	/* Execute a command */
-	int	Server::_executeCommand(Message& msg, Client& client)
+	int	Server::_executeCommand(Message& msg)
 	{
 		if (msg.getCommand() == "CAP")
 			return (1);
-
-		// they didn't provide the connection password
-		if (!(client.isAllowed() && client.isRegistered())
-			&& (msg.getCommand() != "QUIT" && msg.getCommand() != "PASS")) // tmp
-		{
-			err_notregistered(msg, true);
-			_sendResponse(msg);
-			_disconnectClient(client, "ERROR :Password incorrect");
-			return (0);
-		}
 
 		t_cmds::const_iterator	it = this->_commands.find(msg.getCommand());
 
@@ -550,23 +594,11 @@ namespace ft_irc
 			_log(LOG_LEVEL_DEBUG, "Sending: '" + logOutput + "' to " + (*dst)->getIpAddressStr());
 
 			if (send((*dst)->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), MSG_NOSIGNAL) < 0)
-				throw std::runtime_error("send() failed");
+			{
+				_log(LOG_LEVEL_WARNING, "Couldn't send message to " + (*dst)->getIpAddressStr());
+				// throw std::runtime_error("send() failed");
+			}
 		}
-	}
-
-	/* Sends a nice welcome message */
-	void	Server::_makeWelcomeMsg(Client& client)
-	{
-		Message	welcome_msg(client, getHostname());
-
-		rpl_welcome(welcome_msg);
-		rpl_yourhost(welcome_msg, this->_version);
-		rpl_created(welcome_msg, this->_creation_date);
-		rpl_myinfo(welcome_msg, this->_version);
-		rpl_umodeis(welcome_msg, client);
-		_execMotdCmd(welcome_msg); // message is sent here
-		client.setRegistered(true);
-		_log(LOG_LEVEL_INFO, "Client " + client.getNick() + " is now registered");
 	}
 
 	/* Channel operations ******************************************************* */
@@ -904,140 +936,152 @@ namespace ft_irc
 
 	/*
 	 * MODE <nickname> [flags]
+	 * flags: ( "+" / "-" ) *( "o" / "i" )
 	 * Set a user mode
 	 */
-	void	Server::_setUserMode(Message& msg, Client& client)
+	void	Server::_setUserMode(Message& msg, Client& target)
 	{
-		Message		mode_msg(client, getHostname());
-
-		mode_msg.setRecipient(client);
-
-		if (msg.getParams().size() < 2) // just display the mode str
-		{
-			rpl_umodeis(mode_msg, client);
-			_sendResponse(mode_msg);
-			return ;
-		}
-
 		std::string	mode_str = msg.getParams().at(1);
+		Message		mode_msg(target, getHostname());
+		char		mode_operator = '*'; // will store + or -
 
-		msg.setRecipients(client.getAllContacts());
-
-		if (mode_str[0] == '+')
-			mode_str.erase(0, 1);
+		msg.setRecipients(target.getAllContacts());
 
 		for (std::string::const_iterator mode_char = mode_str.begin();
 			 mode_char != mode_str.end();
 			 ++mode_char)
 		{
-			if (*mode_char == '-')
+			if (get_mode_prefix(*mode_char, mode_operator)) // char is '+' or '-'
 			{
-				++mode_char;
-				if (mode_char == mode_str.end())
-					break ;
-				else if (client.removeMode(*mode_char))
-					err_unknownmode(mode_msg, *mode_char);
-				else
-				{
-					msg.setResponse(build_prefix(build_full_client_id(client)));
-					msg.appendResponse(" MODE -");
-					msg.appendResponse(*mode_char);
-					msg.appendSeparator();
-					_sendResponse(msg);
-					rpl_umodeis(mode_msg, client);
-				}
+				continue ;
+			}
+			if (!usermode_char_is_valid(*mode_char)) // char is not 'o' or 'i'
+			{
+				err_unknownmode(mode_msg, *mode_char, true);
+				_sendResponse(mode_msg);
 			}
 			else
 			{
-				if (client.addMode(*mode_char))
-					err_unknownmode(mode_msg, *mode_char);
-				else
-				{
-					msg.setResponse(build_prefix(build_full_client_id(client)));
-					msg.appendResponse(" MODE +");
-					msg.appendResponse(*mode_char);
-					msg.appendSeparator();
-					_sendResponse(msg);
-					rpl_umodeis(mode_msg, client);
-				}
+				if (mode_operator == '+')
+					target.addMode(*mode_char);
+				else if (mode_operator == '-')
+					target.removeMode(*mode_char);
+				msg.setResponse(build_prefix(build_full_client_id(target)));
+				msg.appendResponse(" MODE ");
+				msg.appendResponse(mode_operator);
+				msg.appendResponse(*mode_char);
+				msg.appendSeparator();
+				_sendResponse(msg);
 			}
 		}
+		rpl_umodeis(mode_msg, target, true);
 		_sendResponse(mode_msg);
 	}
 
 	/*
 	 * MODE <channel> [flags]
+	 * flags: ( "+" / "-" ) *( "o" / "t" )
 	 * Set a channel mode
 	 */
-	void	Server::_setChannelMode(Message& msg, Channel& channel)
+	void	Server::_setChannelMode(Message& msg, Client& client, Channel& channel)
 	{
-		Message		mode_msg(msg.getSender(), getHostname());
+		std::string	mode_str = msg.getParams().at(1);
+		Message		mode_msg(client, getHostname());
+		char		mode_operator = '*'; // will store + or -
 
-		mode_msg.setRecipient(msg.getSender());
+		msg.setRecipients(channel.getClients());
 
-		if (msg.getParams().size() < 2) // just display the mode str
+		for (std::string::const_iterator mode_char = mode_str.begin();
+			 mode_char != mode_str.end();
+			 ++mode_char)
 		{
+			if (get_mode_prefix(*mode_char, mode_operator)) // char is '+' or '-'
+			{
+				continue ;
+			}
+			else if (!chanmode_char_is_valid(*mode_char)) // char is not 'o' or 't'
+			{
+				err_unknownmode(mode_msg, *mode_char, true);
+				_sendResponse(mode_msg);
+			}
+			else
+			{
+				if (mode_operator == '+')
+					channel.addMode(*mode_char);
+				else if (mode_operator == '-')
+					channel.removeMode(*mode_char);
+				msg.setResponse(build_prefix(build_full_client_id(client)));
+				msg.appendResponse(" MODE ");
+				msg.appendResponse(channel.getName());
+				msg.appendResponse(" ");
+				msg.appendResponse(mode_operator);
+				msg.appendResponse(*mode_char);
+				msg.appendSeparator();
+				_sendResponse(msg);
+			}
+		}
+		rpl_channelmodeis(mode_msg, channel, true);
+		_sendResponse(mode_msg);
+	}
+
+	/*
+	 * MODE <channel> <flags> <nickname>
+	 * flags: ( "+" / "-" ) "o"
+	 * Set a user mode for a given channel
+	 */
+	void	Server::_setUserModeInChan(Message& msg, Client& client, Channel& channel)
+	{
+		std::string			mode_str = msg.getParams().at(1);
+		t_clients::iterator	target = getClient(msg.getParams().at(2));
+		Message				mode_msg(client, getHostname());
+		char				mode_operator = '*'; // will store + or -
+
+		if (target == this->_clients.end())
+		{
+			err_nosuchnick(mode_msg, msg.getParams().at(2), true);
 			rpl_channelmodeis(mode_msg, channel);
 			_sendResponse(mode_msg);
 			return ;
 		}
 
-		if (!msg.getSender().isChanOp(channel)) // client is not chan op
-		{
-			err_chanoprivsneeded(msg, channel.getName());
-			_sendResponse(msg);
-			return ;
-		}
-
-		std::string	mode_str = msg.getParams().at(1);
-
 		msg.setRecipients(channel.getClients());
-
-		if (mode_str[0] == '+')
-			mode_str.erase(0, 1);
 
 		for (std::string::const_iterator mode_char = mode_str.begin();
 			 mode_char != mode_str.end();
 			 ++mode_char)
 		{
-			if (*mode_char == '-')
+			if (get_mode_prefix(*mode_char, mode_operator)) // char is + or -
 			{
-				++mode_char;
-				if (mode_char == mode_str.end())
-					break ;
-				if (channel.removeMode(*mode_char))
-					err_unknownmode(mode_msg, *mode_char);
-				else
-				{
-					msg.setResponse(build_prefix(build_full_client_id(msg.getSender())));
-					msg.appendResponse(" MODE -");
-					msg.appendResponse(*mode_char);
-					msg.appendSeparator();
-					_sendResponse(msg);
-					rpl_channelmodeis(mode_msg, channel);
-				}
+				continue ;
+			}
+			else if (*mode_char != 'o') // only operator is possible
+			{
+				err_unknownmode(mode_msg, *mode_char, true);
+				_sendResponse(mode_msg);
 			}
 			else
 			{
-				if (channel.addMode(*mode_char))
-					err_unknownmode(mode_msg, *mode_char);
-				else
-				{
-					msg.setResponse(build_prefix(build_full_client_id(msg.getSender())));
-					msg.appendResponse(" MODE +");
-					msg.appendResponse(*mode_char);
-					msg.appendSeparator();
-					_sendResponse(msg);
-					rpl_channelmodeis(mode_msg, channel);
-				}
+				if (mode_operator == '+')
+					channel.addChanOp(*target);
+				else if (mode_operator == '-')
+					channel.removeChanOp(*target);
+				msg.setResponse(build_prefix(build_full_client_id(client)));
+				msg.appendResponse(" MODE ");
+				msg.appendResponse(channel.getName());
+				msg.appendResponse(" ");
+				msg.appendResponse(mode_operator);
+				msg.appendResponse(*mode_char);
+				msg.appendResponse(" ");
+				msg.appendResponse(target->getNick());
+				msg.appendSeparator();
+				_sendResponse(msg);
 			}
 		}
-		_sendResponse(mode_msg);
 	}
 
 	/*
 	 * MODE <nickname> [flags]
-	 * MODE <channel> [flags]
+	 * MODE <channel> [flags] [nickname]
 	 * Set a user or a channel mode.
 	 */
 	void	Server::_execModeCmd(Message& msg)
@@ -1049,32 +1093,43 @@ namespace ft_irc
 			std::string	target = msg.getParams().at(0);
 
 			if (target == "0")
-				err_nosuchnick(msg, target);
+				err_nosuchnick(msg, target, true);
 			else if (target == "*")
-				err_needmoreparams(msg);
+				err_needmoreparams(msg, true);
 			else if (target[0] == '#') // target is a channel
 			{
 				t_channels::iterator	channel = getChannel(target);
 
-				if (channel != this->_channels.end())
+				if (channel == this->_channels.end())
+					err_nosuchchannel(msg, target, true);
+				else if (msg.getParams().size() == 1) // just display the channel mode
+					rpl_channelmodeis(msg, *channel, true);
+				else if (!msg.getSender().isChanOp(*channel)) // client is not chan op
+					err_chanoprivsneeded(msg, channel->getName(), true);
+				else
 				{
-					_setChannelMode(msg, *channel);
+					if (msg.getParams().size() == 3)
+						_setUserModeInChan(msg, msg.getSender(), *channel);
+					else
+						_setChannelMode(msg, msg.getSender(), *channel);
 					return ;
 				}
-				else
-					err_nosuchchannel(msg, target);
 			}
 			else // target is a client
 			{
 				t_clients::iterator	client = getClient(target);
 
-				if (client != this->_clients.end())
+				if (client == this->_clients.end())
+					err_nosuchnick(msg, target, true);
+				else if (client->getNick() != msg.getSender().getNick())
+					err_usersdontmatch(msg, true);
+				else if (msg.getParams().size() == 1) // just display the user mode
+					rpl_umodeis(msg, *client, true);
+				else
 				{
 					_setUserMode(msg, *client);
 					return ;
 				}
-				else
-					err_usersdontmatch(msg, true);
 			}
 		}
 		_sendResponse(msg);
@@ -1090,7 +1145,6 @@ namespace ft_irc
 
 		msg.setRecipient(msg.getSender());
 		msg.appendResponse(build_prefix(msg.getServHostname()));
-
 		// RPL_MOTDSTART
 		msg.appendResponse(" 375 ");
 		msg.appendResponse(start_line);
@@ -1098,11 +1152,13 @@ namespace ft_irc
 		msg.appendResponse(" Message of the day - ");
 		msg.appendSeparator();
 		// RPL_MOTD
+		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 372 ");
 		msg.appendResponse(start_line);
 		msg.appendResponse("Welcome you users! This server was made by very nice people"); // tmp
 		msg.appendSeparator();
 		// RPL_ENDOFMOTD
+		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 376 ");
 		msg.appendResponse(start_line);
 		msg.appendResponse(":End of MOTD command");
@@ -1174,11 +1230,12 @@ namespace ft_irc
 				if (new_nick.size() > USER_LEN)
 					new_nick.resize(USER_LEN);
 
+				msg.getSender().setNick(new_nick);
+
+				if (!msg.getSender().isRegistered())
+					return ;
 				msg.setRecipient(msg.getSender());
 				msg.addRecipients(msg.getSender().getAllContacts());
-				msg.getSender().setNick(new_nick);
-				if (!msg.getSender().isAllowed() || !msg.getSender().isRegistered()) // tmp
-					return ;
 			}
 		}
 		_sendResponse(msg);
@@ -1223,11 +1280,6 @@ namespace ft_irc
 				msg.clearParams();
 				msg.setParam(nick);
 				msg.setParam("+o");
-				msg.setResponse(build_prefix(getHostname()));
-				msg.appendResponse(" MODE ");
-				msg.appendResponse(nick);
-				msg.appendResponse(" +o");
-				msg.appendSeparator();
 				_setUserMode(msg, msg.getSender());
 
 				if (msg.getSender().isOper() == true)
@@ -1295,19 +1347,22 @@ namespace ft_irc
 	 */
 	void	Server::_execPassCmd(Message& msg)
 	{
-		if (msg.getSender().isRegistered())
-		{
+		if (msg.getParams().empty())
+			err_needmoreparams(msg, true);
+		else if (msg.getSender().isRegistered())
 			err_alreadyregistered(msg, true);
-			_sendResponse(msg);
-		}
-		else if ((msg.getParams().empty()) || (msg.getParams().front() != getPassword()))
+		else if (msg.getParams().front() != getPassword())
 		{
 			err_passwdmismatch(msg, true);
-			_sendResponse(msg);
-			_disconnectClient(msg.getSender(), "ERROR :Password incorrect");
+			msg.appendResponse("ERROR :Password incorrect");
+			msg.appendSeparator();
 		}
 		else
+		{
 			msg.getSender().setAllowed(true);
+			return ;
+		}
+		_sendResponse(msg);
 	}
 
 	/*
@@ -1425,22 +1480,22 @@ namespace ft_irc
 	}
 
 	/*
-	 * USER <user> <mode> <unused> <realname>
+	 * USER <username> <hostname> <servername> <realname>
 	 */
 	void	Server::_execUserCmd(Message& msg)
 	{
 		Client&						client = msg.getSender();
 		std::vector<std::string>	params = msg.getParams(); //copy list of parameters
-	
-		if (msg.getParams().size() < 4)
+
+		if (msg.getSender().isRegistered())
+			err_alreadyregistered(msg, true);
+		else if ((msg.getParams().size() < 4) || (params.at(3)[0] != ':')) // realname must start by ':'
 			err_needmoreparams(msg, true);
 		else
 		{
 			client.setUsername(params.at(0));
-			client.setRealName(params.at(1));
-			client.setHostname(params.at(2));
-			msg.clearResponse();
-			msg.setRecipient(client);
+			client.setHostname(params.at(1));
+			client.setRealName(params.at(3));
 		}
 		_sendResponse(msg);
 	}
@@ -1471,7 +1526,7 @@ namespace ft_irc
 		{
 			if (oper_only && !it->isOper())
 				continue ;
-			if (match_nick(to_match, it->getNick()))
+			if (match_nick(to_match, it->getNick()) && (it->isInvisible() == false))
 			{
 				_log(LOG_LEVEL_DEBUG, "WHO matched " + it->getNick());
 				rpl_whoreply(msg, msg.getSender().getNick(), *it);

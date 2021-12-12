@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 12:25:08 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/12 12:49:31 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 13:27:41 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -303,25 +303,6 @@ int	test_parsing()
 		expected.setResponse(":nick!username@hostname KICK #general,#random John,Jane :Speaking English\r\n");
 		assert(cmp_msg(msg, expected));
 	}
-
-	return (0);
-}
-
-int	test_modes()
-{
-	assert(ft_irc::channel_mode_is_valid("+o"));
-	assert(ft_irc::channel_mode_is_valid("-o"));
-	assert(ft_irc::channel_mode_is_valid("+i"));
-	assert(ft_irc::channel_mode_is_valid("-i"));
-	assert(ft_irc::channel_mode_is_valid("+t"));
-	assert(ft_irc::channel_mode_is_valid("-t"));
-
-	assert(ft_irc::channel_mode_is_valid("+o+") == false);
-	assert(ft_irc::channel_mode_is_valid("-o+") == false);
-	assert(ft_irc::channel_mode_is_valid("+c") == false);
-	assert(ft_irc::channel_mode_is_valid("-e+") == false);
-	assert(ft_irc::channel_mode_is_valid("+beI") == false);
-	assert(ft_irc::channel_mode_is_valid("I-") == false);
 
 	return (0);
 }
