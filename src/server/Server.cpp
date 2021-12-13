@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/13 14:24:26 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/13 14:48:07 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -919,8 +919,7 @@ namespace ft_irc
 		std::string	mode_str = msg.getParams().at(1);
 		Message		mode_msg(target, getHostname());
 		char		mode_operator = '*'; // will store + or -
-
-		msg.setRecipients(target.getAllContacts());
+		int			not_changed = 0;
 
 		for (std::string::const_iterator mode_char = mode_str.begin();
 			 mode_char != mode_str.end();
@@ -938,19 +937,29 @@ namespace ft_irc
 			else
 			{
 				if (mode_operator == '+')
-					target.addMode(*mode_char);
+					not_changed = target.addMode(*mode_char);
 				else if (mode_operator == '-')
-					target.removeMode(*mode_char);
-				msg.setResponse(build_prefix(build_full_client_id(target)));
-				msg.appendResponse(" MODE ");
-				msg.appendResponse(mode_operator);
-				msg.appendResponse(*mode_char);
-				msg.appendSeparator();
-				_sendResponse(msg);
+					not_changed = target.removeMode(*mode_char);
+				if (!not_changed)
+				{
+					msg.setRecipients(target.getAllContacts());
+					msg.addRecipient(target);
+					msg.setResponse(build_prefix(build_full_client_id(target)));
+					msg.appendResponse(" MODE ");
+					msg.appendResponse(target.getNick());
+					msg.appendResponse(" ");
+					msg.appendResponse(mode_operator);
+					msg.appendResponse(*mode_char);
+					msg.appendSeparator();
+					_sendResponse(msg);
+				}
 			}
 		}
-		rpl_umodeis(mode_msg, target, true);
-		_sendResponse(mode_msg);
+		if (not_changed)
+		{
+			rpl_umodeis(mode_msg, target, true);
+			_sendResponse(mode_msg);
+		}
 	}
 
 	/*

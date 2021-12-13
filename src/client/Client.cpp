@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/12/12 19:53:51 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/13 14:38:00 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -524,11 +524,14 @@ namespace ft_irc
 		if (valid_modes.find(mode_char) != std::string::npos)
 		{
 			if ((mode_char == 'o') && !this->isOper()) // not enough rights, do nothing
-				return (ERR_SUCCESS);
+				return (1);
 
 			if (this->_mode.find(mode_char) == std::string::npos)
+			{
 				this->_mode += mode_char;
-			return (ERR_SUCCESS);
+				return (ERR_SUCCESS);
+			}
+			return (1);
 		}
 		return (ERR_UNKNOWNMODE);
 	}
@@ -541,8 +544,11 @@ namespace ft_irc
 		if (valid_modes.find(mode_char) != std::string::npos)
 		{
 			if (this->_mode.find(mode_char) != std::string::npos)
+			{
 				this->_mode.erase(this->_mode.find(mode_char), 1);
-			return (ERR_SUCCESS);
+				return (ERR_SUCCESS);
+			}
+			return (1);
 		}
 		return (ERR_UNKNOWNMODE);
 	}
