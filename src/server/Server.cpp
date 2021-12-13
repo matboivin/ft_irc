@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/13 13:49:48 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/13 14:24:26 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -440,6 +440,7 @@ namespace ft_irc
 				"Client " + client.getNick() + client.getIpAddressStr() + " is not in the client list!");
 			return (-1);
 		}
+
 		if (it->getSocketFd() > 0)
 		{
 			// send them a goodbye message
@@ -1007,18 +1008,15 @@ namespace ft_irc
 	{
 		std::string			mode_str = msg.getParams().at(1);
 		t_clients::iterator	target = getClient(msg.getParams().at(2));
-		Message				mode_msg(client, getHostname());
 		char				mode_operator = '*'; // will store + or -
 
 		if (target == this->_clients.end())
 		{
-			err_nosuchnick(mode_msg, msg.getParams().at(2), true);
-			rpl_channelmodeis(mode_msg, channel);
-			_sendResponse(mode_msg);
+			err_nosuchnick(msg, msg.getParams().at(2), true);
+			rpl_channelmodeis(msg, channel);
+			_sendResponse(msg);
 			return ;
 		}
-
-		msg.setRecipients(channel.getClients());
 
 		for (std::string::const_iterator mode_char = mode_str.begin();
 			 mode_char != mode_str.end();
@@ -1030,11 +1028,13 @@ namespace ft_irc
 			}
 			else if (*mode_char != 'o') // only operator is possible
 			{
-				err_unknownmode(mode_msg, *mode_char, true);
-				_sendResponse(mode_msg);
+				err_unknownmode(msg, *mode_char, true);
+				_sendResponse(msg);
 			}
 			else
 			{
+				msg.setRecipients(channel.getClients());
+
 				if (mode_operator == '+')
 					channel.addChanOp(*target);
 				else if (mode_operator == '-')
@@ -1078,13 +1078,13 @@ namespace ft_irc
 					err_nosuchchannel(msg, target, true);
 				else if (msg.getParams().size() == 1) // just display the channel mode
 					rpl_channelmodeis(msg, *channel, true);
+				else if ((msg.getParams().size() == 2) && (msg.getParams().at(1) == "b"))
+					rpl_endofbanlist(msg, channel->getName(), true); // list ban users
+				else if (!msg.getSender().isChanOp(*channel))
+					err_chanoprivsneeded(msg, channel->getName(), true); // client is not chan op
 				else
 				{
-					if ((msg.getParams().size() == 2) && (msg.getParams().at(1) == "b"))
-						rpl_endofbanlist(msg, channel->getName(), true); // list ban users
-					else if (!msg.getSender().isChanOp(*channel))
-						err_chanoprivsneeded(msg, channel->getName(), true); // client is not chan op
-					else if (msg.getParams().size() == 3)
+					if (msg.getParams().size() == 3)
 						_setUserModeInChan(msg, msg.getSender(), *channel);
 					else
 						_setChannelMode(msg, msg.getSender(), *channel);

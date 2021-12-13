@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:48:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/11 18:28:39 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/13 14:17:09 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,20 +147,16 @@ namespace ft_irc
 		this->_params = params;
 	}
 
+	void	Message::setRecipient(Client& recipient)
+	{
+		if (!this->_recipients.empty())
+			this->_recipients.clear();
+		this->_recipients.push_back(&recipient);
+	}
+
 	void	Message::setRecipients(const t_clients& recipients)
 	{
 		this->_recipients = recipients;
-	}
-
-	void	Message::setRecipient(Client& recipient)
-	{
-		t_clients::const_iterator	found;
-
-		/* Checks if the recipient is already in the list */
-		found = std::find(this->_recipients.begin(), this->_recipients.end(), &recipient);
-
-		if (found == this->_recipients.end())
-			this->_recipients.push_back(&recipient);
 	}
 
 	/* Helpers ****************************************************************** */
@@ -192,6 +188,17 @@ namespace ft_irc
 	void	Message::clearRecipients()
 	{
 		this->_recipients.clear();
+	}
+
+	void	Message::addRecipient(Client& recipient)
+	{
+		t_clients::const_iterator	found;
+
+		/* Checks if the recipient is already in the list */
+		found = std::find(this->_recipients.begin(), this->_recipients.end(), &recipient);
+
+		if (found == this->_recipients.end())
+			this->_recipients.push_back(&recipient);
 	}
 
 	/* Append a range of recipients */
