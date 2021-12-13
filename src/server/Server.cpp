@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/13 12:10:47 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/13 13:49:48 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -545,31 +545,6 @@ namespace ft_irc
 	}
 
 	/* Command response ********************************************************* */
-
-	/* Sets response recipient(s) (channels or clients) */
-	void	Server::_setResponseRecipients(Message& msg)
-	{
-		std::cout << __LINE__ << std::endl;
-		t_clients::iterator	dst = getClient(msg.getParams().at(0));
-
-		if (dst != this->_clients.end())
-		{
-			msg.setRecipient(*dst);
-			return ;
-		}
-		if (msg.getParams().empty())
-			return ;
-
-		t_channels::iterator	channel = getChannel(msg.getParams().at(0));
-
-		if (channel != this->_channels.end())
-		{
-			Channel::t_clients	recipients = channel->getClients();
-
-			recipients.remove(&msg.getSender());
-			msg.setRecipients(recipients);
-		}
-	}
 
 	/* Sends response */
 	void	Server::_sendResponse(Message& msg)
@@ -1249,9 +1224,30 @@ namespace ft_irc
 	 */
 	void	Server::_execNoticeCmd(Message& msg)
 	{
-		if (msg.getParams().size() < 2) // params are mandatory
+		if (msg.getParams().size() < 2)
 			return ;
-		_setResponseRecipients(msg);
+
+		std::string	target = msg.getParams().at(0);
+
+		if (channel_is_valid(target)) // send to chan
+		{
+			t_channels::iterator	channel = getChannel(target);
+
+			if (channel == this->_channels.end())
+				return ;
+			// if 'n' flag is set: messages to channel from clients of the channel only
+			else if (channel->hasMode('n') && !_userOnChannel(msg.getSender(), *channel))
+				return ;
+			msg.setRecipients(channel->getClients());
+		}
+		else // send to user
+		{
+			t_clients::iterator	client = getClient(msg.getParams().at(0));
+
+			if (client == this->_clients.end())
+				return ;
+			msg.setRecipient(*client);
+		}
 		_sendResponse(msg);
 	}
 
@@ -1417,14 +1413,29 @@ namespace ft_irc
 			err_notexttosend(msg, true);
 		else
 		{
-			std::string	msgtarget = msg.getParams().at(0);
+			std::string	target = msg.getParams().at(0);
 
-			if (channel_is_valid(msgtarget) && !_userOnChannel(msg.getSender(), msgtarget))
-				err_cannotsendtochan(msg, true);
-			else if (!channel_is_valid(msgtarget) && (getClient(msgtarget) == this->_clients.end()))
-				err_nosuchnick(msg, msgtarget, true);
-			else
-				_setResponseRecipients(msg);
+			if (channel_is_valid(target)) // send to chan
+			{
+				t_channels::iterator	channel = getChannel(target);
+
+				if (channel == this->_channels.end())
+					err_nosuchchannel(msg, target, true);
+				// if 'n' flag is set: messages to channel from clients of the channel only
+				else if (channel->hasMode('n') && !_userOnChannel(msg.getSender(), *channel))
+					err_cannotsendtochan(msg, target, true);
+				else
+					msg.setRecipients(channel->getClients());
+			}
+			else // send to user
+			{
+				t_clients::iterator	client = getClient(msg.getParams().at(0));
+
+				if (client == this->_clients.end())
+					err_nosuchnick(msg, target, true);
+				else
+					msg.setRecipient(*client);
+			}
 		}
 		_sendResponse(msg);
 	}

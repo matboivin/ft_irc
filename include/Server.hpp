@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/12/12 17:50:28 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/13 13:46:20 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,6 @@ namespace ft_irc
 		bool					_processClientCommand(Client& client);
 
 		/* Command response */
-		void					_setResponseRecipients(Message& msg);
 		void					_sendResponse(Message& msg);
 
 		/* Channel operations */

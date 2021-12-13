@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:58:53 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/12 16:59:33 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/13 13:08:46 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,13 @@ namespace ft_irc
 {
 	/* Default constructor */
 	Channel::Channel()
-	: _name(), _topic(), _mode("t"), _clients(), _chan_ops()
+	: _name(), _topic(), _mode("nt"), _clients(), _chan_ops()
 	{
 	}
 
 	/* Name constructor */
 	Channel::Channel(const std::string& name)
-	: _name(name), _topic(), _mode("t"), _clients(), _chan_ops()
+	: _name(name), _topic(), _mode("nt"), _clients(), _chan_ops()
 	{
 	}
 
@@ -214,7 +214,7 @@ namespace ft_irc
 	/* Adds the mode passed as parameter to the client mode string */
 	int	Channel::addMode(const char& mode_char)
 	{
-		const std::string	modes = "ot";
+		const std::string	modes = "nto";
 
 		if (modes.find(mode_char) != std::string::npos)
 		{
@@ -228,7 +228,7 @@ namespace ft_irc
 	/* Removes the mode passed as parameter from the client mode string */
 	int	Channel::removeMode(const char& mode_char)
 	{
-		const std::string	modes = "ot";
+		const std::string	modes = "nto";
 
 		if (modes.find(mode_char) != std::string::npos)
 		{

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/13 12:03:46 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/13 13:41:28 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ namespace ft_irc
 	void	err_nosuchnick(Message& msg, const std::string& nick, bool rewrite = false); // 401
 	void	err_nosuchserver(Message& msg, const std::string& serv_name, bool rewrite = false); // 402
 	void	err_nosuchchannel(Message& msg, const std::string& chan_name, bool rewrite = false); // 403
-	void	err_cannotsendtochan(Message& msg, bool rewrite = false); // 404
+	void	err_cannotsendtochan(Message& msg, const std::string& chan_name, bool rewrite = false); // 404
 	void	err_toomanychannels(Message& msg, const std::string& chan_name, bool rewrite = false); // 405
 	void	err_noorigin(Message& msg, bool rewrite = false); // 409
 	void	err_norecipient(Message& msg, bool rewrite = false); // 411
