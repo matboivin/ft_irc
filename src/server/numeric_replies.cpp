@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/12 20:50:01 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/13 12:04:43 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ namespace ft_irc
 		msg.appendResponse(msg.getServHostname());
 		msg.appendResponse(" ");
 		msg.appendResponse(version);
-		msg.appendResponse(" o o");
+		msg.appendResponse(" io nto"); // <user modes> <channel modes>
 		msg.appendSeparator();
 	}
 
@@ -120,6 +120,18 @@ namespace ft_irc
 		msg.appendResponse(msg.getServHostname());
 		msg.appendResponse(" :");
 		msg.appendResponse(description);
+		msg.appendSeparator();
+	}
+
+	void	rpl_whoisoperator(Message& msg, const Client& user, bool rewrite)
+	{
+		msg.setRecipient(msg.getSender());
+		if (rewrite)
+			msg.clearResponse();
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 313 ");
+		msg.appendResponse(user.getNick());
+		msg.appendResponse(" :is an IRC operator");
 		msg.appendSeparator();
 	}
 
@@ -342,6 +354,7 @@ namespace ft_irc
 
 	void	rpl_endofnames(Message& msg, const std::string& chan_name, bool rewrite)
 	{
+		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
@@ -350,6 +363,20 @@ namespace ft_irc
 		msg.appendResponse(" ");
 		msg.appendResponse(chan_name);
 		msg.appendResponse(" :End of NAMES list");
+		msg.appendSeparator();
+	}
+
+	void	rpl_endofbanlist(Message& msg, const std::string& chan_name, bool rewrite)
+	{
+		msg.setRecipient(msg.getSender());
+		if (rewrite)
+			msg.clearResponse();
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 368 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" ");
+		msg.appendResponse(chan_name);
+		msg.appendResponse(" :End of channel ban list");
 		msg.appendSeparator();
 	}
 
@@ -362,17 +389,6 @@ namespace ft_irc
 		msg.appendResponse(" 381 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" :You are now an IRC operator");
-		msg.appendSeparator();
-	}
-
-	void	rpl_whoisoperator(Message& msg, const Client& user, bool rewrite)
-	{
-		if (rewrite)
-			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 313 ");
-		msg.appendResponse(user.getNick());
-		msg.appendResponse(" :is an IRC operator");
 		msg.appendSeparator();
 	}
 

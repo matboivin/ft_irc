@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/11 18:30:43 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/13 12:03:46 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ namespace ft_irc
 	void	rpl_namreply(Message& msg, Channel& channel, bool rewrite = false); // 353
 	void	rpl_namreply(Message& msg, const t_clients& clients, bool rewrite = false); // 353
 	void	rpl_endofnames(Message& msg, const std::string& chan_name, bool rewrite = false); // 366
+	void	rpl_endofbanlist(Message& msg, const std::string& chan_name, bool rewrite = false); // 368
 	void	rpl_youreoper(Message& msg, bool rewrite = false); // 381
 
 	// error replies

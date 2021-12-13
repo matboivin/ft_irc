@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/12 21:07:31 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/13 12:10:47 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -378,7 +378,6 @@ namespace ft_irc
 		rpl_yourhost(welcome_msg, this->_version);
 		rpl_created(welcome_msg, this->_creation_date);
 		rpl_myinfo(welcome_msg, this->_version);
-		rpl_umodeis(welcome_msg, client);
 		_execMotdCmd(welcome_msg); // message is sent here
 		client.setRegistered(true);
 		_log(LOG_LEVEL_INFO,
@@ -1104,11 +1103,13 @@ namespace ft_irc
 					err_nosuchchannel(msg, target, true);
 				else if (msg.getParams().size() == 1) // just display the channel mode
 					rpl_channelmodeis(msg, *channel, true);
-				else if (!msg.getSender().isChanOp(*channel)) // client is not chan op
-					err_chanoprivsneeded(msg, channel->getName(), true);
 				else
 				{
-					if (msg.getParams().size() == 3)
+					if ((msg.getParams().size() == 2) && (msg.getParams().at(1) == "b"))
+						rpl_endofbanlist(msg, channel->getName(), true); // list ban users
+					else if (!msg.getSender().isChanOp(*channel))
+						err_chanoprivsneeded(msg, channel->getName(), true); // client is not chan op
+					else if (msg.getParams().size() == 3)
 						_setUserModeInChan(msg, msg.getSender(), *channel);
 					else
 						_setChannelMode(msg, msg.getSender(), *channel);
