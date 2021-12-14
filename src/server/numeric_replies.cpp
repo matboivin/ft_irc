@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/14 19:52:10 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/14 20:47:25 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,20 +135,7 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	rpl_whoisoperator(Message& msg, bool rewrite)
-	{
-		msg.setRecipient(msg.getSender());
-		if (rewrite)
-			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 313 ");
-		msg.appendResponse(msg.getSender().getNick());
-		msg.appendResponse(" :is an IRC operator");
-		msg.appendSeparator();
-	}
-
-	void	rpl_endofwho(Message& msg,
-						const std::string& name, const std::string& to_match,
+	void	rpl_endofwho(Message& msg, const std::string& name, const std::string& to_match,
 						bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
@@ -163,8 +150,7 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	rpl_endofwhois(Message& msg,
-						   const std::string& nick, const std::string& to_match,
+	void	rpl_endofwhois(Message& msg, const std::string& nick, const std::string& to_match,
 						   bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
@@ -179,17 +165,28 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	rpl_whoischannels(Message& msg, const std::string& nick, const std::string& chan_name,
-							  bool rewrite)
+	void	rpl_whoischannels(Message& msg, const Client& client, bool rewrite)
 	{
+		const Client::t_channels&	channels = client.getJoinedChannels();
+
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 319 ");
-		msg.appendResponse(nick);
+		msg.appendResponse(client.getNick());
 		msg.appendResponse(" :");
-		msg.appendResponse(chan_name);
+
+		for (Client::t_channels::const_iterator it = channels.begin();
+			 it != channels.end();
+			 ++it)
+		{
+			if ((*it)->hasChanOp(client))
+				msg.appendResponse(" @");
+			else
+				msg.appendResponse(" +");
+			msg.appendResponse((*it)->getName());
+		}
 		msg.appendSeparator();
 	}
 

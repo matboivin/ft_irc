@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:58:53 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/13 13:08:46 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/14 20:43:15 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,7 +161,7 @@ namespace ft_irc
 	/* Manage clients in channel ************************************************ */
 
 	/* Finds a channel operator using a nickname */
-	Channel::t_clients::iterator	Channel::findChanOp(Client& chan_op)
+	Channel::t_clients::iterator	Channel::findChanOp(const Client& chan_op)
 	{
 		t_clients::iterator	it;
 
@@ -170,7 +170,7 @@ namespace ft_irc
 	}
 
 	/* Checks whether the given client is channel operator */
-	bool	Channel::hasChanOp(Client& chan_op)
+	bool	Channel::hasChanOp(const Client& chan_op)
 	{
 		return (this->findChanOp(chan_op) != this->_chan_ops.end());
 	}

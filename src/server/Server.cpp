@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/14 19:48:20 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/14 21:03:51 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1607,12 +1607,12 @@ namespace ft_irc
 	void	Server::_addWhoisToMsg(Message& msg, const Client& client)
 	{
 		// :mynick 311 mynick nickname user hostname * :realname
-		rpl_whoisuser(msg, client, false);
-		rpl_whoisserver(msg, this->_description, false);
-
+		rpl_whoisuser(msg, client);
+		if ((client.getJoinedChannels().size() > 0) && !client.isInvisible())
+			rpl_whoischannels(msg, client);
 		if (client.isOper())
-			rpl_whoisoperator(msg, client, false);
-
+			rpl_whoisoperator(msg, client);
+		rpl_whoisserver(msg, this->_description);
 		_sendResponse(msg);
 	}
 
@@ -1624,10 +1624,9 @@ namespace ft_irc
 	{
 		Parser::t_params::const_iterator	paramsIt;
 		std::string							to_match = "0"; //match all by default
-		bool								matchAll = false;
+		bool								matchAll = msg.getParams().empty() || (msg.getParams().front() == "0");
 
-		msg.setResponse("");
-		matchAll = msg.getParams().empty() || msg.getParams().front() == "0";
+		msg.clearResponse();
 
 		for (t_clients::iterator it = this->_clients.begin();
 			 it != this->_clients.end();
@@ -1643,7 +1642,7 @@ namespace ft_irc
 				// iterate over params
 				for (; paramsIt != msg.getParams().end(); ++paramsIt)
 				{
-					//_logger.log(0, "WHOIS: " + *paramsIt  + ":" + it->getNick());
+					// _logger.log(0, "WHOIS: " + *paramsIt  + ":" + it->getNick());
 					if (match_nick(*paramsIt, it->getNick()))
 					{
 						// _logger.log(0, "WHOIS matched " + it->getNick());

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 16:35:17 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/14 16:47:32 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/14 20:39:20 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,9 @@ namespace ft_irc
 	void	rpl_whoisuser(Message& msg, const Client& user, bool rewrite = false); // 311
 	void	rpl_whoisserver(Message& msg, const std::string& description, bool rewrite = false); // 312
 	void	rpl_whoisoperator(Message& msg, const Client& user, bool rewrite = false); // 313
-	void	rpl_whoisoperator(Message& msg, bool rewrite = false); // 313
 	void	rpl_endofwho(Message& msg, const std::string& name, const std::string& to_match, bool rewrite = false); // 315
 	void	rpl_endofwhois(Message& msg, const std::string& nick, const std::string& to_match, bool rewrite = false); // 318
-	void	rpl_whoischannels(Message& msg, const std::string& nick, const std::string& chan_name, bool rewrite = false); // 319
+	void	rpl_whoischannels(Message& msg, const Client& client, bool rewrite = false); // 319
 	void	rpl_list(Message& msg, Channel& channel, bool rewrite = false); // 322
 	void	rpl_listend(Message& msg, bool rewrite = false); // 323
 	void	rpl_channelmodeis(Message& msg, Channel& channel, bool rewrite = false); // 324

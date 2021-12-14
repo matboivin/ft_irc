@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/12 13:12:48 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/14 20:50:08 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,7 +144,7 @@ namespace ft_irc
 		this->_paramsNb["KICK"]		= 3;
 		this->_paramsNb["KILL"]		= 2;
 		this->_paramsNb["LIST"]		= 1;
-		this->_paramsNb["MODE"]		= 0; // no need to fill forward response
+		this->_paramsNb["MODE"]		= 0; // don't fill
 		this->_paramsNb["MOTD"]		= 1;
 		this->_paramsNb["NICK"]		= 1;
 		this->_paramsNb["NAMES"]	= 1;
@@ -159,7 +159,7 @@ namespace ft_irc
 		this->_paramsNb["TOPIC"]	= 2;
 		this->_paramsNb["USER"]		= 4;
 		this->_paramsNb["WHO"]		= 2;
-		this->_paramsNb["WHOIS"]	= 2;
+		this->_paramsNb["WHOIS"]	= 0; // don't fill
 	}
 
 	/* Checks whether command name is valid */
