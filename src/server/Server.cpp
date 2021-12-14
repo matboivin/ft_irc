@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/14 17:47:25 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/14 18:04:51 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -712,31 +712,40 @@ namespace ft_irc
 	void	Server::_execInviteCmd(Message& msg)
 	{
 		if (msg.getParams().size() != 2)
-			err_needmoreparams(msg);
-		else if (getClient(msg.getParams().at(0)) == this->_clients.end())
-			err_nosuchnick(msg, msg.getParams().at(0));
-		else if (channel_is_valid(msg.getParams().at(1)))
 		{
-			std::string				guest = msg.getParams().at(0);
-			t_clients::iterator		guest_user = getClient(guest);
+			err_needmoreparams(msg, true);
+			_sendResponse(msg);
+			return ;
+		}
+		std::string			nick = msg.getParams().at(0);
+		t_clients::iterator	invited_user = getClient(nick);
+
+		if (invited_user == this->_clients.end())
+			err_nosuchnick(msg, nick, true);
+		else
+		{
 			std::string				chan_name = msg.getParams().at(1);
 			t_channels::iterator	channel = getChannel(chan_name);
-			bool					chan_exists = (channel != this->_channels.end());
 
-			if (chan_exists && !msg.getSender().isChanOp(*channel))
-				err_chanoprivsneeded(msg, chan_name);
-			else if (chan_exists && !_userOnChannel(msg.getSender(), *channel))
-				err_notonchannel(msg, chan_name);
-			else if (chan_exists && _userOnChannel(*guest_user, *channel))
-				err_useronchannel(msg, guest, chan_name);
+			if (channel == this->_channels.end())
+				err_nosuchchannel(msg, chan_name, true);
 			else
 			{
-				msg.setRecipient(*guest_user);
+				if (!msg.getSender().isChanOp(*channel))
+					err_chanoprivsneeded(msg, chan_name, true);
+				else if (!_userOnChannel(msg.getSender(), *channel))
+					err_notonchannel(msg, chan_name, true);
+				else if (_userOnChannel(*invited_user, *channel))
+					err_useronchannel(msg, nick, chan_name, true);
+				else
+				{
+					msg.setRecipient(*invited_user);
 
-				Message	invite_msg(msg.getSender(), getHostname());
+					Message	invite_msg(msg.getSender(), getHostname());
 
-				rpl_inviting(invite_msg, chan_name, guest);
-				_sendResponse(invite_msg);
+					rpl_inviting(invite_msg, chan_name, nick);
+					_sendResponse(invite_msg);
+				}
 			}
 		}
 		_sendResponse(msg);
