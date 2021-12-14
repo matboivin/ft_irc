@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/13 14:48:07 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/14 16:48:54 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -919,7 +919,7 @@ namespace ft_irc
 		std::string	mode_str = msg.getParams().at(1);
 		Message		mode_msg(target, getHostname());
 		char		mode_operator = '*'; // will store + or -
-		int			not_changed = 0;
+		int			mode_updated = 0;
 
 		for (std::string::const_iterator mode_char = mode_str.begin();
 			 mode_char != mode_str.end();
@@ -934,13 +934,17 @@ namespace ft_irc
 				err_unknownmode(mode_msg, *mode_char, true);
 				_sendResponse(mode_msg);
 			}
+			if ((*mode_char == 'o') && !target.isOper()) // not enough rights, do nothing
+			{
+				continue ;
+			}
 			else
 			{
 				if (mode_operator == '+')
-					not_changed = target.addMode(*mode_char);
+					mode_updated += target.addMode(*mode_char);
 				else if (mode_operator == '-')
-					not_changed = target.removeMode(*mode_char);
-				if (!not_changed)
+					mode_updated += target.removeMode(*mode_char);
+				if (mode_updated)
 				{
 					msg.setRecipients(target.getAllContacts());
 					msg.addRecipient(target);
@@ -955,7 +959,7 @@ namespace ft_irc
 				}
 			}
 		}
-		if (not_changed)
+		if (!mode_updated)
 		{
 			rpl_umodeis(mode_msg, target, true);
 			_sendResponse(mode_msg);
@@ -1262,8 +1266,8 @@ namespace ft_irc
 
 	/*
 	 * OPER <username> <password>
-	 * Authenticates a user as an IRC operator if the username/password combination exists
-	 * for that server
+	 * Authenticates a user as an IRC operator if the username/password combination
+	 * exists for that server
 	 */
 	void	Server::_execOperCmd(Message& msg)
 	{
@@ -1277,24 +1281,23 @@ namespace ft_irc
 				err_passwdmismatch(msg, true);
 			else
 			{
+				Client&		target = msg.getSender();
 				std::string	nick = msg.getSender().getNick();
 
-				Message	rpl_msg(msg);
+				target.addMode('o');
 
-				msg.setRecipient(msg.getSender());
-				msg.setCommand("MODE");
-				msg.clearParams();
-				msg.setParam(nick);
-				msg.setParam("+o");
-				_setUserMode(msg, msg.getSender());
-
-				if (msg.getSender().isOper() == true)
+				if (target.isOper() == true)
 				{
-					rpl_youreoper(rpl_msg);
-					_sendResponse(rpl_msg);
+					rpl_youreoper(msg, true);
+					msg.appendResponse(build_prefix(getHostname()));
+					msg.appendResponse(" MODE ");
+					msg.appendResponse(nick);
+					msg.appendResponse(" +o");
+					msg.appendSeparator();
+					_log(LOG_LEVEL_INFO, "Client " + nick + " is now IRC op");
 				}
-				_log(LOG_LEVEL_INFO, "Client " + msg.getSender().getNick() + " is now IRC op");
-				return ;
+				else
+					err_nooperhost(msg, true);
 			}
 		}
 		_sendResponse(msg);

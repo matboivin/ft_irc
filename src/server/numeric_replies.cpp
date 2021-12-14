@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/13 13:41:34 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/14 16:48:21 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -716,6 +716,18 @@ namespace ft_irc
 		msg.appendResponse(" 483 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" :You can't kill a server!");
+		msg.appendSeparator();
+	}
+
+	void	err_nooperhost(Message& msg, bool rewrite)
+	{
+		msg.setRecipient(msg.getSender());
+		if (rewrite)
+			msg.clearResponse();
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 491 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" :No O-lines for your host");
 		msg.appendSeparator();
 	}
 
