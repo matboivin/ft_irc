@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/14 16:48:54 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/14 17:10:35 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -363,6 +363,7 @@ namespace ft_irc
 					timeout_msg.appendSeparator();
 					_sendResponse(timeout_msg);
 					_disconnectClient(*it);
+					it = this->_clients.erase(it);
 				}
 			}
 		}
@@ -481,7 +482,7 @@ namespace ft_irc
 		msg.appendSeparator();
 		_sendResponse(msg);
 		// reset timeout and mark the client as pinged
-		client.updateLastEventTime();
+		//client.updateLastEventTime();
 		client.setPinged(true);
 		return (0);
 	}
@@ -1404,13 +1405,18 @@ namespace ft_irc
 	void	Server::_execPongCmd(Message& msg)
 	{
 		if (msg.getParams().empty())
-			err_noorigin(msg, true);
-		else
 		{
-			msg.setRecipient(msg.getSender());
-			msg.clearResponse();
+			err_noorigin(msg, true);
+			_sendResponse(msg);
 		}
-		_sendResponse(msg);
+
+		Client&	client = msg.getSender();
+
+		if (client.isPinged() == true)
+		{
+			client.updateLastEventTime();
+			client.setPinged(false);
+		}
 	}
 
 	/*
