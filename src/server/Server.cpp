@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/14 17:10:35 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/14 17:47:25 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1132,6 +1132,10 @@ namespace ft_irc
 	void	Server::_execMotdCmd(Message& msg)
 	{
 		const std::string	start_line = msg.getSender().getNick() + " :- ";
+		std::string	motd_start_line = build_prefix(msg.getServHostname());
+
+		motd_start_line += " 372 ";
+		motd_start_line += start_line;
 
 		msg.setRecipient(msg.getSender());
 		msg.appendResponse(build_prefix(msg.getServHostname()));
@@ -1142,10 +1146,25 @@ namespace ft_irc
 		msg.appendResponse(" Message of the day - ");
 		msg.appendSeparator();
 		// RPL_MOTD
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 372 ");
-		msg.appendResponse(start_line);
-		msg.appendResponse("Welcome you users! This server was made by very nice people"); // tmp
+		msg.appendResponse(motd_start_line);
+		msg.appendResponse("    ______       _          ");
+		msg.appendSeparator();
+		msg.appendResponse(motd_start_line);
+		msg.appendResponse("   / __/ /_     (_)_________");
+		msg.appendSeparator();
+		msg.appendResponse(motd_start_line);
+		msg.appendResponse("  / /_/ __/    / / ___/ ___/");
+		msg.appendSeparator();
+		msg.appendResponse(motd_start_line);
+		msg.appendResponse(" / __/ /_     / / /  / /__  ");
+		msg.appendSeparator();
+		msg.appendResponse(motd_start_line);
+		msg.appendResponse("/_/  \\__/____/_/_/   \\___/  ");
+		msg.appendSeparator();
+		msg.appendResponse(motd_start_line);
+		msg.appendResponse("       /_____/              ");
+		msg.appendSeparator();
+		msg.appendResponse(motd_start_line);
 		msg.appendSeparator();
 		// RPL_ENDOFMOTD
 		msg.appendResponse(build_prefix(msg.getServHostname()));
