@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/14 16:48:21 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/14 18:26:33 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -330,25 +330,35 @@ namespace ft_irc
 
 	void	rpl_namreply(Message& msg, const t_clients& clients, bool rewrite)
 	{
-		msg.setRecipient(msg.getSender());
-		if (rewrite)
-			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 353 ");
-		msg.appendResponse(msg.getSender().getNick());
-		msg.appendResponse(" * * :");
+		int			count = 0;
+		std::string	sender_nick = msg.getSender().getNick();
+		std::string	response;
+
+		response = build_prefix(msg.getServHostname());
+		response += " 353 ";
+		response += msg.getSender().getNick();
+		response += " * * :";
 
 		// check users not belonging to any channel
 		for (t_clients::const_iterator it = clients.begin();
 			 it != clients.end();
 			 ++it)
+		{
+			if ((it->getNick() != sender_nick)
+				&& (it->isInvisible() == false) && it->getJoinedChannels().empty())
 			{
-				if (it->getJoinedChannels().empty())
-				{
-					msg.appendResponse(" ");
-					msg.appendResponse(it->getNick());
-				}
+				response += " ";
+				response += it->getNick();
+				++count;
 			}
+		}
+		if (count == 0)
+			return ;
+
+		msg.setRecipient(msg.getSender());
+		if (rewrite)
+			msg.clearResponse();
+		msg.appendResponse(response);
 		msg.appendSeparator();
 	}
 
