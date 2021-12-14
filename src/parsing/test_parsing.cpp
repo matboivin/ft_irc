@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 12:25:08 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/12 13:27:41 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/14 21:06:21 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -274,19 +274,6 @@ int	test_parsing()
 		expected.setParam("#baz");
 		expected.setParam("server");
 		expected.setResponse(":nick!username@hostname LIST #foo,#bar,#baz\r\n");
-		assert(cmp_msg(msg, expected));
-	}
-
-	{
-		ft_irc::Message	msg(dummy_client);
-		ft_irc::Message	expected(dummy_client);
-
-		parser.parseMessage(msg, "WHOIS user1,user2,user3");
-		expected.setCommand("WHOIS");
-		expected.setParam("user1");
-		expected.setParam("user2");
-		expected.setParam("user3");
-		expected.setResponse(":nick!username@hostname WHOIS user1,user2,user3\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
