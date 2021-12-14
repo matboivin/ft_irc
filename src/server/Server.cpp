@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/14 18:04:51 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/14 19:48:20 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -771,7 +771,7 @@ namespace ft_irc
 				 ++chan_name)
 			{
 				if (!channel_is_valid(*chan_name))
-					return ;
+					err_nosuchchannel(msg, *chan_name);
 				if (msg.getSender().getJoinedChannels().size() >= CHAN_NB_MAX)
 					err_toomanychannels(msg, *chan_name, true);
 				else
@@ -783,11 +783,9 @@ namespace ft_irc
 						_addChannel(*chan_name, msg.getSender());
 						channel = getChannel(*chan_name);
 					}
+
 					if (channel->getClients().size() < USERS_IN_CHAN_MAX)
-					{
 						_addUserToChannel(msg.getSender(), *channel);
-						continue ;
-					}
 					else
 						err_channelisfull(msg, *chan_name, true);
 				}

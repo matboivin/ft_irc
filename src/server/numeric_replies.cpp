@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/14 18:26:33 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/14 19:52:10 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -302,6 +302,8 @@ namespace ft_irc
 
 	void	rpl_namreply(Message& msg, Channel& channel, bool rewrite)
 	{
+		bool	sender_in_chan = channel.hasClient(msg.getSender());
+
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
@@ -316,7 +318,7 @@ namespace ft_irc
 			 it != channel.getClients().end();
 			 ++it)
 		{
-			if ((*it)->isInvisible() == false)
+			if ((sender_in_chan == true) || ((*it)->isInvisible() == false))
 			{
 				if ((*it)->isChanOp(channel))
 					msg.appendResponse(" @");
@@ -673,7 +675,7 @@ namespace ft_irc
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
 		msg.appendResponse(chan_name);
-		msg.appendResponse(" :Cannot join channel");
+		msg.appendResponse(" :Cannot join channel (maximum number of users reached)");
 		msg.appendSeparator();
 	}
 
