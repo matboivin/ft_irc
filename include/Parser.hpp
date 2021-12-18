@@ -83,7 +83,7 @@ namespace ft_irc
 		bool		_nocrlf(t_str_it it);
 		bool		_nospcrlfcl(t_str_it it);
 		bool		_parseSeparator();
-		void		_parseTrailing(Message& msg);
+		bool		_parseTrailing(Message& msg);
 		void		_parseMiddle(Message& msg);
 		bool		_parseParams(Message& msg);
 		bool		_parseCommand(Message& msg);

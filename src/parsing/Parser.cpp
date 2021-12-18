@@ -244,11 +244,14 @@ namespace ft_irc
 	 * It starts by a ':' followed by a possibly empty sequence of octets not including
 	 * NUL or CR or LF
 	 */
-	void	Parser::_parseTrailing(Message& msg)
+	bool	Parser::_parseTrailing(Message& msg)
 	{
 		while (_nocrlf(this->_current))
 			++this->_current;
-		msg.setParam(std::string(this->_start, this->_current));
+		std::string	param = std::string(this->_start, this->_current);
+		if (param.size() > 1) // single ':'
+			msg.setParam(param);
+		return (_parseSeparator());
 	}
 
 	/*
@@ -261,7 +264,6 @@ namespace ft_irc
 		while ((_nospcrlfcl(this->_current)) || (*this->_current == ':'))
 			++this->_current;
 		msg.setParam(std::string(this->_start, this->_current));
-		return (_parseSeparator());
 	}
 
 	/* Parses the command parameters */
@@ -271,7 +273,7 @@ namespace ft_irc
 		{
 			this->_start = this->_current;
 			if ((this->_current != this->_end) && (*this->_current == ':'))
-				_parseTrailing(msg);
+				return (_parseTrailing(msg));
 			else if (_current != _end)
 				_parseMiddle(msg);
 		}

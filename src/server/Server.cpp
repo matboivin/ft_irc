@@ -1264,33 +1264,33 @@ namespace ft_irc
 	 */
 	void	Server::_execNoticeCmd(Message& msg)
 	{
-		if (msg.getParams().size() < 2)
-		{
+		if (msg.getParams().empty())
 			err_needmoreparams(msg, true);
-			_sendResponse(msg);
-			return ;
-		}
-
-		std::string	target = msg.getParams().at(0);
-
-		if (channel_is_valid(target)) // send to chan
+		else if (msg.getParams().size() < 2)
+			err_notexttosend(msg, true);
+		else
 		{
-			t_channels::iterator	channel = getChannel(target);
+			std::string	target = msg.getParams().at(0);
 
-			if (channel == this->_channels.end())
-				return ;
-			// if 'n' flag is set: messages to channel from clients of the channel only
-			else if (channel->hasMode('n') && !_userOnChannel(msg.getSender(), *channel))
-				return ;
-			msg.setRecipients(removeDuplicates(channel->getClients(), &msg.getSender()));
-		}
-		else // send to user
-		{
-			t_clients::iterator	client = getClient(msg.getParams().at(0));
+			if (channel_is_valid(target)) // send to chan
+			{
+				t_channels::iterator	channel = getChannel(target);
 
-			if (client == this->_clients.end())
-				return ;
-			msg.setRecipient(*client);
+				if (channel == this->_channels.end())
+					return ;
+				// if 'n' flag is set: messages to channel from clients of the channel only
+				else if (channel->hasMode('n') && !_userOnChannel(msg.getSender(), *channel))
+					return ;
+				msg.setRecipients(removeDuplicates(channel->getClients(), &msg.getSender()));
+			}
+			else // send to user
+			{
+				t_clients::iterator	client = getClient(msg.getParams().at(0));
+
+				if (client == this->_clients.end())
+					return ;
+				msg.setRecipient(*client);
+			}
 		}
 		_sendResponse(msg);
 	}
