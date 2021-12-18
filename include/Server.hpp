@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/12/18 23:51:30 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/19 00:29:27 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,7 +167,7 @@ namespace ft_irc
 											const std::string& chan_name, const std::string& nick,
 											const std::string& comment);
 		void					_killClient(Message& msg, Client& target,
-											const std::string& reason = "(<no reason supplied>)");
+											const std::string& reason = "<no reason supplied>");
 		void					_partClient(Message& msg,
 											const std::string& chan_name,
 											const std::string& comment = "");

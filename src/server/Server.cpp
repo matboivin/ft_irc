@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 00:26:20 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/19 00:29:29 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -884,12 +884,12 @@ namespace ft_irc
 	{
 		std::string	trailing_param = ":Killed (";
 		trailing_param += msg.getSender().getNick();
-		trailing_param += " ";
+		trailing_param += " (";
 		if (reason.at(0) == ':')
 			trailing_param += reason.substr(1);
 		else
 			trailing_param += reason;
-		trailing_param += ")";
+		trailing_param += "))";
 
 		msg.setRecipients(target.getAllContacts());
 		msg.addRecipient(target);
