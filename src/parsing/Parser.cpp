@@ -141,7 +141,7 @@ namespace ft_irc
 		this->_paramsNb["DIE"]		= 0;
 		this->_paramsNb["INVITE"]	= 2;
 		this->_paramsNb["JOIN"]		= 1;
-		this->_paramsNb["KICK"]		= 3;
+		this->_paramsNb["KICK"]		= 0; // don't fill
 		this->_paramsNb["KILL"]		= 2;
 		this->_paramsNb["LIST"]		= 1;
 		this->_paramsNb["MODE"]		= 0; // don't fill

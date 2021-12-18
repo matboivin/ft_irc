@@ -165,7 +165,7 @@ namespace ft_irc
 		void					_setUserModeInChan(Message& msg, Client& client, Channel& channel);
 		void					_kickClient(Message& msg,
 											const std::string& chan_name, const std::string& nick,
-											const std::string& comment = "");
+											const std::string& comment);
 		void					_partClient(Message& msg,
 											const std::string& chan_name,
 											const std::string& comment = "");

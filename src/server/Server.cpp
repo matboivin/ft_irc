@@ -808,15 +808,15 @@ namespace ft_irc
 		t_clients::iterator		user = getClient(nick);
 
 		if (channel == this->_channels.end())
-			err_nosuchchannel(msg, chan_name);
-		else if (!msg.getSender().isChanOp(*channel))
-			err_chanoprivsneeded(msg, chan_name);
-		else if (!_userOnChannel(msg.getSender(), *channel))
-			err_notonchannel(msg, chan_name);
-		else if ((user != this->_clients.end()) && !_userOnChannel(*user, *channel))
-			err_usernotinchannel(msg, nick, chan_name);
+			err_nosuchchannel(msg, chan_name, true);
 		else if (user == this->_clients.end())
-			err_nosuchnick(msg, nick);
+			err_nosuchnick(msg, nick, true);
+		else if (!_userOnChannel(msg.getSender(), *channel))
+			err_notonchannel(msg, chan_name, true);
+		else if ((user != this->_clients.end()) && !_userOnChannel(*user, *channel))
+			err_usernotinchannel(msg, nick, chan_name, true);
+		else if (!msg.getSender().isChanOp(*channel))
+			err_chanoprivsneeded(msg, chan_name, true);
 		else
 		{
 			msg.setRecipients(channel->getClients());
@@ -825,11 +825,8 @@ namespace ft_irc
 			msg.appendResponse(chan_name);
 			msg.appendResponse(" ");
 			msg.appendResponse(nick);
-			if (!comment.empty())
-			{
-				msg.appendResponse(" ");
-				msg.appendResponse(comment);
-			}
+			msg.appendResponse(" ");
+			msg.appendResponse(comment);
 			msg.appendSeparator();
 		}
 		_sendResponse(msg);
@@ -845,22 +842,37 @@ namespace ft_irc
 	void	Server::_execKickCmd(Message& msg)
 	{
 		if (msg.getParams().size() < 2)
-			err_needmoreparams(msg);
+		{
+			err_needmoreparams(msg, true);
+			_sendResponse(msg);
+			return ;
+		}
 		else
 		{
-			std::string	comment = "";
-			Parser::t_params	chan_names = _splitListOfParams(msg.getParams().at(0));
-			Parser::t_params	nicknames = _splitListOfParams(msg.getParams().at(1));
+			std::string				comment;
+			const Parser::t_params	chan_names = _splitListOfParams(msg.getParams().at(0));
+			const Parser::t_params	nicknames = _splitListOfParams(msg.getParams().at(1));
 
 			if (msg.getParams().size() == 3)
 				comment = msg.getParams().at(2);
+			else
+				comment = msg.getSender().getNick();
 
-			std::size_t	len = chan_names.size();
+			std::size_t	chan_nb = chan_names.size();
+			std::size_t	nick_nb = nicknames.size();
+			std::size_t	max_len = (chan_nb > nick_nb) ? chan_nb : nick_nb;
 
-			for (std::size_t i = 0; i < len; ++i)
-				_kickClient(msg, chan_names[i], nicknames[i], comment);
-			// Handle different number of channels and nicknames
-			// if (len != nicknames.size())
+			Parser::t_params::const_iterator	chan = chan_names.begin();
+			Parser::t_params::const_iterator	nick = nicknames.begin();
+
+			for (std::size_t i = 0; i < max_len; ++i)
+			{
+				_kickClient(msg, *chan, *nick, comment);
+				if (*chan != chan_names.back())
+					++chan;
+				if (*nick != nicknames.back())
+					++nick;
+			}
 		}
 	}
 
