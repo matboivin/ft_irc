@@ -1282,7 +1282,7 @@ namespace ft_irc
 			// if 'n' flag is set: messages to channel from clients of the channel only
 			else if (channel->hasMode('n') && !_userOnChannel(msg.getSender(), *channel))
 				return ;
-			msg.setRecipients(channel->getClients());
+			msg.setRecipients(removeDuplicates(channel->getClients(), &msg.getSender()));
 		}
 		else // send to user
 		{
