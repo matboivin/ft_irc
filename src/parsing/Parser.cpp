@@ -261,6 +261,7 @@ namespace ft_irc
 		while ((_nospcrlfcl(this->_current)) || (*this->_current == ':'))
 			++this->_current;
 		msg.setParam(std::string(this->_start, this->_current));
+		return (_parseSeparator());
 	}
 
 	/* Parses the command parameters */
