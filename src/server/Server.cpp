@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/18 22:09:18 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/18 22:13:52 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1485,7 +1485,7 @@ namespace ft_irc
 				else if (channel->hasMode('n') && !_userOnChannel(msg.getSender(), *channel))
 					err_cannotsendtochan(msg, target, true);
 				else
-					msg.setRecipients(channel->getClients());
+					msg.setRecipients(removeDuplicates(channel->getClients(), &msg.getSender()));
 			}
 			else // send to user
 			{
