@@ -1265,7 +1265,11 @@ namespace ft_irc
 	void	Server::_execNoticeCmd(Message& msg)
 	{
 		if (msg.getParams().size() < 2)
+		{
+			err_needmoreparams(msg, true);
+			_sendResponse(msg);
 			return ;
+		}
 
 		std::string	target = msg.getParams().at(0);
 
