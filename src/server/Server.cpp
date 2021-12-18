@@ -482,7 +482,7 @@ namespace ft_irc
 		msg.appendSeparator();
 		_sendResponse(msg);
 		// reset timeout and mark the client as pinged
-		//client.updateLastEventTime();
+		client.updateLastEventTime();
 		client.setPinged(true);
 		return (0);
 	}
