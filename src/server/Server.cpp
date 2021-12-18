@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/18 23:53:16 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/19 00:26:20 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -885,7 +885,10 @@ namespace ft_irc
 		std::string	trailing_param = ":Killed (";
 		trailing_param += msg.getSender().getNick();
 		trailing_param += " ";
-		trailing_param += reason;
+		if (reason.at(0) == ':')
+			trailing_param += reason.substr(1);
+		else
+			trailing_param += reason;
 		trailing_param += ")";
 
 		msg.setRecipients(target.getAllContacts());
@@ -1320,7 +1323,7 @@ namespace ft_irc
 				if (channel == this->_channels.end())
 					return ;
 				// if 'n' flag is set: messages to channel from clients of the channel only
-				else if (channel->hasMode('n') && !_userOnChannel(msg.getSender(), *channel))
+				if (channel->hasMode('n') && !_userOnChannel(msg.getSender(), *channel))
 					return ;
 				msg.setRecipients(removeDuplicates(channel->getClients(), &msg.getSender()));
 			}
@@ -1454,7 +1457,9 @@ namespace ft_irc
 		std::string	origin;
 
 		if (msg.getParams().empty())
+		{
 			err_noorigin(msg, true);
+		}
 		else
 		{
 			origin = msg.getParams().front();
@@ -1554,7 +1559,9 @@ namespace ft_irc
 	void	Server::_execTopicCmd(Message& msg)
 	{
 		if (msg.getParams().empty())
+		{
 			err_needmoreparams(msg, true);
+		}
 		else
 		{
 			std::string				chan_name = msg.getParams().at(0);
