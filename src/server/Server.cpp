@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/18 22:13:52 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/18 23:46:07 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -763,7 +763,9 @@ namespace ft_irc
 			_sendResponse(msg);
 		}
 		else if (msg.getParams().at(0) == "0")
+		{
 			_removeUserFromAllChannels(msg.getSender());
+		}
 		else
 		{
 			for (Message::t_params::const_iterator chan_name = msg.getParams().begin();
@@ -771,8 +773,8 @@ namespace ft_irc
 				 ++chan_name)
 			{
 				if (!channel_is_valid(*chan_name))
-					err_nosuchchannel(msg, *chan_name);
-				if (msg.getSender().getJoinedChannels().size() >= CHAN_NB_MAX)
+					err_nosuchchannel(msg, *chan_name, true);
+				else if (msg.getSender().getJoinedChannels().size() >= CHAN_NB_MAX)
 					err_toomanychannels(msg, *chan_name, true);
 				else
 				{
@@ -783,7 +785,8 @@ namespace ft_irc
 						_addChannel(*chan_name, msg.getSender());
 						channel = getChannel(*chan_name);
 					}
-
+					else if (_userOnChannel(msg.getSender(), *channel))
+						continue ;
 					if (channel->getClients().size() < USERS_IN_CHAN_MAX)
 						_addUserToChannel(msg.getSender(), *channel);
 					else
@@ -836,7 +839,7 @@ namespace ft_irc
 	 * KICK <channel> *( "," <channel> ) <user> *( "," <user> ) [<comment>]
 	 *
 	 * The server MUST NOT send KICK messages with multiple channels or
-	 * users to clients.  This is necessarily to maintain backward
+	 * users to clients. This is necessarily to maintain backward
 	 * compatibility with old client software.
 	 */
 	void	Server::_execKickCmd(Message& msg)
@@ -885,21 +888,45 @@ namespace ft_irc
 	 */
 	void	Server::_execKillCmd(Message& msg)
 	{
-		if (msg.getParams().size() < 2)
-			err_needmoreparams(msg, true);
-		else if (!msg.getSender().isOper())
+		if (!msg.getSender().isOper())
 			err_noprivileges(msg, true);
+		else if (msg.getParams().size() < 1)
+			err_needmoreparams(msg, true);
 		else if (msg.getParams().at(0) == getHostname())
 			err_cantkillserver(msg, true);
 		else
 		{
 			std::string			nick = msg.getParams().at(0);
-			t_clients::iterator	user = getClient(nick);
+			t_clients::iterator	target = getClient(nick);
 
-			if (user == this->_clients.end())
+			if (target == this->_clients.end())
 				err_nosuchnick(msg, nick, true);
 			else
-				user->setAlive(false); // will be clean by server loop
+			{
+				std::string	reason;
+				std::string	trailing_param;
+
+				if (msg.getParams().size() > 1)
+					reason = msg.getParams().at(1);
+				else
+					reason = "(<no reason supplied>)";
+
+				trailing_param = ":Killed (";
+				trailing_param += msg.getSender().getNick();
+				trailing_param += " ";
+				trailing_param += reason;
+				trailing_param += ")";
+				msg.setRecipients(target->getAllContacts());
+				msg.addRecipient(*target);
+				msg.setResponse(build_prefix(build_full_client_id(*target)));
+				msg.appendResponse(" QUIT ");
+				msg.appendResponse(trailing_param);
+				msg.appendSeparator();
+				_sendResponse(msg);
+				target->quitAllChannels();
+				// The server acknowledges by sending an ERROR message to the client
+				_disconnectClient(*target, "ERROR " + trailing_param);
+			}
 		}
 		_sendResponse(msg);
 	}
