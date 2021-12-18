@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/14 21:03:51 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/18 22:09:18 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -811,12 +811,12 @@ namespace ft_irc
 			err_nosuchchannel(msg, chan_name, true);
 		else if (user == this->_clients.end())
 			err_nosuchnick(msg, nick, true);
+		else if (!msg.getSender().isChanOp(*channel))
+			err_chanoprivsneeded(msg, chan_name, true);
 		else if (!_userOnChannel(msg.getSender(), *channel))
 			err_notonchannel(msg, chan_name, true);
 		else if ((user != this->_clients.end()) && !_userOnChannel(*user, *channel))
 			err_usernotinchannel(msg, nick, chan_name, true);
-		else if (!msg.getSender().isChanOp(*channel))
-			err_chanoprivsneeded(msg, chan_name, true);
 		else
 		{
 			msg.setRecipients(channel->getClients());
