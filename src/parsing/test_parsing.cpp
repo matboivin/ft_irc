@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 12:25:08 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/14 21:06:21 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/18 21:30:06 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,7 +173,6 @@ int	test_parsing()
 		expected.setParam("#Finnish");
 		expected.setParam("John");
 		expected.setParam(":Speaking English");
-		expected.setResponse(":nick!username@hostname KICK #Finnish John :Speaking English\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -287,7 +286,6 @@ int	test_parsing()
 		expected.setParam("#general,#random");
 		expected.setParam("John,Jane");
 		expected.setParam(":Speaking English");
-		expected.setResponse(":nick!username@hostname KICK #general,#random John,Jane :Speaking English\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
