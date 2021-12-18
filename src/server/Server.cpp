@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/18 23:46:07 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/18 23:53:16 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -879,8 +879,29 @@ namespace ft_irc
 		}
 	}
 
+	/* Helper for KILL command */
+	void	Server::_killClient(Message& msg, Client& target, const std::string& reason)
+	{
+		std::string	trailing_param = ":Killed (";
+		trailing_param += msg.getSender().getNick();
+		trailing_param += " ";
+		trailing_param += reason;
+		trailing_param += ")";
+
+		msg.setRecipients(target.getAllContacts());
+		msg.addRecipient(target);
+		msg.setResponse(build_prefix(build_full_client_id(target)));
+		msg.appendResponse(" QUIT ");
+		msg.appendResponse(trailing_param);
+		msg.appendSeparator();
+		_sendResponse(msg);
+		target.quitAllChannels();
+		// The server acknowledges by sending an ERROR message to the client
+		_disconnectClient(target, "ERROR " + trailing_param);
+	}
+
 	/*
-	 * KILL <client> <comment>
+	 * KILL <client> [comment]
 	 * Cause a client-server connection to be closed by the server.
 	 *
 	 * The user must be an IRC operator.
@@ -903,29 +924,11 @@ namespace ft_irc
 				err_nosuchnick(msg, nick, true);
 			else
 			{
-				std::string	reason;
-				std::string	trailing_param;
-
 				if (msg.getParams().size() > 1)
-					reason = msg.getParams().at(1);
+					_killClient(msg, *target, msg.getParams().at(1));
 				else
-					reason = "(<no reason supplied>)";
-
-				trailing_param = ":Killed (";
-				trailing_param += msg.getSender().getNick();
-				trailing_param += " ";
-				trailing_param += reason;
-				trailing_param += ")";
-				msg.setRecipients(target->getAllContacts());
-				msg.addRecipient(*target);
-				msg.setResponse(build_prefix(build_full_client_id(*target)));
-				msg.appendResponse(" QUIT ");
-				msg.appendResponse(trailing_param);
-				msg.appendSeparator();
-				_sendResponse(msg);
-				target->quitAllChannels();
-				// The server acknowledges by sending an ERROR message to the client
-				_disconnectClient(*target, "ERROR " + trailing_param);
+					_killClient(msg, *target);
+				return ;
 			}
 		}
 		_sendResponse(msg);
@@ -937,7 +940,6 @@ namespace ft_irc
 	 * If <channel> is specified, only lists information about that channel.
 	 * Otherwise, lists all channels and their topics.
 	 */
-
 	void	Server::_execListCmd(Message& msg)
 	{
 		bool	matchAll = msg.getParams().size() == 0;
