@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/19 16:55:27 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/19 18:09:54 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -295,7 +295,7 @@ namespace ft_irc
 	/* Fill response to be forwarded to other clients */
 	void	Parser::_fillForwardResponse(Message& msg)
 	{
-		const std::string	cmds = "KICK KILL MODE WHOIS"; // no need to fill
+		const std::string	cmds = "JOIN KICK KILL MODE WHOIS"; // no need to fill
 
 		if (cmds.find(msg.getCommand()) != std::string::npos)
 			return ;

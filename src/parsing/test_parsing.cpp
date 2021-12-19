@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 12:25:08 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/18 21:30:06 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/19 18:10:41 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,6 @@ int	test_parsing()
 		parser.parseMessage(msg, "JOIN #general");
 		expected.setCommand("JOIN");
 		expected.setParam("#general");
-		expected.setResponse(":nick!username@hostname JOIN #general\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -185,7 +184,6 @@ int	test_parsing()
 		expected.setCommand("JOIN");
 		expected.setParam("#foo");
 		expected.setParam("#bar");
-		expected.setResponse(":nick!username@hostname JOIN #foo,#bar\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
@@ -199,7 +197,6 @@ int	test_parsing()
 		expected.setParam("#");
 		expected.setParam("#bcd");
 		expected.setParam("x");
-		expected.setResponse(":nick!username@hostname JOIN #abc,#\r\n");
 		assert(cmp_msg(msg, expected));
 	}
 
