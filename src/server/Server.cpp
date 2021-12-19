@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 17:31:25 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/19 18:24:49 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -436,17 +436,9 @@ namespace ft_irc
 					{
 						this->_pingClient(*it);
 					}
-					else
+					else // send them a timeout message
 					{
-						// send them a timeout message
-						Message	timeout_msg(*it);
-
-						timeout_msg.setRecipient(*it);
-						timeout_msg.setResponse("ERROR :Ping timeout: 30 seconds");
-						timeout_msg.appendSeparator();
-						_sendResponse(timeout_msg);
-						//_disconnectClient(*it);
-						it->setAlive(false);
+						_execQuitTimeoutCmd(*it);
 					}
 				}
 				++index;
@@ -1658,6 +1650,22 @@ namespace ft_irc
 		client.quitAllChannels();
 		// The server acknowledges by sending an ERROR message to the client
 		client.kick("ERROR Quit");
+	}
+
+	/* Ping timeout version */
+	void	Server::_execQuitTimeoutCmd(Client& client)
+	{
+		Message	msg(client, getHostname());
+
+		msg.setRecipients(client.getAllContacts());
+		msg.addRecipient(client);
+		msg.setResponse(build_prefix(build_full_client_id(client)));
+		msg.appendResponse(" QUIT :Ping timeout: 30 seconds");
+		msg.appendSeparator();
+		_sendResponse(msg);
+		client.quitAllChannels();
+		// The server acknowledges by sending an ERROR message to the client
+		client.kick("ERROR :Ping timeout: 30 seconds");
 	}
 
 	/*
