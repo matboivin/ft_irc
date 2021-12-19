@@ -11,7 +11,7 @@ address = argv[2]
 port = int(argv[3])
 
 #launch ./ircserv
-proc = subprocess.Popen(["./ircserv", bind_address, argv[3], ""])
+proc = subprocess.Popen(["./ircserv", bind_address, argv[3], "pass42"])
 sleep(1)
 
 # create an INET, STREAMing socket
