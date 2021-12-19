@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 00:29:29 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/19 17:06:47 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,6 +190,11 @@ namespace ft_irc
 		return (this->_alive);
 	}
 
+	bool Server::_pollServ()
+	{
+		return (poll(this->_poll_fds.data(), this->_poll_fds.size(), -1) > 0);
+	}
+
 	/* Main loop **************************************************************** */
 
 	int	Server::run()
@@ -199,12 +204,16 @@ namespace ft_irc
 
 		_log(LOG_LEVEL_INFO, "Server listening on localhost:" + this->getPort());
 		this->_alive = true;
-
 		while (_alive)
 		{
-			if (_hasPendingConnections() == true)
-				_awaitNewConnection();
-			_processClients();
+			if (_pollServ())
+			{
+				if (_hasPendingConnections() == true)
+				{
+					_awaitNewConnection();
+				}
+				_processClients();
+			}
 		}
 		_log(LOG_LEVEL_FATAL, "Server has died");
 		return (-1);
@@ -274,43 +283,58 @@ namespace ft_irc
 			_log(LOG_LEVEL_FATAL, "Error: Could not listen on socket.");
 			return (false);
 		}
+		struct pollfd	poll_fd;
+		
+		poll_fd.fd = this->_sockfd;
+		poll_fd.events = POLLIN | POLLOUT;
+		this->_poll_fds.push_back(poll_fd);
 		return (true);
 	}
 
 	/* Accepts a new connection */
 	bool	Server::_awaitNewConnection()
 	{
-		Client	new_client;
+		Client			new_client;
+		int				new_sockfd;
+		struct pollfd	pollfd;
 
-		// accept a new connection
-		new_client.awaitConnection(this->_sockfd);
-		if (new_client.getSocketFd() < 0)
+		// Accept the connection.
+		new_sockfd = accept(this->_sockfd, (struct sockaddr *)&new_client.getAddress(), &new_client.getAddressSize());
+		if (new_sockfd < 0)
+		{
+			_log(LOG_LEVEL_ERROR, "Error: Could not accept connection.");
 			return (false);
+		}
+		new_client.setAddressStr(inet_ntoa(new_client.getAddress().sin_addr));
+		// Set socket options.
+		setNonblocking(new_sockfd);
+		int	optval = 1;
+		
+		if (setsockopt(new_sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) < 0)
+		{
+			_log(LOG_LEVEL_ERROR, "Error: Could not set socket options.");
+			return (false);
+		}
 
-		// log the clients IP address
-		_log(LOG_LEVEL_INFO, "Client " + new_client.getIpAddressStr() + " connected");
+		// Add the new client to the list of clients.
 		this->_clients.push_back(new_client);
+		pollfd.fd = new_sockfd;
+		pollfd.events = POLLIN | POLLOUT;
+		pollfd.revents = 0;
+		this->_poll_fds.push_back(pollfd);
+		_log(LOG_LEVEL_INFO, "Client " + new_client.getIpAddressStr() + " connected");
 		return (true);
 	}
 
 	/* Checks if there are pending connections. (poll) */
 	bool	Server::_hasPendingConnections()
 	{
-		struct pollfd	poll_fd = {this->_sockfd, POLLIN, 0};
-		int				poll_result = poll(&poll_fd, 1, 0);
-
-		if (poll_result < 0)
-		{
-			_log(LOG_LEVEL_ERROR, "Error: Could not poll socket.");
-			return (false);
-		}
-		if (poll_result == 0)
-			return (false);
-		return (true);
+		return (this->_poll_fds[0].revents & POLLIN);
 	}
 
 	bool	Server::_processClientCommand(Client& client)
 	{
+		
 		if (client.hasUnprocessedCommands() == true)
 		{
 			Message	msg(client, getHostname());
@@ -320,7 +344,7 @@ namespace ft_irc
 				if ((client.isRegistered() && client.isAllowed()) == false)
 					_registerClient(msg, client); // register the client
 				else
-					_executeCommand(msg); // execute the command
+					_executeCommand(msg, client); // execute the command
 			}
 			client.updateLastEventTime();
 			return (true);
@@ -328,43 +352,111 @@ namespace ft_irc
 		return (false);
 	}
 
+	void Server::_removeClientFd(Client& client)
+	{
+		int	fd = -1;
+
+		for (t_pollfds::iterator it = this->_poll_fds.begin();
+			 it != this->_poll_fds.end();
+			 ++it)
+		{
+			fd = _poll_fds[client.pollfd_index].fd;
+			if (it->fd == fd)
+			{
+				this->_poll_fds.erase(it);
+				break ;
+			}
+		}
+	}
+	/* Reads 512 bytes from the socket if there is data to read */
+	int	Server::updateClientInBuffer(Client &client, struct pollfd &client_pollfd)
+	{
+		char					bytes_buffer[MAX_COMMAND_SIZE];
+		std::string::size_type	found;
+		ssize_t					bytes_read;
+		int						sockfd;
+
+		sockfd = client_pollfd.fd;
+		if (client_pollfd.fd == -1)
+			return (0);
+		if (!(client_pollfd.revents & POLLIN))
+			return (0);
+		_log(DEBUG, "Updating \"" + client.getNick() + "\"'s in buffer");
+		bytes_read = recv(sockfd, bytes_buffer, MAX_COMMAND_SIZE, 0);
+		if (bytes_read == -1)
+		{
+			std::cerr << __FILE__ ":" <<__LINE__ << " : " << "FATAL: recv()" << std::endl;
+			return (-1);
+		}
+		if (bytes_read == 0)
+		{
+			_log(DEBUG, "EOF received from \"" + client.getNick() + "\"");
+			client.setAlive(false);
+			return (0);
+		}
+		// append to in_buffer
+		client._in_buffer.append(bytes_buffer, bytes_read);
+		// if there's not \r\n in the first 512 bytes, insert a \r\n at offset 512
+		if (client._in_buffer.size() > 512)
+		{
+			std::string	endofline = CRLF;
+
+			found = client._in_buffer.find(CRLF);
+			if (found == std::string::npos)
+			{
+				found = client._in_buffer.find("\n");
+				endofline = "\n";
+			}
+			if (found == std::string::npos || found > 512)
+				client._in_buffer.insert(512, endofline);
+		}
+		client.updateLastEventTime();
+		return (bytes_read);
+	}
+
 	/* Process all clients */
 	bool	Server::_processClients()
 	{
+		size_t	index = 1;
+
 		for (t_clients::iterator it = this->_clients.begin();
 			 it != this->_clients.end();
 			 ++it)
 		{
+			it->pollfd_index = index;
+			if (it->isAlive())
+			{
+				_processClientCommand(*it);
+				if (it->isAlive() == false)
+					continue ;
+				this->updateClientInBuffer(*it, _poll_fds[index]);
+				if (it->isTimeouted() == true)
+				{
+					if (it->isPinged() == false)
+					{
+						this->_pingClient(*it);
+					}
+					else
+					{
+						// send them a timeout message
+						Message	timeout_msg(*it);
+
+						timeout_msg.setRecipient(*it);
+						timeout_msg.setResponse("ERROR :Ping timeout: 30 seconds");
+						timeout_msg.appendSeparator();
+						_sendResponse(timeout_msg);
+						//_disconnectClient(*it);
+						it->setAlive(false);
+					}
+				}
+				++index;
+			}
 			if (it->isAlive() == false)
 			{
 				_disconnectClient(*it);
+				this->_removeClientFd(*it);
+				_log(LOG_LEVEL_INFO, "Client " + it->getNick() + "@" + it->getIpAddressStr() + " erased");
 				it = this->_clients.erase(it);
-				continue ;
-			}
-			if (it->updateOutBuffer())
-			{
-				continue ;
-			}
-			_processClientCommand(*it);
-			it->updateInBuffer();
-			if (it->isTimeouted() == true)
-			{
-				if (it->isPinged() == false)
-				{
-					this->_pingClient(*it);
-				}
-				else
-				{
-					// send them a timeout message
-					Message	timeout_msg(*it);
-
-					timeout_msg.setRecipient(*it);
-					timeout_msg.setResponse("ERROR :Ping timeout: 30 seconds");
-					timeout_msg.appendSeparator();
-					_sendResponse(timeout_msg);
-					_disconnectClient(*it);
-					it = this->_clients.erase(it);
-				}
 			}
 		}
 		return (true);
@@ -394,7 +486,10 @@ namespace ft_irc
 	int	Server::_registerClient(Message& msg, Client& client)
 	{
 		if (msg.getCommand() == "QUIT")
-			return (_disconnectClient(client));
+		{
+			client.kick();
+			return (1);
+		}
 
 		// unknown command is answered
 		if (this->_commands.find(msg.getCommand()) == this->_commands.end())
@@ -406,7 +501,7 @@ namespace ft_irc
 		if (!client.isAllowed() && (msg.getCommand() == "PASS"))
 			_execPassCmd(msg);
 		else if ((msg.getCommand() == "NICK") || (msg.getCommand() == "USER"))
-			_executeCommand(msg);
+			_executeCommand(msg, client);
 		else
 		{
 			err_notregistered(msg);
@@ -418,7 +513,7 @@ namespace ft_irc
 		{
 			err_passwdmismatch(msg, true);
 			_sendResponse(msg);
-			_disconnectClient(client, "ERROR :Password incorrect");
+			client.kick("ERROR :Password incorrect");
 			return (0);
 		}
 
@@ -431,7 +526,7 @@ namespace ft_irc
 		return (0);
 	}
 
-	int	Server::_disconnectClient(Client& client, const std::string& comment)
+	int	Server::_disconnectClient(Client& client)
 	{
 		t_clients::iterator	it = std::find(this->_clients.begin(), this->_clients.end(), client);
 
@@ -441,8 +536,9 @@ namespace ft_irc
 				"Client " + client.getNick() + client.getIpAddressStr() + " is not in the client list!");
 			return (-1);
 		}
-
-		if (it->getSocketFd() > 0)
+		int	&client_fd = this->_poll_fds[client.pollfd_index].fd;
+		const std::string& comment = client.getKickReason();
+		if (client_fd > 0)
 		{
 			// send them a goodbye message
 			Message	goodbye_msg(*it);
@@ -460,10 +556,9 @@ namespace ft_irc
 			goodbye_msg.appendSeparator();
 			_sendResponse(goodbye_msg);
 
-			close(it->getSocketFd());
-			it->setSocketFd(-1);
+			close(client_fd);
+			client_fd = -1;
 		}
-		it->setAlive(false);
 		it->setAllowed(false);
 		_log(LOG_LEVEL_INFO, "Client " + it->getNick() + "@" + it->getIpAddressStr() + " disconnected");
 		return (0);
@@ -529,10 +624,18 @@ namespace ft_irc
 	}
 
 	/* Execute a command */
-	int	Server::_executeCommand(Message& msg)
+	int	Server::_executeCommand(Message& msg, Client& client)
 	{
 		if (msg.getCommand() == "CAP")
 			return (1);
+		// the client didn't provide the connection password
+		if ((client.isAllowed() == false) && (msg.getCommand() != "PASS"))
+		{
+			err_passwdmismatch(msg, true);
+			_sendResponse(msg);
+			client.kick("ERROR :Password incorrect");
+			return (0);
+		}
 
 		t_cmds::const_iterator	it = this->_commands.find(msg.getCommand());
 
@@ -568,12 +671,13 @@ namespace ft_irc
 				logOutput.replace(pos, 2, CRLF_PRINTABLE);
 
 			_log(LOG_LEVEL_DEBUG, "Sending: '" + logOutput + "' to " + (*dst)->getIpAddressStr());
+			
+			int	fd = this->_poll_fds[(*dst)->pollfd_index].fd;
 
-			if (send((*dst)->getSocketFd(), msg.getResponse().c_str(), msg.getResponse().size(), MSG_NOSIGNAL) < 0)
-			{
-				_log(LOG_LEVEL_WARNING, "Couldn't send message to " + (*dst)->getIpAddressStr());
-				// throw std::runtime_error("send() failed");
-			}
+			if (!(fd & POLLOUT))
+				continue ;
+			if (send(fd, msg.getResponse().c_str(), msg.getResponse().size(), MSG_NOSIGNAL) < 0)
+				throw std::runtime_error("send() failed");
 		}
 	}
 
@@ -721,7 +825,9 @@ namespace ft_irc
 		t_clients::iterator	invited_user = getClient(nick);
 
 		if (invited_user == this->_clients.end())
+		{
 			err_nosuchnick(msg, nick, true);
+		}
 		else
 		{
 			std::string				chan_name = msg.getParams().at(1);
@@ -900,7 +1006,7 @@ namespace ft_irc
 		_sendResponse(msg);
 		target.quitAllChannels();
 		// The server acknowledges by sending an ERROR message to the client
-		_disconnectClient(target, "ERROR " + trailing_param);
+		target.kick("ERROR " + trailing_param);
 	}
 
 	/*
@@ -1438,8 +1544,8 @@ namespace ft_irc
 		else if (msg.getParams().front() != getPassword())
 		{
 			err_passwdmismatch(msg, true);
-			msg.appendResponse("ERROR :Password incorrect");
-			msg.appendSeparator();
+			_sendResponse(msg);
+			msg.getSender().kick("ERROR :Password incorrect");
 		}
 		else
 		{
@@ -1549,7 +1655,7 @@ namespace ft_irc
 		_sendResponse(msg);
 		msg.getSender().quitAllChannels();
 		// The server acknowledges by sending an ERROR message to the client
-		_disconnectClient(msg.getSender());
+		msg.getSender().kick();
 	}
 
 	/*

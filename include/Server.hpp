@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 00:29:27 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/19 16:55:17 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ namespace ft_irc
 		typedef std::map<std::string, cmd_fun>	t_cmds;
 		typedef std::list<Client>				t_clients;
 		typedef std::list<Channel>				t_channels;
+		typedef std::vector<struct pollfd>		t_pollfds;
 
 		/* Constructor */
 								Server(CLIParser& CLI_parser, int backlog_max=5);
@@ -76,19 +77,20 @@ namespace ft_irc
 
 	private:
 		/* Attributes */
-		struct sockaddr_in		_address; /* Structure describing an Internet socket address. */
-		int						_sockfd; /* Socket descriptor. */
-		int						_backlog_max;
-		std::string				_creation_date;
-		std::string				_version;
-		std::string				_description;
-		Config					_config; /* Holds the config */
-		Parser					_parser;
-		t_cmds					_commands;
-		t_clients				_clients;
-		t_channels				_channels;
-		Logger					_logger;
-		bool					_alive;
+		struct sockaddr_in			_address; /* Structure describing an Internet socket address. */
+		int							_sockfd; /* Socket descriptor. */
+		int							_backlog_max;
+		std::string					_creation_date;
+		std::string					_version;
+		std::string					_description;
+		Config						_config; /* Holds the config */
+		Parser						_parser;
+		t_cmds						_commands;
+		t_clients					_clients;
+		t_channels					_channels;
+		Logger						_logger;
+		bool						_alive;
+		t_pollfds					_poll_fds;
 
 		/* Cleaning */
 		void					_shutdown();
@@ -103,10 +105,11 @@ namespace ft_irc
 		bool					_awaitNewConnection();
 		bool					_hasPendingConnections();
 		bool					_processClients();
+		int						_disconnectClient(Client& client);
 		void					_makeWelcomeMsg(Client& client);
 		int						_registerClient(Message& msg, Client& client);
-		int						_disconnectClient(Client& client, const std::string& comment = "");
 		int						_pingClient(Client& client);
+		bool					_pollServ();
 
 		/* Parsing */
 		bool					_parse(Message& msg, const std::string& cmd);
@@ -114,7 +117,7 @@ namespace ft_irc
 
 		/* Commands execution */
 		void					_init_commands_map();
-		int						_executeCommand(Message& msg);
+		int						_executeCommand(Message& msg, Client &client);
 		bool					_processClientCommand(Client& client);
 
 		/* Command response */
@@ -171,6 +174,9 @@ namespace ft_irc
 		void					_partClient(Message& msg,
 											const std::string& chan_name,
 											const std::string& comment = "");
+		void					_addClientFd(Client &client);
+		void					_removeClientFd(Client &client);
+		int						updateClientInBuffer(Client &client, struct pollfd &client_pollfd);
 	};
 } // !namespace ft_irc
 
