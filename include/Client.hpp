@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/12/12 19:52:33 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/18 19:55:15 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 
 # define MAX_COMMAND_SIZE 512
 
+typedef struct pollfd pollfd_t;
 namespace ft_irc
 {
 	class Channel;
@@ -42,6 +43,10 @@ namespace ft_irc
 		/* Aliases */
 		typedef std::list<Channel*>	t_channels;
 		typedef std::list<Client*>	t_clients;
+
+		std::string			_in_buffer;			/* buffer for incoming data */
+		std::string			_out_buffer;		/* buffer for outgoing data */
+		size_t				pollfd_index;		/* index of the pollfd in the pollfd array */
 
 		/* Default constructor */
 							Client(std::string nick="",
@@ -75,22 +80,22 @@ namespace ft_irc
 		std::string			getIpAddressStr() const;
 		struct sockaddr_in&	getAddress();
 		socklen_t&			getAddressSize();
-		int					getSocketFd() const;
 		const t_channels&	getJoinedChannels() const;
 		struct timeval&		getLastEventTime();
 		t_clients			getAllContacts();
+		const std::string&	getKickReason() const;
 
 		/* Setters */
 		void				setNick(const std::string& nick);
 		void				setRealName(const std::string& realname);
 		void				setUsername(const std::string& username);
 		void				setHostname(const std::string& hostname);
-		void				setSocketFd(int socket_fd);
 		void				setJoinedChannels(const t_channels& joined_channels);
 		void				setAllowed(bool allowed);
 		void				setAlive(bool alive);
 		void				setRegistered(bool registered);
 		void				setPinged(bool pinged);
+		void				setAddressStr(const std::string& address);
 
 		/* Helpers */
 		bool				isConnected() const; /* is the client connected to the server? (socket fd check) */
@@ -101,20 +106,19 @@ namespace ft_irc
 		bool				isOper() const;
 		bool				isChanOp(Channel& channel);
 		bool				isPinged() const;
+		void				kick(const std::string& reason = "");
 		bool				isInvisible() const;
 		bool				hasNick() const;
 		bool				hasUser() const;
 
 		/* Connection handling */
-		int					awaitConnection(int socket_fd);
-		bool				hasNewEvents();
 		void				updateLastEventTime();	/* resets timeout and pinged */
 
 		/* Buffer operations */
 		bool				hasUnprocessedCommands();
 		std::string			popUnprocessedCommand();
-		int					updateInBuffer();
-		int					updateOutBuffer();
+		int					addToInBuffer(const std::string& command);
+		int					addToOutBuffer(const std::string& command);
 		/*811 Adds response to the output buffer */
 		void				sendCommand(std::string cmd);
 
@@ -137,8 +141,6 @@ namespace ft_irc
 		std::string			_username;
 		std::string			_hostname;
 		std::string			_mode;
-		std::string			_in_buffer;			/* buffer for incoming data */
-		std::string			_out_buffer;		/* buffer for outgoing data */
 		const size_t		_max_cmd_length;	/* max length of a command */
 		bool				_allowed;			/* true if connection password is right */
 		bool				_alive;
@@ -147,11 +149,11 @@ namespace ft_irc
 		struct sockaddr_in	_address;			/* IPv4 address	*/	
 		socklen_t			_address_size;		/* IPv4 address size */
 		std::string			_address_str;		/* IPv4 address as string */
-		struct timeval		_timeout;			/* timeout for select() */
+		struct timeval		_timeout;			/* timeout for poll() */
 		struct timeval		_keep_alive;		/* keep_alive lenght */
 		struct timeval		_last_event_time;	/* time since last network event */
-		int					_socket_fd;			/* socket file descriptor */
-		t_channels			_joined_channels;
+		t_channels			_joined_channels;	/* channels the client is in */
+		std::string			_kick_reason;			/* kick message */
 	};
 }
 
