@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 18:23:14 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/19 19:45:48 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 # define USER_LEN 32
 # define CHAN_NB_MAX 10
 # define USERS_IN_CHAN_MAX 20
+# define USERS_MAX 200
 
 namespace ft_irc
 {
@@ -91,6 +92,7 @@ namespace ft_irc
 		Logger						_logger;
 		bool						_alive;
 		t_pollfds					_poll_fds;
+		size_t						_max_clients;
 
 		/* Cleaning */
 		void					_shutdown();

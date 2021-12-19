@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 18:24:49 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/19 19:46:56 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,8 @@ namespace ft_irc
 	  _commands(),
 	  _clients(),
 	  _channels(),
-	  _logger(DEBUG)
+	  _logger(DEBUG),
+	  _max_clients(USERS_MAX)
 	{
 		_log(LOG_LEVEL_INFO, "Server constructor");
 
@@ -76,7 +77,8 @@ namespace ft_irc
 	  _clients(other._clients),
 	  _channels(other._channels),
 	  _logger(other._logger),
-	  _alive(other._alive)
+	  _alive(other._alive),
+	  _max_clients(other._max_clients)
 	{
 		_log(LOG_LEVEL_INFO, "Server copy constructor");
 	}
@@ -98,6 +100,7 @@ namespace ft_irc
 			this->_channels = other._channels;
 			this->_logger = other._logger;
 			this->_alive = other._alive;
+			this->_max_clients = other._max_clients;
 		}
 		return (*this);
 	}
@@ -208,7 +211,7 @@ namespace ft_irc
 		{
 			if (_pollServ())
 			{
-				if (_hasPendingConnections() == true)
+				if (_poll_fds.size() < _max_clients && _hasPendingConnections() == true)
 				{
 					_awaitNewConnection();
 				}
@@ -360,7 +363,7 @@ namespace ft_irc
 			 it != this->_poll_fds.end();
 			 ++it)
 		{
-			fd = _poll_fds[client.pollfd_index].fd;
+			fd = _poll_fds.at(client.pollfd_index).fd;
 			if (it->fd == fd)
 			{
 				this->_poll_fds.erase(it);
@@ -414,6 +417,14 @@ namespace ft_irc
 		return (bytes_read);
 	}
 
+	template <typename T>
+	std::string to_string(T value)
+	{
+		std::ostringstream os ;
+		os << value ;
+		return os.str() ;
+	}
+
 	/* Process all clients */
 	bool	Server::_processClients()
 	{
@@ -429,6 +440,13 @@ namespace ft_irc
 				_processClientCommand(*it);
 				if (it->isAlive() == false)
 					continue ;
+				if (_poll_fds[index].fd < 3)
+				{
+					_log(LOG_LEVEL_ERROR, "_poll_fds[" +
+					to_string(index) + "].fd = " + to_string(_poll_fds[index].fd));
+					it->kick("ERROR: Invalid file descriptor");
+					continue ;
+				}
 				this->updateClientInBuffer(*it, _poll_fds[index]);
 				if (it->isTimeouted() == true)
 				{
@@ -441,7 +459,6 @@ namespace ft_irc
 						_execQuitTimeoutCmd(*it);
 					}
 				}
-				++index;
 			}
 			if (it->isAlive() == false)
 			{
@@ -449,7 +466,10 @@ namespace ft_irc
 				this->_removeClientFd(*it);
 				_log(LOG_LEVEL_INFO, "Client " + it->getNick() + "@" + it->getIpAddressStr() + " erased");
 				it = this->_clients.erase(it);
+				index = 1;
 			}
+			else
+				++index;
 		}
 		return (true);
 	}
@@ -723,7 +743,7 @@ namespace ft_irc
 			join_msg.appendResponse(" JOIN ");
 			join_msg.appendResponse(channel.getName());
 			join_msg.appendSeparator();
-			_sendResponse(join_msg);
+			 _sendResponse(join_msg);
 
 			Message	cli_reply(client, getHostname());
 
