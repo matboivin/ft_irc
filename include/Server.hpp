@@ -158,6 +158,7 @@ namespace ft_irc
 		void					_execPongCmd(Message& msg);
 		void					_execPrivmsgCmd(Message& msg);
 		void					_execQuitCmd(Message& msg);
+		void					_execQuitTimeoutCmd(Client& client);
 		void					_execTopicCmd(Message& msg);
 		void					_execUserCmd(Message& msg);
 		void					_execWhoCmd(Message& msg);
