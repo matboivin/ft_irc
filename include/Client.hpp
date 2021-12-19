@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 21:32:42 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/19 22:58:38 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,11 +77,11 @@ namespace ft_irc
 		std::string			getUsername() const;
 		std::string			getHostname() const;
 		std::string			getMode() const;
-		bool				isAlive() const;
-		bool				enteredPass() const;
+		std::string			getEnteredPass() const;
 		bool				enteredNick() const;
 		bool				enteredUser() const;
 		bool				isRegistered() const;
+		bool				isAlive() const;
 		bool				isPinged() const;
 		std::string			getIpAddressStr() const;
 		struct sockaddr_in&	getAddress();
@@ -96,14 +96,14 @@ namespace ft_irc
 		void				setRealName(const std::string& realname);
 		void				setUsername(const std::string& username);
 		void				setHostname(const std::string& hostname);
-		void				setJoinedChannels(const t_channels& joined_channels);
-		void				setAlive(bool alive);
-		void				setEnteredPass(bool enteredPass);
+		void				setEnteredPass(const std::string& enteredPass);
 		void				setEnteredNick(bool enteredNick);
 		void				setEnteredUser(bool enteredUser);
 		void				setRegistered(bool registered);
+		void				setAlive(bool alive);
 		void				setPinged(bool pinged);
 		void				setAddressStr(const std::string& address);
+		void				setJoinedChannels(const t_channels& joined_channels);
 
 		/* Helpers */
 		bool				isTimeouted() const;
@@ -137,17 +137,17 @@ namespace ft_irc
 
 	private:
 		/* Attributes */
+		const size_t		_max_cmd_length;	/* max length of a command */
 		std::string			_nick;
 		std::string			_realname;
 		std::string			_username;
 		std::string			_hostname;
 		std::string			_mode;
-		const size_t		_max_cmd_length;	/* max length of a command */
-		bool				_alive;
-		bool				_enteredPass;
+		std::string			_enteredPass;
 		bool				_enteredNick;
 		bool				_enteredUser;
 		bool				_registered;		/* provided PASS,NICK,USER */
+		bool				_alive;
 		bool				_pinged;			/* has the client been pinged? */
 		struct sockaddr_in	_address;			/* IPv4 address */
 		socklen_t			_address_size;		/* IPv4 address size */

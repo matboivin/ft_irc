@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 22:40:50 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/19 22:58:46 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,19 +22,19 @@ namespace ft_irc
 				   std::string realname,
 				   std::string username,
 				   std::string hostname)
-	: 
-	  _in_buffer(),
+	: _in_buffer(),
 	  _out_buffer(),
+	  _max_cmd_length(512),
 	  _nick(nick),
 	  _realname(realname),
 	  _username(username),
 	  _hostname(hostname),
-	  _max_cmd_length(512),
-	  _alive(true),
-	  _enteredPass(false),
+	  _mode("i"),
+	  _enteredPass(),
 	  _enteredNick(false),
 	  _enteredUser(false),
 	  _registered(false),
+	  _alive(true),
 	  _pinged(false),
 	  _address(address),
 	  _address_size(sizeof(address)),
@@ -61,17 +61,17 @@ namespace ft_irc
 				   std::string hostname)
 	: _in_buffer(),
 	  _out_buffer(),
+	  _max_cmd_length(512),
 	  _nick(nick),
 	  _realname(realname),
 	  _username(username),
 	  _hostname(hostname),
 	  _mode("i"),
-	  _max_cmd_length(512),
-	  _alive(true),
-	  _enteredPass(false),
+	  _enteredPass(),
 	  _enteredNick(false),
 	  _enteredUser(false),
 	  _registered(false),
+	  _alive(true),
 	  _pinged(false),
 	  _address(),
 	  _address_size(),
@@ -93,20 +93,19 @@ namespace ft_irc
 
 	/* Copy constructor */
 	Client::Client(const Client& other)
-	: 
-	  _in_buffer(other._in_buffer),
+	: _in_buffer(other._in_buffer),
 	  _out_buffer(other._out_buffer),
+	  _max_cmd_length(other._max_cmd_length),
 	  _nick(other._nick),
 	  _realname(other._realname),
 	  _username(other._username),
 	  _hostname(other._hostname),
 	  _mode(other._mode),
-	  _max_cmd_length(other._max_cmd_length),
-	  _alive(other._alive),
 	  _enteredPass(other._enteredPass),
 	  _enteredNick(other._enteredNick),
 	  _enteredUser(other._enteredUser),
 	  _registered(other._registered),
+	  _alive(other._alive),
 	  _pinged(other._pinged),
 	  _address(other._address),
 	  _address_size(other._address_size),
@@ -124,18 +123,18 @@ namespace ft_irc
 	{
 		if (this != &other)
 		{
+			this->_in_buffer = other._in_buffer;
+			this->_out_buffer = other._out_buffer;
 			this->_nick = other._nick;
 			this->_realname = other._realname;
 			this->_username = other._username;
 			this->_hostname = other._hostname;
 			this->_mode = other._mode;
-			this->_in_buffer = other._in_buffer;
-			this->_out_buffer = other._out_buffer;
-			this->_alive = other._alive;
 			this->_enteredPass = other._enteredPass;
 			this->_enteredNick = other._enteredNick;
 			this->_enteredUser = other._enteredUser;
 			this->_registered = other._registered;
+			this->_alive = other._alive;
 			this->_pinged = other._pinged;
 			this->_address = other._address;
 			this->_address_str = other._address_str;
@@ -195,12 +194,7 @@ namespace ft_irc
 		return (this->_mode);
 	}
 
-	bool	Client::isAlive() const
-	{
-		return (this->_alive);
-	}
-
-	bool	Client::enteredPass() const
+	std::string	Client::getEnteredPass() const
 	{
 		return (this->_enteredPass);
 	}
@@ -218,6 +212,11 @@ namespace ft_irc
 	bool	Client::isRegistered() const
 	{
 		return (this->_registered);
+	}
+
+	bool	Client::isAlive() const
+	{
+		return (this->_alive);
 	}
 
 	bool	Client::isPinged() const
@@ -290,17 +289,7 @@ namespace ft_irc
 		this->_username = username;
 	}
 
-	void	Client::setJoinedChannels(const t_channels& joined_channels)
-	{
-		this->_joined_channels = joined_channels;
-	}
-
-	void	Client::setAlive(bool alive)
-	{
-		this->_alive = alive;
-	}
-
-	void	Client::setEnteredPass(bool enteredPass)
+	void	Client::setEnteredPass(const std::string& enteredPass)
 	{
 		this->_enteredPass = enteredPass;
 	}
@@ -320,9 +309,19 @@ namespace ft_irc
 		this->_registered = registered;
 	}
 
+	void	Client::setAlive(bool alive)
+	{
+		this->_alive = alive;
+	}
+
 	void	Client::setPinged(bool pinged)
 	{
 		this->_pinged = pinged;
+	}
+
+	void	Client::setJoinedChannels(const t_channels& joined_channels)
+	{
+		this->_joined_channels = joined_channels;
 	}
 
 	/* Helpers ****************************************************************** */

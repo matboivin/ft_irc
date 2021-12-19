@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 22:44:19 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/19 23:05:35 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -499,7 +499,6 @@ namespace ft_irc
 			client.kick();
 			return (1);
 		}
-
 		// unknown command is answered
 		if (this->_commands.find(msg.getCommand()) == this->_commands.end())
 		{
@@ -507,27 +506,34 @@ namespace ft_irc
 			return (0);
 		}
 
-		if (!client.enteredPass() && (msg.getCommand() == "PASS"))
-			_execPassCmd(msg);
+		if (msg.getCommand() == "PASS")
+		{
+			if (client.getEnteredPass().empty() == true)
+				_execPassCmd(msg);
+		}
 		else if ((msg.getCommand() == "NICK") || (msg.getCommand() == "USER"))
+		{
 			_executeCommand(msg);
+		}
 		else
 		{
 			err_notregistered(msg);
 			_sendResponse(msg);
+			return (0);
 		}
 
-		// if no password was given
-		if (!client.enteredPass() && client.enteredNick() && client.enteredUser())
+		bool	passwords_match = (client.getEnteredPass() == getPassword());
+
+		// if no password was given or password is wrong
+		if (!passwords_match && client.enteredNick() && client.enteredUser())
 		{
 			err_passwdmismatch(msg, true);
 			_sendResponse(msg);
 			client.kick("ERROR :Password incorrect");
 			return (0);
 		}
-
 		// if the client has just registered, send them a nice welcome message :D
-		if (client.enteredPass() && client.enteredNick() && client.enteredUser())
+		if (passwords_match && client.enteredNick() && client.enteredUser())
 		{
 			client.setRegistered(true);
 			_log(LOG_LEVEL_INFO,
@@ -1547,18 +1553,17 @@ namespace ft_irc
 			err_needmoreparams(msg, true);
 		else if (msg.getSender().isRegistered())
 			err_alreadyregistered(msg, true);
+		else if (!msg.getSender().isRegistered())
+		{
+			if (msg.getSender().getEnteredPass().empty() == true)
+				msg.getSender().setEnteredPass(msg.getParams().front());
+			return ;
+		}
 		else if (msg.getParams().front() != getPassword())
 		{
-			if (!msg.getSender().enteredPass())
-				return ;
 			err_passwdmismatch(msg, true);
 			_sendResponse(msg);
 			msg.getSender().kick("ERROR :Password incorrect");
-		}
-		else
-		{
-			msg.getSender().setEnteredPass(true);
-			return ;
 		}
 		_sendResponse(msg);
 	}
