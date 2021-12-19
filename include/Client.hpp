@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 21:17:25 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/19 21:32:42 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,9 @@ namespace ft_irc
 		typedef std::list<Channel*>	t_channels;
 		typedef std::list<Client*>	t_clients;
 
-		std::string					_in_buffer;			/* buffer for incoming data */
-		std::string					_out_buffer;		/* buffer for outgoing data */
-		size_t						pollfd_index;		/* index of the pollfd in the pollfd array */
+		std::string					_in_buffer;		/* buffer for incoming data */
+		std::string					_out_buffer;	/* buffer for outgoing data */
+		size_t						pollfd_index;	/* index of the pollfd in the pollfd array */
 
 		/* Default constructor */
 							Client(std::string nick="",
