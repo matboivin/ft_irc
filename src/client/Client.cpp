@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/12/18 19:39:44 by root             ###   ########.fr       */
+/*   Updated: 2021/12/19 20:50:05 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,8 @@ namespace ft_irc
 	  _timeout(),
 	  _keep_alive(),
 	  _last_event_time(),
-	  _joined_channels()
+	  _joined_channels(),
+	  _kick_reason()
 	{
 		this->_timeout.tv_sec = 0;
 		this->_timeout.tv_usec = 50;
@@ -74,7 +75,8 @@ namespace ft_irc
 	  _timeout(),
 	  _keep_alive(),
 	  _last_event_time(),
-	  _joined_channels()
+	  _joined_channels(),
+	  _kick_reason()
 	{
 		this->_timeout.tv_sec = 0;
 		this->_timeout.tv_usec = 50;
@@ -106,7 +108,8 @@ namespace ft_irc
 	  _timeout(other._timeout),
 	  _keep_alive(other._keep_alive),
 	  _last_event_time(other._last_event_time),
-	  _joined_channels(other._joined_channels)
+	  _joined_channels(other._joined_channels),
+	  _kick_reason(other._kick_reason)
 	{
 	}
 
@@ -133,6 +136,7 @@ namespace ft_irc
 			this->_keep_alive = other._keep_alive;
 			this->_last_event_time = other._last_event_time;
 			this->_joined_channels = other._joined_channels;
+			this->_kick_reason = other._kick_reason;
 		}
 		return (*this);
 	}
@@ -181,6 +185,26 @@ namespace ft_irc
 	std::string	Client::getMode() const
 	{
 		return (this->_mode);
+	}
+
+	bool	Client::isAllowed() const
+	{
+		return (this->_allowed);
+	}
+
+	bool	Client::isAlive() const
+	{
+		return (this->_alive);
+	}
+
+	bool	Client::isRegistered() const
+	{
+		return (this->_registered);
+	}
+
+	bool	Client::isPinged() const
+	{
+		return (this->_pinged);
 	}
 
 	struct sockaddr_in&	Client::getAddress()
@@ -278,19 +302,14 @@ namespace ft_irc
 
 	/* Helpers ****************************************************************** */
 
-	bool	Client::isAllowed() const
+	bool	Client::hasNick() const
 	{
-		return (this->_allowed);
+		return (!this->_nick.empty());
 	}
 
-	bool	Client::isAlive() const
+	bool	Client::hasUser() const
 	{
-		return (this->_alive);
-	}
-
-	bool	Client::isRegistered() const
-	{
-		return (this->_registered);
+		return (!this->_username.empty() && !this->_realname.empty());
 	}
 
 	bool	Client::isTimeouted() const
@@ -311,24 +330,15 @@ namespace ft_irc
 		return (channel.hasChanOp(*this));
 	}
 
-	bool	Client::isPinged() const
-	{
-		return (this->_pinged);
-	}
-
 	bool	Client::isInvisible() const
 	{
 		return (this->_mode.find('i') != std::string::npos);
 	}
 
-	bool	Client::hasNick() const
+	void	Client::kick(const std::string& reason)
 	{
-		return (!this->_nick.empty());
-	}
-
-	bool	Client::hasUser() const
-	{
-		return (!this->_username.empty() && !this->_realname.empty());
+		this->_alive = false;
+		this->_kick_reason = reason;
 	}
 
 	/* Connection handling ****************************************************** */
@@ -464,12 +474,6 @@ namespace ft_irc
 			return (0);
 		}
 		return (ERR_UNKNOWNMODE);
-	}
-
-	void Client::kick(const std::string& reason)
-	{
-		this->_alive = false;
-		this->_kick_reason = reason;
 	}
 
 	/* ************************************************************************** */

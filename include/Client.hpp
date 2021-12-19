@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/12/18 19:55:15 by root             ###   ########.fr       */
+/*   Updated: 2021/12/19 20:47:24 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,9 @@ namespace ft_irc
 		typedef std::list<Channel*>	t_channels;
 		typedef std::list<Client*>	t_clients;
 
-		std::string			_in_buffer;			/* buffer for incoming data */
-		std::string			_out_buffer;		/* buffer for outgoing data */
-		size_t				pollfd_index;		/* index of the pollfd in the pollfd array */
+		std::string					_in_buffer;			/* buffer for incoming data */
+		std::string					_out_buffer;		/* buffer for outgoing data */
+		size_t						pollfd_index;		/* index of the pollfd in the pollfd array */
 
 		/* Default constructor */
 							Client(std::string nick="",
@@ -77,6 +77,10 @@ namespace ft_irc
 		std::string			getUsername() const;
 		std::string			getHostname() const;
 		std::string			getMode() const;
+		bool				isAllowed() const;
+		bool				isAlive() const;
+		bool				isRegistered() const;
+		bool				isPinged() const;
 		std::string			getIpAddressStr() const;
 		struct sockaddr_in&	getAddress();
 		socklen_t&			getAddressSize();
@@ -98,18 +102,13 @@ namespace ft_irc
 		void				setAddressStr(const std::string& address);
 
 		/* Helpers */
-		bool				isConnected() const; /* is the client connected to the server? (socket fd check) */
-		bool				isAllowed() const;
-		bool				isAlive() const;
-		bool				isRegistered() const;
+		bool				hasNick() const;
+		bool				hasUser() const;
 		bool				isTimeouted() const;
 		bool				isOper() const;
 		bool				isChanOp(Channel& channel);
-		bool				isPinged() const;
-		void				kick(const std::string& reason = "");
 		bool				isInvisible() const;
-		bool				hasNick() const;
-		bool				hasUser() const;
+		void				kick(const std::string& reason = "");
 
 		/* Connection handling */
 		void				updateLastEventTime();	/* resets timeout and pinged */
@@ -153,7 +152,7 @@ namespace ft_irc
 		struct timeval		_keep_alive;		/* keep_alive lenght */
 		struct timeval		_last_event_time;	/* time since last network event */
 		t_channels			_joined_channels;	/* channels the client is in */
-		std::string			_kick_reason;			/* kick message */
+		std::string			_kick_reason;		/* kick message */
 	};
 }
 
