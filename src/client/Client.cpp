@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 20:50:05 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/19 22:58:46 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,17 +22,19 @@ namespace ft_irc
 				   std::string realname,
 				   std::string username,
 				   std::string hostname)
-	: 
-	  _in_buffer(),
+	: _in_buffer(),
 	  _out_buffer(),
+	  _max_cmd_length(512),
 	  _nick(nick),
 	  _realname(realname),
 	  _username(username),
 	  _hostname(hostname),
-	  _max_cmd_length(512),
-	  _allowed(false),
-	  _alive(true),
+	  _mode("i"),
+	  _enteredPass(),
+	  _enteredNick(false),
+	  _enteredUser(false),
 	  _registered(false),
+	  _alive(true),
 	  _pinged(false),
 	  _address(address),
 	  _address_size(sizeof(address)),
@@ -59,15 +61,17 @@ namespace ft_irc
 				   std::string hostname)
 	: _in_buffer(),
 	  _out_buffer(),
+	  _max_cmd_length(512),
 	  _nick(nick),
 	  _realname(realname),
 	  _username(username),
 	  _hostname(hostname),
 	  _mode("i"),
-	  _max_cmd_length(512),
-	  _allowed(false),
-	  _alive(true),
+	  _enteredPass(),
+	  _enteredNick(false),
+	  _enteredUser(false),
 	  _registered(false),
+	  _alive(true),
 	  _pinged(false),
 	  _address(),
 	  _address_size(),
@@ -89,18 +93,19 @@ namespace ft_irc
 
 	/* Copy constructor */
 	Client::Client(const Client& other)
-	: 
-	  _in_buffer(other._in_buffer),
+	: _in_buffer(other._in_buffer),
 	  _out_buffer(other._out_buffer),
+	  _max_cmd_length(other._max_cmd_length),
 	  _nick(other._nick),
 	  _realname(other._realname),
 	  _username(other._username),
 	  _hostname(other._hostname),
 	  _mode(other._mode),
-	  _max_cmd_length(other._max_cmd_length),
-	  _allowed(other._allowed),
-	  _alive(other._alive),
+	  _enteredPass(other._enteredPass),
+	  _enteredNick(other._enteredNick),
+	  _enteredUser(other._enteredUser),
 	  _registered(other._registered),
+	  _alive(other._alive),
 	  _pinged(other._pinged),
 	  _address(other._address),
 	  _address_size(other._address_size),
@@ -118,16 +123,18 @@ namespace ft_irc
 	{
 		if (this != &other)
 		{
+			this->_in_buffer = other._in_buffer;
+			this->_out_buffer = other._out_buffer;
 			this->_nick = other._nick;
 			this->_realname = other._realname;
 			this->_username = other._username;
 			this->_hostname = other._hostname;
 			this->_mode = other._mode;
-			this->_in_buffer = other._in_buffer;
-			this->_out_buffer = other._out_buffer;
-			this->_allowed = other._allowed;
-			this->_alive = other._alive;
+			this->_enteredPass = other._enteredPass;
+			this->_enteredNick = other._enteredNick;
+			this->_enteredUser = other._enteredUser;
 			this->_registered = other._registered;
+			this->_alive = other._alive;
 			this->_pinged = other._pinged;
 			this->_address = other._address;
 			this->_address_str = other._address_str;
@@ -155,23 +162,23 @@ namespace ft_irc
 
 	std::string	Client::getNick() const
 	{
-		if (this->_nick.empty())
-			return ("*");
-		return (this->_nick);
+		if (this->isRegistered() && !this->_nick.empty())
+			return (this->_nick);
+		return ("*");
 	}
 
 	std::string	Client::getRealName() const
 	{
-		if (this->_realname.empty())
-			return ("*");
-		return (this->_realname);
+		if (this->isRegistered() && !this->_realname.empty())
+			return (this->_realname);
+		return ("*");
 	}
 
 	std::string	Client::getUsername() const
 	{
-		if (this->_username.empty())
-			return ("*");
-		return (this->_username);
+		if (this->isRegistered() && !this->_username.empty())
+			return (this->_username);
+		return ("*");
 	}
 
 	std::string	Client::getHostname() const
@@ -187,19 +194,29 @@ namespace ft_irc
 		return (this->_mode);
 	}
 
-	bool	Client::isAllowed() const
+	std::string	Client::getEnteredPass() const
 	{
-		return (this->_allowed);
+		return (this->_enteredPass);
 	}
 
-	bool	Client::isAlive() const
+	bool	Client::enteredNick() const
 	{
-		return (this->_alive);
+		return (this->_enteredNick);
+	}
+
+	bool	Client::enteredUser() const
+	{
+		return (this->_enteredUser);
 	}
 
 	bool	Client::isRegistered() const
 	{
 		return (this->_registered);
+	}
+
+	bool	Client::isAlive() const
+	{
+		return (this->_alive);
 	}
 
 	bool	Client::isPinged() const
@@ -240,10 +257,7 @@ namespace ft_irc
 			 it != this->_joined_channels.end();
 			 ++it)
 		{
-			contacts.insert(
-				contacts.end(),
-				(*it)->getClients().begin(), (*it)->getClients().end()
-				);
+			contacts.insert(contacts.end(), (*it)->getClients().begin(), (*it)->getClients().end());
 		}
 		return (removeDuplicates(contacts, this));
 	}
@@ -275,19 +289,19 @@ namespace ft_irc
 		this->_username = username;
 	}
 
-	void	Client::setJoinedChannels(const t_channels& joined_channels)
+	void	Client::setEnteredPass(const std::string& enteredPass)
 	{
-		this->_joined_channels = joined_channels;
+		this->_enteredPass = enteredPass;
 	}
 
-	void	Client::setAllowed(bool allowed)
+	void	Client::setEnteredNick(bool enteredNick)
 	{
-		this->_allowed = allowed;
+		this->_enteredNick = enteredNick;
 	}
 
-	void	Client::setAlive(bool alive)
+	void	Client::setEnteredUser(bool enteredUser)
 	{
-		this->_alive = alive;
+		this->_enteredUser = enteredUser;
 	}
 
 	void	Client::setRegistered(bool registered)
@@ -295,22 +309,22 @@ namespace ft_irc
 		this->_registered = registered;
 	}
 
+	void	Client::setAlive(bool alive)
+	{
+		this->_alive = alive;
+	}
+
 	void	Client::setPinged(bool pinged)
 	{
 		this->_pinged = pinged;
 	}
 
+	void	Client::setJoinedChannels(const t_channels& joined_channels)
+	{
+		this->_joined_channels = joined_channels;
+	}
+
 	/* Helpers ****************************************************************** */
-
-	bool	Client::hasNick() const
-	{
-		return (!this->_nick.empty());
-	}
-
-	bool	Client::hasUser() const
-	{
-		return (!this->_username.empty() && !this->_realname.empty());
-	}
 
 	bool	Client::isTimeouted() const
 	{

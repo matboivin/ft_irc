@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:34:20 by root              #+#    #+#             */
-/*   Updated: 2021/12/14 16:16:50 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/19 21:37:09 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,5 +116,8 @@ namespace ft_irc
 		this->_bind_address = "0.0.0.0";
 		this->_port = port;
 		this->_password = password;
+
+		if (this->_password.empty())
+			throw std::runtime_error("Empty password is forbidden");
 	}
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 19:45:48 by root             ###   ########.fr       */
+/*   Updated: 2021/12/19 21:32:15 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,21 +78,21 @@ namespace ft_irc
 
 	private:
 		/* Attributes */
-		struct sockaddr_in			_address; /* Structure describing an Internet socket address. */
-		int							_sockfd; /* Socket descriptor. */
-		int							_backlog_max;
-		std::string					_creation_date;
-		std::string					_version;
-		std::string					_description;
-		Config						_config; /* Holds the config */
-		Parser						_parser;
-		t_cmds						_commands;
-		t_clients					_clients;
-		t_channels					_channels;
-		Logger						_logger;
-		bool						_alive;
-		t_pollfds					_poll_fds;
-		size_t						_max_clients;
+		struct sockaddr_in		_address; /* Structure describing an Internet socket address. */
+		int						_sockfd; /* Socket descriptor. */
+		int						_backlog_max;
+		std::string				_creation_date;
+		std::string				_version;
+		std::string				_description;
+		Config					_config; /* Holds the config */
+		Parser					_parser;
+		t_cmds					_commands;
+		t_clients				_clients;
+		t_channels				_channels;
+		Logger					_logger;
+		bool					_alive;
+		t_pollfds				_poll_fds;
+		size_t					_max_clients;
 
 		/* Cleaning */
 		void					_shutdown();
@@ -119,7 +119,7 @@ namespace ft_irc
 
 		/* Commands execution */
 		void					_init_commands_map();
-		int						_executeCommand(Message& msg, Client &client);
+		int						_executeCommand(Message& msg);
 		bool					_processClientCommand(Client& client);
 
 		/* Command response */

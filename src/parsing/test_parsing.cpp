@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 12:25:08 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/19 18:10:41 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/19 22:45:56 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,9 +87,11 @@ int	test_parsing()
 
 		parser.parseMessage(msg, "foo");
 		expected.setCommand("foo");
-		expected.setResponse(":irc.42.fr 421 nick foo :Unknown command\r\n");
+		expected.setResponse(":irc.42.fr 421 * foo :Unknown command\r\n");
 		assert(cmp_msg(msg, expected));
 	}
+
+	dummy_client.setRegistered(true);
 
 	// Uppercase command if valid
 	{
