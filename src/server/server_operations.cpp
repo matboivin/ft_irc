@@ -129,7 +129,7 @@ namespace ft_irc
 	 */
 	bool	usermode_char_is_valid(const char& c)
 	{
-		std::string	chan_modes = "oi";
+		std::string	chan_modes = "io";
 
 		return (chan_modes.find(c) != std::string::npos);
 	}
@@ -139,7 +139,7 @@ namespace ft_irc
 	 */
 	bool	chanmode_char_is_valid(const char& c)
 	{
-		std::string	chan_modes = "ot";
+		std::string	chan_modes = "nto";
 
 		return (chan_modes.find(c) != std::string::npos);
 	}

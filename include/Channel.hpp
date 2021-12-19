@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:42:14 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/11 20:31:10 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/14 20:43:00 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,8 @@ namespace ft_irc
 		void				removeClient(Client& client);
 
 		/* Manage chan ops */
-		t_clients::iterator	findChanOp(Client& chan_op);
-		bool				hasChanOp(Client& chan_op);
+		t_clients::iterator	findChanOp(const Client& chan_op);
+		bool				hasChanOp(const Client& chan_op);
 		void				addChanOp(Client& chan_op);
 		void				removeChanOp(Client& chan_op);
 

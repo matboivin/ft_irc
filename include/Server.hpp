@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/12/18 19:55:08 by root             ###   ########.fr       */
+/*   Updated: 2021/12/19 16:55:17 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,9 @@
 # include <ctime>
 # include "ft_irc.hpp"
 # include "Logger.hpp"
-# define USER_LEN 20
-# define CHAN_NB_MAX 20
-# define USERS_IN_CHAN_MAX 50
+# define USER_LEN 32
+# define CHAN_NB_MAX 10
+# define USERS_IN_CHAN_MAX 20
 
 namespace ft_irc
 {
@@ -168,7 +168,9 @@ namespace ft_irc
 		void					_setUserModeInChan(Message& msg, Client& client, Channel& channel);
 		void					_kickClient(Message& msg,
 											const std::string& chan_name, const std::string& nick,
-											const std::string& comment = "");
+											const std::string& comment);
+		void					_killClient(Message& msg, Client& target,
+											const std::string& reason = "<no reason supplied>");
 		void					_partClient(Message& msg,
 											const std::string& chan_name,
 											const std::string& comment = "");

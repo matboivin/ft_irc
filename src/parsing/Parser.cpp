@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parser.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:28:44 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/15 23:28:52 by root             ###   ########.fr       */
+/*   Updated: 2021/12/19 16:55:27 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,14 @@ namespace ft_irc
 {
 	/* Default constructor */
 	Parser::Parser()
-	: _start(), _current(), _end(), _paramsNb()
+	: _start(), _current(), _end(), _cmd_infos()
 	{
-		_initParamsNb();
+		_initCmdInfos();
 	}
 
 	/* Copy constructor */
 	Parser::Parser(const Parser& other)
-	: _start(other._start), _current(other._current), _end(other._end), _paramsNb(other._paramsNb)
+	: _start(other._start), _current(other._current), _end(other._end), _cmd_infos(other._cmd_infos)
 	{
 	}
 
@@ -44,7 +44,7 @@ namespace ft_irc
 			_start = other.getItStart();
 			_current = other.getItCurrent();
 			_end = other.getItEnd();
-			_paramsNb = other.getParamsNb();
+			_cmd_infos = other.getCmdInfos();
 		}
 		return (*this);
 	}
@@ -71,9 +71,9 @@ namespace ft_irc
 		return (this->_end);
 	}
 
-	Parser::t_param_nb	Parser::getParamsNb() const
+	Parser::t_cmd_infos	Parser::getCmdInfos() const
 	{
-		return (this->_paramsNb);
+		return (this->_cmd_infos);
 	}
 
 	/* Setters ****************************************************************** */
@@ -100,9 +100,9 @@ namespace ft_irc
 		this->setItEnd(str.end());
 	}
 
-	void	Parser::setParamsNb(const t_param_nb& cmd_lenghts)
+	void	Parser::setCmdInfos(const t_cmd_infos& cmd_lenghts)
 	{
-		this->_paramsNb = cmd_lenghts;
+		this->_cmd_infos = cmd_lenghts;
 	}
 
 	/* Helpers ****************************************************************** */
@@ -136,30 +136,30 @@ namespace ft_irc
 	}
 
 	/* Init max number of params for each command */
-	void	Parser::_initParamsNb()
+	void	Parser::_initCmdInfos()
 	{
-		this->_paramsNb["DIE"]		= 0;
-		this->_paramsNb["INVITE"]	= 2;
-		this->_paramsNb["JOIN"]		= 1;
-		this->_paramsNb["KICK"]		= 3;
-		this->_paramsNb["KILL"]		= 2;
-		this->_paramsNb["LIST"]		= 1;
-		this->_paramsNb["MODE"]		= 0; // no need to fill forward response
-		this->_paramsNb["MOTD"]		= 1;
-		this->_paramsNb["NICK"]		= 1;
-		this->_paramsNb["NAMES"]	= 1;
-		this->_paramsNb["NOTICE"]	= 2;
-		this->_paramsNb["OPER"]		= 2;
-		this->_paramsNb["PART"]		= 2;
-		this->_paramsNb["PASS"]		= 1;
-		this->_paramsNb["PING"]		= 2;
-		this->_paramsNb["PONG"]		= 2;
-		this->_paramsNb["PRIVMSG"]	= 2;
-		this->_paramsNb["QUIT"]		= 1;
-		this->_paramsNb["TOPIC"]	= 2;
-		this->_paramsNb["USER"]		= 4;
-		this->_paramsNb["WHO"]		= 2;
-		this->_paramsNb["WHOIS"]	= 2;
+		this->_cmd_infos["DIE"]		= 0;
+		this->_cmd_infos["INVITE"]	= 2;
+		this->_cmd_infos["JOIN"]	= 1;
+		this->_cmd_infos["KICK"]	= 3;
+		this->_cmd_infos["KILL"]	= 2;
+		this->_cmd_infos["LIST"]	= 1;
+		this->_cmd_infos["MODE"]	= 3;
+		this->_cmd_infos["MOTD"]	= 1;
+		this->_cmd_infos["NICK"]	= 1;
+		this->_cmd_infos["NAMES"]	= 1;
+		this->_cmd_infos["NOTICE"]	= 2;
+		this->_cmd_infos["OPER"]	= 2;
+		this->_cmd_infos["PART"]	= 2;
+		this->_cmd_infos["PASS"]	= 1;
+		this->_cmd_infos["PING"]	= 2;
+		this->_cmd_infos["PONG"]	= 2;
+		this->_cmd_infos["PRIVMSG"]	= 2;
+		this->_cmd_infos["QUIT"]	= 1;
+		this->_cmd_infos["TOPIC"]	= 2;
+		this->_cmd_infos["USER"]	= 4;
+		this->_cmd_infos["WHO"]		= 2;
+		this->_cmd_infos["WHOIS"]	= 1;
 	}
 
 	/* Checks whether command name is valid */
@@ -187,19 +187,16 @@ namespace ft_irc
 	/* Checks whether command name is valid */
 	bool	Parser::_commandIsValid(Message& msg)
 	{
-		const std::string	cmds = "CAP DIE INVITE JOIN KICK KILL LIST MODE MOTD "
-									"NAMES NICK NOTICE OPER PASS PART PING PONG "
-									"PRIVMSG TOPIC QUIT USER WHOIS WHO";
-
 		std::string	cmd_name = msg.getCommand();
+
 		std::transform(cmd_name.begin(), cmd_name.end(), cmd_name.begin(), ::toupper);
 
-		if ((cmd_name.at(0) == '/') && (cmds.find(cmd_name.substr(1)) != std::string::npos))
+		if ((cmd_name.at(0) == '/') && (this->_cmd_infos.find(cmd_name.substr(1)) != this->_cmd_infos.end()))
 		{
 			err_unknowncommand(msg, "; the correct syntax is " + cmd_name.substr(1));
 			return (false);
 		}
-		else if (cmds.find(cmd_name) != std::string::npos)
+		else if (this->_cmd_infos.find(cmd_name) != this->_cmd_infos.end())
 		{
 			msg.setCommand(cmd_name); // uppercase command name if valid
 			return (true);
@@ -244,11 +241,14 @@ namespace ft_irc
 	 * It starts by a ':' followed by a possibly empty sequence of octets not including
 	 * NUL or CR or LF
 	 */
-	void	Parser::_parseTrailing(Message& msg)
+	bool	Parser::_parseTrailing(Message& msg)
 	{
 		while (_nocrlf(this->_current))
 			++this->_current;
-		msg.setParam(std::string(this->_start, this->_current));
+		std::string	param = std::string(this->_start, this->_current);
+		if (param.size() > 1) // single ':'
+			msg.setParam(param);
+		return (_parseSeparator());
 	}
 
 	/*
@@ -270,7 +270,7 @@ namespace ft_irc
 		{
 			this->_start = this->_current;
 			if ((this->_current != this->_end) && (*this->_current == ':'))
-				_parseTrailing(msg);
+				return (_parseTrailing(msg));
 			else if (_current != _end)
 				_parseMiddle(msg);
 		}
@@ -295,9 +295,14 @@ namespace ft_irc
 	/* Fill response to be forwarded to other clients */
 	void	Parser::_fillForwardResponse(Message& msg)
 	{
-		t_param_nb::const_iterator	it = this->_paramsNb.find(msg.getCommand());
+		const std::string	cmds = "KICK KILL MODE WHOIS"; // no need to fill
 
-		if (it != this->_paramsNb.end())
+		if (cmds.find(msg.getCommand()) != std::string::npos)
+			return ;
+
+		t_cmd_infos::const_iterator	it = this->_cmd_infos.find(msg.getCommand());
+
+		if (it != this->_cmd_infos.end())
 		{
 			std::size_t	i = 0;
 			std::size_t	len = msg.getParams().size();

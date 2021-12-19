@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/14 16:48:21 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/14 20:47:25 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,20 +135,7 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	rpl_whoisoperator(Message& msg, bool rewrite)
-	{
-		msg.setRecipient(msg.getSender());
-		if (rewrite)
-			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 313 ");
-		msg.appendResponse(msg.getSender().getNick());
-		msg.appendResponse(" :is an IRC operator");
-		msg.appendSeparator();
-	}
-
-	void	rpl_endofwho(Message& msg,
-						const std::string& name, const std::string& to_match,
+	void	rpl_endofwho(Message& msg, const std::string& name, const std::string& to_match,
 						bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
@@ -163,8 +150,7 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	rpl_endofwhois(Message& msg,
-						   const std::string& nick, const std::string& to_match,
+	void	rpl_endofwhois(Message& msg, const std::string& nick, const std::string& to_match,
 						   bool rewrite)
 	{
 		msg.setRecipient(msg.getSender());
@@ -179,17 +165,28 @@ namespace ft_irc
 		msg.appendSeparator();
 	}
 
-	void	rpl_whoischannels(Message& msg, const std::string& nick, const std::string& chan_name,
-							  bool rewrite)
+	void	rpl_whoischannels(Message& msg, const Client& client, bool rewrite)
 	{
+		const Client::t_channels&	channels = client.getJoinedChannels();
+
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
 		msg.appendResponse(build_prefix(msg.getServHostname()));
 		msg.appendResponse(" 319 ");
-		msg.appendResponse(nick);
+		msg.appendResponse(client.getNick());
 		msg.appendResponse(" :");
-		msg.appendResponse(chan_name);
+
+		for (Client::t_channels::const_iterator it = channels.begin();
+			 it != channels.end();
+			 ++it)
+		{
+			if ((*it)->hasChanOp(client))
+				msg.appendResponse(" @");
+			else
+				msg.appendResponse(" +");
+			msg.appendResponse((*it)->getName());
+		}
 		msg.appendSeparator();
 	}
 
@@ -302,6 +299,8 @@ namespace ft_irc
 
 	void	rpl_namreply(Message& msg, Channel& channel, bool rewrite)
 	{
+		bool	sender_in_chan = channel.hasClient(msg.getSender());
+
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
@@ -316,7 +315,7 @@ namespace ft_irc
 			 it != channel.getClients().end();
 			 ++it)
 		{
-			if ((*it)->isInvisible() == false)
+			if ((sender_in_chan == true) || ((*it)->isInvisible() == false))
 			{
 				if ((*it)->isChanOp(channel))
 					msg.appendResponse(" @");
@@ -330,25 +329,35 @@ namespace ft_irc
 
 	void	rpl_namreply(Message& msg, const t_clients& clients, bool rewrite)
 	{
-		msg.setRecipient(msg.getSender());
-		if (rewrite)
-			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
-		msg.appendResponse(" 353 ");
-		msg.appendResponse(msg.getSender().getNick());
-		msg.appendResponse(" * * :");
+		int			count = 0;
+		std::string	sender_nick = msg.getSender().getNick();
+		std::string	response;
+
+		response = build_prefix(msg.getServHostname());
+		response += " 353 ";
+		response += msg.getSender().getNick();
+		response += " * * :";
 
 		// check users not belonging to any channel
 		for (t_clients::const_iterator it = clients.begin();
 			 it != clients.end();
 			 ++it)
+		{
+			if ((it->getNick() != sender_nick)
+				&& (it->isInvisible() == false) && it->getJoinedChannels().empty())
 			{
-				if (it->getJoinedChannels().empty())
-				{
-					msg.appendResponse(" ");
-					msg.appendResponse(it->getNick());
-				}
+				response += " ";
+				response += it->getNick();
+				++count;
 			}
+		}
+		if (count == 0)
+			return ;
+
+		msg.setRecipient(msg.getSender());
+		if (rewrite)
+			msg.clearResponse();
+		msg.appendResponse(response);
 		msg.appendSeparator();
 	}
 
@@ -663,7 +672,7 @@ namespace ft_irc
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
 		msg.appendResponse(chan_name);
-		msg.appendResponse(" :Cannot join channel");
+		msg.appendResponse(" :Cannot join channel (maximum number of users reached)");
 		msg.appendSeparator();
 	}
 

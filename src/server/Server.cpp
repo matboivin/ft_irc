@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/18 20:08:00 by root             ###   ########.fr       */
+/*   Updated: 2021/12/19 17:31:25 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -283,7 +283,7 @@ namespace ft_irc
 			_log(LOG_LEVEL_FATAL, "Error: Could not listen on socket.");
 			return (false);
 		}
-		struct pollfd poll_fd;
+		struct pollfd	poll_fd;
 		
 		poll_fd.fd = this->_sockfd;
 		poll_fd.events = POLLIN | POLLOUT;
@@ -294,9 +294,9 @@ namespace ft_irc
 	/* Accepts a new connection */
 	bool	Server::_awaitNewConnection()
 	{
-		Client	new_client;
-		int		new_sockfd;
-		struct  pollfd	pollfd;
+		Client			new_client;
+		int				new_sockfd;
+		struct pollfd	pollfd;
 
 		// Accept the connection.
 		new_sockfd = accept(this->_sockfd, (struct sockaddr *)&new_client.getAddress(), &new_client.getAddressSize());
@@ -354,7 +354,8 @@ namespace ft_irc
 
 	void Server::_removeClientFd(Client& client)
 	{
-		int fd = -1;
+		int	fd = -1;
+
 		for (t_pollfds::iterator it = this->_poll_fds.begin();
 			 it != this->_poll_fds.end();
 			 ++it)
@@ -372,7 +373,7 @@ namespace ft_irc
 	{
 		char					bytes_buffer[MAX_COMMAND_SIZE];
 		std::string::size_type	found;
-		ssize_t						bytes_read;
+		ssize_t					bytes_read;
 		int						sockfd;
 
 		sockfd = client_pollfd.fd;
@@ -412,11 +413,12 @@ namespace ft_irc
 		client.updateLastEventTime();
 		return (bytes_read);
 	}
-	
+
 	/* Process all clients */
 	bool	Server::_processClients()
 	{
-		size_t index = 1;
+		size_t	index = 1;
+
 		for (t_clients::iterator it = this->_clients.begin();
 			 it != this->_clients.end();
 			 ++it)
@@ -447,7 +449,7 @@ namespace ft_irc
 						it->setAlive(false);
 					}
 				}
-				index++;
+				++index;
 			}
 			if (it->isAlive() == false)
 			{
@@ -626,7 +628,7 @@ namespace ft_irc
 	{
 		if (msg.getCommand() == "CAP")
 			return (1);
-		// they didn't provide the connection password
+		// the client didn't provide the connection password
 		if ((client.isAllowed() == false) && (msg.getCommand() != "PASS"))
 		{
 			err_passwdmismatch(msg, true);
@@ -670,7 +672,8 @@ namespace ft_irc
 
 			_log(LOG_LEVEL_DEBUG, "Sending: '" + logOutput + "' to " + (*dst)->getIpAddressStr());
 			
-			int fd = this->_poll_fds[(*dst)->pollfd_index].fd;
+			int	fd = this->_poll_fds[(*dst)->pollfd_index].fd;
+
 			if (!(fd & POLLOUT))
 				continue ;
 			if (send(fd, msg.getResponse().c_str(), msg.getResponse().size(), MSG_NOSIGNAL) < 0)
@@ -746,10 +749,6 @@ namespace ft_irc
 	{
 		if (_userOnChannel(client, *channel))
 		{
-			_log(LOG_LEVEL_DEBUG, "Remove " + client.getNick() + " from channel " + channel->getName());
-
-			client.partChannel(*channel);
-
 			Message	part_msg(client);
 
 			part_msg.setRecipients(channel->getClients());
@@ -763,6 +762,9 @@ namespace ft_irc
 			}
 			part_msg.appendSeparator();
 			_sendResponse(part_msg);
+
+			_log(LOG_LEVEL_DEBUG, "Remove " + client.getNick() + " from channel " + channel->getName());
+			client.partChannel(*channel);
 
 			if (channel->isEmpty())
 				_removeChannel(channel);
@@ -813,31 +815,42 @@ namespace ft_irc
 	void	Server::_execInviteCmd(Message& msg)
 	{
 		if (msg.getParams().size() != 2)
-			err_needmoreparams(msg);
-		else if (getClient(msg.getParams().at(0)) == this->_clients.end())
-			err_nosuchnick(msg, msg.getParams().at(0));
-		else if (channel_is_valid(msg.getParams().at(1)))
 		{
-			std::string				guest = msg.getParams().at(0);
-			t_clients::iterator		guest_user = getClient(guest);
+			err_needmoreparams(msg, true);
+			_sendResponse(msg);
+			return ;
+		}
+		std::string			nick = msg.getParams().at(0);
+		t_clients::iterator	invited_user = getClient(nick);
+
+		if (invited_user == this->_clients.end())
+		{
+			err_nosuchnick(msg, nick, true);
+		}
+		else
+		{
 			std::string				chan_name = msg.getParams().at(1);
 			t_channels::iterator	channel = getChannel(chan_name);
-			bool					chan_exists = (channel != this->_channels.end());
 
-			if (chan_exists && !msg.getSender().isChanOp(*channel))
-				err_chanoprivsneeded(msg, chan_name);
-			else if (chan_exists && !_userOnChannel(msg.getSender(), *channel))
-				err_notonchannel(msg, chan_name);
-			else if (chan_exists && _userOnChannel(*guest_user, *channel))
-				err_useronchannel(msg, guest, chan_name);
+			if (channel == this->_channels.end())
+				err_nosuchchannel(msg, chan_name, true);
 			else
 			{
-				msg.setRecipient(*guest_user);
+				if (!msg.getSender().isChanOp(*channel))
+					err_chanoprivsneeded(msg, chan_name, true);
+				else if (!_userOnChannel(msg.getSender(), *channel))
+					err_notonchannel(msg, chan_name, true);
+				else if (_userOnChannel(*invited_user, *channel))
+					err_useronchannel(msg, nick, chan_name, true);
+				else
+				{
+					msg.setRecipient(*invited_user);
 
-				Message	invite_msg(msg.getSender(), getHostname());
+					Message	invite_msg(msg.getSender(), getHostname());
 
-				rpl_inviting(invite_msg, chan_name, guest);
-				_sendResponse(invite_msg);
+					rpl_inviting(invite_msg, chan_name, nick);
+					_sendResponse(invite_msg);
+				}
 			}
 		}
 		_sendResponse(msg);
@@ -855,7 +868,9 @@ namespace ft_irc
 			_sendResponse(msg);
 		}
 		else if (msg.getParams().at(0) == "0")
+		{
 			_removeUserFromAllChannels(msg.getSender());
+		}
 		else
 		{
 			for (Message::t_params::const_iterator chan_name = msg.getParams().begin();
@@ -863,8 +878,8 @@ namespace ft_irc
 				 ++chan_name)
 			{
 				if (!channel_is_valid(*chan_name))
-					return ;
-				if (msg.getSender().getJoinedChannels().size() >= CHAN_NB_MAX)
+					err_nosuchchannel(msg, *chan_name, true);
+				else if (msg.getSender().getJoinedChannels().size() >= CHAN_NB_MAX)
 					err_toomanychannels(msg, *chan_name, true);
 				else
 				{
@@ -875,11 +890,10 @@ namespace ft_irc
 						_addChannel(*chan_name, msg.getSender());
 						channel = getChannel(*chan_name);
 					}
-					if (channel->getClients().size() < USERS_IN_CHAN_MAX)
-					{
-						_addUserToChannel(msg.getSender(), *channel);
+					else if (_userOnChannel(msg.getSender(), *channel))
 						continue ;
-					}
+					if (channel->getClients().size() < USERS_IN_CHAN_MAX)
+						_addUserToChannel(msg.getSender(), *channel);
 					else
 						err_channelisfull(msg, *chan_name, true);
 				}
@@ -902,15 +916,15 @@ namespace ft_irc
 		t_clients::iterator		user = getClient(nick);
 
 		if (channel == this->_channels.end())
-			err_nosuchchannel(msg, chan_name);
-		else if (!msg.getSender().isChanOp(*channel))
-			err_chanoprivsneeded(msg, chan_name);
-		else if (!_userOnChannel(msg.getSender(), *channel))
-			err_notonchannel(msg, chan_name);
-		else if ((user != this->_clients.end()) && !_userOnChannel(*user, *channel))
-			err_usernotinchannel(msg, nick, chan_name);
+			err_nosuchchannel(msg, chan_name, true);
 		else if (user == this->_clients.end())
-			err_nosuchnick(msg, nick);
+			err_nosuchnick(msg, nick, true);
+		else if (!msg.getSender().isChanOp(*channel))
+			err_chanoprivsneeded(msg, chan_name, true);
+		else if (!_userOnChannel(msg.getSender(), *channel))
+			err_notonchannel(msg, chan_name, true);
+		else if ((user != this->_clients.end()) && !_userOnChannel(*user, *channel))
+			err_usernotinchannel(msg, nick, chan_name, true);
 		else
 		{
 			msg.setRecipients(channel->getClients());
@@ -919,11 +933,8 @@ namespace ft_irc
 			msg.appendResponse(chan_name);
 			msg.appendResponse(" ");
 			msg.appendResponse(nick);
-			if (!comment.empty())
-			{
-				msg.appendResponse(" ");
-				msg.appendResponse(comment);
-			}
+			msg.appendResponse(" ");
+			msg.appendResponse(comment);
 			msg.appendSeparator();
 		}
 		_sendResponse(msg);
@@ -933,33 +944,72 @@ namespace ft_irc
 	 * KICK <channel> *( "," <channel> ) <user> *( "," <user> ) [<comment>]
 	 *
 	 * The server MUST NOT send KICK messages with multiple channels or
-	 * users to clients.  This is necessarily to maintain backward
+	 * users to clients. This is necessarily to maintain backward
 	 * compatibility with old client software.
 	 */
 	void	Server::_execKickCmd(Message& msg)
 	{
 		if (msg.getParams().size() < 2)
-			err_needmoreparams(msg);
+		{
+			err_needmoreparams(msg, true);
+			_sendResponse(msg);
+			return ;
+		}
 		else
 		{
-			std::string	comment = "";
-			Parser::t_params	chan_names = _splitListOfParams(msg.getParams().at(0));
-			Parser::t_params	nicknames = _splitListOfParams(msg.getParams().at(1));
+			std::string				comment;
+			const Parser::t_params	chan_names = _splitListOfParams(msg.getParams().at(0));
+			const Parser::t_params	nicknames = _splitListOfParams(msg.getParams().at(1));
 
 			if (msg.getParams().size() == 3)
 				comment = msg.getParams().at(2);
+			else
+				comment = msg.getSender().getNick();
 
-			std::size_t	len = chan_names.size();
+			std::size_t	chan_nb = chan_names.size();
+			std::size_t	nick_nb = nicknames.size();
+			std::size_t	max_len = (chan_nb > nick_nb) ? chan_nb : nick_nb;
 
-			for (std::size_t i = 0; i < len; ++i)
-				_kickClient(msg, chan_names[i], nicknames[i], comment);
-			// Handle different number of channels and nicknames
-			// if (len != nicknames.size())
+			Parser::t_params::const_iterator	chan = chan_names.begin();
+			Parser::t_params::const_iterator	nick = nicknames.begin();
+
+			for (std::size_t i = 0; i < max_len; ++i)
+			{
+				_kickClient(msg, *chan, *nick, comment);
+				if (*chan != chan_names.back())
+					++chan;
+				if (*nick != nicknames.back())
+					++nick;
+			}
 		}
 	}
 
+	/* Helper for KILL command */
+	void	Server::_killClient(Message& msg, Client& target, const std::string& reason)
+	{
+		std::string	trailing_param = ":Killed (";
+		trailing_param += msg.getSender().getNick();
+		trailing_param += " (";
+		if (reason.at(0) == ':')
+			trailing_param += reason.substr(1);
+		else
+			trailing_param += reason;
+		trailing_param += "))";
+
+		msg.setRecipients(target.getAllContacts());
+		msg.addRecipient(target);
+		msg.setResponse(build_prefix(build_full_client_id(target)));
+		msg.appendResponse(" QUIT ");
+		msg.appendResponse(trailing_param);
+		msg.appendSeparator();
+		_sendResponse(msg);
+		target.quitAllChannels();
+		// The server acknowledges by sending an ERROR message to the client
+		target.kick("ERROR " + trailing_param);
+	}
+
 	/*
-	 * KILL <client> <comment>
+	 * KILL <client> [comment]
 	 * Cause a client-server connection to be closed by the server.
 	 *
 	 * The user must be an IRC operator.
@@ -967,21 +1017,27 @@ namespace ft_irc
 	 */
 	void	Server::_execKillCmd(Message& msg)
 	{
-		if (msg.getParams().size() < 2)
-			err_needmoreparams(msg, true);
-		else if (!msg.getSender().isOper())
+		if (!msg.getSender().isOper())
 			err_noprivileges(msg, true);
+		else if (msg.getParams().size() < 1)
+			err_needmoreparams(msg, true);
 		else if (msg.getParams().at(0) == getHostname())
 			err_cantkillserver(msg, true);
 		else
 		{
 			std::string			nick = msg.getParams().at(0);
-			t_clients::iterator	user = getClient(nick);
+			t_clients::iterator	target = getClient(nick);
 
-			if (user == this->_clients.end())
+			if (target == this->_clients.end())
 				err_nosuchnick(msg, nick, true);
 			else
-				user->setAlive(false); // will be clean by server loop
+			{
+				if (msg.getParams().size() > 1)
+					_killClient(msg, *target, msg.getParams().at(1));
+				else
+					_killClient(msg, *target);
+				return ;
+			}
 		}
 		_sendResponse(msg);
 	}
@@ -992,7 +1048,6 @@ namespace ft_irc
 	 * If <channel> is specified, only lists information about that channel.
 	 * Otherwise, lists all channels and their topics.
 	 */
-
 	void	Server::_execListCmd(Message& msg)
 	{
 		bool	matchAll = msg.getParams().size() == 0;
@@ -1358,29 +1413,33 @@ namespace ft_irc
 	 */
 	void	Server::_execNoticeCmd(Message& msg)
 	{
-		if (msg.getParams().size() < 2)
-			return ;
-
-		std::string	target = msg.getParams().at(0);
-
-		if (channel_is_valid(target)) // send to chan
+		if (msg.getParams().empty())
+			err_needmoreparams(msg, true);
+		else if (msg.getParams().size() < 2)
+			err_notexttosend(msg, true);
+		else
 		{
-			t_channels::iterator	channel = getChannel(target);
+			std::string	target = msg.getParams().at(0);
 
-			if (channel == this->_channels.end())
-				return ;
-			// if 'n' flag is set: messages to channel from clients of the channel only
-			else if (channel->hasMode('n') && !_userOnChannel(msg.getSender(), *channel))
-				return ;
-			msg.setRecipients(channel->getClients());
-		}
-		else // send to user
-		{
-			t_clients::iterator	client = getClient(msg.getParams().at(0));
+			if (channel_is_valid(target)) // send to chan
+			{
+				t_channels::iterator	channel = getChannel(target);
 
-			if (client == this->_clients.end())
-				return ;
-			msg.setRecipient(*client);
+				if (channel == this->_channels.end())
+					return ;
+				// if 'n' flag is set: messages to channel from clients of the channel only
+				if (channel->hasMode('n') && !_userOnChannel(msg.getSender(), *channel))
+					return ;
+				msg.setRecipients(removeDuplicates(channel->getClients(), &msg.getSender()));
+			}
+			else // send to user
+			{
+				t_clients::iterator	client = getClient(msg.getParams().at(0));
+
+				if (client == this->_clients.end())
+					return ;
+				msg.setRecipient(*client);
+			}
 		}
 		_sendResponse(msg);
 	}
@@ -1503,7 +1562,9 @@ namespace ft_irc
 		std::string	origin;
 
 		if (msg.getParams().empty())
+		{
 			err_noorigin(msg, true);
+		}
 		else
 		{
 			origin = msg.getParams().front();
@@ -1525,13 +1586,18 @@ namespace ft_irc
 	void	Server::_execPongCmd(Message& msg)
 	{
 		if (msg.getParams().empty())
-			err_noorigin(msg, true);
-		else
 		{
-			msg.setRecipient(msg.getSender());
-			msg.clearResponse();
+			err_noorigin(msg, true);
+			_sendResponse(msg);
 		}
-		_sendResponse(msg);
+
+		Client&	client = msg.getSender();
+
+		if (client.isPinged() == true)
+		{
+			client.updateLastEventTime();
+			client.setPinged(false);
+		}
 	}
 
 	/*
@@ -1558,7 +1624,7 @@ namespace ft_irc
 				else if (channel->hasMode('n') && !_userOnChannel(msg.getSender(), *channel))
 					err_cannotsendtochan(msg, target, true);
 				else
-					msg.setRecipients(channel->getClients());
+					msg.setRecipients(removeDuplicates(channel->getClients(), &msg.getSender()));
 			}
 			else // send to user
 			{
@@ -1579,16 +1645,19 @@ namespace ft_irc
 	 */
 	void	Server::_execQuitCmd(Message& msg)
 	{
-		msg.setRecipients(msg.getSender().getAllContacts());
-		if (msg.getParams().empty())
-		{
-			msg.setResponse("QUIT :Quit: leaving");
-			msg.appendSeparator();
-		}
+		Client&	client = msg.getSender();
+
+		msg.setRecipients(client.getAllContacts());
+		msg.addRecipient(client);
+		msg.setResponse(build_prefix(build_full_client_id(client)));
+		msg.appendResponse(" QUIT quit");
+		if (!msg.getParams().empty())
+			msg.appendResponse(msg.getParams().at(0));
+		msg.appendSeparator();
 		_sendResponse(msg);
-		msg.getSender().quitAllChannels();
+		client.quitAllChannels();
 		// The server acknowledges by sending an ERROR message to the client
-		msg.getSender().kick();
+		client.kick("ERROR Quit");
 	}
 
 	/*
@@ -1598,7 +1667,9 @@ namespace ft_irc
 	void	Server::_execTopicCmd(Message& msg)
 	{
 		if (msg.getParams().empty())
+		{
 			err_needmoreparams(msg, true);
+		}
 		else
 		{
 			std::string				chan_name = msg.getParams().at(0);
@@ -1696,12 +1767,12 @@ namespace ft_irc
 	void	Server::_addWhoisToMsg(Message& msg, const Client& client)
 	{
 		// :mynick 311 mynick nickname user hostname * :realname
-		rpl_whoisuser(msg, client, false);
-		rpl_whoisserver(msg, this->_description, false);
-
+		rpl_whoisuser(msg, client);
+		if ((client.getJoinedChannels().size() > 0) && !client.isInvisible())
+			rpl_whoischannels(msg, client);
 		if (client.isOper())
-			rpl_whoisoperator(msg, client, false);
-
+			rpl_whoisoperator(msg, client);
+		rpl_whoisserver(msg, this->_description);
 		_sendResponse(msg);
 	}
 
@@ -1713,10 +1784,9 @@ namespace ft_irc
 	{
 		Parser::t_params::const_iterator	paramsIt;
 		std::string							to_match = "0"; //match all by default
-		bool								matchAll = false;
+		bool								matchAll = msg.getParams().empty() || (msg.getParams().front() == "0");
 
-		msg.setResponse("");
-		matchAll = msg.getParams().empty() || msg.getParams().front() == "0";
+		msg.clearResponse();
 
 		for (t_clients::iterator it = this->_clients.begin();
 			 it != this->_clients.end();
@@ -1732,7 +1802,7 @@ namespace ft_irc
 				// iterate over params
 				for (; paramsIt != msg.getParams().end(); ++paramsIt)
 				{
-					//_logger.log(0, "WHOIS: " + *paramsIt  + ":" + it->getNick());
+					// _logger.log(0, "WHOIS: " + *paramsIt  + ":" + it->getNick());
 					if (match_nick(*paramsIt, it->getNick()))
 					{
 						// _logger.log(0, "WHOIS matched " + it->getNick());
