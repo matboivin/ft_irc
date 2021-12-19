@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 21:01:08 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/19 22:40:50 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,23 +163,23 @@ namespace ft_irc
 
 	std::string	Client::getNick() const
 	{
-		if (this->_nick.empty())
-			return ("*");
-		return (this->_nick);
+		if (this->isRegistered() && !this->_nick.empty())
+			return (this->_nick);
+		return ("*");
 	}
 
 	std::string	Client::getRealName() const
 	{
-		if (this->_realname.empty())
-			return ("*");
-		return (this->_realname);
+		if (this->isRegistered() && !this->_realname.empty())
+			return (this->_realname);
+		return ("*");
 	}
 
 	std::string	Client::getUsername() const
 	{
-		if (this->_username.empty())
-			return ("*");
-		return (this->_username);
+		if (this->isRegistered() && !this->_username.empty())
+			return (this->_username);
+		return ("*");
 	}
 
 	std::string	Client::getHostname() const
