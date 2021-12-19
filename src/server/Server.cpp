@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 21:18:08 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/19 22:44:19 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -484,9 +484,6 @@ namespace ft_irc
 		rpl_created(welcome_msg, this->_creation_date);
 		rpl_myinfo(welcome_msg, this->_version);
 		_execMotdCmd(welcome_msg); // message is sent here
-		client.setRegistered(true);
-		_log(LOG_LEVEL_INFO,
-			"Client " + client.getNick() + "@" + client.getIpAddressStr() + " has just registered");
 	}
 
 	/*
@@ -532,6 +529,9 @@ namespace ft_irc
 		// if the client has just registered, send them a nice welcome message :D
 		if (client.enteredPass() && client.enteredNick() && client.enteredUser())
 		{
+			client.setRegistered(true);
+			_log(LOG_LEVEL_INFO,
+				"Client " + client.getNick() + "@" + client.getIpAddressStr() + " has just registered");
 			_makeWelcomeMsg(client);
 			return (1);
 		}
