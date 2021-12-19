@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 17:06:47 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/19 17:31:25 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -749,10 +749,6 @@ namespace ft_irc
 	{
 		if (_userOnChannel(client, *channel))
 		{
-			_log(LOG_LEVEL_DEBUG, "Remove " + client.getNick() + " from channel " + channel->getName());
-
-			client.partChannel(*channel);
-
 			Message	part_msg(client);
 
 			part_msg.setRecipients(channel->getClients());
@@ -766,6 +762,9 @@ namespace ft_irc
 			}
 			part_msg.appendSeparator();
 			_sendResponse(part_msg);
+
+			_log(LOG_LEVEL_DEBUG, "Remove " + client.getNick() + " from channel " + channel->getName());
+			client.partChannel(*channel);
 
 			if (channel->isEmpty())
 				_removeChannel(channel);
@@ -1646,16 +1645,19 @@ namespace ft_irc
 	 */
 	void	Server::_execQuitCmd(Message& msg)
 	{
-		msg.setRecipients(msg.getSender().getAllContacts());
-		if (msg.getParams().empty())
-		{
-			msg.setResponse("QUIT :Quit: leaving");
-			msg.appendSeparator();
-		}
+		Client&	client = msg.getSender();
+
+		msg.setRecipients(client.getAllContacts());
+		msg.addRecipient(client);
+		msg.setResponse(build_prefix(build_full_client_id(client)));
+		msg.appendResponse(" QUIT quit");
+		if (!msg.getParams().empty())
+			msg.appendResponse(msg.getParams().at(0));
+		msg.appendSeparator();
 		_sendResponse(msg);
-		msg.getSender().quitAllChannels();
+		client.quitAllChannels();
 		// The server acknowledges by sending an ERROR message to the client
-		msg.getSender().kick();
+		client.kick("ERROR Quit");
 	}
 
 	/*
