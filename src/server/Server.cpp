@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 19:46:56 by root             ###   ########.fr       */
+/*   Updated: 2021/12/19 21:18:08 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -344,10 +344,10 @@ namespace ft_irc
 
 			if (_parse(msg, client.popUnprocessedCommand()) == true) // parse the message
 			{
-				if ((client.isRegistered() && client.isAllowed()) == false)
+				if (client.isRegistered() == false)
 					_registerClient(msg, client); // register the client
 				else
-					_executeCommand(msg, client); // execute the command
+					_executeCommand(msg); // execute the command
 			}
 			client.updateLastEventTime();
 			return (true);
@@ -510,10 +510,10 @@ namespace ft_irc
 			return (0);
 		}
 
-		if (!client.isAllowed() && (msg.getCommand() == "PASS"))
+		if (!client.enteredPass() && (msg.getCommand() == "PASS"))
 			_execPassCmd(msg);
 		else if ((msg.getCommand() == "NICK") || (msg.getCommand() == "USER"))
-			_executeCommand(msg, client);
+			_executeCommand(msg);
 		else
 		{
 			err_notregistered(msg);
@@ -521,7 +521,7 @@ namespace ft_irc
 		}
 
 		// if no password was given
-		if (!client.isAllowed() && client.hasNick() && client.hasUser())
+		if (!client.enteredPass() && client.enteredNick() && client.enteredUser())
 		{
 			err_passwdmismatch(msg, true);
 			_sendResponse(msg);
@@ -530,7 +530,7 @@ namespace ft_irc
 		}
 
 		// if the client has just registered, send them a nice welcome message :D
-		if (client.isAllowed() && client.hasNick() && client.hasUser())
+		if (client.enteredPass() && client.enteredNick() && client.enteredUser())
 		{
 			_makeWelcomeMsg(client);
 			return (1);
@@ -571,7 +571,7 @@ namespace ft_irc
 			close(client_fd);
 			client_fd = -1;
 		}
-		it->setAllowed(false);
+		it->setRegistered(false);
 		_log(LOG_LEVEL_INFO, "Client " + it->getNick() + "@" + it->getIpAddressStr() + " disconnected");
 		return (0);
 	}
@@ -636,18 +636,10 @@ namespace ft_irc
 	}
 
 	/* Execute a command */
-	int	Server::_executeCommand(Message& msg, Client& client)
+	int	Server::_executeCommand(Message& msg)
 	{
 		if (msg.getCommand() == "CAP")
 			return (1);
-		// the client didn't provide the connection password
-		if ((client.isAllowed() == false) && (msg.getCommand() != "PASS"))
-		{
-			err_passwdmismatch(msg, true);
-			_sendResponse(msg);
-			client.kick("ERROR :Password incorrect");
-			return (0);
-		}
 
 		t_cmds::const_iterator	it = this->_commands.find(msg.getCommand());
 
@@ -1410,7 +1402,10 @@ namespace ft_irc
 				msg.getSender().setNick(new_nick);
 
 				if (!msg.getSender().isRegistered())
+				{
+					msg.getSender().setEnteredNick(true);
 					return ;
+				}
 				msg.setRecipient(msg.getSender());
 				msg.addRecipients(msg.getSender().getAllContacts());
 			}
@@ -1554,13 +1549,15 @@ namespace ft_irc
 			err_alreadyregistered(msg, true);
 		else if (msg.getParams().front() != getPassword())
 		{
+			if (!msg.getSender().enteredPass())
+				return ;
 			err_passwdmismatch(msg, true);
 			_sendResponse(msg);
 			msg.getSender().kick("ERROR :Password incorrect");
 		}
 		else
 		{
-			msg.getSender().setAllowed(true);
+			msg.getSender().setEnteredPass(true);
 			return ;
 		}
 		_sendResponse(msg);
@@ -1740,6 +1737,8 @@ namespace ft_irc
 			client.setUsername(params.at(0));
 			client.setHostname(params.at(1));
 			client.setRealName(params.at(3));
+			if (!msg.getSender().isRegistered())
+				msg.getSender().setEnteredUser(true);
 		}
 		_sendResponse(msg);
 	}

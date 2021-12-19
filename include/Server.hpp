@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 19:45:48 by root             ###   ########.fr       */
+/*   Updated: 2021/12/19 21:11:30 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,7 @@ namespace ft_irc
 
 		/* Commands execution */
 		void					_init_commands_map();
-		int						_executeCommand(Message& msg, Client &client);
+		int						_executeCommand(Message& msg);
 		bool					_processClientCommand(Client& client);
 
 		/* Command response */

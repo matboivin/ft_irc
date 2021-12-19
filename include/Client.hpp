@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 20:47:24 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/19 21:17:25 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,8 +77,10 @@ namespace ft_irc
 		std::string			getUsername() const;
 		std::string			getHostname() const;
 		std::string			getMode() const;
-		bool				isAllowed() const;
 		bool				isAlive() const;
+		bool				enteredPass() const;
+		bool				enteredNick() const;
+		bool				enteredUser() const;
 		bool				isRegistered() const;
 		bool				isPinged() const;
 		std::string			getIpAddressStr() const;
@@ -95,15 +97,15 @@ namespace ft_irc
 		void				setUsername(const std::string& username);
 		void				setHostname(const std::string& hostname);
 		void				setJoinedChannels(const t_channels& joined_channels);
-		void				setAllowed(bool allowed);
 		void				setAlive(bool alive);
+		void				setEnteredPass(bool enteredPass);
+		void				setEnteredNick(bool enteredNick);
+		void				setEnteredUser(bool enteredUser);
 		void				setRegistered(bool registered);
 		void				setPinged(bool pinged);
 		void				setAddressStr(const std::string& address);
 
 		/* Helpers */
-		bool				hasNick() const;
-		bool				hasUser() const;
 		bool				isTimeouted() const;
 		bool				isOper() const;
 		bool				isChanOp(Channel& channel);
@@ -141,15 +143,17 @@ namespace ft_irc
 		std::string			_hostname;
 		std::string			_mode;
 		const size_t		_max_cmd_length;	/* max length of a command */
-		bool				_allowed;			/* true if connection password is right */
 		bool				_alive;
-		bool				_registered;		/* is the client registered? */
+		bool				_enteredPass;
+		bool				_enteredNick;
+		bool				_enteredUser;
+		bool				_registered;		/* provided PASS,NICK,USER */
 		bool				_pinged;			/* has the client been pinged? */
-		struct sockaddr_in	_address;			/* IPv4 address	*/	
+		struct sockaddr_in	_address;			/* IPv4 address */
 		socklen_t			_address_size;		/* IPv4 address size */
 		std::string			_address_str;		/* IPv4 address as string */
 		struct timeval		_timeout;			/* timeout for poll() */
-		struct timeval		_keep_alive;		/* keep_alive lenght */
+		struct timeval		_keep_alive;		/* keep_alive length */
 		struct timeval		_last_event_time;	/* time since last network event */
 		t_channels			_joined_channels;	/* channels the client is in */
 		std::string			_kick_reason;		/* kick message */
