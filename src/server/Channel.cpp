@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:58:53 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/02 18:13:12 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/14 20:43:15 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,19 @@
 #include <list>
 #include <iostream>
 #include <string>
-#include "Client.hpp"
-#include "Message.hpp"
-#include "Channel.hpp"
-#include "server_operations.hpp"
+#include "ft_irc.hpp"
 
 namespace ft_irc
 {
 	/* Default constructor */
 	Channel::Channel()
-	: _name(), _topic(), _mode(), _clients(), _chan_ops()
+	: _name(), _topic(), _mode("nt"), _clients(), _chan_ops()
 	{
 	}
 
 	/* Name constructor */
 	Channel::Channel(const std::string& name)
-	: _name(name), _topic(), _mode(), _clients(), _chan_ops()
+	: _name(name), _topic(), _mode("nt"), _clients(), _chan_ops()
 	{
 	}
 
@@ -96,9 +93,13 @@ namespace ft_irc
 
 	void	Channel::setTopic(const std::string& topic)
 	{
-		this->_topic = topic;
-		if (this->_topic[0] == ':')
-			this->_topic.erase(0, 1);
+		std::size_t	pos;
+
+		if (topic.at(0) == ':')
+			pos = 1;
+		else
+			pos = 0;
+		this->_topic = topic.substr(pos);
 	}
 
 	void	Channel::setMode(const std::string& mode)
@@ -143,27 +144,26 @@ namespace ft_irc
 	/* Adds a client to the channel */
 	void	Channel::addClient(Client& client)
 	{
-		this->_clients.push_back(&client);
+		if (!this->hasClient(client))
+			this->_clients.push_back(&client);
 	}
 
 	/* Removes a client from the channel */
 	void	Channel::removeClient(Client& client)
 	{
-		bool	need_chan_op = hasChanOp(client);
-
-		this->_clients.remove(&client);
-		if (need_chan_op)
+		if (this->hasClient(client))
 		{
-			removeChanOp(client);
-			if (!this->_clients.empty())
-				addChanOp(*this->_clients.front());
+			if (this->hasChanOp(client))
+				this->removeChanOp(client);
+
+			this->_clients.remove(&client);
 		}
 	}
 
 	/* Manage clients in channel ************************************************ */
 
 	/* Finds a channel operator using a nickname */
-	Channel::t_clients::iterator	Channel::findChanOp(Client& chan_op)
+	Channel::t_clients::iterator	Channel::findChanOp(const Client& chan_op)
 	{
 		t_clients::iterator	it;
 
@@ -172,7 +172,7 @@ namespace ft_irc
 	}
 
 	/* Checks whether the given client is channel operator */
-	bool	Channel::hasChanOp(Client& chan_op)
+	bool	Channel::hasChanOp(const Client& chan_op)
 	{
 		return (this->findChanOp(chan_op) != this->_chan_ops.end());
 	}
@@ -180,13 +180,15 @@ namespace ft_irc
 	/* Makes a client operator of the channel */
 	void	Channel::addChanOp(Client& chan_op)
 	{
-		this->_chan_ops.push_back(&chan_op);
+		if (!this->hasChanOp(chan_op))
+			this->_chan_ops.push_back(&chan_op);
 	}
 
 	/* Removes the operator privileges to a client */
 	void	Channel::removeChanOp(Client& chan_op)
 	{
-		this->_chan_ops.remove(&chan_op);
+		if (this->hasChanOp(chan_op))
+			this->_chan_ops.remove(&chan_op);
 	}
 
 	/* Manage topic ************************************************************* */
@@ -196,11 +198,48 @@ namespace ft_irc
 		this->setTopic(topic);
 
 		msg.setRecipients(this->getClients());
-		msg.setResponse(
-			build_prefix( build_full_client_id(msg.getSender()) )
-			+ " TOPIC " + this->_name + ' ' + topic
-			);
+		msg.setResponse(build_prefix(build_full_client_id(msg.getSender())));
+		msg.appendResponse(" TOPIC ");
+		msg.appendResponse(this->_name);
+		msg.appendResponse(" :");
+		msg.appendResponse(this->_topic);
 		msg.appendSeparator();
+	}
+
+	/* Mode operations ********************************************************** */
+
+	/* Check whether the given mode is set */
+	bool	Channel::hasMode(const char& mode_char) const
+	{
+		return (this->_mode.find(mode_char) != std::string::npos);
+	}
+
+	/* Adds the mode passed as parameter to the client mode string */
+	int	Channel::addMode(const char& mode_char)
+	{
+		const std::string	modes = "nto";
+
+		if (modes.find(mode_char) != std::string::npos)
+		{
+			if (this->_mode.find(mode_char) == std::string::npos)
+				this->_mode += mode_char;
+			return (ERR_SUCCESS);
+		}
+		return (ERR_UNKNOWNMODE);
+	}
+
+	/* Removes the mode passed as parameter from the client mode string */
+	int	Channel::removeMode(const char& mode_char)
+	{
+		const std::string	modes = "nto";
+
+		if (modes.find(mode_char) != std::string::npos)
+		{
+			if (this->_mode.find(mode_char) != std::string::npos)
+				this->_mode.erase(this->_mode.find(mode_char), 1);
+			return (ERR_SUCCESS);
+		}
+		return (ERR_UNKNOWNMODE);
 	}
 
 	/* ************************************************************************** */
@@ -212,6 +251,18 @@ namespace ft_irc
 
 		for (t_clients::iterator	it = this->_clients.begin();
 			 it != this->_clients.end();
+			 ++it)
+		{
+			std::cout << "- " << (*it)->getNick() << '\n';
+		}
+	}
+
+	void	Channel::displayChanOps()
+	{
+		std::cout << "ChanOps in channel " << this->getName() << ":\n";
+
+		for (t_clients::iterator	it = this->_chan_ops.begin();
+			 it != this->_chan_ops.end();
 			 ++it)
 		{
 			std::cout << "- " << (*it)->getNick() << '\n';

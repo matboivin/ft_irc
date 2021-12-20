@@ -6,9 +6,10 @@
 
 BIND_ADDR="0.0.0.0"
 PORT="2727"
+PASS="pass42"
 
 # run server in background
-./$EXE $BIND_ADDR $PORT "" &
+./$EXE $BIND_ADDR $PORT $PASS &
 # store PID
 SERV_PID=$!
 sleep 1

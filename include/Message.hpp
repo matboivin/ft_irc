@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 18:47:11 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/02 18:04:07 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/13 14:16:57 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,11 +61,12 @@ namespace ft_irc
 		void				setServHostname(const std::string& serv_hostname);
 		void				setResponse(const std::string& response);
 		void				appendResponse(const std::string& response);
+		void				appendResponse(const char& c);
 		void				setCommand(const std::string& command);
 		void				setParam(const std::string& param);
 		void				setParams(const t_params& params);
-		void				setRecipients(const t_clients& recipients);
 		void				setRecipient(Client& recipient);
+		void				setRecipients(const t_clients& recipients);
 
 		/* Helpers */
 		void				appendSeparator();
@@ -74,6 +75,7 @@ namespace ft_irc
 
 		/* Clients operations */
 		void				clearRecipients();
+		void				addRecipient(Client& recipient);
 		void				addRecipients(const t_clients& recipients);
 
 		/* debug */

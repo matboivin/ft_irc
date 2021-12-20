@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:04 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/05 15:40:07 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/11 15:12:34 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ enum	e_error_code
 	ERR_CHANOPRIVSNEEDED
 };
 
-extern const char *error_msg[];
+extern const char	*error_msg[];
 int		setNonblocking(int fd);
 void	displayUsage(const char* program_name);
 int		test_parsing();
@@ -79,9 +79,8 @@ int		test_modes();
 #  define nullptr NULL
 # endif
 
-#ifndef DEBUG
-# define DEBUG 0
-
-#endif // !DEBUG
+# ifndef DEBUG
+#  define DEBUG 0
+# endif // !DEBUG
 
 #endif // FT_IRC_HPP

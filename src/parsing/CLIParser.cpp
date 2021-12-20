@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:34:20 by root              #+#    #+#             */
-/*   Updated: 2021/12/02 18:11:57 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/19 21:37:09 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,17 +33,21 @@ namespace ft_irc
 			displayUsage(argv[0]);
 			exit(EXIT_SUCCESS);
 		}
-		if (argc < 4)
+		if (argc < 3)
 			throw std::runtime_error("Not enough arguments");
 		if (argc > 4)
 			throw std::runtime_error("Too many arguments");
-		parse(argv[1], argv[2], argv[3]);
+
+		if (argc == 3)
+			parse(argv[1], argv[2]); // ./ircserv <port> <password>
+		else
+			parse(argv[2], argv[3]); // ./ircserv [unused] <port> <password>
 	}
 
 	/* Copy constructor */
 	CLIParser::CLIParser(const CLIParser& other)
 	: _argc(other._argc),
-	  _argv(other._argv),
+	  _argv(),
 	  _bind_address(other._bind_address),
 	  _port(other._port),
 	  _password(other._password)
@@ -107,10 +111,13 @@ namespace ft_irc
 	/* Parsing ************************************************************** */
 
 	/* Parses the command line arguments */
-	void	CLIParser::parse(const char* bind_address, const char* port, const char* password)
+	void	CLIParser::parse(const char* port, const char* password)
 	{
-		this->_bind_address = bind_address;
+		this->_bind_address = "0.0.0.0";
 		this->_port = port;
 		this->_password = password;
+
+		if (this->_password.empty())
+			throw std::runtime_error("Empty password is forbidden");
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:37:26 by mboivin           #+#    #+#             */
-/*   Updated: 2021/11/30 17:19:39 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/12 16:52:24 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include "Channel.hpp"
 #include "Message.hpp"
 #include "server_operations.hpp"
+#include "numeric_replies.hpp"
 
 namespace ft_irc
 {
@@ -28,17 +29,19 @@ namespace ft_irc
 
 	std::string	build_full_client_id(const Client& client)
 	{
-		if (!client.getHostname().empty())
-			return (client.getNick() + "!" + client.getUsername() + "@" + client.getHostname());
+		std::string	full_client_id = client.getNick();
 
-		// return IP address if host couldn't resolve
-		return (client.getNick() + "!" + client.getUsername() + "@" + client.getIpAddressStr());
+		full_client_id += "!";
+		full_client_id += client.getUsername();
+		full_client_id += "@";
+		full_client_id += client.getHostname();
+		return (full_client_id);
 	}
 
 	/* Late parsing helpers */
 
 	/* Special characters listed in the RFC grammar */
-	bool	is_special(char c)
+	bool	is_special(const char& c)
 	{
 		return (
 			(c == '[') || (c == ']') || (c == '\\') || (c == '`')
@@ -79,26 +82,6 @@ namespace ft_irc
 				|| (chan_name[0] == '!') || (chan_name[0] == '&'));
 	}
 
-	/*
-	 * Check channel mode
-	 * In ft_irc, we only use the 'o'/'O' flag
-	 * *( ( "+" / "-" ) *( "o" / "O" / "v" / "a" / "i" / "m" / "n" / "q" / "p" /
-	 *                     "s" / "r" / "t" / "k" / "l" / "b" / "e" / "I" ) )
-	 */
-	bool	channel_mode_is_valid(const std::string& mode)
-	{
-		if (mode.size() == 2)
-		{
-			if ((mode[0] == '+') || (mode[0] == '-'))
-			{
-				std::string	chan_modes = "oOvaimnqpsrtklbeI";
-
-				return (chan_modes.find(mode[1]) != std::string::npos);
-			}
-		}
-		return (false);
-	}
-
 	/* Match nicknames */
 	bool	match_nick(const std::string& to_match, const std::string& nick)
 	{
@@ -134,5 +117,36 @@ namespace ft_irc
 				return true;
 		}
 		return false;
+	}
+
+	/* Check mode prefix */
+	int	get_mode_prefix(const char& prefix, char& mode_operator)
+	{
+		if ((prefix == '+') || (prefix == '-'))
+		{
+			mode_operator = prefix;
+			return (1);
+		}
+		return (0);
+	}
+
+	/*
+	 * Check user mode char
+	 */
+	bool	usermode_char_is_valid(const char& c)
+	{
+		std::string	chan_modes = "io";
+
+		return (chan_modes.find(c) != std::string::npos);
+	}
+
+	/*
+	 * Check channel mode char
+	 */
+	bool	chanmode_char_is_valid(const char& c)
+	{
+		std::string	chan_modes = "nto";
+
+		return (chan_modes.find(c) != std::string::npos);
 	}
 } // namespace ft_irc

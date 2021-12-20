@@ -8,7 +8,7 @@ namespace ft_irc
 	/*
 	 * Parser for command line arguments
 	 * • Your executable will be used as follows:
-	 * ./ircserv bind_address <port> <password>
+	 * ./ircserv <port> <password>
 	 */
 	class CLIParser
 	{
@@ -39,8 +39,8 @@ namespace ft_irc
 		void		setPassword(const std::string& password);
 
 		/* Parses the command line arguments */
-		void		parse(const char* bind_address, const char* port, const char* password);
-	
+		void		parse(const char* port, const char* password);
+
 	private:
 		/* Attributes */
 		int			_argc;

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/12/05 16:08:49 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/19 21:32:15 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,11 @@
 # include <ctime>
 # include "ft_irc.hpp"
 # include "Logger.hpp"
-# define USER_LEN 20
-# define CHAN_NB_MAX 20
-# define USERS_IN_CHAN_MAX 50
+# define USER_LEN 32
+# define CHAN_NB_MAX 10
+# define USERS_IN_CHAN_MAX 20
+# define USERS_MAX 200
+# define WHOIS_LIST_LIMIT 25
 
 namespace ft_irc
 {
@@ -44,6 +46,7 @@ namespace ft_irc
 		typedef std::map<std::string, cmd_fun>	t_cmds;
 		typedef std::list<Client>				t_clients;
 		typedef std::list<Channel>				t_channels;
+		typedef std::vector<struct pollfd>		t_pollfds;
 
 		/* Constructor */
 								Server(CLIParser& CLI_parser, int backlog_max=5);
@@ -69,8 +72,6 @@ namespace ft_irc
 		const t_clients&		getClients() const;
 		t_clients::iterator		getClient(const std::string& nick);
 		t_channels::iterator	getChannel(const std::string& chan_name);
-
-		/* Checkers */
 		bool					isAlive() const;
 
 		/* Main loop */
@@ -91,6 +92,8 @@ namespace ft_irc
 		t_channels				_channels;
 		Logger					_logger;
 		bool					_alive;
+		t_pollfds				_poll_fds;
+		size_t					_max_clients;
 
 		/* Cleaning */
 		void					_shutdown();
@@ -105,8 +108,11 @@ namespace ft_irc
 		bool					_awaitNewConnection();
 		bool					_hasPendingConnections();
 		bool					_processClients();
-		int						_disconnectClient(Client& client, const std::string& comment = "");
+		int						_disconnectClient(Client& client);
+		void					_makeWelcomeMsg(Client& client);
+		int						_registerClient(Message& msg, Client& client);
 		int						_pingClient(Client& client);
+		bool					_pollServ();
 
 		/* Parsing */
 		bool					_parse(Message& msg, const std::string& cmd);
@@ -114,13 +120,11 @@ namespace ft_irc
 
 		/* Commands execution */
 		void					_init_commands_map();
-		int						_executeCommand(Message& msg, Client& client);
+		int						_executeCommand(Message& msg);
 		bool					_processClientCommand(Client& client);
 
 		/* Command response */
-		void					_setResponseRecipients(Message& msg);
 		void					_sendResponse(Message& msg);
-		void					_make_welcome_msg(Client& client);
 
 		/* Channel operations */
 		Channel&				_addChannel(const std::string& name, Client& creator);
@@ -134,16 +138,17 @@ namespace ft_irc
 														   const std::string& comment = "");
 
 		/* Oper operations */
-		bool					_userCanBeOper(const std::string& name);
 		bool					_canGiveOperPriv(const std::string& name, const std::string& password);
 
 		/* Commands */
+		void					_execDieCmd(Message& msg);
 		void					_execInviteCmd(Message& msg);
 		void					_execJoinCmd(Message& msg);
 		void					_execKickCmd(Message& msg);
 		void					_execKillCmd(Message& msg);
 		void					_execListCmd(Message& msg);
 		void					_execModeCmd(Message& msg);
+		void					_execMotdCmd(Message& msg);
 		void					_execNamesCmd(Message& msg);
 		void					_execNickCmd(Message& msg);
 		void					_execNoticeCmd(Message& msg);
@@ -154,6 +159,7 @@ namespace ft_irc
 		void					_execPongCmd(Message& msg);
 		void					_execPrivmsgCmd(Message& msg);
 		void					_execQuitCmd(Message& msg);
+		void					_execQuitTimeoutCmd(Client& client);
 		void					_execTopicCmd(Message& msg);
 		void					_execUserCmd(Message& msg);
 		void					_execWhoCmd(Message& msg);
@@ -161,13 +167,20 @@ namespace ft_irc
 
 		/* Command helpers */
 		void					_addWhoisToMsg(Message& msg, const Client& client);
-		int						_setUserMode(Client& client, const std::string& mode, Message& msg);
+		void					_setUserMode(Message& msg, Client& target);
+		void					_setChannelMode(Message& msg, Client& client, Channel& channel);
+		void					_setUserModeInChan(Message& msg, Client& client, Channel& channel);
 		void					_kickClient(Message& msg,
 											const std::string& chan_name, const std::string& nick,
-											const std::string& comment = "");
+											const std::string& comment);
+		void					_killClient(Message& msg, Client& target,
+											const std::string& reason = "<no reason supplied>");
 		void					_partClient(Message& msg,
 											const std::string& chan_name,
 											const std::string& comment = "");
+		void					_addClientFd(Client& client);
+		void					_removeClientFd(Client& client);
+		int						updateClientInBuffer(Client& client, struct pollfd& client_pollfd);
 	};
 } // !namespace ft_irc
 

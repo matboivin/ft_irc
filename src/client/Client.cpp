@@ -6,14 +6,12 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/12/02 19:21:39 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/19 22:58:46 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <list>
 #include <string>
-#include "Channel.hpp"
-#include "Client.hpp"
 #include "ft_irc.hpp"
 
 namespace ft_irc
@@ -24,17 +22,19 @@ namespace ft_irc
 				   std::string realname,
 				   std::string username,
 				   std::string hostname)
-	: _nick(nick),
-	  _realname(realname),
-	  _hostname(hostname),
-	  _username(username),
-	  _mode(),
-	  _in_buffer(),
+	: _in_buffer(),
 	  _out_buffer(),
 	  _max_cmd_length(512),
-	  _allowed(false),
-	  _alive(true),
+	  _nick(nick),
+	  _realname(realname),
+	  _username(username),
+	  _hostname(hostname),
+	  _mode("i"),
+	  _enteredPass(),
+	  _enteredNick(false),
+	  _enteredUser(false),
 	  _registered(false),
+	  _alive(true),
 	  _pinged(false),
 	  _address(address),
 	  _address_size(sizeof(address)),
@@ -42,9 +42,8 @@ namespace ft_irc
 	  _timeout(),
 	  _keep_alive(),
 	  _last_event_time(),
-	  _socket_fd(-1),
-	  _joined_channels()
-	  
+	  _joined_channels(),
+	  _kick_reason()
 	{
 		this->_timeout.tv_sec = 0;
 		this->_timeout.tv_usec = 50;
@@ -60,17 +59,19 @@ namespace ft_irc
 				   std::string realname,
 				   std::string username,
 				   std::string hostname)
-	: _nick(nick),
-	  _realname(realname),
-	  _hostname(hostname),
-	  _username(username),
-	  _mode(),
-	  _in_buffer(),
+	: _in_buffer(),
 	  _out_buffer(),
 	  _max_cmd_length(512),
-	  _allowed(false),
-	  _alive(true),
+	  _nick(nick),
+	  _realname(realname),
+	  _username(username),
+	  _hostname(hostname),
+	  _mode("i"),
+	  _enteredPass(),
+	  _enteredNick(false),
+	  _enteredUser(false),
 	  _registered(false),
+	  _alive(true),
 	  _pinged(false),
 	  _address(),
 	  _address_size(),
@@ -78,8 +79,8 @@ namespace ft_irc
 	  _timeout(),
 	  _keep_alive(),
 	  _last_event_time(),
-	  _socket_fd(-1),
-	  _joined_channels()
+	  _joined_channels(),
+	  _kick_reason()
 	{
 		this->_timeout.tv_sec = 0;
 		this->_timeout.tv_usec = 50;
@@ -92,17 +93,19 @@ namespace ft_irc
 
 	/* Copy constructor */
 	Client::Client(const Client& other)
-	: _nick(other._nick),
-	  _realname(other._realname),
-	  _hostname(other._hostname),
-	  _username(other._username),
-	  _mode(other._mode),
-	  _in_buffer(other._in_buffer),
+	: _in_buffer(other._in_buffer),
 	  _out_buffer(other._out_buffer),
 	  _max_cmd_length(other._max_cmd_length),
-	  _allowed(other._allowed),
-	  _alive(other._alive),
+	  _nick(other._nick),
+	  _realname(other._realname),
+	  _username(other._username),
+	  _hostname(other._hostname),
+	  _mode(other._mode),
+	  _enteredPass(other._enteredPass),
+	  _enteredNick(other._enteredNick),
+	  _enteredUser(other._enteredUser),
 	  _registered(other._registered),
+	  _alive(other._alive),
 	  _pinged(other._pinged),
 	  _address(other._address),
 	  _address_size(other._address_size),
@@ -110,8 +113,8 @@ namespace ft_irc
 	  _timeout(other._timeout),
 	  _keep_alive(other._keep_alive),
 	  _last_event_time(other._last_event_time),
-	  _socket_fd(other._socket_fd),
-	  _joined_channels(other._joined_channels)
+	  _joined_channels(other._joined_channels),
+	  _kick_reason(other._kick_reason)
 	{
 	}
 
@@ -120,15 +123,18 @@ namespace ft_irc
 	{
 		if (this != &other)
 		{
-			this->_nick = other._nick;
-			this->_realname = other._realname;
-			this->_hostname = other._hostname;
-			this->_username = other._username;
 			this->_in_buffer = other._in_buffer;
 			this->_out_buffer = other._out_buffer;
-			this->_allowed = other._allowed;
-			this->_alive = other._alive;
+			this->_nick = other._nick;
+			this->_realname = other._realname;
+			this->_username = other._username;
+			this->_hostname = other._hostname;
+			this->_mode = other._mode;
+			this->_enteredPass = other._enteredPass;
+			this->_enteredNick = other._enteredNick;
+			this->_enteredUser = other._enteredUser;
 			this->_registered = other._registered;
+			this->_alive = other._alive;
 			this->_pinged = other._pinged;
 			this->_address = other._address;
 			this->_address_str = other._address_str;
@@ -136,8 +142,8 @@ namespace ft_irc
 			this->_timeout = other._timeout;
 			this->_keep_alive = other._keep_alive;
 			this->_last_event_time = other._last_event_time;
-			this->_socket_fd = other._socket_fd ;
 			this->_joined_channels = other._joined_channels;
+			this->_kick_reason = other._kick_reason;
 		}
 		return (*this);
 	}
@@ -147,26 +153,75 @@ namespace ft_irc
 	{
 	}
 
+	void Client::setAddressStr(const std::string& address)
+	{
+		this->_address_str = address;
+	}
+
 	/* Getters ****************************************************************** */
 
 	std::string	Client::getNick() const
 	{
-		return (this->_nick);
+		if (this->isRegistered() && !this->_nick.empty())
+			return (this->_nick);
+		return ("*");
 	}
 
 	std::string	Client::getRealName() const
 	{
-		return (this->_realname);
+		if (this->isRegistered() && !this->_realname.empty())
+			return (this->_realname);
+		return ("*");
 	}
 
 	std::string	Client::getUsername() const
 	{
-		return (this->_username);
+		if (this->isRegistered() && !this->_username.empty())
+			return (this->_username);
+		return ("*");
 	}
 
 	std::string	Client::getHostname() const
 	{
+		// return IP address if no host
+		if (this->_hostname.empty())
+			return (this->_address_str);
 		return (this->_hostname);
+	}
+
+	std::string	Client::getMode() const
+	{
+		return (this->_mode);
+	}
+
+	std::string	Client::getEnteredPass() const
+	{
+		return (this->_enteredPass);
+	}
+
+	bool	Client::enteredNick() const
+	{
+		return (this->_enteredNick);
+	}
+
+	bool	Client::enteredUser() const
+	{
+		return (this->_enteredUser);
+	}
+
+	bool	Client::isRegistered() const
+	{
+		return (this->_registered);
+	}
+
+	bool	Client::isAlive() const
+	{
+		return (this->_alive);
+	}
+
+	bool	Client::isPinged() const
+	{
+		return (this->_pinged);
 	}
 
 	struct sockaddr_in&	Client::getAddress()
@@ -182,11 +237,6 @@ namespace ft_irc
 	socklen_t&	Client::getAddressSize()
 	{
 		return (this->_address_size);
-	}
-
-	int	Client::getSocketFd() const
-	{
-		return (this->_socket_fd);
 	}
 
 	const Client::t_channels&	Client::getJoinedChannels() const
@@ -207,58 +257,51 @@ namespace ft_irc
 			 it != this->_joined_channels.end();
 			 ++it)
 		{
-			contacts.insert(
-				contacts.end(),
-				(*it)->getClients().begin(), (*it)->getClients().end()
-				);
+			contacts.insert(contacts.end(), (*it)->getClients().begin(), (*it)->getClients().end());
 		}
 		return (removeDuplicates(contacts, this));
+	}
+
+	const std::string&	Client::getKickReason() const
+	{
+		return (this->_kick_reason);
 	}
 
 	/* Setters ****************************************************************** */
 
 	void	Client::setNick(const std::string& nick)
 	{
-		std::cout << "Nick: " << nick << std::endl;
 		this->_nick = nick;
 	}
 
 	void	Client::setRealName(const std::string& realname)
 	{
-		std::cout << "Real Name: " << realname << std::endl;
 		this->_realname = realname;
 	}
 
 	void	Client::setHostname(const std::string& hostname)
 	{
-		std::cout << "Hostname: " << hostname << std::endl;
 		this->_hostname = hostname;
 	}
 
 	void	Client::setUsername(const std::string& username)
 	{
-		std::cout << "Username: " << username << std::endl;
 		this->_username = username;
 	}
 
-	void	Client::setSocketFd(int socket_fd)
+	void	Client::setEnteredPass(const std::string& enteredPass)
 	{
-		this->_socket_fd = socket_fd;
+		this->_enteredPass = enteredPass;
 	}
 
-	void	Client::setJoinedChannels(const t_channels& joined_channels)
+	void	Client::setEnteredNick(bool enteredNick)
 	{
-		this->_joined_channels = joined_channels;
+		this->_enteredNick = enteredNick;
 	}
 
-	void	Client::setAllowed(bool allowed)
+	void	Client::setEnteredUser(bool enteredUser)
 	{
-		this->_allowed = allowed;
-	}
-
-	void	Client::setAlive(bool alive)
-	{
-		this->_alive = alive;
+		this->_enteredUser = enteredUser;
 	}
 
 	void	Client::setRegistered(bool registered)
@@ -266,32 +309,22 @@ namespace ft_irc
 		this->_registered = registered;
 	}
 
+	void	Client::setAlive(bool alive)
+	{
+		this->_alive = alive;
+	}
+
 	void	Client::setPinged(bool pinged)
 	{
 		this->_pinged = pinged;
 	}
 
+	void	Client::setJoinedChannels(const t_channels& joined_channels)
+	{
+		this->_joined_channels = joined_channels;
+	}
+
 	/* Helpers ****************************************************************** */
-
-	bool	Client::isConnected() const
-	{
-		return (this->_socket_fd != -1);
-	}
-
-	bool	Client::isAllowed() const
-	{
-		return (this->_allowed);
-	}
-
-	bool	Client::isAlive() const
-	{
-		return (this->_alive);
-	}
-
-	bool	Client::isRegistered() const
-	{
-		return (this->_registered);
-	}
 
 	bool	Client::isTimeouted() const
 	{
@@ -301,7 +334,6 @@ namespace ft_irc
 		return ((now.tv_sec - this->_last_event_time.tv_sec) > this->_keep_alive.tv_sec);
 	}
 
-	//placeholder
 	bool	Client::isOper() const
 	{
 		return (this->_mode.find("o") != std::string::npos);
@@ -312,49 +344,18 @@ namespace ft_irc
 		return (channel.hasChanOp(*this));
 	}
 
-	//isPinged()
-	bool	Client::isPinged() const
+	bool	Client::isInvisible() const
 	{
-		return (this->_pinged);
+		return (this->_mode.find('i') != std::string::npos);
+	}
+
+	void	Client::kick(const std::string& reason)
+	{
+		this->_alive = false;
+		this->_kick_reason = reason;
 	}
 
 	/* Connection handling ****************************************************** */
-
-	int	Client::awaitConnection(int socket_fd)
-	{
-		this->_socket_fd = accept(socket_fd,
-								  (struct sockaddr *)&this->_address,
-								  &this->_address_size
-								  );
-
-		if (this->_socket_fd == -1)
-		{
-			std::cerr << "Accept failed" << std::endl;
-			return (-1);
-		}
-
-		setNonblocking(this->_socket_fd);
-		this->_address_str = inet_ntoa(this->_address.sin_addr);
-		return (this->_socket_fd);
-	}
-
-	/* poll */
-	bool	Client::hasNewEvents()
-	{
-		int				ret;
-		struct pollfd	poll_fd;
-
-		poll_fd.fd = this->_socket_fd;
-		poll_fd.events = POLLIN;
-		ret = poll(&poll_fd, 1, this->_timeout.tv_usec);
-
-		if (ret == -1)
-		{
-			std::cerr << __FILE__ ":" <<__LINE__ << " : " << "FATAL: poll()" << std::endl;
-			throw std::runtime_error("poll() failed");
-		}
-		return (ret > 0);
-	}
 
 	/* Resets timeout and pinged */
 	void Client::updateLastEventTime()
@@ -379,7 +380,6 @@ namespace ft_irc
 
 		if (found == std::string::npos)
 		{
-			found = this->_in_buffer.find("\n");
 			endofline = "\n";
 		}
 		std::string	cmd = this->_in_buffer.substr(0, this->_in_buffer.find(endofline) + endofline.size());
@@ -391,58 +391,19 @@ namespace ft_irc
 		return (cmd);
 	}
 
-	/* Reads 512 bytes from the socket if there is data to read */
-	int	Client::updateInBuffer()
+	int	Client::addToInBuffer(const std::string& str)
 	{
-		char					bytes_buffer[MAX_COMMAND_SIZE];
-		int						ret;
-		int						poll_ret;
-		std::string::size_type	found;
-		struct pollfd			poll_fd;
-
-		poll_fd.fd = this->_socket_fd;
-		poll_fd.events = POLLIN;
-
-		if (this->getSocketFd() < 0)
-			return (-1);
-		poll_ret = poll(&poll_fd, 1, this->_timeout.tv_usec);
-		if (poll_ret == -1)
-		{
-			std::cerr << __FILE__ ":" <<__LINE__ << " : " << "FATAL: poll()" << std::endl;
-			throw std::runtime_error("poll() failed");
-		}
-		if (poll_ret == 0)
-			return (0);
-		// read
-		ret = recv(this->_socket_fd, bytes_buffer, MAX_COMMAND_SIZE, 0);
-		if (ret == -1)
-		{
-			throw std::runtime_error("recv() failed");
-			std::cerr << __FILE__ ":" <<__LINE__ << " : " << "FATAL: poll()" << std::endl;
-		}
-		if (ret == 0)
-			return (0);
-
-		// append to in_buffer
-		this->_in_buffer.append(bytes_buffer, ret);
-		// if there's not \r\n in the first 512 bytes, insert a \r\n at offset 512
-		if (this->_in_buffer.size() > this->_max_cmd_length)
-		{
-			std::string	endofline = CRLF;
-
-			found = this->_in_buffer.find(CRLF);
-			if (found == std::string::npos)
-			{
-				found = this->_in_buffer.find("\n");
-				endofline = "\n";
-			}
-			if (found == std::string::npos || found > this->_max_cmd_length)
-				this->_in_buffer.insert(this->_max_cmd_length, endofline);
-		}
-		this->updateLastEventTime();
-		return (ret);
+		this->_in_buffer += str;
+		return (0);
 	}
 
+	int Client::addToOutBuffer(const std::string& str)
+	{
+		this->_out_buffer += str;
+		return (0);
+	}
+
+/*
 	int	Client::updateOutBuffer()
 	{
 		int		ret;
@@ -459,7 +420,7 @@ namespace ft_irc
 		}
 		this->_out_buffer.erase(0, ret);
 		return (ret);
-	}
+	}*/
 
 	void	Client::sendCommand(std::string cmd)
 	{
@@ -497,12 +458,16 @@ namespace ft_irc
 	/* Adds the mode passed as parameter to the client mode string */
 	int	Client::addMode(char mode_char)
 	{
-		std::string	valid_modes = "iswo";
+		std::string	valid_modes = "io";
 
 		if (valid_modes.find(mode_char) != std::string::npos)
 		{
-			this->_mode += mode_char;
-			return (ERR_SUCCESS);
+			if (this->_mode.find(mode_char) == std::string::npos)
+			{
+				this->_mode += mode_char;
+				return (1);
+			}
+			return (0);
 		}
 		return (ERR_UNKNOWNMODE);
 	}
@@ -510,12 +475,16 @@ namespace ft_irc
 	/* Removes the mode passed as parameter from the client mode string */
 	int	Client::removeMode(char mode_char)
 	{
-		std::string	valid_modes = "iswo";
+		std::string	valid_modes = "io";
 
 		if (valid_modes.find(mode_char) != std::string::npos)
 		{
-			this->_mode.erase(this->_mode.find(mode_char), 1);
-			return (ERR_SUCCESS);
+			if (this->_mode.find(mode_char) != std::string::npos)
+			{
+				this->_mode.erase(this->_mode.find(mode_char), 1);
+				return (1);
+			}
+			return (0);
 		}
 		return (ERR_UNKNOWNMODE);
 	}
@@ -525,6 +494,8 @@ namespace ft_irc
 	/* friend operator == */
 	bool	operator==(const Client& lhs, const Client& rhs)
 	{
-		return ((lhs._socket_fd == rhs._socket_fd && lhs._nick == rhs._nick));
+		return (lhs._nick == rhs._nick && lhs._username == rhs._username && lhs._hostname == rhs._hostname
+		&& lhs._alive == rhs._alive && lhs._last_event_time.tv_sec == rhs._last_event_time.tv_sec &&
+		lhs._last_event_time.tv_usec == rhs._last_event_time.tv_usec);
 	}
 } // namespace ft_irc

@@ -1,4 +1,4 @@
-const char *error_msg[] =
+const char	*error_msg[] =
 {
 	"Success",
 	"No such nick or channel name",
