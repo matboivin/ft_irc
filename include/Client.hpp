@@ -28,7 +28,8 @@
 
 # define MAX_COMMAND_SIZE 512
 
-typedef struct pollfd pollfd_t;
+typedef struct pollfd	pollfd_t;
+
 namespace ft_irc
 {
 	class Channel;

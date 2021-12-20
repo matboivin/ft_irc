@@ -29,7 +29,13 @@ namespace ft_irc
 
 	std::string	build_full_client_id(const Client& client)
 	{
-		return (client.getNick() + "!" + client.getUsername() + "@" + client.getHostname());
+		std::string	full_client_id = client.getNick();
+
+		full_client_id += "!";
+		full_client_id += client.getUsername();
+		full_client_id += "@";
+		full_client_id += client.getHostname();
+		return (full_client_id);
 	}
 
 	/* Late parsing helpers */

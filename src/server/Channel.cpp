@@ -93,10 +93,12 @@ namespace ft_irc
 
 	void	Channel::setTopic(const std::string& topic)
 	{
-		std::size_t	pos = 0;
+		std::size_t	pos;
 
 		if (topic.at(0) == ':')
 			pos = 1;
+		else
+			pos = 0;
 		this->_topic = topic.substr(pos);
 	}
 
@@ -196,10 +198,11 @@ namespace ft_irc
 		this->setTopic(topic);
 
 		msg.setRecipients(this->getClients());
-		msg.setResponse(
-			build_prefix( build_full_client_id(msg.getSender()) )
-			+ " TOPIC " + this->_name + " :" + topic
-			);
+		msg.setResponse(build_prefix(build_full_client_id(msg.getSender())));
+		msg.appendResponse(" TOPIC ");
+		msg.appendResponse(this->_name);
+		msg.appendResponse(" :");
+		msg.appendResponse(topic);
 		msg.appendSeparator();
 	}
 

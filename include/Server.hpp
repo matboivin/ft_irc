@@ -177,9 +177,9 @@ namespace ft_irc
 		void					_partClient(Message& msg,
 											const std::string& chan_name,
 											const std::string& comment = "");
-		void					_addClientFd(Client &client);
-		void					_removeClientFd(Client &client);
-		int						updateClientInBuffer(Client &client, struct pollfd &client_pollfd);
+		void					_addClientFd(Client& client);
+		void					_removeClientFd(Client& client);
+		int						updateClientInBuffer(Client& client, struct pollfd& client_pollfd);
 	};
 } // !namespace ft_irc
 

@@ -372,7 +372,7 @@ namespace ft_irc
 		}
 	}
 	/* Reads 512 bytes from the socket if there is data to read */
-	int	Server::updateClientInBuffer(Client &client, struct pollfd &client_pollfd)
+	int	Server::updateClientInBuffer(Client& client, struct pollfd& client_pollfd)
 	{
 		char					bytes_buffer[MAX_COMMAND_SIZE];
 		std::string::size_type	found;

@@ -30,7 +30,6 @@ namespace ft_irc
 
 			if (elem)
 				tmp.remove(elem);
-
 			return (tmp);
 		}
 } // !namespace ft_irc

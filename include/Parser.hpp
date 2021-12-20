@@ -35,7 +35,7 @@ namespace ft_irc
 
 	public:
 		/* Alias */
-		typedef std::vector<std::string>	t_params;
+		typedef std::vector<std::string>			t_params;
 
 		/* Default constructor */
 					Parser();

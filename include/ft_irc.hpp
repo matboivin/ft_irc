@@ -69,7 +69,7 @@ enum	e_error_code
 	ERR_CHANOPRIVSNEEDED
 };
 
-extern const char *error_msg[];
+extern const char	*error_msg[];
 int		setNonblocking(int fd);
 void	displayUsage(const char* program_name);
 int		test_parsing();

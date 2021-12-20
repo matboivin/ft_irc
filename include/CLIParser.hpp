@@ -40,7 +40,7 @@ namespace ft_irc
 
 		/* Parses the command line arguments */
 		void		parse(const char* port, const char* password);
-	
+
 	private:
 		/* Attributes */
 		int			_argc;

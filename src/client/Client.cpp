@@ -380,7 +380,6 @@ namespace ft_irc
 
 		if (found == std::string::npos)
 		{
-			// found = this->_in_buffer.find("\n");
 			endofline = "\n";
 		}
 		std::string	cmd = this->_in_buffer.substr(0, this->_in_buffer.find(endofline) + endofline.size());

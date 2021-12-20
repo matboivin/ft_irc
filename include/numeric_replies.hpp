@@ -25,7 +25,7 @@ namespace ft_irc
 	/* Aliases */
 	typedef std::list<Client>	t_clients;
 
-	// command responses
+	/* Command replies */
 	void	rpl_welcome(Message& msg, bool rewrite = false); // 001
 	void	rpl_yourhost(Message& msg, const std::string& version, bool rewrite = false); // 002
 	void	rpl_created(Message& msg, const std::string& creation_date, bool rewrite = false); // 003
@@ -50,7 +50,7 @@ namespace ft_irc
 	void	rpl_endofbanlist(Message& msg, const std::string& chan_name, bool rewrite = false); // 368
 	void	rpl_youreoper(Message& msg, bool rewrite = false); // 381
 
-	// error replies
+	/* Error replies */
 	void	err_alreadyoper(Message& msg, bool rewrite = false); // 400
 	void	err_nosuchnick(Message& msg, const std::string& nick, bool rewrite = false); // 401
 	void	err_nosuchserver(Message& msg, const std::string& serv_name, bool rewrite = false); // 402
