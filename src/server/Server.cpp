@@ -1373,8 +1373,10 @@ namespace ft_irc
 			 ++channels_it)
 		{
 			if (matchAll || is_string_in_msg_params(msg, channels_it->getName()))
+			{
 				rpl_namreply(msg, *channels_it);
-			rpl_endofnames(msg, channels_it->getName());
+				rpl_endofnames(msg, channels_it->getName());
+			}
 		}
 		if (matchAll)
 		{
