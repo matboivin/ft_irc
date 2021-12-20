@@ -1805,7 +1805,6 @@ namespace ft_irc
 		if (client.isOper())
 			rpl_whoisoperator(msg, client);
 		rpl_whoisserver(msg, this->_description);
-		_sendResponse(msg);
 	}
 
 	/*
