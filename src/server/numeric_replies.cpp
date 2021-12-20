@@ -299,7 +299,24 @@ namespace ft_irc
 
 	void	rpl_namreply(Message& msg, Channel& channel, bool rewrite)
 	{
-		bool	sender_in_chan = channel.hasClient(msg.getSender());
+		bool		sender_in_chan = channel.hasClient(msg.getSender());
+		std::string	users_in_chan = "";
+
+		for (Channel::t_clients::const_iterator it = channel.getClients().begin();
+			 it != channel.getClients().end();
+			 ++it)
+		{
+			if ((sender_in_chan == true) || ((*it)->isInvisible() == false))
+			{
+				if ((*it)->isChanOp(channel))
+					users_in_chan += " @";
+				else
+					users_in_chan += " ";
+				users_in_chan += (*it)->getNick();
+			}
+		}
+		if (users_in_chan.empty())
+			return ;
 
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
@@ -310,33 +327,14 @@ namespace ft_irc
 		msg.appendResponse(" = ");
 		msg.appendResponse(channel.getName());
 		msg.appendResponse(" :");
-
-		for (Channel::t_clients::const_iterator it = channel.getClients().begin();
-			 it != channel.getClients().end();
-			 ++it)
-		{
-			if ((sender_in_chan == true) || ((*it)->isInvisible() == false))
-			{
-				if ((*it)->isChanOp(channel))
-					msg.appendResponse(" @");
-				else
-					msg.appendResponse(" ");
-				msg.appendResponse((*it)->getNick());
-			}
-		}
+		msg.appendResponse(users_in_chan);
 		msg.appendSeparator();
 	}
 
 	void	rpl_namreply(Message& msg, const t_clients& clients, bool rewrite)
 	{
-		int			count = 0;
 		std::string	sender_nick = msg.getSender().getNick();
-		std::string	response;
-
-		response = build_prefix(msg.getServHostname());
-		response += " 353 ";
-		response += msg.getSender().getNick();
-		response += " * * :";
+		std::string	users_in_chan = "";
 
 		// check users not belonging to any channel
 		for (t_clients::const_iterator it = clients.begin();
@@ -346,18 +344,21 @@ namespace ft_irc
 			if ((it->getNick() != sender_nick)
 				&& (it->isInvisible() == false) && it->getJoinedChannels().empty())
 			{
-				response += " ";
-				response += it->getNick();
-				++count;
+				users_in_chan += " ";
+				users_in_chan += it->getNick();
 			}
 		}
-		if (count == 0)
+		if (users_in_chan.empty())
 			return ;
 
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(response);
+		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(" 353 ");
+		msg.appendResponse(msg.getSender().getNick());
+		msg.appendResponse(" * * :");
+		msg.appendResponse(users_in_chan);
 		msg.appendSeparator();
 	}
 
