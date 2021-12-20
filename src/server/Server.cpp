@@ -1782,7 +1782,7 @@ namespace ft_irc
 				rpl_whoreply(msg, msg.getSender().getNick(), *it);
 			}
 			++count;
-			if (count == 25)
+			if (count == WHOIS_LIST_LIMIT)
 			{
 				//:public-irc.w3.org NOTICE mynick :WHO list limit (25) reached!
 				msg.setRecipient(msg.getSender());

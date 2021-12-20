@@ -23,6 +23,7 @@
 # define CHAN_NB_MAX 10
 # define USERS_IN_CHAN_MAX 20
 # define USERS_MAX 200
+# define WHOIS_LIST_LIMIT 25
 
 namespace ft_irc
 {
