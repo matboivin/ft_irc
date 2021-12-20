@@ -202,7 +202,7 @@ namespace ft_irc
 		msg.appendResponse(" TOPIC ");
 		msg.appendResponse(this->_name);
 		msg.appendResponse(" :");
-		msg.appendResponse(topic);
+		msg.appendResponse(this->_topic);
 		msg.appendSeparator();
 	}
 
