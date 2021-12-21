@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 23:05:35 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/21 21:15:23 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1668,7 +1668,10 @@ namespace ft_irc
 		msg.setResponse(build_prefix(build_full_client_id(client)));
 		msg.appendResponse(" QUIT quit");
 		if (!msg.getParams().empty())
+		{
+			msg.appendResponse(" ");
 			msg.appendResponse(msg.getParams().at(0));
+		}
 		msg.appendSeparator();
 		_sendResponse(msg);
 		client.quitAllChannels();
