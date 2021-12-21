@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:56:54 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 22:58:46 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/21 21:46:21 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ namespace ft_irc
 	  _hostname(hostname),
 	  _mode("i"),
 	  _enteredPass(),
-	  _enteredNick(false),
+	  _enteredNick(),
 	  _enteredUser(false),
 	  _registered(false),
 	  _alive(true),
@@ -68,7 +68,7 @@ namespace ft_irc
 	  _hostname(hostname),
 	  _mode("i"),
 	  _enteredPass(),
-	  _enteredNick(false),
+	  _enteredNick(),
 	  _enteredUser(false),
 	  _registered(false),
 	  _alive(true),
@@ -199,7 +199,7 @@ namespace ft_irc
 		return (this->_enteredPass);
 	}
 
-	bool	Client::enteredNick() const
+	std::string	Client::getEnteredNick() const
 	{
 		return (this->_enteredNick);
 	}
@@ -294,7 +294,7 @@ namespace ft_irc
 		this->_enteredPass = enteredPass;
 	}
 
-	void	Client::setEnteredNick(bool enteredNick)
+	void	Client::setEnteredNick(const std::string& enteredNick)
 	{
 		this->_enteredNick = enteredNick;
 	}

@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:55:22 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 22:58:38 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/21 21:40:49 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ namespace ft_irc
 		std::string			getHostname() const;
 		std::string			getMode() const;
 		std::string			getEnteredPass() const;
-		bool				enteredNick() const;
+		std::string			getEnteredNick() const;
 		bool				enteredUser() const;
 		bool				isRegistered() const;
 		bool				isAlive() const;
@@ -98,7 +98,7 @@ namespace ft_irc
 		void				setUsername(const std::string& username);
 		void				setHostname(const std::string& hostname);
 		void				setEnteredPass(const std::string& enteredPass);
-		void				setEnteredNick(bool enteredNick);
+		void				setEnteredNick(const std::string& enteredNick);
 		void				setEnteredUser(bool enteredUser);
 		void				setRegistered(bool registered);
 		void				setAlive(bool alive);
@@ -145,7 +145,7 @@ namespace ft_irc
 		std::string			_hostname;
 		std::string			_mode;
 		std::string			_enteredPass;
-		bool				_enteredNick;
+		std::string			_enteredNick;
 		bool				_enteredUser;
 		bool				_registered;		/* provided PASS,NICK,USER */
 		bool				_alive;

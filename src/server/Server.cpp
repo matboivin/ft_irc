@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 23:05:35 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/21 21:51:46 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -523,21 +523,34 @@ namespace ft_irc
 		}
 
 		bool	passwords_match = (client.getEnteredPass() == getPassword());
+		bool	entered_nick = (client.getEnteredNick().empty() == false);
+		bool	nick_is_available = (getClient(client.getEnteredNick()) == this->_clients.end());
 
 		// if no password was given or password is wrong
-		if (!passwords_match && client.enteredNick() && client.enteredUser())
+		if (!passwords_match && entered_nick && client.enteredUser())
 		{
 			err_passwdmismatch(msg, true);
 			_sendResponse(msg);
 			client.kick("ERROR :Password incorrect");
 			return (0);
 		}
-		// if the client has just registered, send them a nice welcome message :D
-		if (passwords_match && client.enteredNick() && client.enteredUser())
+
+		if (passwords_match && entered_nick && client.enteredUser())
 		{
+			if (!nick_is_available)
+			{
+				err_nicknameinuse(msg, true);
+				_sendResponse(msg);
+				return (0);
+			}
+			else
+			{
+				client.setNick(client.getEnteredNick());
+			}
 			client.setRegistered(true);
 			_log(LOG_LEVEL_INFO,
 				"Client " + client.getNick() + "@" + client.getIpAddressStr() + " has just registered");
+			// if the client has just registered, send them a nice welcome message :D
 			_makeWelcomeMsg(client);
 			return (1);
 		}
@@ -1396,22 +1409,23 @@ namespace ft_irc
 		{
 			std::string	new_nick = msg.getParams().at(0);
 
+			if (new_nick.size() > USER_LEN)
+				new_nick.resize(USER_LEN);
+			if (msg.getSender().getNick() == new_nick)
+				return ;
+
 			if (!nick_is_valid(new_nick))
 				err_erroneusnickname(msg, true);
 			else if (getClient(new_nick) != this->_clients.end())
 				err_nicknameinuse(msg, true);
+			else if (!msg.getSender().isRegistered())
+			{
+				msg.getSender().setEnteredNick(new_nick);
+				return ;
+			}
 			else
 			{
-				if (new_nick.size() > USER_LEN)
-					new_nick.resize(USER_LEN);
-
 				msg.getSender().setNick(new_nick);
-
-				if (!msg.getSender().isRegistered())
-				{
-					msg.getSender().setEnteredNick(true);
-					return ;
-				}
 				msg.setRecipient(msg.getSender());
 				msg.addRecipients(msg.getSender().getAllContacts());
 			}
