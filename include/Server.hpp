@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 21:32:15 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/21 21:29:41 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,7 @@ namespace ft_irc
 		bool					_processClientCommand(Client& client);
 
 		/* Command response */
-		void					_sendResponse(Message& msg);
+		void						_sendResponse(Message& msg);
 
 		/* Channel operations */
 		Channel&				_addChannel(const std::string& name, Client& creator);

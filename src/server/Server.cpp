@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 23:05:35 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/21 21:30:34 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -670,10 +670,12 @@ namespace ft_irc
 		Message::t_clients	recipients = msg.getRecipients();
 		std::string			logOutput;
 
-		for (Message::t_clients::const_iterator	dst = recipients.begin();
+		for (Message::t_clients::iterator	dst = recipients.begin();
 			 dst != recipients.end();
 			 ++dst)
 		{
+			if (!*dst)
+				continue ;
 			logOutput = msg.getResponse();
 			size_t	pos = logOutput.find(CRLF);
 
@@ -687,7 +689,10 @@ namespace ft_irc
 			if (!(fd & POLLOUT))
 				continue ;
 			if (send(fd, msg.getResponse().c_str(), msg.getResponse().size(), MSG_NOSIGNAL) < 0)
-				throw std::runtime_error("send() failed");
+			{
+				_log(LOG_LEVEL_ERROR, "Error sending response to " + (*dst)->getIpAddressStr());
+				(*dst)->kick("Error sending response");
+			}
 		}
 	}
 
