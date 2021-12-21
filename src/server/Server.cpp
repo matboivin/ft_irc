@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/21 21:30:34 by root             ###   ########.fr       */
+/*   Updated: 2021/12/21 21:33:39 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,7 +213,14 @@ namespace ft_irc
 			{
 				if (_poll_fds.size() < _max_clients && _hasPendingConnections() == true)
 				{
-					_awaitNewConnection();
+					try
+					{
+						_awaitNewConnection();
+					}
+					catch (std::exception& e)
+					{
+						_log(LOG_LEVEL_ERROR, e.what());
+					}
 				}
 				_processClients();
 			}
