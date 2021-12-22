@@ -1,5 +1,9 @@
 #!/bin/bash
 
+NICK="quotes_bot"
+USER="irccat 8 x : irccat"
+SLEEP_TIME=3.4
+
 send_message()
 {
 	printf "%s\r\n" "$@"
@@ -7,40 +11,46 @@ send_message()
 
 get_random_quote()
 {
-	response=$(curl -s 'https://api.quotable.io/random')
-	formatted=$(echo "$response" | tr '"' '\n')
-	content=$(echo "$formatted" | grep -A2 content | sed '3q;d')
-	author=$(echo "$formatted" | grep -A2 author | sed '3q;d')
+	local response=$(curl -s 'https://api.quotable.io/random')
+	local formatted=$(echo "$response" | tr '"' '\n')
+	local content=$(echo "$formatted" | grep -A2 content | sed '3q;d')
+	local author=$(echo "$formatted" | grep -A2 author | sed '3q;d')
 	echo "$content - $author"
 }
 
-PASSWORD="pass"
-NICK="quotes_bot"
-USER="irccat 8 x : irccat"
-HOST="irc.w3.org"
-PORT="6667"
-CHANNEL="#random_quotes"
-SLEEP_TIME=5
-
 bot()
 {
-	send_message "PASS $PASSWORD"
+
+	local password="$1"
+	local channel="$2"
+	if ! (echo "$channel" | grep -q '#'); then
+		channel="#$channel"
+	fi
+	send_message "PASS $password"
 	send_message "NICK $NICK"
 	send_message "USER $USER"
-	send_message "JOIN $CHANNEL"
+	send_message "JOIN $channel"
 	while true; do
 		sleep "$SLEEP_TIME"
 		quote=$(get_random_quote)
-		send_message "PRIVMSG $CHANNEL :$quote"
+		send_message "PRIVMSG $channel :$quote"
 	done
 	
 }
 
 run()
 {
+	if [ "$#" -ne 4 ]; then
+		echo "Usage: $0 <host> <port> <password> <channel>"
+		exit 1
+	fi
+
+	local host="$1"
+	local port="$2"
+	shift 2
 	while true;do
-		bot | nc localhost 6667
+		bot $@ | nc -q 0 "$host" "$port"
 	done
 }
 
-run
+run $@

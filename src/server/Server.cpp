@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
 /*   Updated: 2021/12/21 21:51:46 by mboivin          ###   ########.fr       */
@@ -213,7 +213,14 @@ namespace ft_irc
 			{
 				if (_poll_fds.size() < _max_clients && _hasPendingConnections() == true)
 				{
-					_awaitNewConnection();
+					try
+					{
+						_awaitNewConnection();
+					}
+					catch (std::exception& e)
+					{
+						_log(LOG_LEVEL_ERROR, e.what());
+					}
 				}
 				_processClients();
 			}
@@ -683,10 +690,12 @@ namespace ft_irc
 		Message::t_clients	recipients = msg.getRecipients();
 		std::string			logOutput;
 
-		for (Message::t_clients::const_iterator	dst = recipients.begin();
+		for (Message::t_clients::iterator	dst = recipients.begin();
 			 dst != recipients.end();
 			 ++dst)
 		{
+			if (!*dst)
+				continue ;
 			logOutput = msg.getResponse();
 			size_t	pos = logOutput.find(CRLF);
 
@@ -700,7 +709,10 @@ namespace ft_irc
 			if (!(fd & POLLOUT))
 				continue ;
 			if (send(fd, msg.getResponse().c_str(), msg.getResponse().size(), MSG_NOSIGNAL) < 0)
-				throw std::runtime_error("send() failed");
+			{
+				_log(LOG_LEVEL_ERROR, "Error sending response to " + (*dst)->getIpAddressStr());
+				(*dst)->kick("Error sending response");
+			}
 		}
 	}
 
@@ -1386,8 +1398,10 @@ namespace ft_irc
 			 ++channels_it)
 		{
 			if (matchAll || is_string_in_msg_params(msg, channels_it->getName()))
+			{
 				rpl_namreply(msg, *channels_it);
-			rpl_endofnames(msg, channels_it->getName());
+				rpl_endofnames(msg, channels_it->getName());
+			}
 		}
 		if (matchAll)
 		{
@@ -1680,7 +1694,10 @@ namespace ft_irc
 		msg.setResponse(build_prefix(build_full_client_id(client)));
 		msg.appendResponse(" QUIT quit");
 		if (!msg.getParams().empty())
+		{
+			msg.appendResponse(" ");
 			msg.appendResponse(msg.getParams().at(0));
+		}
 		msg.appendSeparator();
 		_sendResponse(msg);
 		client.quitAllChannels();
@@ -1794,7 +1811,7 @@ namespace ft_irc
 				rpl_whoreply(msg, msg.getSender().getNick(), *it);
 			}
 			++count;
-			if (count == 25)
+			if (count == WHOIS_LIST_LIMIT)
 			{
 				//:public-irc.w3.org NOTICE mynick :WHO list limit (25) reached!
 				msg.setRecipient(msg.getSender());

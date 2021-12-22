@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 21:32:15 by mboivin          ###   ########.fr       */
+/*   Updated: 2021/12/21 21:46:18 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # define CHAN_NB_MAX 10
 # define USERS_IN_CHAN_MAX 20
 # define USERS_MAX 200
+# define WHOIS_LIST_LIMIT 25
 
 namespace ft_irc
 {
