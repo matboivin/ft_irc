@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 16:34:20 by root              #+#    #+#             */
-/*   Updated: 2021/12/19 21:37:09 by mboivin          ###   ########.fr       */
+/*   Updated: 2022/01/21 19:40:14 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,15 +33,9 @@ namespace ft_irc
 			displayUsage(argv[0]);
 			exit(EXIT_SUCCESS);
 		}
-		if (argc < 3)
-			throw std::runtime_error("Not enough arguments");
-		if (argc > 4)
-			throw std::runtime_error("Too many arguments");
-
-		if (argc == 3)
-			parse(argv[1], argv[2]); // ./ircserv <port> <password>
-		else
-			parse(argv[2], argv[3]); // ./ircserv [unused] <port> <password>
+		if (argc != 3)
+			throw std::runtime_error("Wrong number of arguments");
+		parse(argv[1], argv[2]);
 	}
 
 	/* Copy constructor */

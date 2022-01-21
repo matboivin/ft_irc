@@ -35,8 +35,8 @@ test:
   - test -f "$EXE"
   - ls ; pwd
   - ./tests/usage.sh
-  - python3 ./tests/connect_tester.py 0.0.0.0 127.0.0.1 2727 pass42
-  - python3 ./tests/resiliency_test.py  0.0.0.0 127.0.0.1 2727 pass42
+  - python3 ./tests/connect_tester.py 127.0.0.1 2727 pass42
+  - python3 ./tests/resiliency_test.py 127.0.0.1 2727 pass42
 
 parsing:
   stage: test

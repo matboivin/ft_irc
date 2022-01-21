@@ -6,13 +6,12 @@ from sys import argv
 import subprocess
 from time import sleep
 
-bind_address = argv[1]
-address = argv[2]
-port = int(argv[3])
-connection_pass = argv[4]
+address = argv[1]
+port = int(argv[2])
+connection_pass = argv[3]
 
 #launch ./ircserv
-proc = subprocess.Popen(["./ircserv", bind_address, argv[3], connection_pass])
+proc = subprocess.Popen(["./ircserv", argv[2], connection_pass])
 sleep(1)
 
 # create an INET, STREAMing socket
