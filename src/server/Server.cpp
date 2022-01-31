@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2021/12/21 21:51:46 by mboivin          ###   ########.fr       */
+/*   Updated: 2022/01/31 15:57:13 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -598,6 +598,7 @@ namespace ft_irc
 			client_fd = -1;
 		}
 		it->setRegistered(false);
+		it->quitAllChannels();
 		_log(LOG_LEVEL_INFO, "Client " + it->getNick() + "@" + it->getIpAddressStr() + " disconnected");
 		return (0);
 	}
