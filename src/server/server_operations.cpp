@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:37:26 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/12 16:52:24 by mboivin          ###   ########.fr       */
+/*   Updated: 2022/10/22 22:04:48 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,12 @@
 namespace ft_irc
 {
 	/* Response helpers */
-	std::string	build_prefix(const std::string& sender)
+	std::string	buildPrefix(const std::string& sender)
 	{
 		return (":" + sender);
 	}
 
-	std::string	build_full_client_id(const Client& client)
+	std::string	buildFullClientId(const Client& client)
 	{
 		std::string	full_client_id = client.getNick();
 
@@ -41,7 +41,7 @@ namespace ft_irc
 	/* Late parsing helpers */
 
 	/* Special characters listed in the RFC grammar */
-	bool	is_special(const char& c)
+	bool	isSpecial(const char& c)
 	{
 		return (
 			(c == '[') || (c == ']') || (c == '\\') || (c == '`')
@@ -54,16 +54,16 @@ namespace ft_irc
 	 * A nickname is composed of characters which can be digits, letters or special characters.
 	 * It musn't start with a digit.
 	 */
-	bool	nick_is_valid(const std::string& newnick)
+	bool	nickIsValid(const std::string& newnick)
 	{
 		std::string::const_iterator	it = newnick.begin();
 
-		if (isalpha(*it) || is_special(*it))
+		if (isalpha(*it) || isSpecial(*it))
 		{
 			++it;
 			while (it != newnick.end())
 			{
-				if (!isalnum(*it) && !is_special(*it) && (*it != '-'))
+				if (!isalnum(*it) && !isSpecial(*it) && (*it != '-'))
 					return (false);
 				++it;
 			}
@@ -76,14 +76,14 @@ namespace ft_irc
 	 * Check channel name
 	 * ( "#" / "+" / ( "!" channelid ) / "&" ) chanstring [ ":" chanstring ]
 	 */
-	bool	channel_is_valid(const std::string& chan_name)
+	bool	channelIsValid(const std::string& chan_name)
 	{
 		return ((chan_name[0] == '#') || (chan_name[0] == '+')
 				|| (chan_name[0] == '!') || (chan_name[0] == '&'));
 	}
 
 	/* Match nicknames */
-	bool	match_nick(const std::string& to_match, const std::string& nick)
+	bool	matchNick(const std::string& to_match, const std::string& nick)
 	{
 		//wildcard matching
 		if (to_match.find('*') != std::string::npos)
@@ -107,7 +107,7 @@ namespace ft_irc
 	}
 
 	/* Helper for names */
-	bool	is_string_in_msg_params(const Message& msg, const std::string& str)
+	bool	isStringInMsgParams(const Message& msg, const std::string& str)
 	{
 		for (t_params::const_iterator it = msg.getParams().begin();
 			 it != msg.getParams().end();
@@ -120,7 +120,7 @@ namespace ft_irc
 	}
 
 	/* Check mode prefix */
-	int	get_mode_prefix(const char& prefix, char& mode_operator)
+	int	getModePrefix(const char& prefix, char& mode_operator)
 	{
 		if ((prefix == '+') || (prefix == '-'))
 		{
@@ -133,7 +133,7 @@ namespace ft_irc
 	/*
 	 * Check user mode char
 	 */
-	bool	usermode_char_is_valid(const char& c)
+	bool	usermodeCharIsValid(const char& c)
 	{
 		std::string	chan_modes = "io";
 
@@ -143,7 +143,7 @@ namespace ft_irc
 	/*
 	 * Check channel mode char
 	 */
-	bool	chanmode_char_is_valid(const char& c)
+	bool	chanmodecharisvalid(const char& c)
 	{
 		std::string	chan_modes = "nto";
 

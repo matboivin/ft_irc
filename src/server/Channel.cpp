@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 18:58:53 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/14 20:43:15 by mboivin          ###   ########.fr       */
+/*   Updated: 2022/10/22 22:02:38 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,7 +198,7 @@ namespace ft_irc
 		this->setTopic(topic);
 
 		msg.setRecipients(this->getClients());
-		msg.setResponse(build_prefix(build_full_client_id(msg.getSender())));
+		msg.setResponse(buildPrefix(buildFullClientId(msg.getSender())));
 		msg.appendResponse(" TOPIC ");
 		msg.appendResponse(this->_name);
 		msg.appendResponse(" :");

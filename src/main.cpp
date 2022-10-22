@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 13:07:21 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/15 23:25:29 by root             ###   ########.fr       */
+/*   Updated: 2022/10/22 22:00:27 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 int	main(int argc, char** argv)
 {
 #if defined(DEBUG_PARSING)
-	test_parsing();
+	testParsing();
 	return (0);
 #endif
 	try

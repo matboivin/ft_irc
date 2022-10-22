@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 19:35:18 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/12 15:32:04 by mboivin          ###   ########.fr       */
+/*   Updated: 2022/10/22 22:04:48 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,18 +28,18 @@ namespace ft_irc
 	typedef std::vector<std::string>	t_params;
 
 	/* Response helpers */
-	std::string	build_prefix(const std::string& sender);
-	std::string	build_full_client_id(const Client& client);
+	std::string	buildPrefix(const std::string& sender);
+	std::string	buildFullClientId(const Client& client);
 
 	/* Secondary parsing helpers and checkers */
-	bool		is_special(const char& c);
-	bool		nick_is_valid(const std::string& newnick);
-	bool		channel_is_valid(const std::string& chan_name);
-	bool		match_nick(const std::string& to_match, const std::string& nick);
-	bool		is_string_in_msg_params(const Message& msg, const std::string& str);
-	int			get_mode_prefix(const char& prefix, char& mode_operator);
-	bool		usermode_char_is_valid(const char& c);
-	bool		chanmode_char_is_valid(const char& c);
+	bool		isSpecial(const char& c);
+	bool		nickIsValid(const std::string& newnick);
+	bool		channelIsValid(const std::string& chan_name);
+	bool		matchNick(const std::string& to_match, const std::string& nick);
+	bool		isStringInMsgParams(const Message& msg, const std::string& str);
+	int			getModePrefix(const char& prefix, char& mode_operator);
+	bool		usermodeCharIsValid(const char& c);
+	bool		chanmodecharisvalid(const char& c);
 
 	/* Remove duplicates from lists */
 	template<typename T>

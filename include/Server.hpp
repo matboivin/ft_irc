@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:37:43 by root              #+#    #+#             */
-/*   Updated: 2021/12/21 21:46:18 by root             ###   ########.fr       */
+/*   Updated: 2022/10/22 22:01:55 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,7 @@ namespace ft_irc
 		Parser::t_params		_splitListOfParams(const std::string& params);
 
 		/* Commands execution */
-		void					_init_commands_map();
+		void					_initCommandsMap();
 		int						_executeCommand(Message& msg);
 		bool					_processClientCommand(Client& client);
 
