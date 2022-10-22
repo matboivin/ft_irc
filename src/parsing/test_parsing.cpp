@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 12:25:08 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/19 22:45:56 by mboivin          ###   ########.fr       */
+/*   Updated: 2022/10/22 22:00:35 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ static int	cmp_msg(const ft_irc::Message& msg, const ft_irc::Message& expected)
 
 // Test parsing use cases
 
-int	test_parsing()
+int	testParsing()
 {
 	ft_irc::Parser	parser;
 	ft_irc::Client	dummy_client;

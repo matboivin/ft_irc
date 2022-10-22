@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/24 17:01:20 by mboivin           #+#    #+#             */
-/*   Updated: 2021/12/14 20:47:25 by mboivin          ###   ########.fr       */
+/*   Updated: 2022/10/22 22:02:38 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,11 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 001 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" :Welcome to the Internet Relay Network ");
-		msg.appendResponse(build_full_client_id(msg.getSender()));
+		msg.appendResponse(buildFullClientId(msg.getSender()));
 		msg.appendSeparator();
 	}
 
@@ -38,7 +38,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 002 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" :Your host is ");
@@ -53,7 +53,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 003 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" :This server was created ");
@@ -66,7 +66,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 004 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
@@ -82,7 +82,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 221 ");
 		msg.appendResponse(client.getNick());
 		msg.appendResponse(" +");
@@ -94,7 +94,7 @@ namespace ft_irc
 	{
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 311 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
@@ -113,7 +113,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 312 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
@@ -128,7 +128,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 313 ");
 		msg.appendResponse(user.getNick());
 		msg.appendResponse(" :is an IRC operator");
@@ -141,7 +141,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 315 ");
 		msg.appendResponse(name);
 		msg.appendResponse(" ");
@@ -156,7 +156,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 318 ");
 		msg.appendResponse(nick);
 		msg.appendResponse(" ");
@@ -172,7 +172,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 319 ");
 		msg.appendResponse(client.getNick());
 		msg.appendResponse(" :");
@@ -195,7 +195,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 322 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
@@ -210,7 +210,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 323 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" :End of LIST");
@@ -222,7 +222,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 324 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
@@ -237,7 +237,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 331 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
@@ -251,7 +251,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 332 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
@@ -266,7 +266,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 341 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
@@ -281,7 +281,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 352 ");
 		msg.appendResponse(nick);
 		msg.appendResponse(" * ");
@@ -321,7 +321,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 353 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" = ");
@@ -354,7 +354,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 353 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" * * :");
@@ -367,7 +367,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 366 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
@@ -381,7 +381,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 368 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
@@ -395,7 +395,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 381 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" :You are now an IRC operator");
@@ -409,7 +409,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 400 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" OPER :You're already opered-up!");
@@ -421,7 +421,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 401 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
@@ -435,7 +435,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 403 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
@@ -449,7 +449,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 404 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
@@ -465,7 +465,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 405 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
@@ -479,7 +479,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 409 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" :No origin specified");
@@ -491,7 +491,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 411 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" :No recipient given (");
@@ -505,7 +505,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 412 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" :No text to send");
@@ -517,7 +517,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 421 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
@@ -533,7 +533,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 431 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" :No nickname given");
@@ -545,7 +545,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 432 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
@@ -559,7 +559,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 433 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
@@ -573,7 +573,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 441 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
@@ -589,7 +589,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 442 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
@@ -603,7 +603,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 443 ");
 		msg.appendResponse(nick);
 		msg.appendResponse(" ");
@@ -617,7 +617,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 451 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" :You have not registered");
@@ -629,7 +629,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 461 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
@@ -644,7 +644,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 462 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" :Unauthorized command (already registered)");
@@ -656,7 +656,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 464 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" :Password incorrect");
@@ -668,7 +668,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 471 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
@@ -682,7 +682,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 472 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
@@ -696,7 +696,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 481 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" :Permission Denied- You're not an IRC operator");
@@ -708,7 +708,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 482 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" ");
@@ -722,7 +722,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 483 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" :You can't kill a server!");
@@ -734,7 +734,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 491 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" :No O-lines for your host");
@@ -746,7 +746,7 @@ namespace ft_irc
 		msg.setRecipient(msg.getSender());
 		if (rewrite)
 			msg.clearResponse();
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 502 ");
 		msg.appendResponse(msg.getSender().getNick());
 		msg.appendResponse(" :Cannot change mode for other users");

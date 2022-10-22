@@ -6,7 +6,7 @@
 /*   By: mboivin <mboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/20 17:39:18 by root              #+#    #+#             */
-/*   Updated: 2022/01/31 15:57:13 by mboivin          ###   ########.fr       */
+/*   Updated: 2022/10/22 22:04:48 by mboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ namespace ft_irc
 		this->_creation_date = ctime(&now);
 
 		// init map of commands
-		_init_commands_map();
+		_initCommandsMap();
 
 		_log(LOG_LEVEL_INFO, "Server constructed");
 	}
@@ -174,7 +174,7 @@ namespace ft_irc
 
 	Server::t_channels::iterator	Server::getChannel(const std::string& chan_name)
 	{
-		if (!channel_is_valid(chan_name))
+		if (!channelIsValid(chan_name))
 			return (this->_channels.end());
 
 		t_channels::iterator	it = this->_channels.begin();
@@ -608,7 +608,7 @@ namespace ft_irc
 		Message	msg(client);
 
 		msg.setRecipient(client);
-		msg.setResponse(build_prefix(getHostname()));
+		msg.setResponse(buildPrefix(getHostname()));
 		msg.appendResponse(" PING ");
 		msg.appendResponse(getHostname());
 		msg.appendResponse(" :");
@@ -636,7 +636,7 @@ namespace ft_irc
 	/* Commands execution *************************************************** */
 
 	/* Inits the map containing the commands */
-	void	Server::_init_commands_map()
+	void	Server::_initCommandsMap()
 	{
 		this->_commands["DIE"]		= &Server::_execDieCmd;
 		this->_commands["INVITE"]	= &Server::_execInviteCmd;
@@ -763,7 +763,7 @@ namespace ft_irc
 			Message	join_msg(client);
 
 			join_msg.setRecipients(channel.getClients());
-			join_msg.setResponse(build_prefix(build_full_client_id(client)));
+			join_msg.setResponse(buildPrefix(buildFullClientId(client)));
 			join_msg.appendResponse(" JOIN ");
 			join_msg.appendResponse(channel.getName());
 			join_msg.appendSeparator();
@@ -788,7 +788,7 @@ namespace ft_irc
 			Message	part_msg(client);
 
 			part_msg.setRecipients(channel->getClients());
-			part_msg.setResponse(build_prefix(build_full_client_id(client)));
+			part_msg.setResponse(buildPrefix(buildFullClientId(client)));
 			part_msg.appendResponse(" PART ");
 			part_msg.appendResponse(channel->getName());
 			if (!comment.empty())
@@ -913,7 +913,7 @@ namespace ft_irc
 				 chan_name != msg.getParams().end();
 				 ++chan_name)
 			{
-				if (!channel_is_valid(*chan_name))
+				if (!channelIsValid(*chan_name))
 					err_nosuchchannel(msg, *chan_name, true);
 				else if (msg.getSender().getJoinedChannels().size() >= CHAN_NB_MAX)
 					err_toomanychannels(msg, *chan_name, true);
@@ -964,7 +964,7 @@ namespace ft_irc
 		else
 		{
 			msg.setRecipients(channel->getClients());
-			msg.setResponse(build_prefix(build_full_client_id( msg.getSender())));
+			msg.setResponse(buildPrefix(buildFullClientId( msg.getSender())));
 			msg.appendResponse(" KICK ");
 			msg.appendResponse(chan_name);
 			msg.appendResponse(" ");
@@ -1034,7 +1034,7 @@ namespace ft_irc
 
 		msg.setRecipients(target.getAllContacts());
 		msg.addRecipient(target);
-		msg.setResponse(build_prefix(build_full_client_id(target)));
+		msg.setResponse(buildPrefix(buildFullClientId(target)));
 		msg.appendResponse(" QUIT ");
 		msg.appendResponse(trailing_param);
 		msg.appendSeparator();
@@ -1095,7 +1095,7 @@ namespace ft_irc
 			 channels_it != this->_channels.end();
 			 ++channels_it)
 		{
-			if (matchAll || is_string_in_msg_params(msg, channels_it->getName()))
+			if (matchAll || isStringInMsgParams(msg, channels_it->getName()))
 				rpl_list(msg, *channels_it);
 		}
 		rpl_listend(msg);
@@ -1118,11 +1118,11 @@ namespace ft_irc
 			 mode_char != mode_str.end();
 			 ++mode_char)
 		{
-			if (get_mode_prefix(*mode_char, mode_operator)) // char is '+' or '-'
+			if (getModePrefix(*mode_char, mode_operator)) // char is '+' or '-'
 			{
 				continue ;
 			}
-			if (!usermode_char_is_valid(*mode_char)) // char is not 'o' or 'i'
+			if (!usermodeCharIsValid(*mode_char)) // char is not 'o' or 'i'
 			{
 				err_unknownmode(mode_msg, *mode_char, true);
 				_sendResponse(mode_msg);
@@ -1141,7 +1141,7 @@ namespace ft_irc
 				{
 					msg.setRecipients(target.getAllContacts());
 					msg.addRecipient(target);
-					msg.setResponse(build_prefix(build_full_client_id(target)));
+					msg.setResponse(buildPrefix(buildFullClientId(target)));
 					msg.appendResponse(" MODE ");
 					msg.appendResponse(target.getNick());
 					msg.appendResponse(" ");
@@ -1176,11 +1176,11 @@ namespace ft_irc
 			 mode_char != mode_str.end();
 			 ++mode_char)
 		{
-			if (get_mode_prefix(*mode_char, mode_operator)) // char is '+' or '-'
+			if (getModePrefix(*mode_char, mode_operator)) // char is '+' or '-'
 			{
 				continue ;
 			}
-			else if (!chanmode_char_is_valid(*mode_char)) // char is not 'o' or 't'
+			else if (!chanmodecharisvalid(*mode_char)) // char is not 'o' or 't'
 			{
 				err_unknownmode(mode_msg, *mode_char, true);
 				_sendResponse(mode_msg);
@@ -1191,7 +1191,7 @@ namespace ft_irc
 					channel.addMode(*mode_char);
 				else if (mode_operator == '-')
 					channel.removeMode(*mode_char);
-				msg.setResponse(build_prefix(build_full_client_id(client)));
+				msg.setResponse(buildPrefix(buildFullClientId(client)));
 				msg.appendResponse(" MODE ");
 				msg.appendResponse(channel.getName());
 				msg.appendResponse(" ");
@@ -1228,7 +1228,7 @@ namespace ft_irc
 			 mode_char != mode_str.end();
 			 ++mode_char)
 		{
-			if (get_mode_prefix(*mode_char, mode_operator)) // char is + or -
+			if (getModePrefix(*mode_char, mode_operator)) // char is + or -
 			{
 				continue ;
 			}
@@ -1245,7 +1245,7 @@ namespace ft_irc
 					channel.addChanOp(*target);
 				else if (mode_operator == '-')
 					channel.removeChanOp(*target);
-				msg.setResponse(build_prefix(build_full_client_id(client)));
+				msg.setResponse(buildPrefix(buildFullClientId(client)));
 				msg.appendResponse(" MODE ");
 				msg.appendResponse(channel.getName());
 				msg.appendResponse(" ");
@@ -1324,13 +1324,13 @@ namespace ft_irc
 	void	Server::_execMotdCmd(Message& msg)
 	{
 		const std::string	start_line = msg.getSender().getNick() + " :- ";
-		std::string	motd_start_line = build_prefix(msg.getServHostname());
+		std::string	motd_start_line = buildPrefix(msg.getServHostname());
 
 		motd_start_line += " 372 ";
 		motd_start_line += start_line;
 
 		msg.setRecipient(msg.getSender());
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		// RPL_MOTDSTART
 		msg.appendResponse(" 375 ");
 		msg.appendResponse(start_line);
@@ -1359,7 +1359,7 @@ namespace ft_irc
 		msg.appendResponse(motd_start_line);
 		msg.appendSeparator();
 		// RPL_ENDOFMOTD
-		msg.appendResponse(build_prefix(msg.getServHostname()));
+		msg.appendResponse(buildPrefix(msg.getServHostname()));
 		msg.appendResponse(" 376 ");
 		msg.appendResponse(start_line);
 		msg.appendResponse(":End of MOTD command");
@@ -1398,7 +1398,7 @@ namespace ft_irc
 			 channels_it != this->_channels.end();
 			 ++channels_it)
 		{
-			if (matchAll || is_string_in_msg_params(msg, channels_it->getName()))
+			if (matchAll || isStringInMsgParams(msg, channels_it->getName()))
 			{
 				rpl_namreply(msg, *channels_it);
 				rpl_endofnames(msg, channels_it->getName());
@@ -1429,7 +1429,7 @@ namespace ft_irc
 			if (msg.getSender().getNick() == new_nick)
 				return ;
 
-			if (!nick_is_valid(new_nick))
+			if (!nickIsValid(new_nick))
 				err_erroneusnickname(msg, true);
 			else if (getClient(new_nick) != this->_clients.end())
 				err_nicknameinuse(msg, true);
@@ -1463,7 +1463,7 @@ namespace ft_irc
 		{
 			std::string	target = msg.getParams().at(0);
 
-			if (channel_is_valid(target)) // send to chan
+			if (channelIsValid(target)) // send to chan
 			{
 				t_channels::iterator	channel = getChannel(target);
 
@@ -1511,7 +1511,7 @@ namespace ft_irc
 				if (target.isOper() == true)
 				{
 					rpl_youreoper(msg, true);
-					msg.appendResponse(build_prefix(getHostname()));
+					msg.appendResponse(buildPrefix(getHostname()));
 					msg.appendResponse(" MODE ");
 					msg.appendResponse(nick);
 					msg.appendResponse(" +o");
@@ -1613,7 +1613,7 @@ namespace ft_irc
 			origin = msg.getParams().front();
 
 			msg.setRecipient(msg.getSender());
-			msg.setResponse(build_prefix(getHostname()));
+			msg.setResponse(buildPrefix(getHostname()));
 			msg.appendResponse(" PONG ");
 			msg.appendResponse(getHostname());
 			msg.appendResponse(" :");
@@ -1657,7 +1657,7 @@ namespace ft_irc
 		{
 			std::string	target = msg.getParams().at(0);
 
-			if (channel_is_valid(target)) // send to chan
+			if (channelIsValid(target)) // send to chan
 			{
 				t_channels::iterator	channel = getChannel(target);
 
@@ -1692,7 +1692,7 @@ namespace ft_irc
 
 		msg.setRecipients(client.getAllContacts());
 		msg.addRecipient(client);
-		msg.setResponse(build_prefix(build_full_client_id(client)));
+		msg.setResponse(buildPrefix(buildFullClientId(client)));
 		msg.appendResponse(" QUIT quit");
 		if (!msg.getParams().empty())
 		{
@@ -1713,7 +1713,7 @@ namespace ft_irc
 
 		msg.setRecipients(client.getAllContacts());
 		msg.addRecipient(client);
-		msg.setResponse(build_prefix(build_full_client_id(client)));
+		msg.setResponse(buildPrefix(buildFullClientId(client)));
 		msg.appendResponse(" QUIT :Ping timeout: 30 seconds");
 		msg.appendSeparator();
 		_sendResponse(msg);
@@ -1741,7 +1741,7 @@ namespace ft_irc
 				err_nosuchchannel(msg, chan_name, true);
 			else if (!_userOnChannel(msg.getSender(), *channel))
 				err_notonchannel(msg, chan_name, true);
-			else if (msg.getParams().size() > 1 && !channel_is_valid(msg.getParams().at(1)))
+			else if (msg.getParams().size() > 1 && !channelIsValid(msg.getParams().at(1)))
 			{
 				// if 't' flag is set: the topic is settable by channel operator only
 				if (channel->hasMode('t') && !msg.getSender().isChanOp(*channel))
@@ -1806,7 +1806,7 @@ namespace ft_irc
 		{
 			if (oper_only && !it->isOper())
 				continue ;
-			if (match_nick(to_match, it->getNick()) && (it->isInvisible() == false))
+			if (matchNick(to_match, it->getNick()) && (it->isInvisible() == false))
 			{
 				_log(LOG_LEVEL_DEBUG, "WHO matched " + it->getNick());
 				rpl_whoreply(msg, msg.getSender().getNick(), *it);
@@ -1816,7 +1816,7 @@ namespace ft_irc
 			{
 				//:public-irc.w3.org NOTICE mynick :WHO list limit (25) reached!
 				msg.setRecipient(msg.getSender());
-				msg.setResponse(build_prefix(getHostname()));
+				msg.setResponse(buildPrefix(getHostname()));
 				msg.appendResponse(" NOTICE ");
 				msg.appendResponse(msg.getSender().getNick());
 				msg.appendResponse(" :WHO list limit (25) reached!");
@@ -1866,7 +1866,7 @@ namespace ft_irc
 				for (; paramsIt != msg.getParams().end(); ++paramsIt)
 				{
 					// _logger.log(0, "WHOIS: " + *paramsIt  + ":" + it->getNick());
-					if (match_nick(*paramsIt, it->getNick()))
+					if (matchNick(*paramsIt, it->getNick()))
 					{
 						// _logger.log(0, "WHOIS matched " + it->getNick());
 						this->_addWhoisToMsg(msg, *it);
