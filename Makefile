@@ -107,17 +107,14 @@ $(NAME):			$(OBJ_DIR) $(OBJ) $(INC)
 # DEBUG
 
 debug:				$(NAME)
-					./$(NAME) 0.0.0.0 2727 test
+					./$(NAME) 2727 test
 
 debug_replies:
 					./tests/replies_tester.sh
 
 debug_parsing:		CXXFLAGS+= -D DEBUG_PARSING
 debug_parsing:		re
-					./$(NAME) 0.0.0.0 2727 test
-
-show:
-					@echo "VPATH: $(VPATH)"
+					./$(NAME) 2727 test
 
 # CLEAN
 
